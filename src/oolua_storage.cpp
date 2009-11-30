@@ -4,31 +4,18 @@
 #include "oolua_storage.h"
 #include "oolua_push_pull.h"
 #include <stdexcept>
+#include "oolua_char_arrays.h"
 
 namespace OOLUA
 {
 
 	namespace INTERNAL
 	{
-		char weak_lookup_name [] = "__weak_lookup";
-
 		//pushes the weak top and returns its index
 		int push_weak_table(lua_State* l)
 		{
-			lua_pushstring(l,weak_lookup_name);//string
-			lua_rawget(l,LUA_REGISTRYINDEX);//weakTable
+			lua_getfield(l, LUA_REGISTRYINDEX, weak_lookup_name);
 			return lua_gettop(l);
-		}
-		//userdata is top of stack and is still on top when it leaves
-		void typed_delete_for_proxy_ptr(lua_State* l)
-		{
-			lua_getmetatable(l,-1);//ud stackMetatable
-			lua_CFunction typed_delete;
-			push2lua(l,"__typed_delete");//ud stackMetatable key
-			lua_gettable(l, -2);//ud stackMetatable value
-			pull2cpp(l, typed_delete);//ud stackMetatable
-			lua_pop(l,1);//ud
-			typed_delete(l);
 		}
 
 		//if found it is left on the top of the stack and returns true
@@ -64,20 +51,6 @@ namespace OOLUA
 			return ud;
 		}
 
-		void remove_classes_ud_if_required(lua_State* l,void* ptr, int tableIndex)
-		{
-			lua_pushlightuserdata(l,ptr);
-			lua_gettable(l,tableIndex);
-			if( lua_isnil(l,-1)  == 1 )
-			{
-				lua_pop(l,1);//pop the null
-				return;
-			}
-			lua_pop(l,1);//pop ud
-			lua_pushlightuserdata(l,ptr);//weakTable ptr
-			lua_pushnil(l);//weakTable ptr nil
-			lua_settable(l,tableIndex);
-		}
 
 		//on entering user data and weaktable are on the stack
 		void add_ptr_if_required(lua_State* const l, void* ptr,int udIndex,int weakIndex)
@@ -97,7 +70,7 @@ namespace OOLUA
 		}
 		void set_owner( lua_State* l,void* ptr, Owner own)
 		{
-			if(own == No_change)return;//should never get called but...
+			if(own == No_change){assert(0);return;}//should never get called but...
 			Lua_ud* ud = find_ud_dont_care_about_type_and_clean_stack(l,ptr);
 			if(!ud)throw std::runtime_error("(set owner)The pointer was not in the __weak_lookup table");
 			ud->gc = ( own == Cpp ? false : true);
@@ -106,7 +79,7 @@ namespace OOLUA
 		bool ud_at_index_is_const(lua_State* l, int index)
 		{
 			lua_getmetatable(l,index);//ud ... stack_mt 
-			lua_pushliteral(l,"__const");//ud  ... stack_mt str
+			push_char_carray(l,const_field);//ud  ... stack_mt str
 			lua_rawget(l,-2);//ud ... stack_mt int
 			bool is_const(false);
 			if( lua_tointeger(l,-1) == 1)//is it constant

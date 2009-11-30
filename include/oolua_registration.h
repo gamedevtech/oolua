@@ -2,7 +2,7 @@
 #   define OOLUA_REGISTRATION_H_
 
 #include "lua_includes.h"
-#include "proxy_from_stack.h"
+#include "class_from_stack.h"
 #include "proxy_class.h"
 #include "push_pointer_internal.h"
 #include "oolua_userdata.h"
@@ -10,6 +10,7 @@
 #include "oolua_member_function.h"
 #include "oolua_storage.h"
 #include "base_checker.h"
+#include "oolua_char_arrays.h"
 
 namespace OOLUA
 {
@@ -28,15 +29,11 @@ namespace OOLUA
         template<typename T,typename B>struct Add_base;
         template<typename T,typename TL, int index,typename B>struct Register_base;
 		template<typename T>int delete_type(lua_State * /*const*/ l);
-		//template<typename T>int set_to_string_function(lua_State *l,int const_mt,int none_const_mt);
-		//template<typename T>int const_string(lua_State * /*const*/ l);
-		//template<typename T>int none_const_string(lua_State * /*const*/ l);
 		template<typename T>int set_type_top_to_none_const(lua_State * /*const*/ l);
 	}
 
     namespace INTERNAL
 	{
-		//extern char weak_lookup_name [];
 
 		template<typename T>
 		inline int set_type_top_to_none_const(lua_State * /*const*/ l)
@@ -53,14 +50,13 @@ namespace OOLUA
 			T* obj = new T;
 			Lua_ud* ud = add_ptr(l,obj,false);
 			ud->gc = true;
-			//INTERNAL::push_pointer<T>(l, obj,Lua);
 			return 1;
 		}
 		template<typename T>
 		int delete_type(lua_State * /*const*/ l)
 		{
 			Lua_ud *ud = static_cast<Lua_ud *>( lua_touserdata(l, -1) );
-			delete static_cast<Proxy_class<T>*>(ud->void_proxy_ptr);
+			delete static_cast<T*>(ud->void_class_ptr);
 			return 0;
 		}
 		template<typename T>
@@ -70,17 +66,11 @@ namespace OOLUA
 			Lua_ud *ud = static_cast<Lua_ud*>(lua_touserdata(l, 1));
 			lua_pop(l,1);
 			//cast to correct type
-			Proxy_class<T>* proxy = static_cast<Proxy_class<T>*>(ud->void_proxy_ptr);
-			//remove from table
-			INTERNAL::remove_proxy_ptr(l,proxy->m_this);
 			//if responsible then clean up the cpp class
 			if(ud->gc)
 			{
-				//delete the Real_type
-				delete proxy->m_this;
+				delete static_cast<T*>(ud->void_class_ptr);
 			}
-			//clean up the proxy class
-			delete proxy;
 			//ud will be cleaned up by the Lua API
 			return 0;
 		}
@@ -93,7 +83,7 @@ namespace OOLUA
 
 			luaL_newmetatable(l, Proxy_class<T>::class_name);//methods mt
 			//registry[name]= mt
-			/*int*/ mt = lua_gettop(l);
+			mt = lua_gettop(l);
 
 			// store method table in globals so that
 			// scripts can add functions written in Lua.
@@ -102,23 +92,17 @@ namespace OOLUA
 			lua_settable(l, LUA_GLOBALSINDEX);//methods mt
 			//global[name]=methods
 
-			//lua_pushliteral(l, "__metatable");
-			//lua_pushvalue(l, methods);
-			//lua_settable(l, mt);  // hide metatable from Lua getmetatable()
-			////mt["__metatable"]= methods
-
-			//lua_CFunction func = (lua_CFunction)(&stack_top_type_is_base<T>);
-			lua_pushliteral(l,"__mt_check");//methods mt __mt_check
+			push_char_carray(l,mt_check_field);//methods mt __mt_check
 			lua_pushcfunction(l, &stack_top_type_is_base<T>);//methods mt __mt_check func
 			lua_settable(l, mt);//methods mt 
 			//mt["__mt_check"]= &stack_top_type_is_base<T>;
 
-			lua_pushliteral(l,"__typed_delete");//methods mt __typed_delete
-			lua_pushcfunction(l, &delete_type<T>);//methods mt __typed_delete func
-			lua_settable(l, mt);//methods mt 
-			//mt["__typed_delete"]= &delete_type<T>;
+			//push_char_carray(l,typed_delete_field);;//methods mt __typed_delete
+			//lua_pushcfunction(l, &delete_type<T>);//methods mt __typed_delete func
+			//lua_settable(l, mt);//methods mt 
+			////mt["__typed_delete"]= &delete_type<T>;
 
-			lua_pushliteral(l, "__const");//methods mt __const
+			push_char_carray(l,const_field);//methods mt __const
 			lua_pushinteger(l,0);//methods mt __const false
 			lua_settable(l, mt);//methods mt 
 			//mt["__const"]= 0
@@ -166,35 +150,26 @@ namespace OOLUA
 			lua_settable(l, LUA_GLOBALSINDEX);//const_methods const_mt
 			//global[name#_const]=const_methods
 
-			//lua_pushliteral(l, "__metatable");
-			//lua_pushvalue(l, const_methods );
-			//lua_settable(l, const_mt);  // hide metatable from Lua getmetatable()
-			////const_mt["__metatable"]= const_methods
-
-
-			//lua_CFunction func = &stack_top_type_is_base<T>;
-			lua_pushliteral(l,"__mt_check");//const_methods const_mt __mt_check
+			push_char_carray(l,mt_check_field);//const_methods const_mt __mt_check
 			lua_pushcfunction(l, &stack_top_type_is_base<T>);//const_methods const_mt __mt_check func
 			lua_settable(l, const_mt);//const_methods const_mt
 			//const_mt["__mt_check"]= &stack_top_type_is_base<T>;
 
-			lua_pushliteral(l,"__typed_delete");//const_methods const_mt __typed_delete
-			lua_pushcfunction(l, &delete_type<T>);//const_methods const_mt __typed_delete func
-			lua_settable(l, const_mt);//const_methods const_mt
-			//const_mt["__typed_delete"]= &delete_type<T>;
+			//push_char_carray(l,typed_delete_field);//const_methods const_mt __typed_delete
+			//lua_pushcfunction(l, &delete_type<T>);//const_methods const_mt __typed_delete func
+			//lua_settable(l, const_mt);//const_methods const_mt
+			////const_mt["__typed_delete"]= &delete_type<T>;
 
-			lua_pushliteral(l, "__const");//const_methods const_mt __const
+			push_char_carray(l,const_field);//const_methods const_mt __const
 			lua_pushinteger(l,1);//const_methods const_mt int
 			lua_settable(l, const_mt);//const_methods const_mt
 			//const_mt["__const"]= 1
 
-
-			lua_pushliteral(l, "__change_mt_to_none_const");//const_methods const_mt __gc
+			push_char_carray(l,change_mt_to_none_const_field);//const_methods const_mt __gc
 			lua_pushcclosure(l, &INTERNAL::set_type_top_to_none_const<T>, 0);//const_methods const_mt __gc func
 			lua_settable(l, const_mt);//const_methods const_mt
 			//const_mt["__gc"]=&set_type_top_to_none_const()
 			
-
 			lua_pushliteral(l, "__index");//const_methods const_mt __index
 			lua_pushvalue(l, const_methods );//const_methods const_mt __index const_methods
 			lua_settable(l, const_mt);//const_methods const_mt
@@ -206,7 +181,7 @@ namespace OOLUA
 			lua_settable(l, const_mt);//const_methods const_mt
 			//const_mt["__newindex"]= const_methods
 
-			lua_pushstring(l, "set_owner");//const_methods const_mt set_owner
+			push_char_carray(l,set_owner_str);//const_methods const_mt set_owner
 			lua_pushcclosure(l, &INTERNAL::lua_set_owner<T>, 0);//const_methods const_mt set_owner func
 			lua_settable(l, const_methods);//const_methods const_mt
 			//const_methods["set_owner"]=&lua_set_owner()
@@ -228,7 +203,6 @@ namespace OOLUA
 			set_mul_function<T,has_typedef<Proxy_class<T>,Mul_op>::Result>::set(l,const_mt,none_const_mt);
 			set_div_function<T,has_typedef<Proxy_class<T>,Div_op>::Result>::set(l,const_mt,none_const_mt);
 			
-			//set_to_string_function<T>(l,const_mt,none_const_mt);
 			lua_pop(l, 1);//const_methods
 			return const_methods;
 		}
@@ -287,7 +261,7 @@ namespace OOLUA
 		{
 			static void set(lua_State*  const l, int methods)
 			{
-				lua_pushliteral(l, "new");
+				push_char_carray(l,new_str);
 				lua_pushcfunction(l, &INTERNAL::create_type<T>);
 				lua_settable(l, methods);
 				// methods["new"] = create_type
@@ -299,32 +273,6 @@ namespace OOLUA
 		{
 			static void set(lua_State*  const /*l*/,int /*methods*/){}///no-op
 		};
-
-		//template<typename T>
-		//int const_string(lua_State * /*const*/ l)
-		//{
-		//	lua_pushliteral(l,Proxy_class<T>::class_name_const);
-		//	return 1;
-		//}
-		//template<typename T>
-		//int none_const_string(lua_State * /*const*/ l)
-		//{
-		//	lua_pushliteral(l,Proxy_class<T>::class_name);
-		//	return 1;
-		//}
-		//template<typename T> 
-		//int set_to_string_function(lua_State *l,int const_mt,int none_const_mt)
-		//{
-		//	lua_pushliteral(l,"__tostring");
-		//	int str = lua_gettop(l);
-		//	lua_pushvalue(l,str);
-		//	lua_pushcfunction(l,&const_string<T>);
-		//	lua_rawset(l,const_mt);
-		//	lua_pushvalue(l,str);
-		//	lua_pushcfunction(l,&none_const_string<T>);
-		//	lua_rawset(l,none_const_mt);
-		//	lua_remove(l,str);
-		//}
 
 	}
 

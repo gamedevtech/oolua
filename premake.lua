@@ -21,13 +21,19 @@ function doclean(cmd, arg)
 end
 
 --output files
+project.configs =
+{
+    "Debug",
+    "ReleaseWithSymbols",
+    "Release"
+}
 project.config["Debug"].bindir   = "bin/debug"
 project.config["Release"].bindir = "bin/release"
+project.config["ReleaseWithSymbols"].bindir = "bin/symbols_release"
+
 project.libdir = "lib"
 project.name ="oolua"
 
---dofile("oolua.lua")
---dofile("test.unit.lua")
 dopackage("./oolua.lua")
 dopackage("./test.unit.lua")
 dopackage("./file_generator")
@@ -35,3 +41,5 @@ dopackage("./file_generator")
 if (options["gcc_coverage"]) then
 	dopackage("./test.coverage.lua")
 end	
+
+--dopackage("./profile")

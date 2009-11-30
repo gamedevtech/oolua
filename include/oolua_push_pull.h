@@ -8,7 +8,7 @@
 #include "lvd_types.h"
 #include "param_traits.h"
 #include "proxy_class.h"
-#include "proxy_from_stack.h"
+#include "class_from_stack.h"
 #include "push_pointer_internal.h"
 #include "fwd_push_pull.h"
 #include "oolua_storage.h"
@@ -291,22 +291,22 @@ namespace OOLUA
 		template<typename T,bool IsIntregal>
 		struct pull_ptr_2cpp;
 
-		inline void pull_proxy_type_error(lua_State* const s,char const* type)
+		inline void pull_class_type_error(lua_State* const s,char const* type)
 		{
 			luaL_error(s,"%s %s %s","tried to pull type"
 				,type
 				,"which is not the type or a base of the type on the stack");
 		}
 
-		template<typename Pull_type,typename Proxy>
-		inline void pull_proxy_type(lua_State *const s,int Is_const,Proxy*& proxy)
+		template<typename Pull_type>
+		inline void pull_class_type(lua_State *const s,int Is_const,Pull_type*& class_type)
 		{
 #ifdef _MSC_VER
 #	pragma warning(push)
 #	pragma warning(disable : 4127)//conditional expression is constant
 #endif
-			if(Is_const) proxy = INTERNAL::proxy_from_stack_top< Pull_type >(s);
-			else proxy = INTERNAL::none_const_proxy_from_stack_top<Pull_type>(s);
+			if(Is_const) class_type = INTERNAL::class_from_stack_top< Pull_type >(s);
+			else class_type = INTERNAL::none_const_class_from_stack_top<Pull_type>(s);
 #ifdef _MSC_VER
 #	pragma warning(pop)
 #endif
@@ -319,12 +319,12 @@ namespace OOLUA
 			static void pull2cpp(lua_State* const s, T *&  value)
 			{
 				assert(s);
-				Proxy_class< typename OOLUA::param_type<T>::raw_type >* proxy;
-				pull_proxy_type<typename OOLUA::param_type<T>::raw_type>(s,OOLUA::param_type<T*>::is_constant,proxy);
-				if(!proxy )
+				typename OOLUA::param_type<T>::raw_type* class_ptr;
+				pull_class_type<typename OOLUA::param_type<T>::raw_type>(s,OOLUA::param_type<T*>::is_constant,class_ptr);
+				if(!class_ptr )
 				{
 #if 1
-					pull_proxy_type_error(s,OOLUA::param_type<T*>::is_constant 
+					pull_class_type_error(s,OOLUA::param_type<T*>::is_constant 
 						? Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name_const 
 						: Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name);
 #elif defined OOLUA_EXCEPTIONS
@@ -334,10 +334,8 @@ namespace OOLUA
 #endif
 					return;
 				}
-				assert(proxy);
-				value = proxy->m_this;
-				assert(value);
-				//lua_remove(s, 1);
+				assert(class_ptr);
+				value = class_ptr;
 				lua_pop(s,1);
 			}
 		};
@@ -366,12 +364,12 @@ namespace OOLUA
 	inline void pull2cpp(lua_State* const s, OOLUA::cpp_acquire_ptr<T>&  value)
 	{
 		assert(s);
-		Proxy_class< typename cpp_acquire_ptr<T>::raw >* proxy;
-		INTERNAL::pull_proxy_type<typename cpp_acquire_ptr<T>::raw>(s,OOLUA::param_type<T*>::is_constant,proxy);
-		if(!proxy )
+		typename cpp_acquire_ptr<T>::raw* class_ptr;
+		INTERNAL::pull_class_type<typename cpp_acquire_ptr<T>::raw>(s,OOLUA::param_type<T*>::is_constant,class_ptr);
+		if(!class_ptr )
 		{
 #if 1 
-			INTERNAL::pull_proxy_type_error(s,OOLUA::param_type<T*>::is_constant
+			INTERNAL::pull_class_type_error(s,OOLUA::param_type<T*>::is_constant
 					? Proxy_class<typename cpp_acquire_ptr<T>::raw>::class_name_const 
 					: Proxy_class<typename cpp_acquire_ptr<T>::raw>::class_name);
 #elif defined OOLUA_EXCEPTIONS
@@ -381,8 +379,8 @@ namespace OOLUA
 #endif
 			return;
 		}
-		assert(proxy && proxy->m_this);
-		value.m_ptr = proxy->m_this;
+		assert(class_ptr);
+		value.m_ptr = class_ptr;
 		INTERNAL::set_owner(s,value.m_ptr,OOLUA::Cpp);
 		lua_pop( s, 1);
 	}

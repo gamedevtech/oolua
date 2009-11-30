@@ -51,13 +51,6 @@ EXPORT_OOLUA_FUNCTIONS_6_NON_CONST(Method_returns_class
 									,ref_const_ptr_const
 									)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Method_returns_class)
-namespace
-{
-	int throw_OOLUA_Runtime_at_panic(lua_State* s)
-	{
-		throw OOLUA::Runtime_error(s);
-	}
-}
 
 class CppFunctionReturns : public CPPUNIT_NS::TestFixture
 {
@@ -81,7 +74,6 @@ public:
 		m_lua->register_class<Method_returns_class>();
 		m_lua->register_class<Return_double>();
 		m_instance = new Method_returns_class;
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
 	}
 	void tearDown()
 	{

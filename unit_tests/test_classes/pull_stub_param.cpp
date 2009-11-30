@@ -6,24 +6,17 @@
 
 #	include <string>
 
-namespace
-{
-	int throw_OOLUA_Runtime_at_panic(lua_State* s)
-	{
-		throw OOLUA::Runtime_error(s);
-	}
-}
 //We are testing that a proxy class method can correctly pull a stub
 //and can convert to the required type for the method which it is proxying.
 class Pulls_stub_param : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Pulls_stub_param);
 		CPPUNIT_TEST(ref_noneConstantPointerPassed_CalledOnce);
-		CPPUNIT_TEST(ref_ConstantPointerPassed_throwsOoluaRuntime);
+		CPPUNIT_TEST(ref_ConstantPointerPassed_callReturnsFalse);
 		CPPUNIT_TEST(refConst_noneConstantPointerPassed_CalledOnce);
 		CPPUNIT_TEST(refConst_ConstantPointerPassed_CalledOnce);
 		CPPUNIT_TEST(ptr_noneConstantPointerPassed_CalledOnce);
-		CPPUNIT_TEST(ptr_ConstantPointerPassed_throwsOoluaRuntime);
+		CPPUNIT_TEST(ptr_ConstantPointerPassed_callReturnsFalse);
 		CPPUNIT_TEST(ptrConst_noneConstantPointerPassed_CalledOnce);
 		CPPUNIT_TEST(ptrConst_ConstantPointerPassed_CalledOnce);
 		CPPUNIT_TEST(refPtrConst_noneConstantPointerPassed_CalledOnce);
@@ -105,13 +98,9 @@ public:
 			.Times(1);
 		generate_and_call_func_passing_none_const_ptr("ref");
 	}
-	void ref_ConstantPointerPassed_throwsOoluaRuntime()
+	void ref_ConstantPointerPassed_callReturnsFalse()
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
-		CPPUNIT_ASSERT_THROW(
-			generate_and_call_func_passing_const_ptr("ref");
-			,OOLUA::Runtime_error
-			);
+		CPPUNIT_ASSERT_EQUAL(false,generate_and_call_func_passing_const_ptr("ref"));
 	}
 	void refConst_noneConstantPointerPassed_CalledOnce()
 	{
@@ -132,13 +121,9 @@ public:
 			.Times(1);
 		generate_and_call_func_passing_none_const_ptr("ptr");
 	}
-	void ptr_ConstantPointerPassed_throwsOoluaRuntime()
+	void ptr_ConstantPointerPassed_callReturnsFalse()
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
-		CPPUNIT_ASSERT_THROW(
-			generate_and_call_func_passing_const_ptr("ptr");
-			,OOLUA::Runtime_error
-			);
+		CPPUNIT_ASSERT_EQUAL(false,generate_and_call_func_passing_const_ptr("ptr"));
 	}
 	void ptrConst_noneConstantPointerPassed_CalledOnce()
 	{

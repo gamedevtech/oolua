@@ -7,7 +7,7 @@ namespace OOLUA
     {
         struct Lua_ud
         {
-            void* void_proxy_ptr;//Proxy_class pointer
+			void* void_class_ptr;
             bool gc;//should it be garbage collected
         };
     }

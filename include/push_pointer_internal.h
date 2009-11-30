@@ -7,7 +7,10 @@
 #include "oolua_userdata.h"
 #include "oolua_storage.h"
 
-#define DEBUG_LUA_CHECKING
+#if defined DEBUG || defined _DEBUG
+#	define DEBUG_LUA_CHECKING
+#endif
+
 namespace OOLUA
 {
 
@@ -55,18 +58,6 @@ namespace OOLUA
 				ud->gc =( owner == Lua ? true : false);
 			}
 		}
-		//template<typename T>
-		//inline void push_pointer(lua_State * /*const*/ l, T* const ptr,Owner owner,bool is_const)
-		//{			
-		//	if_check_enabled_check_type_is_registered(l,Proxy_class<T>::class_name);
-		//	Lua_ud* ud( find_ud(l,ptr,is_const) );
-		//	if(! ud ) ud = add_ptr(l,ptr,is_const);
-
-		//	if(owner != No_change)
-		//	{
-		//		ud->gc =( owner == Lua ? true : false);
-		//	}
-		//}
 	}
 }
 

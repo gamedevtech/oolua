@@ -304,6 +304,8 @@ access to objects with no metatables does not fail (it simply results in nil).\n
 #	include "param_traits.h"
 #   include "push_pointer_internal.h"
 #   include "type_list.h"
+#	include "oolua_userdata.h"
+#	include "oolua_storage.h"
 
 namespace OOLUA
 {
@@ -353,7 +355,9 @@ namespace OOLUA
 		pull2cpp(l,rhs);
 		pull2cpp(l,lhs);
     	T* result ( new T( *lhs + *rhs ) );
-		INTERNAL::push_pointer<T>(l,result,Lua);
+		//INTERNAL::push_pointer<T>(l,result,Lua);
+		OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
+		ud->gc = true;
     	return 1;
 	}
 
@@ -366,7 +370,9 @@ namespace OOLUA
 		pull2cpp(l,rhs);
 		pull2cpp(l,lhs);
 		T* result ( new T( *lhs - *rhs ) );
-		INTERNAL::push_pointer<T>(l,result,Lua);
+		//INTERNAL::push_pointer<T>(l,result,Lua);
+		OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
+		ud->gc = true;
 		return 1;
 	}
 
@@ -378,7 +384,9 @@ namespace OOLUA
 		pull2cpp(l,rhs);
 		pull2cpp(l,lhs);
 		T* result ( new T( *lhs * *rhs ) );
-		INTERNAL::push_pointer<T>(l,result,Lua);
+		//INTERNAL::push_pointer<T>(l,result,Lua);
+		OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
+		ud->gc = true;
 		return 1;
 	}
 
@@ -390,7 +398,9 @@ namespace OOLUA
 		pull2cpp(l,rhs);
 		pull2cpp(l,lhs);
 		T* result ( new T( *lhs / *rhs ) );
-		INTERNAL::push_pointer<T>(l,result,Lua);
+		//INTERNAL::push_pointer<T>(l,result,Lua);
+		OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
+		ud->gc = true;
 		return 1;
 	}
 

@@ -20,21 +20,19 @@ namespace OOLUA
         template<typename ProxyStackType,typename Bases, int BaseIndex,typename BaseType>
 		struct Is_a_base;
 
-		//cast the proxy pointer to the correct type and put it onto
+		//cast the class pointer to the correct type and put it onto
 		//of the stack
 		template<typename ProxyStackType,typename BaseType,int DoWork = 1>
 		struct CastToRequestedProxyType
 		{
 			static void cast(lua_State* const l,int const& userdata_index)
 			{
-				//lua_pop(l,1);//pop stack type metatable
-				//lua_pushvalue(l, userdata_index/*index-1*/);//dup ud on top of stack
 				//get the userdata
 				OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>( lua_touserdata(l, userdata_index) );
-				//cast the proxy type from the stack to the stacktype
+				//cast the class void ptr from the stack to the stacktype
 				//then to base type to get correct offset
-				OOLUA::Proxy_class<BaseType>* baseptr = static_cast<ProxyStackType* > ( ud->void_proxy_ptr );
-				//push proxy pointer of requested type onto stack
+				BaseType* baseptr = static_cast<typename ProxyStackType::class_* > ( ud->void_class_ptr );
+				//push class pointer of requested type onto stack
 				lua_pushlightuserdata(l,baseptr);
 			}
 		};

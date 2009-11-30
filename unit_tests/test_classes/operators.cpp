@@ -247,18 +247,7 @@ public:
 	}
 
 	void equal_noneConstantAndConstant_returnsTrue()
-	{//self == rhs "
-		//m_lua->run_chunk(
-		//	"function Class_ops:__eq(rhs) "
-		//				" return 1 "
-		//				"end "
-		//				);
-		//"Class_ops[\"__equal\"] = function(rhs) "
-		//	" return 1 "
-		//	"end "
-		//	"function Class_ops:__equal(rhs) "
-		//	" return 1 "
-		//	"end "
+	{
 		Class_ops left(466666);
 		Class_ops const right(left);
 		operator_script(m_lua,left,right,"==");

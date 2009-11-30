@@ -46,10 +46,6 @@ namespace
 		return "lua_func";
 	}
 
-	int throw_OOLUA_Runtime_at_panic(lua_State* s)
-	{
-		throw OOLUA::Runtime_error(s);
-	}
 
 }
 
@@ -92,11 +88,11 @@ class Constant_functions : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST_SUITE( Constant_functions );
 		CPPUNIT_TEST(callConstantFunction_passedConstantInstance_calledOnce);
 		CPPUNIT_TEST(callConstantFunction_passedNoneConstantInstance_calledOnce);
-		CPPUNIT_TEST(callNoneConstantFunction_passedConstantInstance_stdRuntimeException);
+		CPPUNIT_TEST(callNoneConstantFunction_passedConstantInstance_callReturnsFalse);
 		CPPUNIT_TEST(callNoneConstantFunction_passedNoneConstantInstance_calledOnce);
 		CPPUNIT_TEST(callLuaAddedConstantFunction_passedConstantInstance_calledOnce);
 		CPPUNIT_TEST(callLuaAddedConstantFunction_passedNoneConstantInstance_calledOnce);
-		CPPUNIT_TEST(callLuaAddedNoneConstantFunction_passedConstantInstance_stdRuntimeException);
+		CPPUNIT_TEST(callLuaAddedNoneConstantFunction_passedConstantInstance_callReturnsFalse);
 		CPPUNIT_TEST(callLuaAddedNoneConstantFunction_passedNoneConstantInstance_calledOnce);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
@@ -132,12 +128,11 @@ public:
 		m_lua->call(name,c);
 	}
 
-	void callNoneConstantFunction_passedConstantInstance_stdRuntimeException()
+	void callNoneConstantFunction_passedConstantInstance_callReturnsFalse()
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
 		char const* name = none_constant_function(m_lua);
 		Constant const c;
-		CPPUNIT_ASSERT_THROW_MESSAGE( "",m_lua->call(name,&c),std::runtime_error );
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(name,&c));
 	}
 	void callNoneConstantFunction_passedNoneConstantInstance_calledOnce()
 	{
@@ -170,13 +165,12 @@ public:
 		m_lua->call(func_name,c);
 	}
 
-	void callLuaAddedNoneConstantFunction_passedConstantInstance_stdRuntimeException()
+	void callLuaAddedNoneConstantFunction_passedConstantInstance_callReturnsFalse()
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
 		char const* name = add_lua_none_constant_function(m_lua);
 		char const* func_name = lua_added_func(m_lua,name);
 		Constant const c;
-		CPPUNIT_ASSERT_THROW_MESSAGE( "", m_lua->call(func_name,&c),std::runtime_error );
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(func_name,&c));
 	}
 
 	void callLuaAddedNoneConstantFunction_passedNoneConstantInstance_calledOnce()

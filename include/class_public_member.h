@@ -3,7 +3,7 @@
 ///  Getter and setter functions for the internal classes public member
 ///  variables.
 ///  @remarks
-///  A getter for a public member(M) of a class(C) creates a function C::get_M 
+///  A getter for a public member(M) of a class(C) creates a function C::get_M
 ///  A setter similary creates a function C::set_M similary
 ///  @author Liam Devine
 ///  @email
@@ -25,7 +25,6 @@
 #define OOLUA_PUBLIC_MEMBER_SET(id)\
 int set_##id(lua_State* l)\
 {\
-	OOLUA_IF_FAIL(!m_this,"m_this is null pointer error in set id")\
  	OOLUA::pull2cpp(l,m_this->id);\
  	return 0;\
 }
@@ -33,7 +32,6 @@ int set_##id(lua_State* l)\
 #define OOLUA_PUBLIC_MEMBER_GET(id)\
 int get_##id(lua_State* l)const\
 {\
-	OOLUA_IF_FAIL(!m_this,"m_this is null pointer error in get id")\
  	OOLUA::push2lua(l,m_this->id);\
  	return 1;\
 }

@@ -2,13 +2,6 @@
 #	include "lua_ownership.h"
 #	include "common_cppunit_headers.h"
 
-namespace
-{
-	int throw_OOLUA_Runtime_at_panic(lua_State* s)
-	{
-		throw OOLUA::Runtime_error(s);
-	}
-}
 
 struct Ownership_stub
 {
@@ -23,8 +16,8 @@ EXPORT_OOLUA_NO_FUNCTIONS(Ownership_stub)
 class Ownership : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Ownership);
-		CPPUNIT_TEST(setOwnerIsRegistered_onConstantPointer_noException);
-		CPPUNIT_TEST(setOwnerIsRegistered_onNoneConstantPointer_noException);
+		CPPUNIT_TEST(setOwnerIsRegistered_onConstantPointer_callReturnsTrue);
+		CPPUNIT_TEST(setOwnerIsRegistered_onNoneConstantPointer_callReturnsTrue);
 		CPPUNIT_TEST(setOwner_luaPassesOwnershipToCpp_udGcBoolIsFalse);
 		CPPUNIT_TEST(setOwner_luaTakesOwnership_udGcBoolIsTrue);
 		CPPUNIT_TEST(setOwner_luaTakesOwnershipAndThenPassesItToCpp_udGcBoolIsFalse);
@@ -33,10 +26,10 @@ class Ownership : public CPPUNIT_NS::TestFixture
 	template<typename Type>
 	bool call_set_owner(Type* stub,std::string const& owner)
 	{
-		m_lua->run_chunk(
+		bool result = m_lua->run_chunk(
 			std::string("func = function(obj) obj:set_owner(") + owner + std::string(") end")
 			);
-		return m_lua->call("func",stub);
+		return result && m_lua->call("func",stub);
 	}
 
 public:
@@ -51,18 +44,16 @@ public:
 	{
 		delete m_lua;
 	}
-	void setOwnerIsRegistered_onConstantPointer_noException()
+	void setOwnerIsRegistered_onConstantPointer_callReturnsTrue()
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
 		Ownership_stub stub;
 		Ownership_stub const* s(&stub);
-		call_set_owner(s,"Cpp_owns");
+		CPPUNIT_ASSERT_EQUAL(true,call_set_owner(s,"Cpp_owns"));
 	}
-	void setOwnerIsRegistered_onNoneConstantPointer_noException()
+	void setOwnerIsRegistered_onNoneConstantPointer_callReturnsTrue()
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
 		Ownership_stub stub;
-		call_set_owner(&stub,"Cpp_owns");
+		CPPUNIT_ASSERT_EQUAL(true,call_set_owner(&stub,"Cpp_owns"));
 	}
 	void setOwner_luaPassesOwnershipToCpp_udGcBoolIsFalse()
 	{
