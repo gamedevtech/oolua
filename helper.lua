@@ -1,4 +1,4 @@
-root_dir = "../"
+
 
 
 --sets options for the different os's
@@ -41,26 +41,32 @@ end
 function create_package(name,path_to_root,kind)
 	package.kind = kind  or "dll"
 	package.name = name
-	root = path_to_root or "./"
+	package.language = "c++"
+	local root = path_to_root or "./"
 
 --defines for debug and release
-	package.config["Debug"].defines = { "DEBUG", "_DEBUG" }--, "LVD_EXPORT" }
-	package.config["Release"].defines = { "NDEBUG", "RELEASE"}--, "LVD_EXPORT" }
-
+	package.config["Debug"].defines = { "DEBUG", "_DEBUG" }
+	package.config["Release"].defines = { "NDEBUG", "RELEASE"}
+	package.config["ReleaseWithSymbols"].defines = { "NDEBUG", "RELEASE"}
+	package.config["ReleaseWithSymbols"].buildoptions = 
+	{
+			"/Ox",
+			"/GL",
+			"/Zi",
+	}
 --package.objdir = "obj"
 	package.config["Debug"].objdir = "obj/debug"
 	package.config["Release"].objdir = "obj/release"
+	package.config["ReleaseWithSymbols"].objdir = "obj/symbols_release"
 
 
-	--package.kind = "dll"
-	package.language = "c++"
 	
 	if(package.kind == "dll" or package.kind =="lib" )then
 		package.config.Debug.target = package.name..("_d")
 	end
 	
-		package.config.bindir = "/bin";
-
+	--package.config.bindir = "/bin";
+	package.config.bindir = root.. "bin";
 
 	configure_for_os(package)
 

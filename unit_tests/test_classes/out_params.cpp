@@ -67,13 +67,6 @@ EXPORT_OOLUA_FUNCTIONS_9_NON_CONST(OutParamsTest
 								   ,return_int_and_2_int_refs
 								   )
 EXPORT_OOLUA_FUNCTIONS_0_CONST(OutParamsTest)
-namespace
-{
-	int throw_OOLUA_Runtime_at_panic(lua_State* s)
-	{
-		throw OOLUA::Runtime_error(s);
-	}
-}
 
 class OutParams : public CPPUNIT_NS::TestFixture
 {
@@ -202,7 +195,7 @@ public:
 		::testing::NiceMock<MockOutParamsTest> stub;
 		m_lua->call("func",(OutParamsTest*)&stub);
 		assert_top_of_stack_is_exspected_value(input_param);
-	}	
+	}
 
 	void inOutTrait_twoRefsToInt_calledOnceWithCorrectInputs()
 	{
@@ -213,7 +206,7 @@ public:
 		EXPECT_CALL(mock,two_int_refs(::testing::Eq( value1 ),::testing::Eq( value2 ) ))
 			.Times(1);
 		m_lua->call("func",(OutParamsTest*)&mock);
-	}	
+	}
 
 	//parameters which return are pushed left to right after a return value.
 	//The return is either at the bottom of the stack or if void the first parameter which
@@ -226,7 +219,7 @@ public:
 		::testing::NiceMock<MockOutParamsTest> stub;
 		m_lua->call("func",(OutParamsTest*)&stub);
 		assert_top_of_stack_is_exspected_value(value2);
-	}		
+	}
 
 	void inOutTrait_twoRefsToInt_secondReturnIsCorrectValue()
 	{
@@ -285,7 +278,7 @@ public:
 		EXPECT_CALL(mock,int_ptr(::testing::Pointee( input_param ) ) )
 			.Times(1);
 		m_lua->call("func",(OutParamsTest*)&mock);
-	}		
+	}
 
 	void noTraits_luaPassesIntFunctionWantsIntPtr_afterCallTheStackIsEmpty()
 	{
@@ -299,7 +292,7 @@ public:
 	void luaReturnOrder_luaFunctionWhichReturnsMultipleValues_orderIsAsExspectedElseException()
 	{
 
-		lua_atpanic(*m_lua,&throw_OOLUA_Runtime_at_panic);
+		//lua_atpanic(*m_lua,&throw_OOLUA_Runtime_at_panic);
 		m_lua->run_chunk("bar = function(i1,i2,i3) return i1,i2,i3 end "
 							"func = function() "
 							" i1, i2 , i3 = bar(1,2,3) "
@@ -307,14 +300,11 @@ public:
 							" assert(i2 == 2) "
 							" assert(i3 == 3) "
 							"end ");
-
-		m_lua->call("func");
+		CPPUNIT_ASSERT_EQUAL(true,m_lua->call("func"));
 	}
 
 	void luaReturnOrder_luaFunctionWhichReturnsMultipleValuesToCpp_orderFromTopOfStackIsParam3Param2Param1()
 	{
-
-		lua_atpanic(*m_lua,&throw_OOLUA_Runtime_at_panic);
 		m_lua->run_chunk("func = function(i1,i2,i3) return i1,i2,i3 end ");
 		int i1(OutParamsTest::Param1);
 		int i2(OutParamsTest::Param2);

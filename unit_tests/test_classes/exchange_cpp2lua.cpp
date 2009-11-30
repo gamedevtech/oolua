@@ -3,13 +3,7 @@
 #	include "cpp_class_ops.h"
 #	include "lua_class_ops.h"
 
-namespace
-{
-	int throw_OOLUA_Runtime_at_panic(lua_State* s)
-	{
-		throw OOLUA::Runtime_error(s);
-	}
-}
+
 class Exchange_cpp2lua : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Exchange_cpp2lua);
@@ -25,10 +19,10 @@ class Exchange_cpp2lua : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(push_stringPushed_luaValueIsInput);
 		CPPUNIT_TEST(push_classPointerPushed_topOfStackTypeIsUserdata);
 
-		CPPUNIT_TEST(call_callsLuaFunctionNoParams_noException);
-		CPPUNIT_TEST(call_callsLuaFunctionOneParam_noException);
-		CPPUNIT_TEST(call_callsLuaFunctionThreeParams_noException);
-		CPPUNIT_TEST(call_callsUnknownLuaFunction_throwsOOLUARunTimeError);
+		CPPUNIT_TEST(call_callsLuaFunctionNoParams_callReturnsTrue);
+		CPPUNIT_TEST(call_callsLuaFunctionOneParam_callReturnsTrue);
+		CPPUNIT_TEST(call_callsLuaFunctionThreeParams_callReturnsTrue);
+		CPPUNIT_TEST(call_callsUnknownLuaFunction_callReturnsFalse);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -61,9 +55,9 @@ public:
 	template<typename T>
 	void assert_lua_value_is_input(T input)
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
 		m_lua->run_chunk(std::string("func = function(input) assert(input == ") + stringise(input) + std::string(") end") );
-		m_lua->call("func",input);
+		//if the assert is fired in lua then call returns false
+		CPPUNIT_ASSERT_EQUAL(true,m_lua->call("func",input) );
 	}
 	template<typename T>
 	void assert_top_of_stack_is_type_after_push(int type,T toBePushed)
@@ -130,31 +124,27 @@ public:
 	}
 
 
-	void call_callsLuaFunctionNoParams_noException()
+	void call_callsLuaFunctionNoParams_callReturnsTrue()
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
 		std::string foo("foo = function()end");
 		m_lua->run_chunk(foo);
-		m_lua->call("foo");
+		CPPUNIT_ASSERT_EQUAL(true,m_lua->call("foo"));
 	}
-	void call_callsLuaFunctionOneParam_noException()
+	void call_callsLuaFunctionOneParam_callReturnsTrue()
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
 		std::string foo("foo = function(i)end");
 		m_lua->run_chunk(foo);
-		m_lua->call("foo",1);
+        CPPUNIT_ASSERT_EQUAL(true, m_lua->call("foo",1) );
 	}
-	void call_callsLuaFunctionThreeParams_noException()
+	void call_callsLuaFunctionThreeParams_callReturnsTrue()
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
 		std::string foo("foo = function(i,j,k)end");
 		m_lua->run_chunk(foo);
-		m_lua->call("foo",1,2,3);
+		CPPUNIT_ASSERT_EQUAL(true, m_lua->call("foo",1,2,3) );
 	}
-	void call_callsUnknownLuaFunction_throwsOOLUARunTimeError()
+	void call_callsUnknownLuaFunction_callReturnsFalse()
 	{
-		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
-		CPPUNIT_ASSERT_THROW(m_lua->call("foo"),OOLUA::Runtime_error );
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo") );
 	}
 
 };

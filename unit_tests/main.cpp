@@ -1,6 +1,4 @@
 
-
-//#include "lvd_memory.h"
 #ifdef USING_CPPUNIT
 #		include <fstream>
 #		include "cppunit/CompilerOutputter.h"
@@ -22,7 +20,6 @@ int main(int argc, char** argv)
 	::testing::InitGoogleMock(&argc, argv);
 #endif
 
-//#define USING_XML_OUTPUT
 
 #ifdef USING_CPPUNIT
 #	ifdef USING_XML_OUTPUT
