@@ -31,7 +31,7 @@ namespace OOLUA
 				OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>( lua_touserdata(l, userdata_index) );
 				//cast the class void ptr from the stack to the stacktype
 				//then to base type to get correct offset
-				BaseType* baseptr = static_cast<ProxyStackType::class_* > ( ud->void_class_ptr );
+				BaseType* baseptr = static_cast<typename ProxyStackType::class_* > ( ud->void_class_ptr );
 				//push class pointer of requested type onto stack
 				lua_pushlightuserdata(l,baseptr);
 			}

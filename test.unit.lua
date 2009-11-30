@@ -25,17 +25,14 @@ tinsert(package.includepaths,
 			 );
 
 
-
+	tinsert(package.defines,{ "USING_GMOCK","OOLUA_STORE_ERROR"} )
 if(target == "vs2005" or target == "vs2008")then
-	tinsert(package.defines,"USING_GMOCK" )
-	tinsert(package.defines,"OOLUA_STORE_ERROR" )
 	tinsert(package.config["Debug"].linkoptions,{ "cppunitd.lib" , "gmockd.lib" } )
 	tinsert(package.config["Release"].linkoptions,{ "cppunit.lib" , "gmock.lib" } )
 	tinsert(package.postbuildcommands, { "$(TargetPath)" })
 	tinsert(package.links, "oolua")
 	--tinsert(package.defines,{ "USING_LVD_MEMORY"})
 elseif(OS == "linux" and target == "cb-gcc" )then
-	tinsert(package.defines,"USING_GMOCK")
 	tinsert(package.config["Debug"].links,{ "cppunit" })
 	tinsert(package.config["Release"].links,{ "cppunit"})
 	package.buildoptions = { "-W -Wall -pedantic " }
@@ -44,7 +41,6 @@ elseif(OS == "linux" and target == "cb-gcc" )then
 	tinsert(package.linkoptions,{"`gmock-config --cxxflags --ldflags --libs`"})
 	package.links = { "oolua","lua" }
 elseif(OS == "windows" and target == "cb-gcc")then
-	tinsert(package.defines,"USING_GMOCK")
 	tinsert(package.config["Debug"].links,{ "cppunitd" , "gmockd" } )
 	tinsert(package.config["Release"].links,{ "cppunit" , "gmock" } )
 	package.buildoptions = { "-W -Wall -pedantic "}-- -Weffc++" }
@@ -53,7 +49,6 @@ elseif(OS == "windows" and target == "cb-gcc")then
 	package.links = { "oolua","lua" }
 	--tinsert(package.defines,{ "USING_LVD_MEMORY"})
 elseif(target == "gnu")then
-	tinsert(package.defines,"USING_GMOCK")
 	tinsert(package.config["Debug"].links,{ "cppunit" })
 	tinsert(package.config["Release"].links,{ "cppunit"})
 	package.buildoptions = { "-W -Wall -pedantic " }
