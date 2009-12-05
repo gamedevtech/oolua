@@ -22,7 +22,7 @@ namespace OOLUA
         push_error_id_str(l);
         lua_gettable(l, LUA_REGISTRYINDEX);
         std::string error;
-        if(! lua_isnil(l,lua_gettop(l) ) )
+        if( (! lua_isnil(l,-1 ) ) && (lua_type(l, -1) == LUA_TSTRING ))
             error = lua_tolstring(l,-1,0);
         lua_pop( l, 1);
         return error;

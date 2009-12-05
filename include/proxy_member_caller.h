@@ -9,12 +9,7 @@
 ///  @email
 ///  See http://www.liamdevine.co.uk for contact details.
 ///  @licence 
-///  This work is licenced under a Creative Commons Licence. \n 
-///  see: \n 
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/ 
-///  and: \n 
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode \n 
-///  For more details.
+///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 #	include "member_func_helper.h"
 #	include "param_traits.h"

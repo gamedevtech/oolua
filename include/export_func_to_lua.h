@@ -9,12 +9,7 @@
 ///  @email
 ///  See http://www.liamdevine.co.uk for contact details.
 ///  @licence 
-///  This work is licenced under a Creative Commons Licence. \n 
-///  see: \n 
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/ 
-///  and: \n 
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode \n 
-///  For more details.
+///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 #define LUA_MEMBER_FUNC_1(class,func1) {#func1, &class::func1},
 #define LUA_MEMBER_FUNC_2(class,func1,func2) LUA_MEMBER_FUNC_1(class,func1)LUA_MEMBER_FUNC_1(class,func2)
@@ -39,6 +34,7 @@
 /// @def define the constants in the class, which are the the class name and the member function array
 #define CLASS_LIST_MEMBERS_START_OOLUA_NON_CONST(Class)\
 char const OOLUA::Proxy_class< Class >::class_name[] = #Class;\
+int const OOLUA::Proxy_class< Class >::name_size = sizeof(#Class)-1; \
 OOLUA::Proxy_class< Class >::Reg_type OOLUA::Proxy_class< Class >::class_methods[]={
 
 #define CLASS_LIST_MEMBERS_START_OOLUA_CONST(Class)\

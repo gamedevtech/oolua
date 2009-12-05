@@ -136,12 +136,13 @@ namespace OOLUA
 		{
 			Lua_ud *ud = static_cast<Lua_ud *>( lua_touserdata(l, -1) );//ud
 			ud->void_class_ptr = ptr;
+	/*		ud->is_const = use_const_name? 1: 0;*/
+			ud->name = (char*) (use_const_name? OOLUA::Proxy_class<T>::class_name_const :OOLUA::Proxy_class<T>::class_name);
+			ud->none_const_name = (char*) OOLUA::Proxy_class<T>::class_name;
+			ud->name_size = OOLUA::Proxy_class<T>::name_size;
+			
 			//change the metatable associated with the ud
-			if(use_const_name)
-				lua_getfield(l, LUA_REGISTRYINDEX,OOLUA::Proxy_class<T>::class_name_const);
-			else
-				lua_getfield(l, LUA_REGISTRYINDEX,OOLUA::Proxy_class<T>::class_name);
-
+			lua_getfield(l, LUA_REGISTRYINDEX,ud->name);
 			lua_setmetatable(l,-2);//set ud's metatable to this
 
 			int weak_index = push_weak_table(l);//ud weakTable
@@ -159,14 +160,15 @@ namespace OOLUA
 		template<typename T>
 		inline Lua_ud* add_ptr(lua_State* const l,T* const ptr,bool isConst)
 		{
-			Lua_ud* ud = reinterpret_cast<Lua_ud*>(lua_newuserdata(l, sizeof(Lua_ud)));
+			Lua_ud* ud = static_cast<Lua_ud*>(lua_newuserdata(l, sizeof(Lua_ud)));
 			ud->void_class_ptr = ptr;
 			ud->gc = false;
+			//ud->is_const = isConst? 1: 0;
+			ud->name = (char*) (isConst? OOLUA::Proxy_class<T>::class_name_const :OOLUA::Proxy_class<T>::class_name);
+			ud->none_const_name = (char*) OOLUA::Proxy_class<T>::class_name;
+			ud->name_size = OOLUA::Proxy_class<T>::name_size;
 
-			if(isConst)
-				lua_getfield(l, LUA_REGISTRYINDEX,Proxy_class<T>::class_name_const);
-			else
-				lua_getfield(l, LUA_REGISTRYINDEX,Proxy_class<T>::class_name);
+			lua_getfield(l, LUA_REGISTRYINDEX,ud->name);
 
 			assert( lua_isnoneornil(l,-1) ==0 && "no metatable of this name found in registry" );
 			////Pops a table from the stack and sets it as the new metatable for the value at the given acceptable index

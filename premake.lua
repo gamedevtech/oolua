@@ -42,4 +42,4 @@ if (options["gcc_coverage"]) then
 	dopackage("./test.coverage.lua")
 end	
 
---dopackage("./profile")
+dopackage("./profile")

@@ -75,6 +75,9 @@ class ClassExchange : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST( checkMetatable_pushConstDerivedAndThenConstBase_derivedUsesConstDerivedMetatable);
 	CPPUNIT_TEST( checkMetatable_pushConstDerivedAndThenConstBase_baseUsesConstDerivedMetatable);
 
+	//This test fails and is a limitation of the library
+	//CPPUNIT_TEST( differentRootsOfaTree_twoRootsPassedToLua_luaUdComparesEqual );
+
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 public:
@@ -269,5 +272,19 @@ public:
 		assert_metatable_of_type_at_index_is_same_as_name(-1
 			,OOLUA::Proxy_class<BaseAndDerivedHaveOffsets::Derived>::class_name_const);
 	}
+	
+	//This test fails and is a limitation of the library
+	//void differentRootsOfaTree_twoRootsPassedToLua_luaUdComparesEqual()
+	//{
+	//	OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+	//	DerivedFromTwoAbstractBasesAndAbstract3 derived;
+	//	Abstract2* a2 = &derived;
+	//	Abstract3* a3 = &derived;
+	//	OOLUA::push2lua(*m_lua,a2);
+	//	OOLUA::push2lua(*m_lua,a3);
+	//	OOLUA::INTERNAL::Lua_ud* ud_a2 = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(*m_lua,-2));
+	//	OOLUA::INTERNAL::Lua_ud* ud_a3 = static_cast<OOLUA::INTERNAL::Lua_ud*>(lua_touserdata(*m_lua,-1));
+	//	CPPUNIT_ASSERT_EQUAL(true,ud_a2 == ud_a3);
+	//}
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(ClassExchange);

@@ -12,12 +12,7 @@ inline void add_file_header(std::ofstream& f,std::string const& file_name)
 		<<"///  @email\n"
 		<<"///  See http://www.liamdevine.co.uk for contact details.\n"
 		<<"///  @licence \n"
-		<<"///  This work is licenced under a Creative Commons Licence. \\n \n"
-		<<"///  see: \\n \n"
-		<<"///  http://creativecommons.org/licenses/by-nc-sa/3.0/ \n"
-		<<"///  and: \\n \n"
-		<<"///  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode \\n \n"
-		<<"///  For more details.\n"
+		<<"///  See licence.txt for more details. \\n \n"
 		<<"///////////////////////////////////////////////////////////////////////////////\n";
 }
 inline void include_header(std::ofstream & f,std::string const& header)

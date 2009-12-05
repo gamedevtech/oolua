@@ -19,6 +19,8 @@ namespace OOLUA
 	template<typename T,typename K,typename V>
 	void register_class_static(lua_State * const l,K const& k, V const& v);
 
+	template<typename T>void register_class_and_bases(lua_State * l);
+
 	namespace INTERNAL
 	{
 		template<typename T>int create_type(lua_State * /*const*/ l);
@@ -40,6 +42,8 @@ namespace OOLUA
 		{
 			luaL_getmetatable(l,Proxy_class<T>::class_name);//ud metatable
 			lua_setmetatable(l,-2);//ud
+			INTERNAL::Lua_ud* ud = static_cast<INTERNAL::Lua_ud*>(lua_touserdata(l,-1));
+			ud->name = (char*)Proxy_class<T>::class_name;
 			return 0;
 		}
 
@@ -97,11 +101,6 @@ namespace OOLUA
 			lua_settable(l, mt);//methods mt 
 			//mt["__mt_check"]= &stack_top_type_is_base<T>;
 
-			//push_char_carray(l,typed_delete_field);;//methods mt __typed_delete
-			//lua_pushcfunction(l, &delete_type<T>);//methods mt __typed_delete func
-			//lua_settable(l, mt);//methods mt 
-			////mt["__typed_delete"]= &delete_type<T>;
-
 			push_char_carray(l,const_field);//methods mt __const
 			lua_pushinteger(l,0);//methods mt __const false
 			lua_settable(l, mt);//methods mt 
@@ -154,11 +153,6 @@ namespace OOLUA
 			lua_pushcfunction(l, &stack_top_type_is_base<T>);//const_methods const_mt __mt_check func
 			lua_settable(l, const_mt);//const_methods const_mt
 			//const_mt["__mt_check"]= &stack_top_type_is_base<T>;
-
-			//push_char_carray(l,typed_delete_field);//const_methods const_mt __typed_delete
-			//lua_pushcfunction(l, &delete_type<T>);//const_methods const_mt __typed_delete func
-			//lua_settable(l, const_mt);//const_methods const_mt
-			////const_mt["__typed_delete"]= &delete_type<T>;
 
 			push_char_carray(l,const_field);//const_methods const_mt __const
 			lua_pushinteger(l,1);//const_methods const_mt int
@@ -330,6 +324,41 @@ namespace OOLUA
 	{
 		Lua_table meth(l,Proxy_class<T>::class_name);
 		meth.set_value(k,v);
+	}
+
+	namespace INTERNAL
+	{
+		template<int Index,typename Bases, typename Type>
+		struct Register_bases_with_lua;
+
+		template<int Index,typename Bases, typename Type>
+		struct Register_bases_with_lua
+		{
+			static void work(lua_State * l)
+			{
+				register_class<Type>(l);
+				Register_bases_with_lua<Index+1
+								,Bases
+								,typename TYPELIST::At_default<Bases,Index+1,TYPE::Null_type>::Result
+						>::work(l);
+			}
+		};
+		template<int index,typename TL>
+		struct Register_bases_with_lua<index,TL,TYPE::Null_type>
+		{
+			static void work(lua_State * /*l*/)
+			{}
+		};
+	}
+
+	template<typename T>
+	inline void register_class_and_bases(lua_State * l)
+	{
+		register_class<T>(l);
+		INTERNAL::Register_bases_with_lua<0
+								,typename OOLUA::Proxy_class<T>::AllBases
+								,typename TYPELIST::At_default<typename OOLUA::Proxy_class<T>::AllBases,0,TYPE::Null_type>::Result 
+						>::work(l);
 	}
 
 }

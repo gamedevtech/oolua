@@ -78,16 +78,7 @@ namespace OOLUA
 
 		bool ud_at_index_is_const(lua_State* l, int index)
 		{
-			lua_getmetatable(l,index);//ud ... stack_mt 
-			push_char_carray(l,const_field);//ud  ... stack_mt str
-			lua_rawget(l,-2);//ud ... stack_mt int
-			bool is_const(false);
-			if( lua_tointeger(l,-1) == 1)//is it constant
-			{
-				is_const= true;
-			}
-			lua_pop(l,2);
-			return is_const;
+			return INTERNAL::id_is_const( static_cast<Lua_ud *>( lua_touserdata(l, index) ) ); 
 		}
 	}
 }

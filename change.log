@@ -1,0 +1,8 @@
+1.2.0
+added fields to Lua_ud which are used for comparison removing the metatable raw_equals.
+added name_size to proxy classes and updated the generation file to reflect changes.
+changed headers that used old licence.
+added a fuction to register a type and all it's bases.
+added a couple of profile tests in the directory profile.
+1.1.0
+Removed the dynamic allocation of Proxy classes to use stack versions.

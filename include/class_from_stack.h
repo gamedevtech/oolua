@@ -50,7 +50,11 @@ namespace OOLUA
 		template<typename T>
 		T * check_index(lua_State * /*const*/ l, int narg);
 		template<typename T>
+		T * check_index2(lua_State * /*const*/ l, int narg);
+		template<typename T>
 		T  * check_index_no_const(lua_State * /*const*/ l, int narg);
+		template<typename T>
+		T  * check_index_no_const2(lua_State * /*const*/ l, int narg);
 
 		bool index_is_userdata(lua_State* l,int index,char const* name);
 		bool get_metatable_and_check_type_is_registered(lua_State* l,int const& index,char const * name);
@@ -82,9 +86,14 @@ namespace OOLUA
 			return check_index_no_const<T>(l,index);
 		}
 
+
 		template<typename T>
 		T* valid_base_ptr_or_null(lua_State* l,int userdata_index)
 		{
+			INTERNAL::Lua_ud requested_ud;
+			requested_ud.none_const_name = (char*) OOLUA::Proxy_class<T>::class_name;
+			requested_ud.name_size = OOLUA::Proxy_class<T>::name_size;
+			lua_pushlightuserdata(l,&requested_ud);
 			if(!is_requested_type_a_base(l,userdata_index))
 			{
 				//ud ...
@@ -99,93 +108,48 @@ namespace OOLUA
 			}
 		}
 
-		///////////////////////////////////////////////////////////////////////////////
-		///  inline public static  check
-		///  Get a User_data from the Lua stack and return pointer to a Proxy object.
-		///  @param [in]       l lua_State *const \copydoc lua_State
-		///  @param [in]       narg int position on the stack to look at.
-		///  @return OOLUA::Lua_interface<Proxy_class<T> >::Proxy_type * pointer to
-		///  Proxy_class.
-		///  \remarks :
-		///  As this is a check function is should actually check !!!
-		///  Check sequence is:
-		///  if not a userdate type then error
-		///  if constant then error
-		///  if not the same as the requested data type
-		///		if  the requested type is not a base of the stack instance then error
-		///
-		///////////////////////////////////////////////////////////////////////////////
 
-		///this function leaves the top the userdata type on the stack
-		//this function is called when you want a constant instance, so it does not matter
-		//if the instance on the stack is constant or none constant
 		template<typename T>
 		T* check_index(lua_State * /*const*/ l, int narg)
 		{
 			if( ! index_is_userdata(l,narg,Proxy_class<T>::class_name) )
 				return 0;
-			if( ! get_metatable_and_check_type_is_registered(l,narg,Proxy_class<T>::class_name) )
-				return 0;
+			INTERNAL::Lua_ud * ud = static_cast<INTERNAL::Lua_ud *>( lua_touserdata(l, narg) );
 
 			////is the type the was on the stack the same as either of the two which were pushed after
-			if( ! lua_rawequal(l,-2,-1)  )
+			if(! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
+								,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size) )
 			{
-				lua_getfield(l, LUA_REGISTRYINDEX, Proxy_class<T>::class_name_const);//ud ... stackmt requested_mt requested_mtconstant
-				if(! lua_rawequal(l,-3,-1) )
-				{
-					lua_pop(l,1);//ud ... stack_mt requested_mt
-					return valid_base_ptr_or_null<T>(l,narg);
-				}
-				else
-				{
-					lua_pop(l,3);
-				}
+				lua_getmetatable(l,narg);//userdata ... stackmt
+				return valid_base_ptr_or_null<T>(l,narg);
 			}
-			////remove non const metatable and the metatable of the userdata
-			else lua_pop(l,2);
 
-			return static_cast<T* >
-				(
-					static_cast<INTERNAL::Lua_ud *>( lua_touserdata(l, narg) )->void_class_ptr
-				);
+			return static_cast<T* >(ud->void_class_ptr);
 		}
 
 
-
-		//called when the requested type is none constant, you can not go from constant to
-		//none constant for you may try to write in a read area of memory
 		template<typename T>
 		T* check_index_no_const(lua_State * l, int narg)
 		{
 			if( ! index_is_userdata(l,narg,Proxy_class<T>::class_name) )
 				return 0;
-			if( ! get_metatable_and_check_type_is_registered(l,narg,Proxy_class<T>::class_name) )
-				return 0;
+			INTERNAL::Lua_ud * ud = static_cast<INTERNAL::Lua_ud *>( lua_touserdata(l, narg) );
 
-			if( ! ( lua_rawequal(l,-2,-1)  ) )
+			if( INTERNAL::id_is_const(ud) )
 			{
-				int const stack_mt = lua_gettop(l) -1;
-				push_char_carray(l,const_field);//ud ... stack_mt requested_mt str
-				lua_rawget(l,stack_mt);//ud ... stack_mt requested_mt int
-				if( lua_tointeger(l,-1) == 1)//is it constant
-				{
-					lua_pop(l,3);//ud
-					luaL_error (l, "%s \"%s\" %s", "Tried to pull a none constant"
-												,OOLUA::Proxy_class<T>::class_name
-												,"pointer from a const pointer"
-								);
-					return (T*)0;
-				}
-				lua_pop(l,1);//ud ... stack_mt requested_mt
+				luaL_error (l, "%s \"%s\" %s", "Tried to pull a none constant"
+					,OOLUA::Proxy_class<T>::class_name
+					,"pointer from a const pointer"
+					);
+				return (T*)0;
+			}
+			if( ! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
+									,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size) )
+			{
+				lua_getmetatable(l,narg);//userdata ... stackmt
 				return valid_base_ptr_or_null<T>(l,narg);
 			}
-			//remove non const metatable and the metatable of the userdata
-			else lua_pop(l,2);//ud
-
-			return static_cast<T* >
-				(
-					static_cast<INTERNAL::Lua_ud *>( lua_touserdata(l, narg) )->void_class_ptr
-				);
+			return static_cast<T* >(ud->void_class_ptr);
 		}
 
 	}

@@ -6,7 +6,7 @@
 
 #ifndef OOLUA_VERSION
 #       define OOLUA_VERSION_MAJ 1
-#       define OOLUA_VERSION_MIN 1
+#       define OOLUA_VERSION_MIN 2
 #       define OOLUA_VERSION_PATCH 0
 #       define OOLUA_VERSION \
 					OOLUA_STRINGISE(OOLUA_VERSION_MAJ) "." \
