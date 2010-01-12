@@ -9,7 +9,9 @@
 namespace OOLUA
 {
     template<typename T>
-    int stack_top_type_is_base(lua_State* const l);
+	int stack_top_type_is_base(lua_State* const l
+								,INTERNAL::Lua_ud* requested_ud
+								,int const& userdata_index);
 
 	namespace INTERNAL
 	{
@@ -81,22 +83,18 @@ namespace OOLUA
 
 
 	template<typename T>
-	inline int stack_top_type_is_base(lua_State* const l)
+	inline int stack_top_type_is_base(lua_State* const l
+										,INTERNAL::Lua_ud* requested_ud
+										,int const& userdata_index)
 	{
-		//ud... reqested_mt userdata_index
-		int userdata_index = lua_tointeger(l,-1);
-		lua_pop(l,1);//ud... reqested_ud
-		int requested = lua_gettop(l);
-		INTERNAL::Lua_ud* requested_ud = static_cast<INTERNAL::Lua_ud*>( lua_touserdata(l,-1) );
+		//ud... 
 		INTERNAL::Is_a_base<OOLUA::Proxy_class<T>
 			,typename OOLUA::Proxy_class<T>::AllBases
 			,0
 			,typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases,0,TYPE::Null_type >::Result
 		> checkBases;
-
 		bool result(false);
 		checkBases(l,userdata_index,requested_ud,result);
-		lua_remove(l,requested);
 		return !!result;
 	}
 }

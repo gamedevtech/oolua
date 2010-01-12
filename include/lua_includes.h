@@ -1,7 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file lua_includes.h
-///  Prevents name mangling
-///
+///  Prevents name mangling and compatbilty for new Lua versions
 ///  @author Liam Devine
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef LUA_INCLUDES_H_
@@ -13,20 +12,21 @@ extern "C"
 #	include "lua/lua.h"
 #	include "lua/lauxlib.h"
 #	include "lua/lualib.h"
-#elif defined __MINGW32__
+#elif defined __MINGW32__ //you may need to change this
 #	include "lua/lua.h"
 #	include "lua/lauxlib.h"
 #	include "lua/lualib.h"
 #elif defined __GNUC__
-//just for portable codeblocks
 #	include "lua.h"
 #	include "lauxlib.h"
 #	include "lualib.h"
 #endif
 
-//#	include "lua.h"
-//#	include "lauxlib.h"
-//#	include "lualib.h"
 }
+
+#if LUA_VERSION_NUM == 502 || LUA_VERSION_NUM > 502
+//LUA_GLOBALSINDEX is deprecated and removed
+#	define LUA_GLOBALSINDEX  LUA_ENVIRONINDEX
+#endif
 
 #endif //LUA_INCLUDES_H_

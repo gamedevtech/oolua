@@ -130,6 +130,38 @@ namespace OOLUA
 			}
 		};
 
+		///////////////////////////////////////////////////////////////////////////////
+		///  Specialisation for C style strings
+		///////////////////////////////////////////////////////////////////////////////
+		template<>
+		struct push_ptr_2lua<char,true>
+		{
+			static void push2lua(lua_State* const l, char * const &  value,Owner/* owner*/)
+			{
+				assert(l && value);
+				lua_pushstring (l,value);
+			}
+			static void push2lua(lua_State* const l, char * const &  value)
+			{
+				assert(l && value);
+				lua_pushstring (l,value);
+			}
+		};
+		template<>
+		struct push_ptr_2lua<char const,true>
+		{
+			static void push2lua(lua_State* const l, char const * const &  value,Owner/* owner*/)
+			{
+				assert(l && value);
+				lua_pushstring (l,value);
+			}
+			static void push2lua(lua_State* const l, char const * const &  value)
+			{
+				assert(l && value);
+				lua_pushstring (l,value);
+			}
+		};
+
 	}
 
 	void inline push2lua(lua_State* const s, bool const& value)
@@ -143,6 +175,11 @@ namespace OOLUA
 		lua_pushstring (s, value.c_str());
 	}
 	void inline push2lua(lua_State* const s, char const * const& value)
+	{
+		assert(s && value);
+		lua_pushstring (s, value);
+	}
+	void inline push2lua(lua_State* const s, char * const& value)
 	{
 		assert(s && value);
 		lua_pushstring (s, value);

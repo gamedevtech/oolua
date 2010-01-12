@@ -26,7 +26,7 @@ namespace
 	void assert_result_equals_numeric_limits_max(OOLUA::Script * lua)
 	{
 		T input((std::numeric_limits<T >::max)());
-		T result((std::numeric_limits<T >::min)());
+		T result(0);
 		push_then_pull(lua,input,result);
 		CPPUNIT_ASSERT_EQUAL(input, result);
 	}
@@ -34,17 +34,12 @@ namespace
 	void assert_result_equals_numeric_limits_min(OOLUA::Script * lua)
 	{
 		T input((std::numeric_limits<T >::min)());
-		T result((std::numeric_limits<T >::max)());
+		T result(0);
 		push_then_pull(lua,input,result);
 		CPPUNIT_ASSERT_EQUAL(input, result);
 	}
 	const float epsilon_value(.0000001f);
 
-//	int throw_OOLUA_Runtime_at_panic(lua_State* s)
-//	{
-//		//throw OOLUA::Runtime_error(s);
-//		throw std::runtime_error();
-//	}
 }
 enum ENUM{FIRST_VALUE = 123,SECOND_VALUE = 51};
 
@@ -64,12 +59,8 @@ class PushPull : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pushPull_pushSignedShortMax_pulledValueEqualsSingedShortMax);
 		CPPUNIT_TEST(pushPull_pushUnsignedShortMax_pulledValueEqualsUnsignedShortMax);
 
-		CPPUNIT_TEST(pushPull_pushSignedIntMin_pulledValueEqualsSignedIntMin);
-		CPPUNIT_TEST(pushPull_pushSignedIntMax_pulledValueEqualsSignedIntMax);
 		CPPUNIT_TEST(pushPull_pushUnsignedIntMax_pulledValueEqualsUnsignedIntMax);
 
-		CPPUNIT_TEST(pushPull_pushSignedLongMin_pulledValueEqualsSignedLongMin);
-		CPPUNIT_TEST(pushPull_pushSignedLongMax_pulledValueEqualsSignedLongMax);
 		CPPUNIT_TEST(pushPull_pushUnsignedLongMax_pulledValueEqualsUnsignedLongMax);
 
 		CPPUNIT_TEST(pushPull_pushFloatMin_pulledValueWithinEplisonOfFloatMin);
@@ -84,7 +75,6 @@ class PushPull : public CPPUNIT_NS::TestFixture
 
 		CPPUNIT_TEST(pushpull_pushClassPointer_resultAddressEqualsPushValue);
 
-		//CPPUNIT_TEST(pull_pullIncorrectClassType_throwStdRuntimeError);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -146,25 +136,9 @@ public:
 	{
 		assert_result_equals_numeric_limits_max<unsigned short>(m_lua);
 	}
-	void pushPull_pushSignedIntMin_pulledValueEqualsSignedIntMin()
-	{
-		assert_result_equals_numeric_limits_min<signed int>(m_lua);
-	}
-	void pushPull_pushSignedIntMax_pulledValueEqualsSignedIntMax()
-	{
-		assert_result_equals_numeric_limits_max<signed int>(m_lua);
-	}
 	void pushPull_pushUnsignedIntMax_pulledValueEqualsUnsignedIntMax()
 	{
 		assert_result_equals_numeric_limits_max<unsigned int>(m_lua);
-	}
-	void pushPull_pushSignedLongMin_pulledValueEqualsSignedLongMin()
-	{
-		assert_result_equals_numeric_limits_min<signed long>(m_lua);
-	}
-	void pushPull_pushSignedLongMax_pulledValueEqualsSignedLongMax()
-	{
-		assert_result_equals_numeric_limits_max<signed long>(m_lua);
 	}
 	void pushPull_pushUnsignedLongMax_pulledValueEqualsUnsignedLongMax()
 	{
@@ -223,16 +197,7 @@ public:
 		push_then_pull(m_lua,input,result);
 		CPPUNIT_ASSERT_EQUAL(input, result);
 	}
-//	void pull_pullIncorrectClassType_throwStdRuntimeError()
-//	{
-//		m_lua->register_class<Stub1>();
-//		m_lua->register_class<Stub2>();
-//		lua_atpanic (*m_lua, &throw_OOLUA_Runtime_at_panic);
-//		Stub1 input;
-//		Stub2* result;
-//		OOLUA::push2lua(*m_lua,&input);
-//		CPPUNIT_ASSERT_THROW(OOLUA::pull2cpp(*m_lua,result), std::runtime_error);
-//	}
+	
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( PushPull );

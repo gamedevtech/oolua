@@ -11,7 +11,7 @@ extern "C"
 {
 	extern int luaopen_swig_profile(lua_State* L);
 	extern void OOLUA_SWIG_pass_pointer_to_lua(lua_State* L,void* ptr,char* type,int own);
-};
+}
 #endif
 #ifdef OOLUA_LUABIND_COMPARE
 #	include "luabind/luabind.hpp"
@@ -66,7 +66,7 @@ int main()
 		ProfileBase* base = &derived;
 		lua_getfield(L, LUA_GLOBALSINDEX, "func");
 		OOLUA_SWIG_pass_pointer_to_lua(L,base,"ProfileBase *",0);
-		if( int result = lua_pcall(L,1,LUA_MULTRET,0) != 0)
+		if( lua_pcall(L,1,LUA_MULTRET,0) != 0)
 		{
 			std::cout <<lua_tostring(L,-1) <<std::endl;
 		}

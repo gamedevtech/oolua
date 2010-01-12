@@ -136,7 +136,6 @@ namespace OOLUA
 		{
 			Lua_ud *ud = static_cast<Lua_ud *>( lua_touserdata(l, -1) );//ud
 			ud->void_class_ptr = ptr;
-	/*		ud->is_const = use_const_name? 1: 0;*/
 			ud->name = (char*) (use_const_name? OOLUA::Proxy_class<T>::class_name_const :OOLUA::Proxy_class<T>::class_name);
 			ud->none_const_name = (char*) OOLUA::Proxy_class<T>::class_name;
 			ud->name_size = OOLUA::Proxy_class<T>::name_size;
@@ -163,7 +162,6 @@ namespace OOLUA
 			Lua_ud* ud = static_cast<Lua_ud*>(lua_newuserdata(l, sizeof(Lua_ud)));
 			ud->void_class_ptr = ptr;
 			ud->gc = false;
-			//ud->is_const = isConst? 1: 0;
 			ud->name = (char*) (isConst? OOLUA::Proxy_class<T>::class_name_const :OOLUA::Proxy_class<T>::class_name);
 			ud->none_const_name = (char*) OOLUA::Proxy_class<T>::class_name;
 			ud->name_size = OOLUA::Proxy_class<T>::name_size;
@@ -191,23 +189,6 @@ namespace OOLUA
 			return ud;
 		}
 
-
-		//template<typename T>
-		//inline void remove_proxy_ptr(lua_State*  l,T * ptr)
-		//{
-		//	int weakIndex = push_weak_table(l);
-
-		//	remove_classes_ud_if_required(l,ptr,weakIndex);//it is required
-		//	Set_nill_for_corrisponding_ud<T
-		//			,typename OOLUA::Proxy_class<T>::Bases
-		//			,0
-		//			,typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
-		//		> addThisTypesBases;
-		//	addThisTypesBases(l,ptr,weakIndex);
-		//	lua_pop(l,1);//pop the table
-		//}
-
-
 		template<typename Type,typename Bases, int BaseIndex,typename BaseType>
 		struct Add_ptr
 		{
@@ -232,31 +213,6 @@ namespace OOLUA
 			void operator()(lua_State * const /*l*/,Type* /*ptr*/,int /*udIndex*/,int /*weakIndex*/)const
 			{}
 		};
-
-		//template<typename Type,typename Bases, int BaseIndex,typename BaseType>
-		//struct Set_nill_for_corrisponding_ud
-		//{
-		//	void operator()(lua_State * const l,Type* ptr,int weakIndex)
-		//	{
-		//		remove_classes_ud_if_required(l,(BaseType*)ptr,weakIndex);
-
-		//		Set_nill_for_corrisponding_ud<
-		//				Type
-		//				,Bases
-		//				,BaseIndex + 1
-		//				,typename TYPELIST::At_default< Bases, BaseIndex + 1, TYPE::Null_type >::Result
-		//			> setBaseUdNext;
-		//		setBaseUdNext(l,ptr,weakIndex);
-		//	}
-		//};
-
-		//template<typename Type,typename Bases, int BaseIndex>
-		//struct Set_nill_for_corrisponding_ud<Type,Bases,BaseIndex,TYPE::Null_type>
-		//{
-		//	void operator()(lua_State * const /*l*/,Type* /*ptr*/,int /*weakIndex*/)const
-		//	{}
-		//};
-
 
 		template<typename Type,typename Bases, int BaseIndex,typename BaseType>
 		struct Has_a_root_entry

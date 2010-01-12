@@ -1,3 +1,39 @@
+1.2.2
+*Converted premake scripts to premake4 
+*optimised checking of a type against a requested type via casting and storing a function taking the parameters to 
+lua_Cfunction which requires less usage of the Lua stack. 
+*moved Luna licence to a more suitable section of code
+*removed dead code from oolua_storage.h
+*removed dead code from class_from_stack.h
+*added setting a user data's none const name whilst changing it's constant status in set_type_top_to_none_const to 
+prevent potentail errors. As the name and none constant name use a pointer compare when checking for constant status.
+*added xcode support, tests required linking gtest and gmock normally i.e. -lgmock instead of gmock specified way gmock config - *
+*added xcode test unit bash build script.
+*build logs directed to there own directory
+*added new test project "tests_may_fail" for issue 7 (http://code.google.com/p/oolua/issues/detail?id=7)
+this fails soft on an error i.e. returns 0 from main not 1. moved effected 
+tests (pushing and pulling signed int and signed long)to the new test project.
+*changed bash build scripts to run the tests_may_fail swell as unit.tests
+*added comment in lua_includes.h for mingw users
+*added a readme with details of library as many download locations are now available
+* fixed passing a c style string to a member function bug as reported by airbash http://code.google.com/p/oolua/issues/detail?id=8
+* fixed a corresponding bug of a member function which returns a c style string.
+* added define in lua_includes.h to support Lua 5.2 and 5.1.4 simultaneously 
+* fixed typo in xcode_premake4.sh
+* adjusted premake recursive file inclusion to offset premake4.2 problem
+* renamed gnu build script to gnu_tests.sh to reflect what it is doing
+* added gnu_build.sh for building a local install
+* added xcode_build.sh for building a local install
+* added codeblocks_build.sh for building a local install
+* renamed codeblocks_premake4.sh to codeblocks_tests.sh to reflect what it is doing
+* added dl to link flags for unit tests in linux builds
+* added vs2008x86_build.bat for building a local install
+* renamed vs2008x86_premake4.bat to vs2008x86_tests.bat to reflect what it is doing
+* added codeblocks_build.bat for building a local install
+* renamed codeblocks_premake4.bat to codeblocks_tests.bat to reflect what it is doing
+
+1.2.1
+* was actually 1.2.0 yet due to a packaging error had to be incremented.
 1.2.0
 added fields to Lua_ud which are used for comparison removing the metatable raw_equals.
 added name_size to proxy classes and updated the generation file to reflect changes.

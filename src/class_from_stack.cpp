@@ -38,17 +38,16 @@ namespace OOLUA
 				return true;
 		}
 
-		bool is_requested_type_a_base(lua_State* l,int userdata_index)
+		typedef int(*function_sig_to_check_base)(lua_State* const l,INTERNAL::Lua_ud*,int const&);
+
+		bool is_requested_type_a_base(lua_State* l,INTERNAL::Lua_ud* requested_ud,int const& userdata_index)
 		{
-			//ud ... stackmt requested_ud
-			int stackmt = lua_gettop(l) -1;
-			push_char_carray(l,mt_check_field);//ud ... stackmt requested_mt str
-			lua_rawget(l,stackmt);//ud ... stackmt requested_mt  fun
-			lua_CFunction isRequestTypeaBaseOfStackType ( lua_tocfunction(l,-1) );
-			lua_pop(l,1);//ud ... stackmt requested_ud
-			lua_remove(l,stackmt);//ud requested_ud
-			lua_pushinteger(l,userdata_index);//ud... requested_ud userdataindex
-			return isRequestTypeaBaseOfStackType(l) ? true : false;
+			//ud ... stackmt 
+			push_char_carray(l,mt_check_field);//ud ... stackmt str
+			lua_rawget(l,-2);//ud ... stackmt   fun
+			function_sig_to_check_base isRequestTypeaBaseOfStackType (reinterpret_cast<function_sig_to_check_base>( lua_tocfunction(l,-1) ) );
+			lua_pop(l,2);//ud ... 
+			return isRequestTypeaBaseOfStackType(l,requested_ud,userdata_index) ? true : false;
 		}
 	}
 }

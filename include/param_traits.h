@@ -11,51 +11,41 @@
 ///  @email
 ///  See http://www.liamdevine.co.uk for contact details.
 ///  @licence
-///  This work is licenced under a Creative Commons Licence. \n
-///  see: \n
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/ \n
-///  and: \n
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode \n
-///  For more details.
+///  See licence.txt for more details.
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef PARAM_TRAITS_H_
 #	define PARAM_TRAITS_H_
 
 #	include "lvd_types.h"
 #	include "determin_qualifier.h"
-
+#	include <string>
 namespace OOLUA
 {
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct in_p
 	///  Input parameter trait
-	///  @author Liam Devine @date 17/02/2008
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct in_p;
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct out_p
 	///  Output parameter trait
-	///  @author Liam Devine @date 17/02/2008
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct out_p;
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct in_out_p
 	///  Input and output parameter trait
-	///  @author Liam Devine @date 17/02/2008
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct in_out_p;
 
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct cpp_in_p
 	///  Input parameter trait which cpp takes ownership of
-	///  @author Liam Devine @date 17/02/2008
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct cpp_in_p;
 
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct lua_out_p
 	///  Output parameter trait which Lua takes ownership of
-	///  @author Liam Devine @date 17/02/2008
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct lua_out_p;
 
@@ -304,8 +294,6 @@ namespace OOLUA
 	///  @struct cpp_owned_ptr
 	///  Informs the binding that Cpp will take control of the pointer and call
 	///  delete on it when appropriate.
-	///  @remarks <TODO: insert remarks here>
-	///  @author Liam Devine @date 27/02/2008
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct cpp_acquire_ptr;
 
@@ -346,6 +334,7 @@ namespace OOLUA
 	};
 
 //////////////////////////////////////////////////////////////////////
+
 	template<typename T, typename T1>
 	struct add_out_param
 	{
@@ -356,7 +345,6 @@ namespace OOLUA
 	///  @struct total_out_params
 	///  Adds the amount of return parameters together
 	///  which is an enum in the type
-	///  @author Liam Devine @date 17/02/2008
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct total_out_params;
 
@@ -374,7 +362,6 @@ namespace OOLUA
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct has_param_traits
 	///  Checks if the type is a trait type or not.
-	///  @author Liam Devine @date 17/02/2008
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct has_param_traits;
 
@@ -424,7 +411,6 @@ namespace OOLUA
 	///  @struct param_type_typedef
 	///  Typedefs the raw underlying type weather it is already a raw type or
 	///  a type wrapped in a trait.
-	///  @author Liam Devine @date 17/02/2008
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T, bool True>
 	struct param_type_typedef
@@ -459,7 +445,6 @@ namespace OOLUA
 	///  @struct param_type
 	///  Uses param_type_typedef and has_param_traits to define the type and its
 	///  in_p in_out_p or out_p traits.
-	///  @author Liam Devine @date 17/02/2008
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>
 	struct param_type
@@ -494,7 +479,6 @@ namespace OOLUA
 
 	};
 
-	//template<typename T,typename T1>struct Converter;
 	template<typename Pull_type,typename Real_type>struct Converter;
 
 	template<typename T>
@@ -745,6 +729,64 @@ namespace OOLUA
 		Converter& operator =(Converter const &);
 		Converter(Converter const &);
 		T const* m_t;
+	};
+
+
+	///////////////////////////////////////////////////////////////////////////////
+	///  Specialisation for C style strings
+	///////////////////////////////////////////////////////////////////////////////
+	template<>
+	struct in_p<char*>
+	{
+		typedef char* type;
+		typedef std::string raw;
+		typedef std::string pull_type;
+		enum {in = 1};
+		enum {out = 0};
+		enum {owner = No_change};
+		enum { is_by_value = 0 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+
+	template<>
+	struct Converter<std::string,char *>
+	{
+		Converter(std::string & t):m_t(&t[0]){}
+		operator char * () const
+		{
+			return m_t;
+		}
+		Converter& operator =(Converter const &);
+		Converter(Converter const &);
+		char * m_t;
+	};
+
+	template<>
+	struct in_p<char const*>
+	{
+		typedef char const* type;
+		typedef std::string raw;
+		typedef std::string pull_type;
+		enum {in = 1};
+		enum {out = 0};
+		enum {owner = No_change};
+		enum { is_by_value = 0 };
+		enum { is_constant = 1 };
+		enum { is_integral = 1 };
+	};
+
+	template<>
+	struct Converter<std::string,char const*>
+	{
+		Converter(std::string const& t):m_t(t.c_str()){}
+		operator char const* () const
+		{
+			return m_t;
+		}
+		Converter& operator =(Converter const &);
+		Converter(Converter const &);
+		char const* m_t;
 	};
 
 }

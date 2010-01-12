@@ -1,0 +1,18 @@
+OOLua access (average elapsed time):	0.3626544
+OOLua passing derived to a function that wants a base  (average elapsed time):	0.3795204
+OOLua passing derived with multiple bases to a function that wants a base  (average elapsed time):	0.3811993
+OOLua virtual function  (average elapsed time):	0.1772278
+OOLua pure virtual function  (average elapsed time):	0.1801823
+OOLua - Lua function which takes a base and calls a virtual function (average elapsed time): 0.15866
+Swig access (average elapsed time):	0.7878275
+Swig passing derived to a function that wants a base  (average elapsed time):	0.3928767
+Swig passing derived with multiple bases to a function that wants a base  (average elapsed time):	0.419663
+Swig virtual function  (average elapsed time):	0.3549922
+Swig pure virtual function  (average elapsed time):	0.3664791
+Swig - Lua function which takes a base and calls a virtual function (average elapsed time): 0.347451
+Luabind access (average elapsed time):	0.5739439
+Luabind passing derived to a function that wants a base  (average elapsed time):	0.4176557
+Luabind passing derived with multiple bases to a function that wants a base (average elapsed time):	0.4209044
+Luabind virtual function  (average elapsed time):	0.2934042
+Luabind pure virtual function  (average elapsed time):	0.2915681
+Luabind - Lua function which takes a base and calls a virtual function (average elapsed time): 0.268678

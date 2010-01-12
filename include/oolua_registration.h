@@ -1,3 +1,27 @@
+///////////////////////////////////////////////////////////////////////////////
+///	 Orginally based on \n
+///  http://lua-users.org/wiki/SimplerCppBinding \n
+///	 http://www.lua.org/notes/ltn005.html \n
+///  @author modified by Liam Devine
+///  @email
+///  See http://www.liamdevine.co.uk for contact details.
+/// @licence
+///	Copyright (c) 2005 Leonardo Palozzi
+///	Permission is hereby granted, free of charge, to any person obtaining a copy of
+///	this software and associated documentation files (the "Software"), to deal in the
+///	Software without restriction, including without limitation the rights to use,
+///	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+///	Software, and to permit persons to whom the Software is furnished to do so,
+///	subject to the following conditions:
+///	The above copyright notice and this permission notice shall be included in all
+///	copies or substantial portions of the Software.
+///	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+///	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+///	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+///	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+///	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+///	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+///////////////////////////////////////////////////////////////////////////////
 #ifndef OOLUA_REGISTRATION_H_
 #   define OOLUA_REGISTRATION_H_
 
@@ -44,6 +68,7 @@ namespace OOLUA
 			lua_setmetatable(l,-2);//ud
 			INTERNAL::Lua_ud* ud = static_cast<INTERNAL::Lua_ud*>(lua_touserdata(l,-1));
 			ud->name = (char*)Proxy_class<T>::class_name;
+			ud->none_const_name = (char*)Proxy_class<T>::class_name;
 			return 0;
 		}
 
@@ -78,7 +103,7 @@ namespace OOLUA
 			//ud will be cleaned up by the Lua API
 			return 0;
 		}
-
+		typedef int(*function_sig_to_check_base_)(lua_State* const l,INTERNAL::Lua_ud*,int const&);
 		template<typename T>
 		inline int set_methods(lua_State* /*const*/ l,int& mt)
 		{
@@ -97,7 +122,10 @@ namespace OOLUA
 			//global[name]=methods
 
 			push_char_carray(l,mt_check_field);//methods mt __mt_check
-			lua_pushcfunction(l, &stack_top_type_is_base<T>);//methods mt __mt_check func
+			function_sig_to_check_base_ temp_func = &stack_top_type_is_base< T>;
+			lua_CFunction func = reinterpret_cast<lua_CFunction>( temp_func);
+			//lua_CFunction func = reinterpret_cast<lua_CFunction>( &stack_top_type_is_base< T>);
+			lua_pushcfunction(l, func);//methods mt __mt_check func
 			lua_settable(l, mt);//methods mt 
 			//mt["__mt_check"]= &stack_top_type_is_base<T>;
 
@@ -150,7 +178,10 @@ namespace OOLUA
 			//global[name#_const]=const_methods
 
 			push_char_carray(l,mt_check_field);//const_methods const_mt __mt_check
-			lua_pushcfunction(l, &stack_top_type_is_base<T>);//const_methods const_mt __mt_check func
+			//lua_CFunction func = reinterpret_cast<lua_CFunction>(& stack_top_type_is_base<T>);
+			function_sig_to_check_base_ temp_func = &stack_top_type_is_base< T>;
+			lua_CFunction func = reinterpret_cast<lua_CFunction>( temp_func);
+			lua_pushcfunction(l, func);//const_methods const_mt __mt_check func
 			lua_settable(l, const_mt);//const_methods const_mt
 			//const_mt["__mt_check"]= &stack_top_type_is_base<T>;
 

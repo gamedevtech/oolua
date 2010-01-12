@@ -1,28 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
-///  @file lua_interface.h
-///	 A Lua and C++ interface based on http://lua-users.org/wiki/SimplerCppBinding \n
-///	 http://www.lua.org/notes/ltn005.html \n
-///
-///  @author modified by Liam Devine
-///  @email
-///  See http://www.liamdevine.co.uk for contact details.
-/// @licence
-///	Copyright (c) 2005 Leonardo Palozzi
-///	Permission is hereby granted, free of charge, to any person obtaining a copy of
-///	this software and associated documentation files (the "Software"), to deal in the
-///	Software without restriction, including without limitation the rights to use,
-///	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
-///	Software, and to permit persons to whom the Software is furnished to do so,
-///	subject to the following conditions:
-///	The above copyright notice and this permission notice shall be included in all
-///	copies or substantial portions of the Software.
-///	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-///	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-///	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-///	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-///	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-///	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-///////////////////////////////////////////////////////////////////////////////
+
 #ifndef CLASS_FROM_STACK_H_
 #	define CLASS_FROM_STACK_H_
 
@@ -49,16 +25,13 @@ namespace OOLUA
 	{
 		template<typename T>
 		T * check_index(lua_State * /*const*/ l, int narg);
-		template<typename T>
-		T * check_index2(lua_State * /*const*/ l, int narg);
+
 		template<typename T>
 		T  * check_index_no_const(lua_State * /*const*/ l, int narg);
-		template<typename T>
-		T  * check_index_no_const2(lua_State * /*const*/ l, int narg);
 
 		bool index_is_userdata(lua_State* l,int index,char const* name);
 		bool get_metatable_and_check_type_is_registered(lua_State* l,int const& index,char const * name);
-		bool is_requested_type_a_base(lua_State* l,int userdata_index);
+		bool is_requested_type_a_base(lua_State* l,INTERNAL::Lua_ud* requested_ud,int const& userdata_index);
 
 		template<typename T>
 		inline T* class_from_stack_top(lua_State * l)
@@ -93,8 +66,7 @@ namespace OOLUA
 			INTERNAL::Lua_ud requested_ud;
 			requested_ud.none_const_name = (char*) OOLUA::Proxy_class<T>::class_name;
 			requested_ud.name_size = OOLUA::Proxy_class<T>::name_size;
-			lua_pushlightuserdata(l,&requested_ud);
-			if(!is_requested_type_a_base(l,userdata_index))
+			if(!is_requested_type_a_base(l,&requested_ud,userdata_index))
 			{
 				//ud ...
 				return (T*)0;
