@@ -54,7 +54,7 @@ class PublicVariablesTest : public CPPUNIT_NS::TestFixture
 	OOLUA::Script * m_lua;
 	Public_variables* m_class_with_public_vars;
 public:
-    PublicVariablesTest():m_lua(0){}
+    PublicVariablesTest():m_lua(0),m_class_with_public_vars(0){}
     LVD_NOCOPY(PublicVariablesTest)
 	void setUp()
 	{
@@ -70,7 +70,7 @@ public:
 	}
 	void getX_publicVariablesClassPassedToLua_returnEqualToX()
 	{
-		m_class_with_public_vars->x = 4;
+		m_class_with_public_vars->x = 1;
 		m_lua->run_chunk("func = function(obj) return obj:get_x() end");
 		m_lua->call("func",m_class_with_public_vars);
 		int res;
