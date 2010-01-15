@@ -4,52 +4,68 @@
 
 namespace
 {
+	struct Dummy
+	{
+	};
+	const int set_value = 1;
+	const int initail_value = 0;
+	
 	class Public_variables
 	{
 	public:
-		Public_variables(int x_, int y_, int z_, int i_):x(x_),y(y_),z(z_),i(new int(i_)){}
-		Public_variables(int x_, int y_, int z_):x(x_),y(y_),z(z_),i(new int(0)){}
-		Public_variables():x(0),y(0),z(0),i(new int(0)){}
-		Public_variables(Public_variables const & rhs):x(rhs.x),y(rhs.y),z(rhs.z), i(new int(*rhs.i)){}
-		~Public_variables(){delete i;}
-		bool operator==(Public_variables const & rhs)//default is not good enough for cppunit
+		Public_variables()
+			:an_int(initail_value)
+			,int_ptr(new int(initail_value))
+			,dummy_instance(new Dummy)
+		{}
+		Public_variables(Public_variables const & rhs)
+			:an_int(rhs.an_int)
+			,int_ptr(new int(*rhs.int_ptr))
+			,dummy_instance(new Dummy(*rhs.dummy_instance))
+		{}
+		~Public_variables()
 		{
-			return x == rhs.x && y == rhs.y && z == rhs.z && *i == *rhs.i;
+			delete int_ptr;
+			delete dummy_instance;
 		}
-		int x;
-		int y;
-		int z;
-		int* i;
+		int an_int;
+		int* int_ptr;
+		Dummy* dummy_instance;
 	};
+	
 }
+OOLUA_CLASS_NO_BASES(Dummy)
+	OOLUA_NO_TYPEDEFS
+OOLUA_CLASS_END
+
+EXPORT_OOLUA_NO_FUNCTIONS(Dummy)
+
 OOLUA_CLASS_NO_BASES(Public_variables)
 	OOLUA_NO_TYPEDEFS
-	OOLUA_PUBLIC_MEMBER_GET_SET(x)
-	OOLUA_PUBLIC_MEMBER_GET_SET(y)
-	OOLUA_PUBLIC_MEMBER_GET_SET(z)
-	OOLUA_PUBLIC_MEMBER_GET_SET(i)
+	OOLUA_PUBLIC_MEMBER_GET_SET(an_int)
+	OOLUA_PUBLIC_MEMBER_GET_SET(int_ptr)
+	OOLUA_PUBLIC_MEMBER_GET_SET(dummy_instance)
 OOLUA_CLASS_END
-EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(Public_variables,
-								   set_x,
-								   set_y,
-								   set_z,
-								   set_i)
 
-EXPORT_OOLUA_FUNCTIONS_4_CONST(Public_variables,
-								   get_x,
-								   get_y,
-								   get_z,
-								   get_i)
+EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Public_variables,
+								   set_an_int,
+								   set_int_ptr,
+								   set_dummy_instance)
+
+EXPORT_OOLUA_FUNCTIONS_3_CONST(Public_variables,
+								   get_an_int,
+								   get_int_ptr,
+								   get_dummy_instance)
 
 class PublicVariablesTest : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(PublicVariablesTest);
-
-	CPPUNIT_TEST(getX_publicVariablesClassPassedToLua_returnEqualToX);
-	CPPUNIT_TEST(setZ_publicVariablesClassAndIntPassedToLua_zComparesEqualToInput);
-	CPPUNIT_TEST(setXYAndZ_publicVariablesClassAndIntPassedToLua_comparesEqualToInput);
-	CPPUNIT_TEST(getIntPointer_publicVariablesWithIntPointerSetToOne_returnsOne);
-	CPPUNIT_TEST(setIntPointer_publicVariablesAndIntSetToOne_IntEqualsOneAfterCall);
+	CPPUNIT_TEST(getAnInt_publicVariablesClassPassedToLua_returnsSetValue);
+	CPPUNIT_TEST(setAnInt_publicVariablesClassAndIntPassedToLua_AnIntComparesEqualToSetValue);
+	CPPUNIT_TEST(getIntPointer_publicVariablesWithIntPointerSetToOne_returnsSetValue);
+	CPPUNIT_TEST(setIntPointer_publicVariablesAndIntSetToOne_IntEqualsSetValue);
+	CPPUNIT_TEST(getClassInstance_passedPublicVariablesInstance_returnPtrComparesEqualToPublicClassInstance);
+	CPPUNIT_TEST(setClassInstance_passedPublicVariablesInstanceAndDummyInstance_publicDummyInstancePtrCompareEqualsToInput);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 	Public_variables* m_class_with_public_vars;
@@ -68,46 +84,55 @@ public:
 		delete m_class_with_public_vars;
 
 	}
-	void getX_publicVariablesClassPassedToLua_returnEqualToX()
+	void getAnInt_publicVariablesClassPassedToLua_returnsSetValue()
 	{
-		m_class_with_public_vars->x = 1;
-		m_lua->run_chunk("func = function(obj) return obj:get_x() end");
+		m_class_with_public_vars->an_int = set_value;
+		m_lua->run_chunk("func = function(obj) return obj:get_an_int() end");
 		m_lua->call("func",m_class_with_public_vars);
-		int res;
-		OOLUA::pull2cpp(*m_lua,res);
-		CPPUNIT_ASSERT_EQUAL(m_class_with_public_vars->x,res);
+		int result;
+		OOLUA::pull2cpp(*m_lua,result);
+		CPPUNIT_ASSERT_EQUAL(set_value,result);
 	}
 
-	void setZ_publicVariablesClassAndIntPassedToLua_zComparesEqualToInput()
+	void setAnInt_publicVariablesClassAndIntPassedToLua_AnIntComparesEqualToSetValue()
 	{
-		int input(1);
-		m_lua->run_chunk("func = function(obj,i) obj:set_z(i) end");
-		m_lua->call("func",m_class_with_public_vars,input);
-		CPPUNIT_ASSERT_EQUAL(input,m_class_with_public_vars->z);
+		m_lua->run_chunk("func = function(obj,i) obj:set_an_int(i) end");
+		m_lua->call("func",m_class_with_public_vars,set_value);
+		CPPUNIT_ASSERT_EQUAL(set_value,m_class_with_public_vars->an_int);
 	}
-	void setXYAndZ_publicVariablesClassAndIntPassedToLua_comparesEqualToInput()
+	void getIntPointer_publicVariablesWithIntPointerSetToOne_returnsSetValue()
 	{
-		Public_variables exspected(1,2,3);
-		m_lua->run_chunk("func = function(obj,i1,i2,i3) obj:set_x(i1) obj:set_y(i2) obj:set_z(i3) end");
-		m_lua->call("func",m_class_with_public_vars,exspected.x,exspected.y,exspected.z);
-		CPPUNIT_ASSERT_EQUAL(true,exspected==*m_class_with_public_vars);
-	}
-	void getIntPointer_publicVariablesWithIntPointerSetToOne_returnsOne()
-	{
-		int exspected(1);
-		*m_class_with_public_vars->i = exspected;
-		m_lua->run_chunk("func = function(obj) return obj:get_i() end");
+		*m_class_with_public_vars->int_ptr = set_value;
+		m_lua->run_chunk("func = function(obj) return obj:get_int_ptr() end");
 		m_lua->call("func",m_class_with_public_vars);
-		int res;
-		OOLUA::pull2cpp(*m_lua,res);
-		CPPUNIT_ASSERT_EQUAL(exspected,res);	
+		int result;
+		OOLUA::pull2cpp(*m_lua,result);
+		CPPUNIT_ASSERT_EQUAL(set_value,result);	
 	}
-	void setIntPointer_publicVariablesAndIntSetToOne_IntEqualsOneAfterCall()
+	void setIntPointer_publicVariablesAndIntSetToOne_IntEqualsSetValue()
 	{
-		int expected(1);
-		m_lua->run_chunk("func = function(obj,i) return obj:set_i(i) end");
-		m_lua->call("func",m_class_with_public_vars,expected);
-		CPPUNIT_ASSERT_EQUAL(expected,*m_class_with_public_vars->i);	
+		m_lua->run_chunk("func = function(obj,i) return obj:set_int_ptr(i) end");
+		m_lua->call("func",m_class_with_public_vars,set_value);
+		CPPUNIT_ASSERT_EQUAL(set_value,*m_class_with_public_vars->int_ptr);	
+	}
+	void getClassInstance_passedPublicVariablesInstance_returnPtrComparesEqualToPublicClassInstance()
+	{
+		m_lua->register_class<Dummy>();
+		m_lua->run_chunk("func = function(obj) return obj:get_dummy_instance() end");
+		m_lua->call("func",m_class_with_public_vars);
+		Dummy* result;
+		OOLUA::pull2cpp(*m_lua,result);
+		CPPUNIT_ASSERT_EQUAL(m_class_with_public_vars->dummy_instance,result);	
+	}
+	void setClassInstance_passedPublicVariablesInstanceAndDummyInstance_publicDummyInstancePtrCompareEqualsToInput()
+	{
+		m_lua->register_class<Dummy>();
+		Dummy* input = m_class_with_public_vars->dummy_instance;
+		m_class_with_public_vars->dummy_instance = 0;
+		
+		m_lua->run_chunk("func = function(obj,inst) obj:set_dummy_instance(inst) end");
+		m_lua->call("func",m_class_with_public_vars,input);
+		CPPUNIT_ASSERT_EQUAL(input,m_class_with_public_vars->dummy_instance);	
 	}
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(PublicVariablesTest);
