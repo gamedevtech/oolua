@@ -9,9 +9,34 @@ struct Ownership_stub
 
 OOLUA_CLASS_NO_BASES(Ownership_stub)
 	OOLUA_NO_TYPEDEFS
+	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
 
 EXPORT_OOLUA_NO_FUNCTIONS(Ownership_stub)
+
+
+struct HasPrivateDestructor
+{
+	void release()
+	{
+		delete this;
+	}
+	static HasPrivateDestructor* create()
+	{
+		return new HasPrivateDestructor;
+	}
+private:
+	HasPrivateDestructor (HasPrivateDestructor const&);
+	HasPrivateDestructor& operator =(HasPrivateDestructor const&);
+	HasPrivateDestructor(){}
+	~HasPrivateDestructor(){}
+};
+
+OOLUA_CLASS_NO_BASES(HasPrivateDestructor)
+	OOLUA_TYPEDEFS No_public_destructor, No_public_constructors OOLUA_END_TYPES
+OOLUA_CLASS_END
+
+EXPORT_OOLUA_NO_FUNCTIONS(HasPrivateDestructor)
 
 class Ownership : public CPPUNIT_NS::TestFixture
 {
@@ -21,6 +46,8 @@ class Ownership : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(setOwner_luaPassesOwnershipToCpp_udGcBoolIsFalse);
 		CPPUNIT_TEST(setOwner_luaTakesOwnership_udGcBoolIsTrue);
 		CPPUNIT_TEST(setOwner_luaTakesOwnershipAndThenPassesItToCpp_udGcBoolIsFalse);
+		CPPUNIT_TEST(setOwner_luaOwnsOnInstanceWithNoPublicDestructor_callSetOwnerReturnsFalse);
+		CPPUNIT_TEST(setOwner_cppOwnsOnInstanceWithNoPublicDestructor_callSetOwnerReturnsFalse);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 	template<typename Type>
@@ -81,6 +108,24 @@ public:
 		OOLUA::INTERNAL::is_there_an_entry_for_this_void_pointer(*m_lua,&stub);
 		OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud *>( lua_touserdata(*m_lua, -1) );
 		CPPUNIT_ASSERT_EQUAL(false,ud->gc);
+	}
+	void setOwner_luaOwnsOnInstanceWithNoPublicDestructor_callSetOwnerReturnsFalse()
+	{
+		m_lua->register_class<HasPrivateDestructor>();
+		HasPrivateDestructor* mock = HasPrivateDestructor::create();
+		bool result = call_set_owner(mock,"Lua_owns");
+		CPPUNIT_ASSERT_EQUAL(false,result);
+		mock->release();
+
+	}
+	void setOwner_cppOwnsOnInstanceWithNoPublicDestructor_callSetOwnerReturnsFalse()
+	{
+		m_lua->register_class<HasPrivateDestructor>();
+		HasPrivateDestructor* mock = HasPrivateDestructor::create();
+		bool result = call_set_owner(mock,"Cpp_owns");
+		CPPUNIT_ASSERT_EQUAL(false,result);
+		mock->release();
+		
 	}
 
 };

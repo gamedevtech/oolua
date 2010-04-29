@@ -21,32 +21,13 @@ namespace OOLUA
 		static const char weak_lookup_name [] = "__weak_lookup";
 		static const char new_str [] = "new";
 
-		//basically does the same as lua_pushliteral in that it does not require a strlen
-		//template<int Length>
-		//inline void push_char_carray(lua_State* l ,const char (&carray)[Length] )
-		//{
-		//	lua_pushlstring(l, carray, Length-1);
-		//}
-
-		//template<int Length,typename const char (*&)[Length]>
-		//struct array_size
-		//{
-		//	enum {value = Length};
-		//};
-
-
-		//template<int Length>
-		//inline int array_size_(const char (&)[Length] )
-		//{
-		//	return Length-1;
-		//}
-		template<typename T,int Length>
+	/*	template<typename T,int Length>
 		inline int array_size_(T (&)[ Length ] )
 		{
 			return Length-1;
 		}
+	 */
 
-		
 	}
 }
 

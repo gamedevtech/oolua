@@ -5,22 +5,15 @@
 ///  @email
 ///  See http://www.liamdevine.co.uk for contact details.
 ///  @licence
-///  This work is licenced under a Creative Commons Licence. \n
-///  see: \n
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/ \n
-///  and: \n
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode \n
-///  For more details.
+///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef MEMBER_FUNC_HELPER_H_
 #	define MEMBER_FUNC_HELPER_H_
 
 #	include "lua_includes.h"
-#	include "fwd_push_pull.h"
-# include "oolua_push_pull.h" ///""""""""""""""!!!!!!!!!!!!!!!!*********&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+#	include "oolua_push_pull.h"
 namespace OOLUA
 {
-	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	namespace
 	{
@@ -29,7 +22,22 @@ namespace OOLUA
 		{
 			static void push(Owner owner,lua_State* const s, T& value)
 			{
+				push(owner,s,value, LVD::Int2type<is_by_value>());
+			}
+		private:
+			
+			//its by ref
+			static void push(Owner owner,lua_State* const s, T& value,LVD::Int2type<0> /*t*/)
+			{
 				OOLUA::INTERNAL::push_pointer<Raw>(s,&value,owner);
+			}
+			
+			//by value
+			static void push(Owner/* owner*/,lua_State* const s, T& value,LVD::Int2type<1> /*t*/)
+			{
+				//this needs an allocation and push onto the stack
+				Raw* ptr = new Raw(value);
+				OOLUA::INTERNAL::push_pointer<Raw>(s,ptr,Lua);
 			}
 		};
 		template<typename Raw,typename T,int is_by_value >
@@ -95,7 +103,6 @@ namespace OOLUA
 		template<typename T>
 		static void pull2cpp(lua_State* const s, T*& value)
 		{
-			//we know here if it is const or not
 			Is_intergal_pushpull<T,Type,Type::is_integral>::pull(s,value);
 		}
 		template<typename T>
@@ -155,7 +162,6 @@ namespace OOLUA
 	};
 
 
-	////////////////////////////////////////////////////////////////////////////////////////////////
 }
- #endif//MEMBER_FUNC_HELPER_H_
+ #endif
 

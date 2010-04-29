@@ -19,8 +19,13 @@
 #	include "lvd_types.h"
 #	include "determin_qualifier.h"
 #	include <string>
+#	include "lua_includes.h"
+#	include "lua_ref.h"
+
+
 namespace OOLUA
 {
+	class Lua_table;
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct in_p
 	///  Input parameter trait
@@ -732,6 +737,43 @@ namespace OOLUA
 	};
 
 
+	template<typename T>
+	struct Converter<T,T const>
+	{
+		Converter(T& t):m_t(t){}
+		operator T () const
+		{
+			return m_t;
+		}
+		Converter& operator =(Converter const &);
+		Converter(Converter const &);
+		T const & m_t;
+	};
+	
+	template<typename T>
+	struct Converter<T,T const*>
+	{
+		Converter(T & t):m_t(&t){}
+		operator T const*&()
+		{
+			return m_t;
+		}
+		Converter& operator =(Converter const &);
+		Converter(Converter const &);
+		T const* m_t;
+	};
+	template<typename T>
+	struct Converter<T,T const *const>
+	{
+		Converter(T& t):m_t(&t){}
+		operator T*const &() const
+		{
+			return m_t;
+		}
+		Converter& operator =(Converter const &);
+		Converter(Converter const &);
+		T* m_t;
+	};
 	///////////////////////////////////////////////////////////////////////////////
 	///  Specialisation for C style strings
 	///////////////////////////////////////////////////////////////////////////////
@@ -789,6 +831,133 @@ namespace OOLUA
 		char const* m_t;
 	};
 
+	
+	
+	///////////////////////////////////////////////////////////////////////////////
+	///  Specialisation for registry references
+	///////////////////////////////////////////////////////////////////////////////
+	
+	template<int ID>
+	struct in_p<Lua_ref<ID> >
+	{
+		typedef Lua_ref<ID> type;
+		typedef Lua_ref<ID> raw;
+		typedef Lua_ref<ID> pull_type;
+		enum { in = 1};
+		enum { out = 0};
+		enum { owner = No_change};
+		enum { is_by_value = 1 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+	
+	template<int ID>
+	struct in_p<Lua_ref<ID>&>
+	{
+		typedef Lua_ref<ID>& type;
+		typedef Lua_ref<ID> raw;
+		typedef Lua_ref<ID> pull_type;
+		enum { in = 1};
+		enum { out = 0};
+		enum { owner = No_change};
+		enum { is_by_value = 0 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+	
+	template<int ID>
+	struct in_p<Lua_ref<ID> const&>
+	{
+		typedef Lua_ref<ID> const& type;
+		typedef Lua_ref<ID> raw;
+		typedef Lua_ref<ID> pull_type;
+		enum { in = 1};
+		enum { out = 0};
+		enum { owner = No_change};
+		enum { is_by_value = 0 };
+		enum { is_constant = 1 };
+		enum { is_integral = 1 };
+	};
+	
+	template<int ID>
+	struct out_p<Lua_ref<ID> >
+	{
+		typedef Lua_ref<ID> type;
+		typedef Lua_ref<ID> pull_type;
+		typedef Lua_ref<ID> raw;
+		enum { in = 0};
+		enum { out = 1};
+		enum { owner = No_change};
+		enum { is_by_value = 1 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+	
+	template<>
+	struct in_p<Lua_table>
+	{
+		typedef Lua_table type;
+		typedef Lua_table raw;
+		typedef Lua_table pull_type;
+		enum {in = 1};
+		enum {out = 0};
+		enum {owner = No_change};
+		enum { is_by_value = 1 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+
+}
+
+namespace OOLUA
+{
+	namespace INTERNAL
+	{
+		template<typename Cpp_type,int Lua_type>
+		struct lua_type_is_cpp_type;
+
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type,LUA_TNUMBER>
+		{
+			typedef Type_list<
+			char,unsigned char, signed char,
+			short,unsigned short, signed short,
+			int,unsigned int, signed int,
+			long, unsigned long, signed long, LVD::int64, LVD::uint64,
+			float,
+			double, long double>::type Lua_number;
+			enum {value = TYPELIST::IndexOf<Lua_number,Cpp_type>::value == -1 ? 0 : 1};
+		};
+		
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type,LUA_TSTRING>
+		{
+			typedef Type_list<
+			char*,std::string
+			>::type Lua_string;
+			enum {value = TYPELIST::IndexOf<Lua_string,Cpp_type>::value == -1 ? 0 : 1};
+		};
+		
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type,LUA_TBOOLEAN>
+		{
+			enum {value = LVD::is_same<bool,Cpp_type>::value};
+		};
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type,LUA_TFUNCTION>
+		{
+			enum {value = LVD::is_same<Lua_ref<LUA_TFUNCTION> ,Cpp_type>::value};
+		};
+		template<typename Cpp_type>
+		struct lua_type_is_cpp_type<Cpp_type,LUA_TTABLE>
+		{
+			
+			typedef Type_list<
+			Lua_ref<LUA_TTABLE>,Lua_table
+			>::type Table_types;
+			enum {value = TYPELIST::IndexOf<Table_types,Cpp_type>::value == -1 ? 0 : 1};
+		};
+	}
 }
 
 

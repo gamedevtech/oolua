@@ -4,11 +4,37 @@
 #	include "lua_class_ops.h"
 
 #	include "common_cppunit_headers.h"
+struct PrivateDestructor
+{
+	void release()
+	{
+		delete this;
+	}
+	static PrivateDestructor* create()
+	{
+		return new PrivateDestructor;
+	}
+private:
+	PrivateDestructor (PrivateDestructor const&);
+	PrivateDestructor& operator =(PrivateDestructor const&);
+	PrivateDestructor(){}
+	~PrivateDestructor(){}
+};
+
+OOLUA_CLASS_NO_BASES(PrivateDestructor)
+	OOLUA_TYPEDEFS
+		No_public_constructors
+		,No_public_destructor 
+	OOLUA_END_TYPES
+OOLUA_CLASS_END
+
+EXPORT_OOLUA_NO_FUNCTIONS(PrivateDestructor)
 
 class Destruct : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Destruct);
 		CPPUNIT_TEST(gc_gcCalledAfterPassingToLua_entryForPointerIsFalse);
+		CPPUNIT_TEST(register_classWithPrivateDestuctor_compiles);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -34,7 +60,10 @@ public:
 		bool result = OOLUA::INTERNAL::is_there_an_entry_for_this_void_pointer(*m_lua,&p1);
 		CPPUNIT_ASSERT_EQUAL(false,result);
 	}
-
+	void register_classWithPrivateDestuctor_compiles()
+	{
+		m_lua->register_class<PrivateDestructor>();
+	}
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( Destruct );

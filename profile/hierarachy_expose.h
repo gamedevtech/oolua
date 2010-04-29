@@ -13,6 +13,7 @@ OOLUA_CLASS_END
 
 OOLUA_CLASS_NO_BASES(ProfileAnotherBase)
 	OOLUA_NO_TYPEDEFS
+	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
 
 
@@ -20,12 +21,14 @@ OOLUA_CLASS(ProfileDerived) : public Proxy_class<ProfileBase>
 	OOLUA_BASIC
 	OOLUA_NO_TYPEDEFS
 	OOLUA_BASES_START ProfileBase OOLUA_BASES_END
+	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
 
 OOLUA_CLASS(ProfileMultiBases) :public Proxy_class<ProfileDerived>, public Proxy_class<ProfileAnotherBase>
 	OOLUA_BASIC
 	OOLUA_NO_TYPEDEFS
 	OOLUA_BASES_START ProfileDerived,ProfileAnotherBase OOLUA_BASES_END
+	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
 
 void open_Luabind_hierarchy(lua_State* l);

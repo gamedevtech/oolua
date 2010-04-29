@@ -8,6 +8,7 @@ OOLUA_CLASS_NO_BASES(Set_get)
 	OOLUA_NO_TYPEDEFS
 	OOLUA_MEM_FUNC_1(void,set,double)
 	OOLUA_MEM_FUNC_0_CONST(double,get)
+	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
 
 void open_Luabind_set_n_get(lua_State* l);

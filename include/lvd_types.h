@@ -2,16 +2,11 @@
 ///  @file lvd_types.h
 ///  Header for the types used.
 ///
-///  @author Liam Devine @date 25/10/2006
+///  @author Liam Devine
 ///  @email
 ///  See http://www.liamdevine.co.uk for contact details.
 ///  @licence
-///  This work is licenced under a Creative Commons Licence. \n
-///  see: \n
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/ \n
-///  and: \n
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode \n
-///  For more details.
+///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef BASIC_TYPES_H_

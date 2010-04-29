@@ -8,6 +8,7 @@ typedef std::vector<int> vector_int;
 
 OOLUA_CLASS_NO_BASES(vector_int)
 	OOLUA_NO_TYPEDEFS
+	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 	OOLUA_MEM_FUNC_1(void ,push_back,vector_int::const_reference  )
 	OOLUA_MEM_FUNC_0(void ,pop_back)
 	OOLUA_MEM_FUNC_0_CONST(vector_int::size_type, size)

@@ -1,3 +1,31 @@
+1.3.0
+Initial support for constructors
+http://code.google.com/p/oolua/issues/detail?id=9 Exporting classes with no public destructor
+Added a file generator to the generator solution for constructor parameters
+Added the types No_default_constructor,No_public_constructors and No_public_destructor to oolua_typedefs.h
+Removed oolua_construct which had the default constructor for earlier versions
+Added OOLUA_ONLY_DEFAULT_CONSTRUCTOR
+Broke ABI removing default constructor being forced
+Updated tests which used old style constructors
+added OOLUA::table_set_value which does not retrieve the table from the registry yet uses a stack index
+added convenance function OOLUA::new_table 
+added copy constructor to Lua_ref and Lua_table
+removed static keyword from member function generator for parameter types.
+added param traits for Lua_ref 
+added push member to lua_ref
+enabled a constructor to take a Lua_func_ref
+* fixed user type return on the stack http://code.google.com/p/oolua/issues/detail?id=10 reported by Tomm on the mailing list
+moved Lua_table in parameter trait to parma_traits.h
+enabled a constructor to take a Lua_table
+added method to pull a table reference from the stack
+enabled a constructor to take a Lua_table_ref
+added a conversion constructor to Lua_table from Lua_ref_table, introduced a friend hack!!
+Moved the Lua_table member function get_table to the private interface
+Refactored the pulling of a registry type (Lua_ref<T> and Lua_table)
+pulling a registry type when nil is on the stack, frees the registry ref and sets it to invalid
+Refactored Lua_table removing the lua_State instead using the reference's state member
+
+
 1.2.2
 *Converted premake scripts to premake4 
 *optimised checking of a type against a requested type via casting and storing a function taking the parameters to 

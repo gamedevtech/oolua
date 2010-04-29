@@ -8,12 +8,7 @@
 ///  @email
 ///  See http://www.liamdevine.co.uk for contact details.
 ///  @licence
-///  This work is licenced under a Creative Commons Licence. \n
-///  see: \n
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/ \n
-///  and: \n
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode \n
-///  For more details.
+///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -37,11 +32,8 @@ struct lua_State;
 #	define LUA_DEBUG_ONLY(X)
 #endif
 
-//#	define OOLUA_EXCEPTIONS
 
-//#	include <stdexcept>
 #	include <string>
-//#	include <cassert>
 
 #	include "lua_includes.h"
 #	include "lvd_types.h"
@@ -65,6 +57,8 @@ struct lua_State;
 #	include "oolua_push_pull.h"
 #   include "oolua_error.h"
 #	include "oolua_version.h"
+#	include "cpp_constructor.h"
+
 namespace OOLUA
 {
 

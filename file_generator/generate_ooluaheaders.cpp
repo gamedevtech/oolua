@@ -4,11 +4,12 @@
 #include "export_func_to_lua_generate.h"
 #include "cpp_member_func_generate.h"
 #include "lua_function_generate.h"
+#include "constructor_generate.h"
 #include "options.h"
 
 bool default_options(EXECUTABLE::Options& opt)
 {
-	const int num = 9;
+	const int num = 11;
 	char* values[num]  =
 	{
 		"file_generator"
@@ -16,6 +17,7 @@ bool default_options(EXECUTABLE::Options& opt)
 		,"--cppParams","8"
 		,"--luaParams","10"
 		,"--saveDir","../include/"
+		,"--constructorParams", "5"
 	};
 
 	return opt.process(num,values);
@@ -49,6 +51,11 @@ int main(int argc, char** argv)
 				"Relative directory to save headers to. Required to be slash postfixed."
 				,"./")
 			);
+		options.add("--constructorParams"
+			,Option_value<int>(
+				"Maximum parameters an OOLua registered C++ constructor can have."
+				,5)
+			);
 	}
 	
 	if( argc == 1)
@@ -56,7 +63,6 @@ int main(int argc, char** argv)
 		std::cout <<"No options passed via the command line\n";
 		if( !default_options(options) ) return 1;
 		options.help();
-		//return 1;
 	}
 	else if(! options.process(argc,argv) ) return 1;
 
@@ -64,11 +70,13 @@ int main(int argc, char** argv)
 	int max_amount_of_member_functions_a_class_can_register = options.value<int>("--classFunctions");
 	int max_params_for_a_lua_function = options.value<int>("--luaParams");
 	std::string save_directory = options.value<std::string>("--saveDir");
+	int max_params_for_constructor = options.value<int>("--constructorParams");
 
 	export_func_to_lua_header(save_directory,max_amount_of_member_functions_a_class_can_register);
 	cpp_member_func_header(save_directory,max_params_for_cpp_function);
 	proxy_member_caller_header(save_directory,max_params_for_cpp_function);
 	lua_function_header(save_directory,max_params_for_a_lua_function);
+	constructor_header(save_directory,max_params_for_constructor);
 }
 
 

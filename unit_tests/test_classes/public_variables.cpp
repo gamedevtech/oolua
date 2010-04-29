@@ -134,6 +134,16 @@ public:
 		m_lua->call("func",m_class_with_public_vars,input);
 		CPPUNIT_ASSERT_EQUAL(input,m_class_with_public_vars->dummy_instance);	
 	}
+	void getClassInstance_passedPublicVariablesInstance_callReturnsTrue()
+	{
+		m_lua->register_class<Dummy>();
+		m_lua->run_chunk("func = function(obj) return obj:get_dummy_instance_none_ptr() end");
+		bool result = m_lua->call("func",m_class_with_public_vars);
+		CPPUNIT_ASSERT_EQUAL(true,result);
+		//Dummy* result;
+		//OOLUA::pull2cpp(*m_lua,result);
+		//CPPUNIT_ASSERT_EQUAL(m_class_with_public_vars->dummy_instance,result);	
+	}
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(PublicVariablesTest);
 

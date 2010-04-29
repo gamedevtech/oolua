@@ -5,12 +5,7 @@
 ///  @email
 ///  See http://www.liamdevine.co.uk for contact details.
 ///  @licence
-///  This work is licenced under a Creative Commons Licence. \n
-///  see: \n
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/ \n
-///  and: \n
-///  http://creativecommons.org/licenses/by-nc-sa/3.0/legalcode \n
-///  For more details.
+///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef OOLUA_TYPEDEFS_H_
 # define OOLUA_TYPEDEFS_H_
@@ -45,6 +40,17 @@
 ///  @struct OOLUA::Add_op
 ///  Addition operator is defined for the type.
 
+///  @struct No_default_constructor
+///  There is not a default constructor in the public interface
+///  yet there are other constructors.
+
+///  @struct No_public_constructors
+///  There are no constructors in the public interface.
+
+///  @struct OOLUA::No_public_destructor
+///  There is not a destructor in the public interface
+///  and OOLua will not attempt to delete an instance of this type
+
 namespace OOLUA
 {
 
@@ -57,7 +63,9 @@ namespace OOLUA
 	struct Mul_op{};
 	struct Sub_op{};
 	struct Add_op{};
-
+	struct No_default_constructor{};
+	struct No_public_constructors{};
+	struct No_public_destructor{};
 }
 	///  @}
-#endif//OOLUA_TYPEDEFS_H_
+#endif

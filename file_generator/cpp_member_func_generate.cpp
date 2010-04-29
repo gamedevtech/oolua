@@ -37,7 +37,7 @@ void print_param_macros(std::ofstream& f,int num)
 	//yet w-effc++ complains. When string is intregal it is an error to init to 0 which is seen as
 	//a null pointer which it is an error to be constructed from
 	//<<tab<<"P ## NUM ##_::pull_type p ## NUM( static_cast<P ## NUM ##_::pull_type>(0) );\\\n"
-	f<<tab<<"static P ## NUM ##_::pull_type p ## NUM;\\\n"
+	f<<tab<<"P ## NUM ##_::pull_type p ## NUM;\\\n"
 		<<tab<<"MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT\\\n"
 		<<tab<<"if( P ## NUM ##_::in )\\\n"
 		<<tab<<tab<<"OOLUA::Member_func_helper<P ## NUM ##_,P ## NUM ##_::owner>::pull2cpp(l,p ## NUM);\\\n"

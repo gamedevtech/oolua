@@ -172,7 +172,6 @@ namespace OOLUA
 			////Pops a table from the stack and sets it as the new metatable for the value at the given acceptable index
 			lua_setmetatable(l, -2);
 
-			//int udIndex = lua_gettop(l);
 			int weakIndex = push_weak_table(l);//ud,weakTable
 			int udIndex = weakIndex -1;
 

@@ -8,11 +8,13 @@ struct Lua2Cpp2{};
 
 OOLUA_CLASS_NO_BASES(Lua2Cpp1)
 	OOLUA_NO_TYPEDEFS
+	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
 EXPORT_OOLUA_NO_FUNCTIONS(Lua2Cpp1)
 
 OOLUA_CLASS_NO_BASES(Lua2Cpp2)
 	OOLUA_NO_TYPEDEFS
+	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
 EXPORT_OOLUA_NO_FUNCTIONS(Lua2Cpp2)
 
@@ -68,6 +70,10 @@ class Exchange_lua2cpp : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(pullClasses_functionReturnsTheTwoDifferentInputtedClasses_pointersComparesEqualToInputs);
 	CPPUNIT_TEST(pullTable_luaTableOnStack_tableIsValid);
 	CPPUNIT_TEST(pullLuaFunction_luaFunctionOnStack_functionIsValid);
+	
+	CPPUNIT_TEST(pullTable_nilOnStack_tableIsInValid);
+	CPPUNIT_TEST(pullTableRef_nilOnStack_tableIsInValid);
+	CPPUNIT_TEST(pullLuaFunction_nilOnStack_functionIsInValid);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -182,31 +188,81 @@ public:
 		CPPUNIT_ASSERT_EQUAL_MESSAGE("input1 is incorrect",input1, result1);
 	}
 
-	void pullTable_luaTableOnStack_tableIsValid()
+	void callFunctionThatReturnsNil()
 	{
-		OOLUA::Lua_table table;
 		m_lua->run_chunk(
 			"func = function() "
+						 "return nil "
+						 "end");
+		m_lua->call("func");
+	}
+	void callFunctionThatReturnsTable()
+	{
+		m_lua->run_chunk(
+						 "func = function() "
 				"local t={} "
 				"return t "
 			"end");
 		m_lua->call("func");
-		OOLUA::pull2cpp(*m_lua,table);
-		CPPUNIT_ASSERT_EQUAL(true, table.valid() );
 	}
-	void pullLuaFunction_luaFunctionOnStack_functionIsValid()
+	void callFunctionThatReturnsFunction()
 	{
-		OOLUA::Lua_func_ref lua_func;
 		m_lua->run_chunk(
 			"bar = function() end "
 			"func = function() "
 				"return bar "
 			"end");
 		m_lua->call("func");
+	}	
+	
+	void pullTable_luaTableOnStack_tableIsValid()
+	{
+		OOLUA::Lua_table table;
+		callFunctionThatReturnsTable();
+		OOLUA::pull2cpp(*m_lua,table);
+		CPPUNIT_ASSERT_EQUAL(true, table.valid() );
+	}
+	void pullLuaFunction_luaFunctionOnStack_functionIsValid()
+	{
+		OOLUA::Lua_func_ref lua_func;
+		callFunctionThatReturnsFunction();
 		OOLUA::pull2cpp(*m_lua,lua_func);
 		CPPUNIT_ASSERT_EQUAL(true, lua_func.valid() );
 	}
 
+	
+	void pullTable_nilOnStack_tableIsInValid()
+	{
+		//start with a valid table
+		OOLUA::Lua_table table( OOLUA::new_table(*m_lua) );
+		callFunctionThatReturnsNil();
+		OOLUA::pull2cpp(*m_lua,table);
+		CPPUNIT_ASSERT_EQUAL(false, table.valid() );
+	}
+	void pullTableRef_nilOnStack_tableIsInValid()
+	{
+		OOLUA::Lua_table_ref table;
+		//start with a valid table
+		{
+			callFunctionThatReturnsTable();
+			OOLUA::pull2cpp(*m_lua,table);
+		}
+		callFunctionThatReturnsNil();
+		OOLUA::pull2cpp(*m_lua,table);
+		CPPUNIT_ASSERT_EQUAL(false, table.valid() );
+	}
+	void pullLuaFunction_nilOnStack_functionIsInValid()
+	{
+		OOLUA::Lua_func_ref lua_func;
+		//start with a valid function
+		{
+			callFunctionThatReturnsFunction();
+			OOLUA::pull2cpp(*m_lua,lua_func);
+		}
+		callFunctionThatReturnsNil();
+		OOLUA::pull2cpp(*m_lua,lua_func);
+		CPPUNIT_ASSERT_EQUAL(false, lua_func.valid() );
+	}
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( Exchange_lua2cpp );
