@@ -174,6 +174,14 @@ namespace OOLUA\
 class OOLUA::Proxy_class<name>;\
 }
 
+namespace OOLUA
+{
+	template<typename NoneProxyType>
+	class Proxy_class
+	{ 
+		typedef NoneProxyType OoluaNoneProxy;
+	};
+}
 /// \def OOLUA_CLASS_END
 ///end the class and the namespace
 #define OOLUA_CLASS_END };}

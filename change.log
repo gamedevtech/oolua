@@ -24,7 +24,8 @@ Moved the Lua_table member function get_table to the private interface
 Refactored the pulling of a registry type (Lua_ref<T> and Lua_table)
 pulling a registry type when nil is on the stack, frees the registry ref and sets it to invalid
 Refactored Lua_table removing the lua_State instead using the reference's state member
-
+added a default implementation of Proxy_class which creates a typedef that identifies it as a none proxy type
+Public members retrieved with get_?, now push by reference if the type has a proxy type and it is by value
 
 1.2.2
 *Converted premake scripts to premake4 
