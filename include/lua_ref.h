@@ -15,6 +15,12 @@
 #include "lua_includes.h"
 #include <cassert>
 
+#ifdef __GNUC__
+#	define OOLUA_DEFAULT __attribute__ ((visibility("default")))
+#else
+#	define OOLUA_DEFAULT
+#endif	
+
 namespace OOLUA
 {
 	class Lua_table;
@@ -35,24 +41,14 @@ namespace OOLUA
 		explicit Lua_ref(lua_State* const lua);
 		Lua_ref();
 		Lua_ref& operator =(Lua_ref const& /*rhs*/);//unimplemented
-		Lua_ref(Lua_ref const& rhs)
-			:m_lua(0),m_ref(LUA_NOREF)
-		{
-			if (rhs.valid()) 
-			{
-				m_lua = rhs.m_lua;
-				lua_rawgeti(m_lua, LUA_REGISTRYINDEX, rhs.m_ref );
-				m_ref = luaL_ref(m_lua, LUA_REGISTRYINDEX);
-				//lua_pop(m_lua,1);
-			}
-		}
-		~Lua_ref();
+		Lua_ref(Lua_ref const& rhs) OOLUA_DEFAULT;
+		~Lua_ref()OOLUA_DEFAULT;
 		bool valid()const;
 		int const& ref()const;
-		void set_ref(lua_State* const lua,int const& ref);
+		void set_ref(lua_State* const lua,int const& ref)OOLUA_DEFAULT;
 		void swap(Lua_ref & rhs);
 		bool push(lua_State* const lua)const;
-		bool pull(lua_State* const lua);
+		bool pull(lua_State* const lua) OOLUA_DEFAULT ;
 	private:
 		friend class  Lua_table;
 		void release();
@@ -73,6 +69,19 @@ namespace OOLUA
 	Lua_ref<ID>::Lua_ref()
 		:m_lua(0),m_ref(LUA_NOREF)
 	{}
+	
+	template<int ID>
+	Lua_ref<ID>::Lua_ref(Lua_ref<ID> const& rhs)
+		:m_lua(0),m_ref(LUA_NOREF)
+	{
+		if (rhs.valid()) 
+		{
+			m_lua = rhs.m_lua;
+			lua_rawgeti(m_lua, LUA_REGISTRYINDEX, rhs.m_ref );
+			m_ref = luaL_ref(m_lua, LUA_REGISTRYINDEX);
+		}
+	}
+	
 	template<int ID>
 	Lua_ref<ID>::~Lua_ref()
 	{
@@ -89,7 +98,7 @@ namespace OOLUA
 		return m_ref;
 	}
 	template<int ID>
-	void Lua_ref<ID>::set_ref(lua_State* const lua,int const& ref)
+	inline void Lua_ref<ID>::set_ref(lua_State* const lua,int const& ref)
 	{
 		release();
 		m_ref = ref;
@@ -116,7 +125,7 @@ namespace OOLUA
 	}
 
 	template<int ID>
-	inline bool Lua_ref<ID>::push(lua_State* const lua)const
+	bool Lua_ref<ID>::push(lua_State* const lua)const
 	{
 		if (!valid() ) {
 			lua_pushnil(lua);
@@ -132,7 +141,8 @@ namespace OOLUA
 	}
 
 	template<int ID>
-	inline bool Lua_ref<ID>::pull(lua_State* const lua)
+	bool Lua_ref<ID>::pull(lua_State* const lua) 
+
 	{
 		if( lua_type(lua, -1) == ID )
 		{

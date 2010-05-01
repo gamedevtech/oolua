@@ -33,6 +33,7 @@ namespace OOLUA
 	public:
 		Lua_table();
 		explicit Lua_table(Lua_table_ref const& ref);
+		~Lua_table()OOLUA_DEFAULT;
 		Lua_table(lua_State*  const lua,std::string const& name);
 		void bind_script(lua_State*  const lua);
 		void set_table(std::string const& name);
@@ -125,6 +126,8 @@ namespace OOLUA
 		Lua_table_ref m_table_ref;
 	};
 
+	inline Lua_table::~Lua_table(){}
+	
 	//the table is at table_index which can be either absolute or pseudo in the stack
 	//table is left at the index.
 	template<typename T,typename T1>

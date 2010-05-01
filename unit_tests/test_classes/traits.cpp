@@ -62,6 +62,7 @@ public:
 	{
 		m_lua = new OOLUA::Script;
 		m_lua->register_class<StubProxy>();
+		m_lua->register_class<HasPublicMemberStub>();
 	}
 	void tearDown()
 	{

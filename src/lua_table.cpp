@@ -1,6 +1,7 @@
 
 #	include "lua_table.h"
 #	include "oolua_exception.h"
+#	include "fwd_push_pull.h"
 #include <cassert>
 
 namespace OOLUA
@@ -115,15 +116,17 @@ namespace OOLUA
 		m_table_ref.swap(rhs.m_table_ref);
 	}
 
-	void new_table(lua_State* l,OOLUA::Lua_table& t)
+	void new_table(lua_State* l,Lua_table& t)
 	{
 		new_table(l).swap(t);
-}
-	OOLUA::Lua_table new_table(lua_State* l)
+	}
+	
+	Lua_table new_table(lua_State* l)
 	{
 		lua_newtable(l);
-		OOLUA::Lua_table t;
-		OOLUA::pull2cpp(l,t);
+		Lua_table t;
+		//OOLUA::pull2cpp(l,t);
+		t.pull_from_stack(l);
 		return t;
 	}
 
