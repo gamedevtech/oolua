@@ -38,7 +38,7 @@ links
 }
 
 	configuration { "vs*"}
-		postbuildcommands { "$(TargetPath)" }
+		postbuildcommands { "\"$(TargetPath)\"" }
 		links{"lua51"}
 		
 	configuration { "vs*","Debug"}

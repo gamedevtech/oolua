@@ -1,6 +1,10 @@
 #	include "class_method_returns_class.h"
 
-struct Return_double{};
+struct Return_double
+{
+	//Return_double(){}
+	//Return_double() = default;
+};
 
 OOLUA_CLASS_NO_BASES(Return_double)
 OOLUA_NO_TYPEDEFS
@@ -8,26 +12,6 @@ OOLUA_NO_TYPEDEFS
 OOLUA_CLASS_END
 
 EXPORT_OOLUA_NO_FUNCTIONS(Return_double)
-
-
-struct Return_mock
-{
-	int x;
-	Return_mock(int i):x(i){}
-	Return_mock():x(-1){}
-};
-
-OOLUA_CLASS_NO_BASES(Return_mock)	
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-	OOLUA_PUBLIC_MEMBER_GET(x)
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Return_mock)
-EXPORT_OOLUA_FUNCTIONS_1_CONST(Return_mock, get_x) 
-
-
-
 
 
 class Method_returns_class
@@ -47,10 +31,14 @@ public:
 	Return_double const*const& ref_const_ptr_const(){return return_ref_const_ptr_const;}
 	Method_returns_class& operator = (Method_returns_class const&);
 	Method_returns_class(Method_returns_class const&);
-	Return_double returnStackInstance()
+	Return_double return_stack_instance()
 	{
-		return Return_double(); 
+		return  Return_double(); 
 	}
+	void overloaded_function(){}
+	//void overloaded_function(int ){}
+	void overloaded_function(float ){}
+	void overloaded_function(int f = 0 ){}
 private:
 	Return_double return_instance;
 public:
@@ -69,7 +57,30 @@ OOLUA_NO_TYPEDEFS
 	OOLUA_MEM_FUNC_0(Return_double const*, ptr_const)
 	OOLUA_MEM_FUNC_0(Return_double const * & ,ref_ptr_const)
 	OOLUA_MEM_FUNC_0(Return_double const*const&, ref_const_ptr_const)
-	OOLUA_MEM_FUNC_0(Return_double,returnStackInstance)
+	OOLUA_MEM_FUNC_0(Return_double, return_stack_instance) 
+
+	int vs9_check(lua_State* const l)
+	{
+		//return type has no explicit constructor and the function pointer was static
+		//this caused a conversion error in visual studio
+		//static R::type (class_::*f )()  = &class_::return_stack_instance;
+		//OOLUA::Proxy_caller<R,class_,LVD::is_void< Return_double >::value >::call(l,m_this,f);
+
+		//check overload functions get matched
+
+		typedef param_type<void > R;
+		typedef R::type (class_::*funcType1 )(int);
+		typedef R::type (class_::*funcType0 )();
+
+		typedef param_type<int> P1;
+
+		OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<funcType0>
+						(l,m_this,&class_::overloaded_function);
+		int i(0);
+		OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<P1,funcType1>
+					(l,m_this,&class_::overloaded_function,i);
+		return 1;
+	}
 OOLUA_CLASS_END
 
 EXPORT_OOLUA_FUNCTIONS_7_NON_CONST(Method_returns_class
@@ -79,7 +90,7 @@ EXPORT_OOLUA_FUNCTIONS_7_NON_CONST(Method_returns_class
 									,ptr_const
 									,ref_ptr_const
 									,ref_const_ptr_const
-								   ,returnStackInstance
+								   ,return_stack_instance
 									)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Method_returns_class)
 
@@ -164,7 +175,7 @@ public:
 		m_lua->register_class<Return_double>();
 		m_lua->run_chunk("function bugReport() "
 						 "local object = Method_returns_class:new() "
-						 "local stack = object:returnStackInstance() "
+						 "local stack = object:return_stack_instance() "
 						 "return stack "
 						 "end");
 		m_lua->call("bugReport");

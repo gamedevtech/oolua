@@ -18,6 +18,7 @@ namespace
 		{}
 		int i;
 		static int const const_i = 5;
+		LVD_NOCOPY(HasPublicMemberStub)
 	};
 	int const  HasPublicMemberStub::const_i;
 	

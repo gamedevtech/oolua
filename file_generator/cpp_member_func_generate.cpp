@@ -140,13 +140,18 @@ void print_proxy_imps(std::ofstream&f,int num_params)
 			template_types<<"P"<<ii<<"_";
 			param_types<<",p"<<ii;
 		}
-		f<<tab<<"static R::type (class_::*f )("<<types.str().c_str()<<")mod  = &class_::func;"<<macro_endl
+		f<<tab<<"typedef R::type (class_::*funcType )("<<types.str().c_str()<<")mod ;"<<macro_endl
+	//	f<<tab<<"static R::type (class_::*f )("<<types.str().c_str()<<")mod  = &class_::func;"<<macro_endl
 			<<tab<<"OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call";
 		if(i>0)
 		{
-			f<<"<"<<template_types.str().c_str()<<">";
+			f<<"<"<<template_types.str().c_str()<<",funcType>";
 		}
-		f<<"(l,m_this,f"<<param_types.str().c_str()<<");"<<macro_endl;
+		else
+		{
+			f<<"<funcType>";
+		}
+		f<<"(l,m_this,&class_::func"<<param_types.str().c_str()<<");"<<macro_endl;
 		if(i>0)f<<tab<<"OOLUA_BACK_INTERNAL_"<<i<<macro_endl;
 		f<<tab<<"return total_out_params< Type_list<out_p<return_value >";
 		if(i>0)f<<","<<template_types.str().c_str();

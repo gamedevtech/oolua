@@ -20,12 +20,14 @@ namespace
 		,dummy_instance(new Dummy)
 		,dummy_ref(bad_global_instance)
 		{}
+		/*
 		Public_variables(Public_variables const & rhs)
 		:an_int(rhs.an_int)
 		,int_ptr(new int(*rhs.int_ptr))
 		,dummy_instance(new Dummy(*rhs.dummy_instance))
 		,dummy_ref(bad_global_instance)
 		{}
+		*/
 		~Public_variables()
 		{
 			delete int_ptr;
@@ -36,6 +38,7 @@ namespace
 		Dummy* dummy_instance;
 		Dummy dummy_instance_none_ptr;
 		Dummy& dummy_ref;
+		LVD_NOCOPY(Public_variables)
 	};
 	
 }

@@ -26,6 +26,30 @@ pulling a registry type when nil is on the stack, frees the registry ref and set
 Refactored Lua_table removing the lua_State instead using the reference's state member
 added a default implementation of Proxy_class which creates a typedef that identifies it as a none proxy type
 Public members retrieved with get_?, now push by reference if the type has a proxy type and it is by value
+Changed the generation of Proxy_class function pointers, the following gave an error in visual studio
+struct foo
+{
+	//foo(){}
+};
+
+struct bar
+{
+	foo baz(){return foo();}
+};
+int main()
+{
+	static foo(bar::*func_ptr)() = &bar::baz;
+}
+/*
+error C2440: 'initializing' : cannot convert from 'foo (__thiscall bar::* )(void)' to 'foo (__thiscall bar::* )(void)'
+Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
+
+Uncomment foo constructor to compile
+or 
+Remove static from pointer instance
+*/
+Added quotation marks to TargetPath as a post build event in visual studio. Directories with a space
+	caused a problem.
 
 1.2.2
 *Converted premake scripts to premake4 
