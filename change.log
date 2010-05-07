@@ -50,6 +50,13 @@ Remove static from pointer instance
 */
 Added quotation marks to TargetPath as a post build event in visual studio. Directories with a space
 	caused a problem.
+	
+Removed dead code from oolua_registration.h
+Added check to make sure a user data type was created by OOLUA when pulling a class from the stack
+Bypassed checking the user data type when calling a member function on that instance
+Changed the internal registration key of the function which checks a class bases
+Add forwarding of template type in Script::register_class_static to OOLUA::register_class_static
+Added Unit Testing showing registration of a class static function
 
 1.2.2
 *Converted premake scripts to premake4 
