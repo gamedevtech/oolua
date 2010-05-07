@@ -72,7 +72,7 @@ public:
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result); 
 	}
-//pop metatable
+
 	
 };
 
