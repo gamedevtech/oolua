@@ -4,21 +4,21 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 
-class ClassHasStacticFunction
+class ClassHasStaticFunction
 {
 public:
 	static void static_function(){}
 };
 
-OOLUA_CLASS_NO_BASES(ClassHasStacticFunction)
+OOLUA_CLASS_NO_BASES(ClassHasStaticFunction)
 	OOLUA_TYPEDEFS No_public_constructors OOLUA_END_TYPES
 OOLUA_CLASS_END
 
-EXPORT_OOLUA_NO_FUNCTIONS(ClassHasStacticFunction)
+EXPORT_OOLUA_NO_FUNCTIONS(ClassHasStaticFunction)
 
-int ClassHasStacticFunction_staticFunc(lua_State* l)
+int ClassHasStaticFunction_staticFunc(lua_State* /*l*/)
 {
-	ClassHasStacticFunction::static_function();
+	ClassHasStaticFunction::static_function();
 	return 0;
 }
 
@@ -35,7 +35,7 @@ public:
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
-		m_lua->register_class<ClassHasStacticFunction>();
+		m_lua->register_class<ClassHasStaticFunction>();
 	}
 	void tearDown()
 	{	
@@ -45,29 +45,29 @@ public:
 	void staticFunc_functionIsUnregistered_callReturnsFalse()
 	{
 		m_lua->run_chunk("foo = function() "
-						 "ClassHasStacticFunction:static_function() "
+						 "ClassHasStaticFunction:static_function() "
 						 "end ");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(false,result); 
 	}
 	void staticFunc_functionIsRegisteredUsingScript_callReturnsTrue()
 	{
-		m_lua->register_class_static<ClassHasStacticFunction>("static_function"
-															  ,&ClassHasStacticFunction_staticFunc);
+		m_lua->register_class_static<ClassHasStaticFunction>("static_function"
+															  ,&ClassHasStaticFunction_staticFunc);
 
 		m_lua->run_chunk("foo = function() "
-						 "ClassHasStacticFunction:static_function() "
+						 "ClassHasStaticFunction:static_function() "
 						 "end ");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result); 
 	}
 	void staticFunc_functionIsRegisteredUsingOOLua_callReturnsTrue()
 	{
-		OOLUA::register_class_static<ClassHasStacticFunction>(*m_lua
+		OOLUA::register_class_static<ClassHasStaticFunction>(*m_lua
 															  ,"static_function"
-															  ,&ClassHasStacticFunction_staticFunc);
+															  ,&ClassHasStaticFunction_staticFunc);
 		m_lua->run_chunk("foo = function() "
-						 "ClassHasStacticFunction:static_function() "
+						 "ClassHasStaticFunction:static_function() "
 						 "end ");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result); 
