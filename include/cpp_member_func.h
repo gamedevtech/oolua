@@ -157,7 +157,7 @@ MSC_POP_COMPILER_WARNING
 
 //param macros
 #define OOLUA_INTERNAL_PARAM(NUM,PARAM)\
-	typedef param_type<PARAM > P ## NUM ##_;\
+	typedef OOLUA::param_type<PARAM > P ## NUM ##_;\
 	P ## NUM ##_::pull_type p ## NUM;\
 	MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT\
 	if( P ## NUM ##_::in )\

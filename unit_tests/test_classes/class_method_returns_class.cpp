@@ -38,7 +38,7 @@ public:
 	void overloaded_function(){}
 	//void overloaded_function(int ){}
 	void overloaded_function(float ){}
-	void overloaded_function(int f = 0 ){}
+	void overloaded_function(int f = 0 ){(void)f;}
 private:
 	Return_double return_instance;
 public:
