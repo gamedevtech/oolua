@@ -143,12 +143,120 @@ void undef_defines(std::ofstream & f,int paramCount,std::string convertor_name)
 	for(int i = 1;i<=paramCount; ++i)
 		f<<"#undef "<<convertor_name <<i<<"\n";
 }
+
+void c_functions_no_return(std::ofstream &f,int paramCount,std::string& convertor_name)
+{
+	f<<"\ntemplate <typename R >\n"
+		<<"struct Proxy_none_member_caller<R, 1 >\n" 
+		<<"{\n"
+		<<tab<<"template<typename FuncType>\n"
+		<<tab<<"static void call(lua_State*  const /*l*/, FuncType ptr2func )\n"
+		<<tab<<"{\n"
+		<<tab<<tab<<"(*ptr2func)();\n"
+		<<tab<<"}\n";
+
+	for(int j =1; j<=paramCount ; ++j)
+	{
+		//template parameters
+		f<<tab<<"template<";
+		for(int k=1; k<= j; ++k)
+		{
+			f<<"typename P"<<k;
+			if(k !=j )f<<",";
+		}
+		f<<",typename FuncType>\n";
+
+		f<<tab<<"static void call(lua_State* const  /*l*/,FuncType ptr2func";
+		//params for function
+		for(int p = 1; p<=j;++p)
+		{
+			f<<",typename P"<<p<<"::pull_type&  p"<<p;
+		}
+		f<<")";
+
+		//function body
+		f<<"\n"<<tab<<"{\n";
+		f<<tab<<tab<<convertor_name<<j<<"\n";
+
+		//caller
+		{
+			f<<tab<<tab<<"(*ptr2func)(";
+			for(int ii = 1;ii<=j;++ii)
+			{
+				if(ii!=1)f<<",";
+				f<<"p"<<ii<<"_";
+			}
+			f<<");\n";
+		}
+		//end function
+		f<<tab<<"}\n";
+	}
+
+	f<<"\n};\n";//end class
+}
+void c_functions_with_return(std::ofstream &f,int paramCount,std::string& convertor_name)
+{
+	f<<"template <typename Return, int ReturnIsVoid>struct Proxy_none_member_caller;\n\n"
+
+	<<"template <typename R> \n"
+	<<"struct Proxy_none_member_caller<R,0 > \n"
+	<<"{\n"
+	<<tab<<"template<typename FuncType> \n"
+	<<tab<<"static void call(lua_State*  const l,FuncType ptr2func ) \n"
+	<<tab<<"{\n"
+	<<tab<<tab<<"typename R::type r( (*ptr2func)() );\n"
+	<<tab<<tab<<"OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);\n"
+	<<tab<<"}\n";
+
+	for(int j =1; j<=paramCount ; ++j)
+	{
+		//template parameters
+		f<<tab<<"template<";
+		for(int k=1; k<= j; ++k)
+		{
+			f<<"typename P"<<k;
+			if(k !=j )f<<",";
+		}
+		f<<",typename FuncType>\n";
+
+		f<<tab<<"static void call(lua_State* const  l,FuncType ptr2func";
+		//params for function
+		for(int p = 1; p<=j;++p)
+		{
+			f<<",typename P"<<p<<"::pull_type&  p"<<p;
+		}
+		f<<")";
+
+		//function body
+		f<<"\n"<<tab<<"{\n";
+		f<<tab<<tab<<convertor_name<<j<<"\n";
+
+		//caller
+		{
+			f<<tab<<tab<<"typename R::type r( (*ptr2func) (";
+			for(int ii = 1;ii<=j;++ii)
+			{
+				if(ii!=1)f<<",";
+				f<<"p"<<ii<<"_";
+			}
+			f<<") );\n";
+		}
+		//return value
+		f<<tab<<tab<<"OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);\n";
+		//end function
+		f<<tab<<"}\n";
+	}
+
+
+
+	f<<"};\n"; //end class
+}
 void proxy_member_caller_header(std::string & save_directory,int paramCount)
 {
-	std::string fileName("proxy_member_caller.h");
+	std::string fileName("proxy_caller.h");
 	std::string file = save_directory + fileName;
 	std::ofstream f( file.c_str() );
-	include_guard_top(f,"PROXY_MEMBER_CALLER_H_");
+	include_guard_top(f,"PROXY_CALLER_H_");
 	add_file_header(f,fileName);
 
 
@@ -165,6 +273,8 @@ void proxy_member_caller_header(std::string & save_directory,int paramCount)
 	member_functions_with_return(f,paramCount,convertor_name);
 	member_functions_no_return(f,paramCount,convertor_name);
 
+	c_functions_with_return(f,paramCount,convertor_name);
+	c_functions_no_return(f,paramCount,convertor_name);
 
 	f<<"\n}\n";//end namespace
 

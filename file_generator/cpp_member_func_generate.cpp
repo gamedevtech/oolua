@@ -32,7 +32,7 @@ void print_param_macros(std::ofstream& f,int num)
 {
 	f<<"\n//param macros\n"
 		<<"#define OOLUA_INTERNAL_PARAM(NUM,PARAM)\\\n"
-		<<tab<<"typedef param_type<PARAM > P ## NUM ##_;\\\n";
+		<<tab<<"typedef OOLUA::param_type<PARAM > P ## NUM ##_;\\\n";
 	//there is no need for initialising pull parameters
 	//yet w-effc++ complains. When string is intregal it is an error to init to 0 which is seen as
 	//a null pointer which it is an error to be constructed from
@@ -159,7 +159,105 @@ void print_proxy_imps(std::ofstream&f,int num_params)
 		f<<"}\n";
 	}
 }
+void print_c_proxy_imps(std::ofstream&f,int num_params)
+{
+	f<<"//proxy implementations\n";
+	std::string macro_endl("\\\n");
+	/*
+	#define OOLUA_C_FUNCTION_0(return_value,func) \
+	typedef OOLUA::param_type<return_value > R; \
+	typedef R::type (*func_ptr)(); \
+	OOLUA::Proxy_none_member_caller<R,LVD::is_void<R::type>::value >::call<func_ptr>(l,func); \
+	return OOLUA::total_out_params< Type_list<OOLUA::out_p<R::type > >::type> ::out;
 
+	*/
+	for(int i = 0; i <=num_params;++i)
+	{
+
+		f<<"#define OOLUA_C_FUNCTION_"<<i<<"(return_value,func";
+		std::stringstream  params;
+		for(int j = 1; j <= i;++j)
+		{
+			if(j>1)params<<",";
+			params <<"P"<<j;
+		}
+		if(i>0)f<<","<<params.str().c_str();
+		f<<") "<<macro_endl;
+		if(i!=0)f<<tab<<"OOLUA_PARAMS_INTERNAL_"<<i<<"("<<params.str().c_str()<<")"<<macro_endl;
+		f<<tab<<"typedef OOLUA::param_type<return_value > R;"<<macro_endl;
+		std::stringstream types;
+		std::stringstream template_types;
+		std::stringstream param_types;
+		for(int ii=1; ii<=i;++ii)
+		{
+			if(ii>1)
+			{
+				types<<",";
+				template_types<<",";
+			}
+			types<<"P"<<ii<<"_::type";
+			template_types<<"P"<<ii<<"_";
+			param_types<<",p"<<ii;
+		}
+		f<<tab<<"typedef R::type (funcType)("<<types.str().c_str()<<") ;"<<macro_endl
+			<<tab<<"OOLUA::Proxy_none_member_caller<R,LVD::is_void< R::type >::value >::call";
+		if(i>0)
+		{
+			f<<"<"<<template_types.str().c_str()<<",funcType>";
+		}
+		else
+		{
+			f<<"<funcType>";
+		}
+		f<<"(l,&func"<<param_types.str().c_str()<<");"<<macro_endl;
+		if(i>0)f<<tab<<"OOLUA_BACK_INTERNAL_"<<i<<macro_endl;
+		f<<tab<<"return OOLUA::total_out_params< Type_list<OOLUA::out_p<return_value >";
+		if(i>0)f<<","<<template_types.str().c_str();
+		f<<" >::type> ::out;"<<macro_endl;
+		f<<"\n";
+	}
+}
+void paramater_helper_macros(std::string & save_directory,int noOfParams)
+{
+	std::string fileName("oolua_paramater_macros.h");
+	std::string file = save_directory + fileName;
+	std::ofstream f( file.c_str() );
+	add_file_header(f,fileName);
+	include_guard_top(f,"OOLUA_PARAMETER_MACROS_H_");
+
+	f<<"#ifdef _MSC_VER \n"
+		<<"#"<<tab<<"define MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT \\\n"
+		<<tab<<"__pragma(warning(push)) \\\n"
+		<<tab<<"__pragma(warning(disable : 4127)) \n"
+		<<"#"<<tab<<"define MSC_POP_COMPILER_WARNING \\\n"
+		<<tab<<"__pragma(warning(pop)) \n"
+	<<"#else\n"
+		<<"#"<<tab<<"define MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT \n"
+		<<"#"<<tab<<"define MSC_POP_COMPILER_WARNING \n"
+	<<"#endif\n";
+
+	print_back_helper_macros(f,noOfParams);
+	print_param_macros(f,noOfParams);
+
+	include_guard_bottom(f);
+
+}
+
+void c_function_header(std::string & save_directory,int noOfParams)
+{
+	std::string fileName("oolua_c_func.h");
+	std::string file = save_directory + fileName;
+	std::ofstream f( file.c_str() );
+	add_file_header(f,fileName);
+	include_guard_top(f,"OOLUA_C_FUNC_H_");
+
+	include_header(f,"param_traits.h");
+	include_header(f,"oolua_paramater_macros.h");
+
+
+	print_c_proxy_imps(f,noOfParams);
+	include_guard_bottom(f);
+}
 void cpp_member_func_header(std::string & save_directory,int noOfParams)
 {
 	std::string fileName("cpp_member_func.h");
@@ -169,7 +267,8 @@ void cpp_member_func_header(std::string & save_directory,int noOfParams)
 	include_guard_top(f,"CPP_MEMBER_FUNC_H_");
 
 	include_header(f,"param_traits.h");
-
+	include_header(f,"oolua_paramater_macros.h");
+	/*
 	f<<"#ifdef _MSC_VER \n"
 		<<"#"<<tab<<"define MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT \\\n"
 		<<tab<<"__pragma(warning(push)) \\\n"
@@ -181,14 +280,23 @@ void cpp_member_func_header(std::string & save_directory,int noOfParams)
 		<<"#"<<tab<<"define MSC_POP_COMPILER_WARNING \n"
 		<<"#endif\n";
 
+
+	*/
+
 	f<<"#define OOLUA_CONST_FUNC const\n"
-		<<"#define OOLUA_NON_CONST_FUNC\n";
+	<<"#define OOLUA_NON_CONST_FUNC\n";
 	f<<"\n";
 
 	print_mem_funcs(f,noOfParams);
-	print_back_helper_macros(f,noOfParams);
-	print_param_macros(f,noOfParams);
+	//print_back_helper_macros(f,noOfParams);
+	//print_param_macros(f,noOfParams);
 	print_proxy_imps(f,noOfParams);
 
+	//print_c_proxy_imps(f,noOfParams);
+
 	include_guard_bottom(f);
+
+	paramater_helper_macros(save_directory,noOfParams);
+	c_function_header(save_directory,noOfParams);
 }
+

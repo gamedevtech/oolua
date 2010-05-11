@@ -57,6 +57,10 @@ Bypassed checking the user data type when calling a member function on that inst
 Changed the internal registration key of the function which checks a class bases
 Add forwarding of template type in Script::register_class_static to OOLUA::register_class_static
 Added Unit Testing showing registration of a class static function
+Added support for building and running unit tests with vs2010 and gmock 1.5
+changed cpp member function generator to include OOLUA namespace
+c function wrappers added to generator project
+c function wrappers moved into library
 
 1.2.2
 *Converted premake scripts to premake4 

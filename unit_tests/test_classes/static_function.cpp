@@ -66,44 +66,7 @@ void cfunction()
 	
 }
 
-#ifndef OOLUA_CONVERTER
-#	define OOLUA_CONVERTER(NUM)\
-	OOLUA::Converter<typename P##NUM::pull_type, typename P##NUM::type> p##NUM##_(p##NUM);
-#endif
-
-#ifndef OOLUA_CONVERTER1
-#	define OOLUA_CONVERTER1\
-	OOLUA_CONVERTER(1)
-#endif
-
-template <typename Return, int ReturnIsVoid>struct Proxy_none_member_caller;
-
-template <typename R>
-struct Proxy_none_member_caller<R,0 >
-{
-	template<typename FuncType>
-	static void call(lua_State*  const l,FuncType ptr2func )
-	{
-		typename R::type r( (*ptr2func)() );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
-	}
-};
-template <typename R>
-struct Proxy_none_member_caller<R,1 >
-{
-	template<typename FuncType>
-	static void call(lua_State*  const /*l*/,FuncType ptr2func )
-	{
-		(*ptr2func)();
-	}
-	template<typename P1,typename FuncType>
-	static void call(lua_State*  const /*l*/,FuncType ptr2func, typename P1::pull_type& p1)
-	{
-		OOLUA_CONVERTER1
-		(*ptr2func)(p1_);
-	}
-};
-
+#if 0
 #define OOLUA_DO_CONCAT(A,B) A##B
 #define OOLUA_CONCAT(A,B) OOLUA_DO_CONCAT(A,B)
 
@@ -118,14 +81,14 @@ int OOLUA_FUNCTION_NAME_WRAPPER(class_name,func)(lua_State* l) \
 { \
 	typedef OOLUA::param_type<return_value > R; \
 	typedef R::type (*func_ptr)(); \
-	Proxy_none_member_caller<R,LVD::is_void<R::type>::value >::call<func_ptr>(l,&class_name::func); \
+	OOLUA::Proxy_none_member_caller<R,LVD::is_void<R::type>::value >::call<func_ptr>(l,&class_name::func); \
 	return OOLUA::total_out_params< Type_list<OOLUA::out_p<R::type > >::type> ::out; \
 }
 
 #define OOLUA_C_FUNCTION_0(return_value,func) \
 	typedef OOLUA::param_type<return_value > R; \
 	typedef R::type (*func_ptr)(); \
-	Proxy_none_member_caller<R,LVD::is_void<R::type>::value >::call<func_ptr>(l,func); \
+	OOLUA::Proxy_none_member_caller<R,LVD::is_void<R::type>::value >::call<func_ptr>(l,func); \
 	return OOLUA::total_out_params< Type_list<OOLUA::out_p<R::type > >::type> ::out;
 
 
@@ -133,9 +96,12 @@ int OOLUA_FUNCTION_NAME_WRAPPER(class_name,func)(lua_State* l) \
 	OOLUA_PARAMS_INTERNAL_1(P1)\
 	typedef OOLUA::param_type<return_value > R; \
 	typedef R::type (*func_ptr)(P1_::type); \
-	Proxy_none_member_caller<R,LVD::is_void<R::type>::value >::call<P1_,func_ptr>(l,func,p1); \
+	OOLUA::Proxy_none_member_caller<R,LVD::is_void<R::type>::value >::call<P1_,func_ptr>(l,func,p1); \
 	OOLUA_BACK_INTERNAL_1\
 	return OOLUA::total_out_params< Type_list<OOLUA::out_p<R::type > >::type> ::out;
+
+
+#endif
 
 int oolua_ClassHasStaticFunction_static_function(lua_State* l)
 {
@@ -148,9 +114,9 @@ int oolua_ClassHasStaticFunction_static_function_int(lua_State* l)
 }
 //OOLUA_STATIC_METHOD_0(ClassHasStaticFunction,void,static_function)
 
-#define OOLUA_NO_PREFIX
+//#define OOLUA_NO_PREFIX
 
-OOLUA_STATIC_METHOD_0(OOLUA_NO_PREFIX,void,cfunction)
+//OOLUA_STATIC_METHOD_0(OOLUA_NO_PREFIX,void,cfunction)
 
 
 /*int oolua_static_ClassHasStaticFunction_static_function(lua_State* l) 
@@ -168,7 +134,7 @@ class StaticFunction : public CppUnit::TestFixture
 	CPPUNIT_TEST(staticFunc_functionIsRegisteredUsingScript_callReturnsTrue);
 	CPPUNIT_TEST(staticFunc_functionIsRegisteredUsingOOLua_callReturnsTrue);
 	CPPUNIT_TEST(staticFunc_generatedProxy_callReturnsTrue);
-	CPPUNIT_TEST(addStandAloneFunctionToClass_generatedProxy_callReturnsTrue);
+	//CPPUNIT_TEST(addStandAloneFunctionToClass_generatedProxy_callReturnsTrue);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -224,7 +190,8 @@ public:
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result); 
 	}
-	
+
+	/*
 	void addStandAloneFunctionToClass_generatedProxy_callReturnsTrue()
 	{
 		OOLUA::register_class_static<ClassHasStaticFunction>(*m_lua
@@ -237,6 +204,7 @@ public:
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result); 
 	}
+	*/
 
 	
 };
