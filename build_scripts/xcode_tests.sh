@@ -1,4 +1,5 @@
 #!/bin/bash 
+cd ..
 premake4 clean
 premake4 xcode3 macosx
 
@@ -15,3 +16,4 @@ xcodebuild  -configuration Release | tee ../build_logs/may_fail_xcode_release.lo
 cd ..
 
 premake4 clean
+cd build_scripts

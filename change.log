@@ -61,6 +61,9 @@ Added support for building and running unit tests with vs2010 and gmock 1.5
 changed cpp member function generator to include OOLUA namespace
 c function wrappers added to generator project
 c function wrappers moved into library
+Moved build scripts to "build_scripts" directory
+Added tests for static methods
+
 
 1.2.2
 *Converted premake scripts to premake4 

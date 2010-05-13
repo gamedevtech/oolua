@@ -1,4 +1,5 @@
 #!/bin/bash 
+cd ..
 premake4 clean
 premake4 gmake linux
 
@@ -12,3 +13,4 @@ make config=debug tests_may_fail | tee ./build_logs/may_fail_gnu_debug.log
 make config=release tests_may_fail | tee ./build_logs/may_fail_gnu_release.log
 
 premake4 clean
+cd build_scripts
