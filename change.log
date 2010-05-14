@@ -63,6 +63,9 @@ c function wrappers added to generator project
 c function wrappers moved into library
 Moved build scripts to "build_scripts" directory
 Added tests for static methods
+cleaned up code
+added oolua_config.h
+OOLUA_RUNTIME_CHECKS_ENABLED when defined to 1 adds a check of userdata to make sure OOLua created it when pulling from the stack
 
 
 1.2.2

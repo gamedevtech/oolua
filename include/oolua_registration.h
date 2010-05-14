@@ -354,12 +354,6 @@ namespace OOLUA
 		b(l,none_const_methods,const_methods);
 
 		lua_pop(l, 3);//stack = methods|mt|const_methods    |const_mt
-
-#	ifdef OOLUA_TESTING
-		Lua_table meth(l,Proxy_class<T>::class_name);
-		std::cout <<"class " <<Proxy_class<T>::class_name <<std::endl;
-		meth.traverse(&list_methods);
-#	endif
 	}
 
 	template<typename T,typename K,typename V>

@@ -10,13 +10,9 @@
 #	include "lua_table.h"
 #	include "oolua_userdata.h"
 
-#ifdef LVD_LUA_DEBUG
-#	include "lua_stack_dump.h"
-#endif
-
-
+//TODO: remove this assert include
 #include <cassert>
-#include "oolua_char_arrays.h"
+
 namespace OOLUA
 {
 
@@ -94,10 +90,14 @@ namespace OOLUA
 			if(! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
 								,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size) )
 			{
-				//lua_getmetatable(l,narg);//userdata ... stackmt
+#if OOLUA_RUNTIME_CHECKS_ENABLED == 0
+				lua_getmetatable(l,narg);//userdata ... stackmt
+#endif
 				return valid_base_ptr_or_null<T>(l,narg);
 			}
+#if OOLUA_RUNTIME_CHECKS_ENABLED == 1
 			lua_pop(l,1);
+#endif
 			return static_cast<T* >(ud->void_class_ptr);
 		}
 
@@ -120,10 +120,14 @@ namespace OOLUA
 			if( ! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
 									,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size) )
 			{
-				//lua_getmetatable(l,narg);//userdata ... stackmt
+#if OOLUA_RUNTIME_CHECKS_ENABLED == 0
+				lua_getmetatable(l,narg);//userdata ... stackmt
+#endif
 				return valid_base_ptr_or_null<T>(l,narg);
 			}
+#if OOLUA_RUNTIME_CHECKS_ENABLED == 1
 			lua_pop(l,1);
+#endif
 			return static_cast<T* >(ud->void_class_ptr);
 		}
 		
@@ -133,6 +137,8 @@ namespace OOLUA
 			INTERNAL::Lua_ud * ud = static_cast<INTERNAL::Lua_ud *>( lua_touserdata(l, narg) );
 			if( INTERNAL::id_is_const(ud) )
 			{
+				//TODO: who called this 
+				//I think it is only a proxy caller
 				luaL_error (l, "%s \"%s\" %s", "Tried to pull a none constant"
 							,OOLUA::Proxy_class<T>::class_name
 							,"pointer from a const pointer"

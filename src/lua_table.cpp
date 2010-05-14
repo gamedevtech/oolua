@@ -2,7 +2,6 @@
 #	include "lua_table.h"
 #	include "oolua_exception.h"
 #	include "fwd_push_pull.h"
-#include <cassert>
 
 namespace OOLUA
 {
@@ -95,9 +94,7 @@ namespace OOLUA
 	}
 	int Lua_table::initail_stack_size()const
 	{
-		int size = (!m_table_ref.m_lua)? 0 : lua_gettop(m_table_ref.m_lua);
-		assert(size >= 0);
-		return size;
+		return (!m_table_ref.m_lua)? 0 : lua_gettop(m_table_ref.m_lua);
 	}
 	void Lua_table::traverse(Lua_table::traverse_do_function do_)
 	{
@@ -125,7 +122,6 @@ namespace OOLUA
 	{
 		lua_newtable(l);
 		Lua_table t;
-		//OOLUA::pull2cpp(l,t);
 		t.pull_from_stack(l);
 		return t;
 	}

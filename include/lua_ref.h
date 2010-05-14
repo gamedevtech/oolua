@@ -13,6 +13,8 @@
 #	define LUA_REF_H_
 
 #include "lua_includes.h"
+
+///TODO: get rid of this include
 #include <cassert>
 
 #ifdef __GNUC__

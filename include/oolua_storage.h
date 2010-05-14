@@ -10,12 +10,59 @@
 #include "class_from_stack.h"
 #include "type_list.h"
 #include "oolua_char_arrays.h"
-#include <cassert>
+
 
 namespace OOLUA
 {
 	namespace INTERNAL
 	{
+		typedef bool (*is_const_func_sig)(Lua_ud* ud);
+		template<int NotTheSameSize>
+		struct VoidPointerSameSizeAsFunctionPointer;
+		
+		template<int NotTheSameSize>
+		struct VoidPointerSameSizeAsFunctionPointer
+		//template<>
+		//struct VoidPointerSameSizeAsFunctionPointer< sizeof(is_const_func_sig) >
+		{
+			static void getWeakTable(lua_State* l)
+			{
+				lua_getfield(l, LUA_REGISTRYINDEX, OOLUA::INTERNAL::weak_lookup_name);
+			}
+			static void setWeakTable(lua_State* l,int value_index)
+			{
+				push_char_carray(l,OOLUA::INTERNAL::weak_lookup_name);
+				lua_pushvalue(l, value_index);
+				lua_settable(l, LUA_REGISTRYINDEX);
+			}
+		};
+
+		
+		template<>
+		struct VoidPointerSameSizeAsFunctionPointer< sizeof(is_const_func_sig) >
+		//template<int NotTheSameSize>
+		//struct VoidPointerSameSizeAsFunctionPointer
+		{
+			static void getWeakTable(lua_State* l)
+			{
+				//it is safe as the pointers are the same size
+				//yet we need to stop warnings
+				is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
+				lua_pushlightuserdata(l,*(void**)&func );
+				lua_gettable(l, LUA_REGISTRYINDEX); 
+			}
+			static void setWeakTable(lua_State* l,int value_index)			
+			{
+				//it is safe as the pointers are the same size
+				//yet we need to stop warnings
+				is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
+				lua_pushlightuserdata(l,*(void**)&func );
+				lua_pushvalue(l, value_index);
+				lua_settable(l, LUA_REGISTRYINDEX);
+			}
+		};
+		
+		
 		//pushes the weak top and returns its index
 		int push_weak_table(lua_State* l);
 		template<typename T>Lua_ud* add_ptr(lua_State* /*const*/ l,T* const ptr,bool isConst);

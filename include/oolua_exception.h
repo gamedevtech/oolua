@@ -10,16 +10,9 @@
 #	define OOLUA_EXCEPTION_H_
 
 
-#ifdef OOLUA_EXCEPTIONS
-#	if defined __GNUC__ && !defined _EXCEPTIONS
-#			error OOLua has been compiled with exceptions yet they have been disabled for this build 
-#	elif defined _MSC_VER && !defined _HAS_EXCEPTIONS
-#			error OOLua has been compiled with exceptions yet they have been disabled for this build
-#	endif
-#endif
+#include "oolua_config.h"
 
-
-# ifdef OOLUA_NO_EXCEPTIONS
+#if OOLUA_USE_EXCEPTIONS == 1
 
 #	include "lua_includes.h"
     namespace OOLUA

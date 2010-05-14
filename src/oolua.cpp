@@ -29,10 +29,16 @@ namespace
 		//weakTable["__mt"]=weak_mt
 
 		//lua_pushstring(l,OOLUA::INTERNAL::weak_lookup_name);//tb key
-		/*OOLUA::INTERNAL::*/push_char_carray(l,OOLUA::INTERNAL::weak_lookup_name);//tb key
-		lua_pushvalue(l, -2);//tb key valuetb
-		lua_settable(l, LUA_REGISTRYINDEX);//tb
+		/*OOLUA::INTERNAL::*/
+		//lua_pushlightuserdata(l,(void*)&OOLUA::INTERNAL::id_is_const);
+
+		//push_char_carray(l,OOLUA::INTERNAL::weak_lookup_name);//tb key
+		//lua_pushvalue(l, -2);//tb key valuetb
+		//lua_settable(l, LUA_REGISTRYINDEX);//tb
+		
+		OOLUA::INTERNAL::VoidPointerSameSizeAsFunctionPointer<sizeof(void*) >::setWeakTable(l,-2);
 		//registry[weak_lookup_name]=weakTable
+		
 		lua_pop(l,1);//empty
 	}
 	void add_ownership_globals(lua_State* l)
@@ -60,8 +66,6 @@ namespace OOLUA
 	Script::Script(): call(),m_lua(0)
 	{
 		m_lua = luaL_newstate();
-		//if(!m_lua){ oolua_throw("failed to initialise lua\n"); }
-		//OOLUA_IF_ERROR(!m_lua,"failed to initialise lua")
 		luaL_openlibs(m_lua);
 		//lua_gc(m_lua, LUA_GCRESTART, 0);
 		call.bind_script(m_lua);//bind the lua state to the function caller

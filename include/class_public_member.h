@@ -16,7 +16,7 @@
 #ifndef CLASS_PUBLIC_MEMBER_H_
 #	define CLASS_PUBLIC_MEMBER_H_
 
-#include "oolua_exception.h"
+//#include "oolua_exception.h"
 
 namespace OOLUA 
 {

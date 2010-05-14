@@ -1,12 +1,19 @@
 
 #	include "lua_function.h"
 #   include "oolua_check_result.h"
+#	include "oolua_config.h"
+
+#if OOLUA_DEBUG_CHECKS == 1
 #   include <cassert>
+#endif
+
 namespace OOLUA
 {
 	void Lua_function::bind_script(lua_State* const lua)
 	{
+#if OOLUA_DEBUG_CHECKS == 1
 		assert(lua);
+#endif
 		m_lua = lua;
 	}
 	bool Lua_function::call(int const& count)

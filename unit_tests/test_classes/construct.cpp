@@ -548,7 +548,6 @@ public:
 							"ParamConstructor:new(f) "
 						 "end");
 		bool result = m_lua->call("foo");
-		std::cout <<OOLUA::get_last_error(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(true,result);
 	}
 	void new_constructorTakesLuaFuncRef_FuncRefMemberIsValid()

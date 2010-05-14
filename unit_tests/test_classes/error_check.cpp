@@ -1,5 +1,4 @@
-//#define OOLUA_STORE_ERROR 1
-//#define OOLUA_EXCEPTIONS 1
+
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 

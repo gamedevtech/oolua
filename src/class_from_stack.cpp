@@ -1,39 +1,65 @@
 #include "class_from_stack.h"
-#include "oolua_char_arrays.h"
+#include "oolua_config.h"
 
-//#define OOLUA_NO_RUNTIME_CHECKS
+
 namespace OOLUA
 {
 	namespace INTERNAL
 	{
-#ifdef OOLUA_NO_RUNTIME_CHECKS
-		bool index_is_userdata(lua_State* /*l*/,int /*index*/,char const* /*name*/)
-		{
-			return true;
-		}
-#else
-		bool index_is_userdata(lua_State* l,int index,char const* name)
+#if OOLUA_RUNTIME_CHECKS_ENABLED == 1
+		bool if_enabled_was_userdata_created_by_oolua_then_leave_metatable_on_stack_top(lua_State* l, int index, char const* name)
 		{
 			if( !lua_isuserdata(l,index) )
 			{
+				//TODO: Who called this?
 				luaL_error (l, "%s %d %s %s", "There is not a userdata pointer at the index."
-					,index,"Whilst looking for type",name);
+							,index,"Whilst looking for type",name);
 				return false;
 			}
-
+			
 			if(!lua_getmetatable(l, index)) return false;
 			lua_pushlightuserdata(l, l);
 			lua_rawget(l,-2);
 			bool result = lua_isnil(l,-1) ==1 ? false : true;
-
+			
 			//pop metatable
 			if(result)lua_pop(l,1);
 			//pop metatable and also the lookup result on top of the stack
 			else lua_pop(l,2);
 			
-			return result;
+			return result;			
+		}
+		
+		bool index_is_userdata(lua_State* l,int index,char const* name)
+		{
+			//return if_enabled_was_userdata_created_by_oolua_then_leave_metatable_on_stack_top(l,index,name);
+			if( !lua_isuserdata(l,index) )
+			{
+				//TODO: Who called this?
+				luaL_error (l, "%s %d %s %s", "There is not a userdata pointer at the index."
+							,index,"Whilst looking for type",name);
+				return false;
+			}
+			
+			if(!lua_getmetatable(l, index)) return false;
+			lua_pushlightuserdata(l, l);
+			lua_rawget(l,-2);
+			bool result = lua_isnil(l,-1) ==1 ? false : true;
+			
+			//pop metatable
+			if(result)lua_pop(l,1);
+			//pop metatable and also the lookup result on top of the stack
+			else lua_pop(l,2);
+			
+			return result;	
+		}
+#else
+		bool index_is_userdata(lua_State* /*l*/,int /*index*/,char const* /*name*/)
+		{
+			return true;
 		}
 #endif
+		//TODO: remove this function it is duplication of index_is_userdata without the preprocessor check
 		bool index_is_oolua_created_userdata(lua_State* l,int index,char const* name)
 		{
 			//if(!index_is_userdata(l,index,name)) return false;
@@ -52,7 +78,9 @@ namespace OOLUA
 		{
 				lua_getmetatable(l,index);//userdata ... stackmt
 				lua_getfield(l, LUA_REGISTRYINDEX, name);//userdata ... stackmt namemt
-#ifndef OOLUA_NO_RUNTIME_CHECKS
+		//TODO: check this. Is the call to lua_getfield correct or should it be after the processor check.
+		//if it is correct document why it is this way!!
+#if OOLUA_RUNTIME_CHECKS_ENABLED == 1
 				if( lua_isnil(l,-1) )
 				{
 					lua_pop(l,2);//userdata ... 

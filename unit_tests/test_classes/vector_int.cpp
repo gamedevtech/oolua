@@ -4,6 +4,8 @@
 
 
 ///\remark typedef the type of vector into the global namespace
+//TODO: this is required as a vector has more than one template type
+//and the commas in the template confuse a macro.
 typedef std::vector<int> vector_int;
 
 OOLUA_CLASS_NO_BASES(vector_int)
