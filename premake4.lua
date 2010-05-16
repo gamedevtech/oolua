@@ -18,4 +18,6 @@ include("./unit_tests/")
 include("./tests_may_fail/")
 include("./file_generator/")
 include("./profile/")
+include("./string_is_integral/")
+include("./UsingExceptions/")
 

@@ -1,24 +1,65 @@
 #ifndef OOLUA_CONFIG_H_
 #	define OOLUA_CONFIG_H_
 
+///def OOLUA_RUNTIME_CHECKS_ENABLED
+///Checks that a type being pulled off the stack is of the correct type
+///If this is a proxy type, it also checks the userdata on the stack was created by OOLua
+#ifndef OOLUA_RUNTIME_CHECKS_ENABLED
+#	define OOLUA_RUNTIME_CHECKS_ENABLED 1
+#endif
 
-#define OOLUA_RUNTIME_CHECKS_ENABLED 1
-#define OOLUA_STD_STRING_IS_INTEGRAL 0
-#define OOLUA_SAFE_ID_COMPARE 1
+
+///def OOLUA_STD_STRING_IS_INTEGRAL
+///If 1 Allows std::string to be a parameter or a return type for a function. 
+///NOTE: This is always by value
+#ifndef OOLUA_STD_STRING_IS_INTEGRAL
+#	define OOLUA_STD_STRING_IS_INTEGRAL 1
+#endif
+
+///def OOLUA_SAFE_ID_COMPARE
+///If 1 then checks id lengths and if the same compares with a memcmp
+///If 0 compares the address' of the id strings
+#ifndef OOLUA_SAFE_ID_COMPARE
+#	define OOLUA_SAFE_ID_COMPARE 1
+#endif
+
 
 //How to handle errors only one of these should be used
-#define OOLUA_USE_EXCEPTIONS 0
-//TODO: tests fail if store last error is zero. These tests need to be isolated
-#define OOLUA_STORE_LAST_ERROR 1
 
-#if OOLUA_USE_EXCEPTIONS ==1 && OOLUA_STORE_LAST_ERROR == 1
+///def OOLUA_USE_EXCEPTIONS
+///If 1 Throws exceptions from C++ code
+//		This could be the return of a pcall
+//		Pulling an incorrect type of the stack if OOLUA_RUNTIME_CHECKS_ENABLED == 1
+#ifndef OOLUA_USE_EXCEPTIONS
+#	define OOLUA_USE_EXCEPTIONS 0
+#endif
+
+//TODO: tests fail due to asserts if OOLUA_USE_EXCEPTIONS == 0 && OOLUA_STORE_LAST_ERROR == 0
+//These tests need to be isolated
+
+///def OOLUA_STORE_LAST_ERROR
+///When it fails it stores the error in the Lua registry and is retrievable via 
+//		OOLUA::get_last_error(lua);
+#ifndef OOLUA_STORE_LAST_ERROR
+#	define OOLUA_STORE_LAST_ERROR 1
+#endif
+
+#if OOLUA_USE_EXCEPTIONS == 1 && OOLUA_STORE_LAST_ERROR == 1
 #	error Only one of these setting can be on
 #endif
 
+///def OOLUA_DEBUG_CHECKS
+///Checks for null pointers 
 #if defined DEBUG || defined _DEBUG
 #	define OOLUA_DEBUG_CHECKS 1
 #else
 #	define OOLUA_DEBUG_CHECKS 0
+#endif
+
+
+//TODO: implement this
+#ifndef OOLUA_STACK_INDEX_WHICH_IS_NUMBER_CAN_CONVERT_TO_BOOL_AND_VICE_VERSA 
+#	define OOLUA_STACK_INDEX_WHICH_IS_NUMBER_CAN_CONVERT_TO_BOOL_AND_VICE_VERSA == 0
 #endif
 
 //check everything
@@ -56,7 +97,7 @@ __pragma(warning(pop))
 #endif
 
 #if OOLUA_USE_EXCEPTIONS == 1
-#	if defined __GNUC__ && !defined _EXCEPTIONS
+#	if defined __GNUC__ && ( ( !defined __EXCEPTIONS) || (defined __EXCEPTIONS && __EXCEPTIONS != 1) ) 
 #			error OOLua has been compiled with exceptions yet they have been disabled for this build 
 #	elif defined _MSC_VER && !defined _HAS_EXCEPTIONS
 #			error OOLua has been compiled with exceptions yet they have been disabled for this build

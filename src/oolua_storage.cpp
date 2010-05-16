@@ -22,19 +22,7 @@ namespace OOLUA
 		//pushes the weak top and returns its index
 		int push_weak_table(lua_State* l)
 		{
-			//TODO: use a function pointer for weak lookup
-			//lua_getfield(l, LUA_REGISTRYINDEX, weak_lookup_name);
-			
-			//lua_pushlightuserdata(l,(void*)&OOLUA::INTERNAL::id_is_const);
-			//lua_gettable(l, LUA_REGISTRYINDEX); 
-			//VoidPointerSameSizeAsFunctionPointer::<sizeof(void*) == sizeof(lua_CFunction) >::getWeakTable(l);
-			
-			
-			VoidPointerSameSizeAsFunctionPointer<sizeof(void*) >::getWeakTable(l);
-			
-			//is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
-			//lua_pushlightuserdata(l,*(void**)&func );
-			//lua_gettable(l, LUA_REGISTRYINDEX); 
+			Weak_table::getWeakTable(l);
 			return lua_gettop(l);
 		}
 

@@ -14,8 +14,8 @@ includedirs
 						"/usr/include"
 					} 
 					
-defines {"OOLUA_STORE_ERROR"}
+--defines {"OOLUA_STORE_ERROR"}
 
-configuration  {"xcode3" }
-	flags{ "NoExceptions", "NoRTTI"}
+-- configuration  {"xcode3" }
+--	flags{ "NoExceptions", "NoRTTI"}
 	

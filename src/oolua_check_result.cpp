@@ -43,11 +43,11 @@ namespace OOLUA
             set_error_from_top_of_stack(l);
 #elif OOLUA_USE_EXCEPTIONS == 1
             if(result == LUA_ERRFILE)
-                throw OOLUA::File_error(m_lua);
+                throw OOLUA::File_error(l);
             else if(result == LUA_ERRSYNTAX)
-                throw OOLUA::Syntax_error(m_lua);
+                throw OOLUA::Syntax_error(l);
             else if(result == LUA_ERRMEM )
-                throw OOLUA::Memory_error(m_lua);
+                throw OOLUA::Memory_error(l);
 #elif OOLUA_DEBUG_CHECKS == 1
             (void)l;
             if(result == LUA_ERRSYNTAX)

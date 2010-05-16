@@ -66,6 +66,12 @@ Added tests for static methods
 cleaned up code
 added oolua_config.h
 OOLUA_RUNTIME_CHECKS_ENABLED when defined to 1 adds a check of userdata to make sure OOLua created it when pulling from the stack
+added std::string param traits when OOLUA_STD_STRING_IS_INTEGRAL == 1
+added string as integral unit tests
+added exceptions enabled unit tests
+How errors are reported now depend on which language called the function and the settings in oolua_config.h
+-	this is implemented using separate functions for Lua code to pull parameters from the stack. * wip *
+
 
 
 1.2.2

@@ -22,17 +22,6 @@ struct lua_State;
 #	define OOLUA_H_
 
 
-#if defined DEBUG || defined _DEBUG
-#	define LUA_DEBUG_CHECKING
-#	define LVD_LUA_DEBUG
-#	define LUA_DEBUG_ONLY(X) X
-#else
-#	define LUA_RELEASE_NO_CHECKING
-#	define LVD_LUA_RELEASE
-#	define LUA_DEBUG_ONLY(X)
-#endif
-
-
 #	include <string>
 
 #	include "lua_includes.h"

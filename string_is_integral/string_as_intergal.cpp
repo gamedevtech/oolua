@@ -5,61 +5,6 @@
 #endif
 #	include <string>
 
-namespace OOLUA
-{
-	template<>
-	struct in_p<std::string>
-	{
-		typedef std::string type;
-		typedef std::string raw;
-		typedef std::string pull_type;
-		enum {in = 1};
-		enum {out = 0};
-		enum {owner = No_change};
-		enum { is_by_value = 1 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
-	template<>
-	struct in_p<std::string const&>
-	{
-		typedef std::string const& type;
-		typedef std::string raw;
-		typedef std::string pull_type;
-		enum {in = 1};
-		enum {out = 0};
-		enum {owner = No_change};
-		enum { is_by_value = 0 };
-		enum { is_constant = 1 };
-		enum { is_integral = 1 };
-	};
-	template<>
-	struct in_out_p<std::string&>
-	{
-		typedef std::string& type;
-		typedef std::string pull_type;
-		typedef std::string raw;
-		enum { in = 1};
-		enum { out = 1};
-		enum { owner = No_change};
-		enum { is_by_value = 0 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
-	template<>
-	struct out_p<std::string>
-	{
-		typedef std::string type;
-		typedef std::string pull_type;
-		typedef std::string raw;
-		enum { in = 0};
-		enum { out = 1};
-		enum { owner = No_change};
-		enum { is_by_value = 1 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
-}
 
 class StringInteragal
 {

@@ -62,6 +62,7 @@ namespace OOLUA
 			}
 		};
 		
+		typedef VoidPointerSameSizeAsFunctionPointer<sizeof(void*)> Weak_table;
 		
 		//pushes the weak top and returns its index
 		int push_weak_table(lua_State* l);
@@ -103,6 +104,9 @@ namespace OOLUA
 			return 0;
 		}
 
+		
+	//TODO: do these calls to class_from_stack_top need to validate the type???
+		//should they call into a function which just returns null on fail
 
 		//It is possible for a base class and a derived class pointer to have no offset.
 		//if found it is left on the top of the stack and returns the Lua_ud ptr

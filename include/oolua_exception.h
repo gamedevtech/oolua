@@ -15,6 +15,7 @@
 #if OOLUA_USE_EXCEPTIONS == 1
 
 #	include "lua_includes.h"
+#	include <stdexcept>
     namespace OOLUA
     {
         struct Bad_cast_error : public std::runtime_error

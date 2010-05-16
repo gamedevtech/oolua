@@ -28,28 +28,18 @@ namespace
 		lua_setmetatable(l, weakTable);//tb
 		//weakTable["__mt"]=weak_mt
 
-		//lua_pushstring(l,OOLUA::INTERNAL::weak_lookup_name);//tb key
-		/*OOLUA::INTERNAL::*/
-		//lua_pushlightuserdata(l,(void*)&OOLUA::INTERNAL::id_is_const);
-
-		//push_char_carray(l,OOLUA::INTERNAL::weak_lookup_name);//tb key
-		//lua_pushvalue(l, -2);//tb key valuetb
-		//lua_settable(l, LUA_REGISTRYINDEX);//tb
-		
-		OOLUA::INTERNAL::VoidPointerSameSizeAsFunctionPointer<sizeof(void*) >::setWeakTable(l,-2);
+		OOLUA::INTERNAL::Weak_table::setWeakTable(l,-2);
 		//registry[weak_lookup_name]=weakTable
 		
 		lua_pop(l,1);//empty
 	}
 	void add_ownership_globals(lua_State* l)
 	{
-		//lua_pushstring(l,"Cpp_owns");//string
-		/*OOLUA::INTERNAL::*/push_char_carray(l,OOLUA::INTERNAL::cpp_owns_str);//string
+		push_char_carray(l,OOLUA::INTERNAL::cpp_owns_str);//string
 		lua_pushinteger(l,OOLUA::Cpp);//string int
 		lua_settable(l, LUA_GLOBALSINDEX);//globals[string]=int
 
-		//lua_pushstring(l,"Lua_owns");//string
-		/*OOLUA::INTERNAL::*/push_char_carray(l,OOLUA::INTERNAL::lua_owns_str);//string
+		push_char_carray(l,OOLUA::INTERNAL::lua_owns_str);//string
 		lua_pushinteger(l,OOLUA::Lua);//string int
 		lua_settable(l, LUA_GLOBALSINDEX);//globals[string]=int
 	}
@@ -67,7 +57,6 @@ namespace OOLUA
 	{
 		m_lua = luaL_newstate();
 		luaL_openlibs(m_lua);
-		//lua_gc(m_lua, LUA_GCRESTART, 0);
 		call.bind_script(m_lua);//bind the lua state to the function caller
 		setup_user_lua_state(m_lua);
 	}
