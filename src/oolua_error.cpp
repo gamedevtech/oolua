@@ -39,6 +39,14 @@ namespace OOLUA
             lua_pushvalue(l,error_index);
             lua_settable(l, LUA_REGISTRYINDEX);
         }
+		void set_error_from_top_of_stack_and_pop_the_error(lua_State*l)
+		{
+			int error_index = lua_gettop(l);
+            push_error_id_str(l);
+            lua_pushvalue(l,error_index);
+            lua_settable(l, LUA_REGISTRYINDEX);
+			lua_pop(l,1);
+		}
     }
 }
 #else

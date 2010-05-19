@@ -12,6 +12,8 @@
 
 #	include "lua_includes.h"
 #	include "oolua_push_pull.h"
+#	include "oolua_error.h"
+
 namespace OOLUA
 {
 

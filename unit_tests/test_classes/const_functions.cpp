@@ -89,12 +89,20 @@ class Constant_functions : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST_SUITE( Constant_functions );
 		CPPUNIT_TEST(callConstantFunction_passedConstantInstance_calledOnce);
 		CPPUNIT_TEST(callConstantFunction_passedNoneConstantInstance_calledOnce);
-		CPPUNIT_TEST(callNoneConstantFunction_passedConstantInstance_callReturnsFalse);
 		CPPUNIT_TEST(callNoneConstantFunction_passedNoneConstantInstance_calledOnce);
 		CPPUNIT_TEST(callLuaAddedConstantFunction_passedConstantInstance_calledOnce);
 		CPPUNIT_TEST(callLuaAddedConstantFunction_passedNoneConstantInstance_calledOnce);
-		CPPUNIT_TEST(callLuaAddedNoneConstantFunction_passedConstantInstance_callReturnsFalse);
 		CPPUNIT_TEST(callLuaAddedNoneConstantFunction_passedNoneConstantInstance_calledOnce);
+	
+#if OOLUA_STORE_LAST_ERROR ==1
+		CPPUNIT_TEST(callNoneConstantFunction_passedConstantInstance_callReturnsFalse);
+		CPPUNIT_TEST(callLuaAddedNoneConstantFunction_passedConstantInstance_callReturnsFalse);
+#endif	
+	
+#if OOLUA_USE_EXCEPTIONS ==1 
+		CPPUNIT_TEST(callNoneConstantFunction_passedConstantInstance_throwsRuntimeError);
+		CPPUNIT_TEST(callLuaAddedNoneConstantFunction_passedConstantInstance_throwsRuntimeError);
+#endif
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 public:
@@ -129,12 +137,7 @@ public:
 		m_lua->call(name,c);
 	}
 
-	void callNoneConstantFunction_passedConstantInstance_callReturnsFalse()
-	{
-		char const* name = none_constant_function(m_lua);
-		Constant const c;
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(name,&c));
-	}
+
 	void callNoneConstantFunction_passedNoneConstantInstance_calledOnce()
 	{
 		char const* name = none_constant_function(m_lua);
@@ -166,13 +169,7 @@ public:
 		m_lua->call(func_name,c);
 	}
 
-	void callLuaAddedNoneConstantFunction_passedConstantInstance_callReturnsFalse()
-	{
-		char const* name = add_lua_none_constant_function(m_lua);
-		char const* func_name = lua_added_func(m_lua,name);
-		Constant const c;
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(func_name,&c));
-	}
+
 
 	void callLuaAddedNoneConstantFunction_passedNoneConstantInstance_calledOnce()
 	{
@@ -184,6 +181,38 @@ public:
 			.Times(1);
 		m_lua->call(func_name,c);
 	}
+#if OOLUA_STORE_LAST_ERROR ==1
+	void callNoneConstantFunction_passedConstantInstance_callReturnsFalse()
+	{
+		char const* name = none_constant_function(m_lua);
+		Constant const c;
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(name,&c));
+	}
+	void callLuaAddedNoneConstantFunction_passedConstantInstance_callReturnsFalse()
+	{
+		char const* name = add_lua_none_constant_function(m_lua);
+		char const* func_name = lua_added_func(m_lua,name);
+		Constant const c;
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(func_name,&c));
+	}
+#endif
+	
+#if OOLUA_USE_EXCEPTIONS ==1 
+	void callNoneConstantFunction_passedConstantInstance_throwsRuntimeError()
+	{
+		char const* name = none_constant_function(m_lua);
+		Constant const c;
+		CPPUNIT_ASSERT_THROW( (m_lua->call(name,&c)),OOLUA::Runtime_error);
+	}
+	void callLuaAddedNoneConstantFunction_passedConstantInstance_throwsRuntimeError()
+	{
+		char const* name = add_lua_none_constant_function(m_lua);
+		char const* func_name = lua_added_func(m_lua,name);
+		Constant const c;
+		CPPUNIT_ASSERT_THROW( (m_lua->call(func_name,&c)),OOLUA::Runtime_error);
+	}
+	
+#endif
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( Constant_functions);

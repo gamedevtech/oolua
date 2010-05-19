@@ -1,29 +1,30 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 
+#include "expose_stub_classes.h"
+#include "expose_class_constructors.h"
 
-namespace 
+#include <stdexcept>
+#include "lua_const_funcs.h"
+
+struct ExceptionMock
 {
-	struct stub{};
-	struct stub1{};
-}
+	void throwsStdRuntimeError()
+	{
+		throw std::runtime_error("member function throwing an error");
+	}
+};
 
-OOLUA_CLASS_NO_BASES(stub)
-OOLUA_TYPEDEFS No_public_constructors OOLUA_END_TYPES
+OOLUA_CLASS_NO_BASES(ExceptionMock)
+	OOLUA_TYPEDEFS 
+		No_public_constructors 
+		, No_public_destructor 
+	OOLUA_END_TYPES
+	OOLUA_MEM_FUNC_0(void, throwsStdRuntimeError)
 OOLUA_CLASS_END
 
-OOLUA_CLASS_NO_BASES(stub1)
-OOLUA_TYPEDEFS No_public_constructors OOLUA_END_TYPES
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(stub)
-EXPORT_OOLUA_NO_FUNCTIONS(stub1)
-
-void function_which_registers_stub1_to_stop_compiler_warning()
-{
-	OOLUA::Script s;
-	s.register_class<stub1>();
-}
+EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(ExceptionMock,throwsStdRuntimeError)
+EXPORT_OOLUA_FUNCTIONS_0_CONST(ExceptionMock)
 
 
 class UsingExceptions : public CPPUNIT_NS::TestFixture
@@ -36,34 +37,20 @@ class UsingExceptions : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pullUnregisteredClass_fromStackContainingAnIntInCpp_throwTypeError );
 	
 		CPPUNIT_TEST(pull_unrelatedUserdataTypeOnTheStack_throwTypeError );
-		//CPPUNIT_TEST(push_unregisteredClass_throwRunTimeError);
+		//CPPUNIT_TEST(push_unregisteredClass_LuaPanic);
 		CPPUNIT_TEST(pull_boolFromEmptyStack_throwTypeError);
-	
 	
 		CPPUNIT_TEST(pull_pushIntThenPullFloat_noException);
 	
-	
 		CPPUNIT_TEST(pull_pushAnIntThenPullBool_throwTypeError);
 		CPPUNIT_TEST(pull_pushBoolThenPullInt_throwTypeError);
-	
-	
-	//CPPUNIT_TEST( );
+		
+		CPPUNIT_TEST(exceptionSafe_memberFunctionThrowsStdRuntimeError_callThrowsOoluaRuntimeError);
+		CPPUNIT_TEST(call_afterAnExceptionTheStackIsEmpty_stackCountEqualsZero);
+		CPPUNIT_TEST(fromLua_luaPassesBooleanToFunctionWantingInt_throwsOoluaRuntimeError);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
-
-    std::string run_chunk(bool returns,std::string const& func_name,std::string const & param)
-    {
-        std::string("func");
-        std::string chunk = std::string("func = function(obj) ");
-        if(returns)chunk+=("return ");
-
-        chunk += std::string("obj:") + func_name + std::string("(\"")
-                    + param + std::string("\") end");
-
-        m_lua->run_chunk(chunk);
-        return std::string("func");
-    }
 
 public:
     UsingExceptions():m_lua(0){}
@@ -86,34 +73,34 @@ public:
 	}
 	void pullUnregisteredClass_fromEmptyStackInCpp_throwTypeError()
 	{
-		stub* fp(0);
+		Stub1* fp(0);
 		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,fp))  ,OOLUA::Type_error);
 	}
 	void pullUnregisteredClass_fromStackContainingAnIntInCpp_throwTypeError()
 	{
-		stub* fp(0);
+		Stub1* fp(0);
 		int i =1;
 		OOLUA::push2lua(*m_lua,i);
 		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,fp))  ,OOLUA::Type_error);
 	}
 	void pull_unrelatedUserdataTypeOnTheStack_throwTypeError()
 	{
-		stub stubtmp;
-		stub* stubptr(&stubtmp);
-		m_lua->register_class<stub>();
+		Stub1 stubtmp;
+		Stub1* stubptr(&stubtmp);
+		m_lua->register_class<Stub1>();
 		OOLUA::push2lua(*m_lua,stubptr);
-		stub1 *stub_1(0);
-		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,stub_1)) ,OOLUA::Type_error);
+		Stub2 *stub_2(0);
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,stub_2)) ,OOLUA::Type_error);
 	}
 	//not registered calls lua_error
 	/*
-	void push_unregisteredClass_throwRunTimeError()
+	void push_unregisteredClass_LuaPanic()
 	{
-		stub stubtmp;
-		stub* stubptr(&stubtmp);
+		Stub1 stubtmp;
+		Stub1* stubptr(&stubtmp);
 		OOLUA::push2lua(*m_lua,stubptr);
 	}
-	 */
+	*/
 	void pull_boolFromEmptyStack_throwTypeError()
 	{
 		bool stub;
@@ -144,6 +131,38 @@ public:
 		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,pullInto)), OOLUA::Type_error);
 	}
 
+	void exceptionSafe_memberFunctionThrowsStdRuntimeError_callThrowsOoluaRuntimeError()
+	{
+		ExceptionMock m;
+		m_lua->register_class<ExceptionMock>();
+		m_lua->run_chunk("foo = function(obj) "
+						"obj:throwsStdRuntimeError() "
+						 "end");
+		
+		CPPUNIT_ASSERT_THROW(m_lua->call("foo",&m),OOLUA::Runtime_error);
+	}
+	
+	void call_afterAnExceptionTheStackIsEmpty_stackCountEqualsZero()
+	{
+		ExceptionMock m;
+		m_lua->register_class<ExceptionMock>();
+		m_lua->run_chunk("foo = function(obj) "
+						 "obj:throwsStdRuntimeError() "
+						 "end");
+
+		CPPUNIT_ASSERT_THROW(m_lua->call("foo",&m),OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_EQUAL(0, m_lua->stack_count() );
+	}
+	void fromLua_luaPassesBooleanToFunctionWantingInt_throwsOoluaRuntimeError()
+	{
+		m_lua->register_class<C_simple>();
+		m_lua->run_chunk("foo = function(obj) "
+						 "obj:set_int(true) "
+						 "end");
+		C_simple s;
+		CPPUNIT_ASSERT_THROW(m_lua->call("foo",&s),OOLUA::Runtime_error);
+
+	}
 
 
 };

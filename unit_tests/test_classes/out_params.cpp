@@ -280,6 +280,7 @@ public:
 		m_lua->call("func",(OutParamsTest*)&mock);
 	}
 
+	//TODO: do not exspect the stack to be empty what is it we really want to know??
 	void noTraits_luaPassesIntFunctionWantsIntPtr_afterCallTheStackIsEmpty()
 	{
 		int input_param(OutParamsTest::Dummy);

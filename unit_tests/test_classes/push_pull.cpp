@@ -1,7 +1,9 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 #	include <limits>
+#	include "expose_stub_classes.h"
 
+/*
 struct Stub1{};
 OOLUA_CLASS_NO_BASES(Stub1)
 	OOLUA_NO_TYPEDEFS
@@ -17,7 +19,7 @@ OOLUA_CLASS_NO_BASES(Stub2)
 OOLUA_CLASS_END
 
 EXPORT_OOLUA_NO_FUNCTIONS(Stub2)
-
+*/
 namespace
 {
 	template<typename T>

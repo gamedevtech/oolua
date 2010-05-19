@@ -6,13 +6,13 @@
 #	include "fwd_push_pull.h"
 #	include "oolua_typedefs.h"
 #	include "proxy_class.h"
-#	include "oolua_exception.h"
 #	include "lua_table.h"
 #	include "oolua_userdata.h"
 
 //#define OOLUA_ABSOLUTE_LUA_INDEX(L, i)
 //		((i) > 0 || (i) <= LUA_REGISTRYINDEX ? (i) : lua_gettop(L) + (i) + 1)
 
+#include "oolua_error.h"
 namespace OOLUA
 {
 
@@ -45,14 +45,18 @@ namespace OOLUA
 		template<typename T>
 		inline T* class_from_index(lua_State * l,int index)
 		{
+#if OOLUA_DEBUG_CHECKS == 1
 			assert(index >0);
+#endif
 			return check_index<T>(l,index);
 		}
 
 		template<typename T>
 		inline T* none_const_class_from_index(lua_State * l,int index)
 		{
+#if OOLUA_DEBUG_CHECKS == 1
 			assert(index >0);
+#endif
 			return check_index_no_const<T>(l,index);
 		}
 

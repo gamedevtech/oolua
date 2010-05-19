@@ -22,33 +22,33 @@
 namespace OOLUA
 {
 	
-	void push2lua(lua_State* const s, bool const& value);
-	void push2lua(lua_State* const s, std::string const& value);
-	void push2lua(lua_State* const s, char const * const& value);
-	void push2lua(lua_State* const s, char * const& value);
-	void push2lua(lua_State* const s, double const& value);
-	void push2lua(lua_State* const s, float const&  value);
-	void push2lua(lua_State* const s, lua_CFunction const &  value);
-	void push2lua(lua_State* const s, Lua_table const &  value);
-	void push2lua(lua_State* const s, Lua_func_ref const &  value);
+	bool push2lua(lua_State* const s, bool const& value);
+	bool push2lua(lua_State* const s, std::string const& value);
+	bool push2lua(lua_State* const s, char const * const& value);
+	bool push2lua(lua_State* const s, char * const& value);
+	bool push2lua(lua_State* const s, double const& value);
+	bool push2lua(lua_State* const s, float const&  value);
+	bool push2lua(lua_State* const s, lua_CFunction const &  value);
+	bool push2lua(lua_State* const s, Lua_table const &  value);//can fail if from different state
+	bool push2lua(lua_State* const s, Lua_func_ref const &  value);//can fail
 	
 	//cpp called
-	void pull2cpp(lua_State* const s, bool& value);
-	void pull2cpp(lua_State* const s, std::string& value);
-	void pull2cpp(lua_State* const s, double& value);
-	void pull2cpp(lua_State* const s, float& value);
-	void pull2cpp(lua_State* const s, lua_CFunction& value);
-	void pull2cpp(lua_State* const s, Lua_func_ref& value);
-	void pull2cpp(lua_State* const s, Lua_table&  value);
-	void pull2cpp(lua_State* const s, Lua_table_ref& value);
+	bool pull2cpp(lua_State* const s, bool& value);
+	bool pull2cpp(lua_State* const s, std::string& value);
+	bool pull2cpp(lua_State* const s, double& value);
+	bool pull2cpp(lua_State* const s, float& value);
+	bool pull2cpp(lua_State* const s, lua_CFunction& value);
+	bool pull2cpp(lua_State* const s, Lua_func_ref& value);
+	bool pull2cpp(lua_State* const s, Lua_table&  value);
+	bool pull2cpp(lua_State* const s, Lua_table_ref& value);
 	
 	
 	namespace INTERNAL
 	{
 		
-		typedef int (*is_type)(lua_State*,int);
+		typedef int (*compare_lua_type_func_sig)(lua_State*,int);
 		bool cpp_runtime_type_check_of_top(lua_State* l, int looking_for_lua_type, char const * type);
-		bool cpp_runtime_type_check_of_top(lua_State* l, is_type compareFunc, char const * type);
+		bool cpp_runtime_type_check_of_top(lua_State* l, compare_lua_type_func_sig compareFunc, char const * type);
 		void handle_cpp_pull_fail(lua_State* l,char const * lookingFor);
 
 		
@@ -106,12 +106,13 @@ namespace OOLUA
 		struct push_basic_type<T,0>
 		{
 
-			static void push2lua(lua_State* const  s, T const&  value)
+			static bool push2lua(lua_State* const  s, T const&  value)
 			{
 				//enumeration type so a static cast must be allowed.
 				//enums will be stronger in C++0x so this will need revisiting then
 				typedef char dummy_can_convert [ can_convert<int,T>::value ? 1 : -1];
 				lua_pushinteger(s, static_cast<lua_Integer>(value) );
+				return true;
 
 			}
 		};
@@ -119,9 +120,10 @@ namespace OOLUA
 		template<typename T>
 		struct push_basic_type<T,1>
 		{
-			static void push2lua(lua_State* const  s, T const&  value)
+			static bool push2lua(lua_State* const  s, T const&  value)
 			{
 				lua_pushinteger(s, static_cast<lua_Integer>(value) );
+				return true;
 			}
 		};
 
@@ -129,18 +131,20 @@ namespace OOLUA
 		template<typename T,int is_it_const>
 		struct ptr_push
 		{
-			static void push(lua_State* const s, OOLUA::lua_acquire_ptr<T>&  value)
+			static bool push(lua_State* const s, OOLUA::lua_acquire_ptr<T>&  value)
 			{
 				INTERNAL::push_pointer<T>(s,value.m_ptr,Lua);
+				return true;
 			}
 		};
 
 		template<typename T>
 		struct ptr_push<T,1>
 		{
-			static void push(lua_State* const s, OOLUA::lua_acquire_ptr<T>&  value)
+			static bool push(lua_State* const s, OOLUA::lua_acquire_ptr<T>&  value)
 			{
 				INTERNAL::push_const_pointer<typename LVD::remove_const<T>::type>(s,value.m_ptr,Lua);
+				return true;
 			}
 		};
 
@@ -150,33 +154,37 @@ namespace OOLUA
 		template<typename T>
 		struct push_ptr_2lua<T,false>
 		{
-			static void push2lua(lua_State* const l, T * const &  value,Owner owner)
+			static bool push2lua(lua_State* const l, T * const &  value,Owner owner)
 			{
 				assert(l && value);
-				push(l,value,LVD::Int2type<LVD::is_const<T>::value>(),owner);
+				return push(l,value,LVD::Int2type<LVD::is_const<T>::value>(),owner);
 			}
 
-			static void push2lua(lua_State* const l, T * const &  value)
+			static bool push2lua(lua_State* const l, T * const &  value)
 			{
 				assert(l && value);
-				push(l,value,LVD::Int2type<LVD::is_const<T>::value>());
+				return push(l,value,LVD::Int2type<LVD::is_const<T>::value>());
 			}
 		private:
-			static void push(lua_State* const l, T* const & value, LVD::Int2type<0> /*is_const*/ )
+			static bool push(lua_State* const l, T* const & value, LVD::Int2type<0> /*is_const*/ )
 			{
 				INTERNAL::push_pointer<T>(l,value,No_change);
+				return true;
 			}
-			static void push(lua_State* const l, T* const & value, LVD::Int2type<1>   /*is_const*/)
+			static bool push(lua_State* const l, T* const & value, LVD::Int2type<1>   /*is_const*/)
 			{
 				INTERNAL::push_const_pointer<typename LVD::remove_const<T>::type >(l,value,No_change);
+				return true;
 			}
-			static void push(lua_State* const l, T* const & value, LVD::Int2type<0> /*is_const*/ ,Owner owner )
+			static bool push(lua_State* const l, T* const & value, LVD::Int2type<0> /*is_const*/ ,Owner owner )
 			{
 				INTERNAL::push_pointer<T>(l,value,owner);
+				return true;
 			}
-			static void push(lua_State* const l, T* const & value, LVD::Int2type<1> /*is_const*/ ,Owner owner  )
+			static bool push(lua_State* const l, T* const & value, LVD::Int2type<1> /*is_const*/ ,Owner owner  )
 			{
 				INTERNAL::push_const_pointer<typename LVD::remove_const<T>::type>(l,value,owner);
+				return true;
 			}
 		};
 
@@ -184,15 +192,15 @@ namespace OOLUA
 		struct push_ptr_2lua<T,true>
 		{
 			//why is owner here?
-			static void push2lua(lua_State* const l, T * const &  value,Owner/* owner*/)
+			static bool push2lua(lua_State* const l, T * const &  value,Owner/* owner*/)
 			{
 				assert(l && value);
-				OOLUA::push2lua(l,*value);
+				return OOLUA::push2lua(l,*value);
 			}
-			static void push2lua(lua_State* const l, T * const &  value)
+			static bool push2lua(lua_State* const l, T * const &  value)
 			{
 				assert(l && value);
-				OOLUA::push2lua(l,*value);
+				return OOLUA::push2lua(l,*value);
 			}
 		};
 
@@ -202,29 +210,33 @@ namespace OOLUA
 		template<>
 		struct push_ptr_2lua<char,true>
 		{
-			static void push2lua(lua_State* const l, char * const &  value,Owner/* owner*/)
+			static bool push2lua(lua_State* const l, char * const &  value,Owner/* owner*/)
 			{
 				assert(l && value);
 				lua_pushstring (l,value);
+				return true;
 			}
-			static void push2lua(lua_State* const l, char * const &  value)
+			static bool push2lua(lua_State* const l, char * const &  value)
 			{
 				assert(l && value);
 				lua_pushstring (l,value);
+				return true;
 			}
 		};
 		template<>
 		struct push_ptr_2lua<char const,true>
 		{
-			static void push2lua(lua_State* const l, char const * const &  value,Owner/* owner*/)
+			static bool push2lua(lua_State* const l, char const * const &  value,Owner/* owner*/)
 			{
 				assert(l && value);
 				lua_pushstring (l,value);
+				return true;
 			}
-			static void push2lua(lua_State* const l, char const * const &  value)
+			static bool push2lua(lua_State* const l, char const * const &  value)
 			{
 				assert(l && value);
 				lua_pushstring (l,value);
+				return true;
 			}
 		};
 
@@ -237,28 +249,28 @@ namespace OOLUA
 	
 	
 	template<typename T>
-	void inline push2lua(lua_State* const  s, T const&  value)
+	bool inline push2lua(lua_State* const  s, T const&  value)
 	{
-		INTERNAL::push_basic_type<T,LVD::is_integral_type<T>::value >::push2lua(s,value);
+		return INTERNAL::push_basic_type<T,LVD::is_integral_type<T>::value >::push2lua(s,value);
 	}
 
 	//pushes a pointer onto the stack which Lua will then own and call delete on
 	template<typename T>
-	void push2lua(lua_State* const s, OOLUA::lua_acquire_ptr<T>&  value)
+	bool push2lua(lua_State* const s, OOLUA::lua_acquire_ptr<T>&  value)
 	{
 		assert(s && value.m_ptr);
-		INTERNAL::ptr_push<T,LVD::is_const<T>::value >::push(s,value);
+		return INTERNAL::ptr_push<T,LVD::is_const<T>::value >::push(s,value);
 	}
 
 	template<typename T>
-	inline void push2lua(lua_State* const s, T * const &  value,Owner owner)
+	inline bool push2lua(lua_State* const s, T * const &  value,Owner owner)
 	{
-		INTERNAL::push_ptr_2lua<T,LVD::is_integral_type<typename LVD::remove_const<T>::type >::value>::push2lua(s,value,owner);
+		return INTERNAL::push_ptr_2lua<T,LVD::is_integral_type<typename LVD::remove_const<T>::type >::value>::push2lua(s,value,owner);
 	}
 	template<typename T>
-	inline void push2lua(lua_State* const s, T * const &  value)
+	inline bool push2lua(lua_State* const s, T * const &  value)
 	{
-		INTERNAL::push_ptr_2lua<T,LVD::is_integral_type<T>::value>::push2lua(s,value);
+		return INTERNAL::push_ptr_2lua<T,LVD::is_integral_type<T>::value>::push2lua(s,value);
 	}
 
 
@@ -280,28 +292,30 @@ namespace OOLUA
 		template<typename T>
 		struct pull_basic_type<T,0>//enum
 		{
-			static void pull2cpp(lua_State* const  s, T &  value)
+			static bool pull2cpp(lua_State* const  s, T &  value)
 			{
 				//enumeration type so a static cast should be allowed else this
 				//is being called with the wrong type
 				typedef char dummy_can_convert [ can_convert<int,T>::value ? 1 : -1];
 				//value = static_cast<T>( lua_tonumber( s, -1) );
 				if( !cpp_runtime_type_check_of_top(s,lua_isnumber,"enum type"))
-					return;
+					return false;
 				value = static_cast<T>( lua_tointeger( s, -1) );
 				lua_pop( s, 1);
+				return true;
 			}
 		};
 
 		template<typename T>
 		struct pull_basic_type<T,1>
 		{
-			static void pull2cpp(lua_State* const  s, T &  value)
+			static bool pull2cpp(lua_State* const  s, T &  value)
 			{
 				if( !cpp_runtime_type_check_of_top(s,lua_isnumber,"interger compatabile type"))
-					return;
+					return false;
 				value = static_cast<T>( lua_tointeger( s, -1) );
 				lua_pop( s, 1);
+				return true;
 			}
 		};
 		
@@ -333,7 +347,7 @@ MSC_POP_COMPILER_WARNING_OOLUA
 		struct pull_ptr_2cpp<T,false>
 		{
 			//this needs to return a bool as it was called from C++
-			static void pull2cpp(lua_State* const s, T *&  value)
+			static bool pull2cpp(lua_State* const s, T *&  value)
 			{
 				assert(s);
 				typename OOLUA::param_type<T>::raw_type* class_ptr;
@@ -349,17 +363,18 @@ MSC_POP_COMPILER_WARNING_OOLUA
 					assert(class_ptr);
 #endif
 					value = 0;
-					return;
+					return false;
 				}
 				
 				value = class_ptr;
 				lua_pop(s,1);
+				return true;
 			}
 		};
 		template<typename T>
 		struct pull_ptr_2cpp<T,true>
 		{
-			static void pull2cpp(lua_State* const s, T *&  value)
+			static bool pull2cpp(lua_State* const s, T *&  value)
 			{
 #if OOLUA_DEBUG_CHECKS == 1
 				///integral type, dereference and call the normal pull function
@@ -367,7 +382,7 @@ MSC_POP_COMPILER_WARNING_OOLUA
 				///pointer here!
 				assert(value);
 #endif
-				OOLUA::pull2cpp(s,*value);
+				return OOLUA::pull2cpp(s,*value);
 			}
 		};
 
@@ -376,14 +391,14 @@ MSC_POP_COMPILER_WARNING_OOLUA
 	
 
 	template<typename T> 
-	inline void pull2cpp(lua_State* const s, T& value)
+	inline bool pull2cpp(lua_State* const s, T& value)
 	{
-		INTERNAL::pull_basic_type<T,LVD::is_integral_type<T>::value>::pull2cpp(s,value);
+		return INTERNAL::pull_basic_type<T,LVD::is_integral_type<T>::value>::pull2cpp(s,value);
 	}
 	
 	//pulls a pointer from the stack which Cpp will then own and call delete on
 	template<typename T>
-	inline void pull2cpp(lua_State* const s, OOLUA::cpp_acquire_ptr<T>&  value)
+	inline bool pull2cpp(lua_State* const s, OOLUA::cpp_acquire_ptr<T>&  value)
 	{
 		typename cpp_acquire_ptr<T>::raw* class_ptr;
 		INTERNAL::pull_class_type<typename cpp_acquire_ptr<T>::raw>(s,OOLUA::param_type<T*>::is_constant,class_ptr);
@@ -398,11 +413,13 @@ MSC_POP_COMPILER_WARNING_OOLUA
 			assert(class_ptr);
 #endif
 			value = 0;
+			return false;
 		}
 		assert(class_ptr);
 		value.m_ptr = class_ptr;
 		INTERNAL::set_owner(s,value.m_ptr,OOLUA::Cpp);
 		lua_pop( s, 1);
+		return true;
 	}
 	
 	///////////////////////////////////////////////////////////////////////////////
@@ -418,9 +435,9 @@ MSC_POP_COMPILER_WARNING_OOLUA
 	///  @see pulling_cpp_values
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>
-	inline void pull2cpp(lua_State* const s, T *&  value)
+	inline bool pull2cpp(lua_State* const s, T *&  value)
 	{
-		INTERNAL::pull_ptr_2cpp<T,LVD::is_integral_type<T>::value>::pull2cpp(s,value);
+		return INTERNAL::pull_ptr_2cpp<T,LVD::is_integral_type<T>::value>::pull2cpp(s,value);
 	}
 	
 	
@@ -450,7 +467,7 @@ MSC_POP_COMPILER_WARNING_OOLUA
 					//is being called with the wrong type
 					typedef char dummy_can_convert [ can_convert<int,T>::value ? 1 : -1];
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-					if(! lua_isnumber(s,-1) )pull_error(s,"interger compatabile type");
+					if(! lua_isnumber(s,-1) )pull_error(s,"enum type");
 #endif
 					value = static_cast<T>( lua_tointeger( s, -1) );
 					lua_pop( s, 1);

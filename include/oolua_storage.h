@@ -10,6 +10,7 @@
 #include "class_from_stack.h"
 #include "type_list.h"
 #include "oolua_char_arrays.h"
+#include "oolua_config.h"
 
 
 namespace OOLUA
@@ -22,8 +23,6 @@ namespace OOLUA
 		
 		template<int NotTheSameSize>
 		struct VoidPointerSameSizeAsFunctionPointer
-		//template<>
-		//struct VoidPointerSameSizeAsFunctionPointer< sizeof(is_const_func_sig) >
 		{
 			static void getWeakTable(lua_State* l)
 			{
@@ -40,8 +39,6 @@ namespace OOLUA
 		
 		template<>
 		struct VoidPointerSameSizeAsFunctionPointer< sizeof(is_const_func_sig) >
-		//template<int NotTheSameSize>
-		//struct VoidPointerSameSizeAsFunctionPointer
 		{
 			static void getWeakTable(lua_State* l)
 			{
@@ -104,9 +101,6 @@ namespace OOLUA
 			return 0;
 		}
 
-		
-	//TODO: do these calls to class_from_stack_top need to validate the type???
-		//should they call into a function which just returns null on fail
 
 		//It is possible for a base class and a derived class pointer to have no offset.
 		//if found it is left on the top of the stack and returns the Lua_ud ptr
@@ -218,8 +212,9 @@ namespace OOLUA
 			ud->name_size = OOLUA::Proxy_class<T>::name_size;
 
 			lua_getfield(l, LUA_REGISTRYINDEX,ud->name);
-
+#if	OOLUA_DEBUG_CHECKS ==1
 			assert( lua_isnoneornil(l,-1) ==0 && "no metatable of this name found in registry" );
+#endif
 			////Pops a table from the stack and sets it as the new metatable for the value at the given acceptable index
 			lua_setmetatable(l, -2);
 

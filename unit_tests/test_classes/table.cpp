@@ -66,6 +66,9 @@ class Table : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(safeAt_checkForKeyWhichIsInvalid_returnsFalse);
 		CPPUNIT_TEST(safeAt_checkForKeyWhichIsValid_valueComparesEqual);
 		CPPUNIT_TEST(safeAt_checkForKeyWhichIsValid_returnsTrue);
+	
+	CPPUNIT_TEST(safeAt_checkForInvalidKeyWhichIsATableFromADifferentLuaState_returnsFalse);
+			
 		CPPUNIT_TEST(remove_valueWhichIsValid_safeAtReturnsFalse);
 		CPPUNIT_TEST(pull_pullValidTableOffStack_stackIsEmptyAfterCall);
 		CPPUNIT_TEST(getTable_pullValidTableOffStackAndCallFunc_stackSizeIsOne);
@@ -101,6 +104,14 @@ class Table : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(construct_LuaTableFromLuaTableRef_compiles);
 		
 		CPPUNIT_TEST(callFunction_memberFunctiontakesTableYetPassedNilReturnsValidityOfTable_returnsFalse);
+	
+#if OOLUA_STORE_LAST_ERROR == 1
+	CPPUNIT_TEST(callFunction_memberFunctionWhichTakesTableYetPassedInt_callReturnsFalse);
+#endif
+	
+#if OOLUA_USE_EXCEPTIONS == 1
+	CPPUNIT_TEST(callFunction_memberFunctionWhichTakesTableYetPassedInt_throwsRuntimeError);
+#endif
 
 	CPPUNIT_TEST_SUITE_END();
 
@@ -140,6 +151,16 @@ public:
 		int value(0);
 		CPPUNIT_ASSERT_EQUAL(false, table->safe_at("key",value));
 	}
+	void safeAt_checkForInvalidKeyWhichIsATableFromADifferentLuaState_returnsFalse()
+	{
+		OOLUA::new_table(*m_lua,*table);
+		OOLUA::Script s;
+		OOLUA::Lua_table t;
+		OOLUA::new_table(s,t);
+		int value(0);
+		CPPUNIT_ASSERT_EQUAL(false, table->safe_at(t,value));
+	}
+	
 	void safeAt_checkForKeyWhichIsValid_returnsTrue()
 	{
 		int input(1);
@@ -163,6 +184,7 @@ public:
 		table->remove_value("key");
 		CPPUNIT_ASSERT_EQUAL(false, table->safe_at("key",value) );
 	}
+	
 	void pull_pullValidTableOffStack_stackIsEmptyAfterCall()
 	{
 		assign_valid_table(m_lua,*table);
@@ -355,6 +377,34 @@ public:
 		CPPUNIT_ASSERT_EQUAL(false, tableIsValid);
 	}
 	
+
+#if OOLUA_STORE_LAST_ERROR == 1
+	void callFunction_memberFunctionWhichTakesTableYetPassedInt_callReturnsFalse()
+	{
+		
+		m_lua->register_class<TableMemberFunction>();
+		TableMemberFunction obj;
+		m_lua->run_chunk("func = function(obj) "
+							"return obj:function_which_takes_a_table(1) "
+						"end");
+		bool res =m_lua->call("func",&obj);
+		CPPUNIT_ASSERT_EQUAL(false, res);
+	}
+	
+#endif
+
+#if OOLUA_USE_EXCEPTIONS == 1
+	void callFunction_memberFunctionWhichTakesTableYetPassedInt_throwsRuntimeError()
+	{
+		m_lua->register_class<TableMemberFunction>();
+		TableMemberFunction obj;
+		m_lua->run_chunk("func = function(obj) "
+							"return obj:function_which_takes_a_table(1) "
+						 "end");
+
+		CPPUNIT_ASSERT_THROW(m_lua->call("func",&obj), OOLUA::Runtime_error);
+	}
+#endif
 	
 };
 

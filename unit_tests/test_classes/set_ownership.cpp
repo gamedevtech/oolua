@@ -46,8 +46,19 @@ class Ownership : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(setOwner_luaPassesOwnershipToCpp_udGcBoolIsFalse);
 		CPPUNIT_TEST(setOwner_luaTakesOwnership_udGcBoolIsTrue);
 		CPPUNIT_TEST(setOwner_luaTakesOwnershipAndThenPassesItToCpp_udGcBoolIsFalse);
+	
+#if OOLUA_STORE_LAST_ERROR	== 1
 		CPPUNIT_TEST(setOwner_luaOwnsOnInstanceWithNoPublicDestructor_callSetOwnerReturnsFalse);
 		CPPUNIT_TEST(setOwner_cppOwnsOnInstanceWithNoPublicDestructor_callSetOwnerReturnsFalse);
+#endif
+
+	
+#if OOLUA_USE_EXCEPTIONS == 1
+		CPPUNIT_TEST(setOwner_luaOwnsOnInstanceWithNoPublicDestructor_throwsRuntimeError);
+		CPPUNIT_TEST(setOwner_cppOwnsOnInstanceWithNoPublicDestructor_throwsRuntimeError);
+#endif	
+	
+	
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 	template<typename Type>
@@ -109,6 +120,9 @@ public:
 		OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud *>( lua_touserdata(*m_lua, -1) );
 		CPPUNIT_ASSERT_EQUAL(false,ud->gc);
 	}
+
+	
+#if OOLUA_STORE_LAST_ERROR	== 1
 	void setOwner_luaOwnsOnInstanceWithNoPublicDestructor_callSetOwnerReturnsFalse()
 	{
 		m_lua->register_class<HasPrivateDestructor>();
@@ -116,7 +130,7 @@ public:
 		bool result = call_set_owner(mock,"Lua_owns");
 		CPPUNIT_ASSERT_EQUAL(false,result);
 		mock->release();
-
+		
 	}
 	void setOwner_cppOwnsOnInstanceWithNoPublicDestructor_callSetOwnerReturnsFalse()
 	{
@@ -127,6 +141,27 @@ public:
 		mock->release();
 		
 	}
+#endif
+	
+	
+#if OOLUA_USE_EXCEPTIONS == 1
+	void setOwner_luaOwnsOnInstanceWithNoPublicDestructor_throwsRuntimeError()
+	{
+		m_lua->register_class<HasPrivateDestructor>();
+		HasPrivateDestructor* mock = HasPrivateDestructor::create();
+		CPPUNIT_ASSERT_THROW((call_set_owner(mock,"Lua_owns")),OOLUA::Runtime_error);
+		mock->release();
+		
+	}
+	void setOwner_cppOwnsOnInstanceWithNoPublicDestructor_throwsRuntimeError()
+	{
+		m_lua->register_class<HasPrivateDestructor>();
+		HasPrivateDestructor* mock = HasPrivateDestructor::create();
+		CPPUNIT_ASSERT_THROW((call_set_owner(mock,"Cpp_owns")),OOLUA::Runtime_error);
+		mock->release();
+		
+	}
+#endif	
 
 };
 

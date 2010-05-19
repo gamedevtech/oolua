@@ -6,6 +6,8 @@
 #	include "gmock/gmock.h"
 #endif
 
+#include "lua_const_funcs.h"
+
 namespace
 {
 	char const* hello_world_cstring = "hello world";
@@ -92,6 +94,12 @@ class LuaCallsCppFunctions : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsCharPtr_calledOnce);
 	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsHelloWorldCstring_returnCompareEqualToHelloWorldCstring);
 	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsConstHelloWorldCstring_returnCompareEqualToHelloWorldCstring);
+	
+#if OOLUA_STORE_LAST_ERROR == 1
+	CPPUNIT_TEST(fromLua_luaPassesBooleanToFunctionWantingInt_callReturnsFalse);
+	CPPUNIT_TEST(fromLua_luaPassesBooleanToFunctionWantingInt_lastErrorHasAnEntry);
+#endif
+	
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -239,7 +247,29 @@ public:
 		OOLUA::pull2cpp(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(std::string(hello_world_cstring),result);
 	}
-
+#if OOLUA_STORE_LAST_ERROR == 1
+	void fromLua_luaPassesBooleanToFunctionWantingInt_callReturnsFalse()
+	{
+		m_lua->register_class<C_simple>();
+		m_lua->run_chunk("foo = function(obj) "
+						 "obj:set_int(true) "
+						 "end");
+		C_simple s;
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo",&s));
+		
+	}
+	void fromLua_luaPassesBooleanToFunctionWantingInt_lastErrorHasAnEntry()
+	{
+		m_lua->register_class<C_simple>();
+		m_lua->run_chunk("foo = function(obj) "
+						 "obj:set_int(true) "
+						 "end");
+		C_simple s;
+		m_lua->call("foo",&s);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(*m_lua).empty() );
+		
+	}
+#endif 
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( LuaCallsCppFunctions );

@@ -82,6 +82,10 @@ namespace OOLUA
 	{
 		m_table_ref.pull(l);
 	}
+	void Lua_table::lua_pull_from_stack(lua_State* l)
+	{
+		m_table_ref.lua_pull(l);
+	}
 	void Lua_table::restore_stack(int const & init_stack_size)const
 	{
 		//ok now we need to clean up the stack if there are left overs

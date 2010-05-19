@@ -1,22 +1,6 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
-
-
-
-struct Lua2Cpp1{};
-struct Lua2Cpp2{};
-
-OOLUA_CLASS_NO_BASES(Lua2Cpp1)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
-EXPORT_OOLUA_NO_FUNCTIONS(Lua2Cpp1)
-
-OOLUA_CLASS_NO_BASES(Lua2Cpp2)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
-EXPORT_OOLUA_NO_FUNCTIONS(Lua2Cpp2)
+#	include "expose_stub_classes.h"
 
 
 namespace
@@ -147,23 +131,23 @@ public:
 
 	void pullClass_functionReturnsInput_addressComparesEqualToInput()
 	{
-		m_lua->register_class<Lua2Cpp1>();
+		m_lua->register_class<Stub1>();
 		std::string func_name = functionReturnsInputs(m_lua,1);
-		Lua2Cpp1 input;
-		Lua2Cpp1* result(0);
+		Stub1 input;
+		Stub1* result(0);
 		m_lua->call(func_name,&input);
 		OOLUA::pull2cpp(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(&input, result);
 	}
 	void pullClasses_functionReturnsTheTwoDifferentInputtedClasses_pointersComparesEqualToInputs()
 	{
-		m_lua->register_class<Lua2Cpp1>();
-		m_lua->register_class<Lua2Cpp2>();
+		m_lua->register_class<Stub1>();
+		m_lua->register_class<Stub2>();
 		std::string func_name = functionReturnsInputs(m_lua,2);
-		Lua2Cpp1 input1;
-		Lua2Cpp1* result1(0);
-		Lua2Cpp2 input2;
-		Lua2Cpp2* result2(0);
+		Stub1 input1;
+		Stub1* result1(0);
+		Stub2 input2;
+		Stub2* result2(0);
 
 		m_lua->call(func_name,&input1,&input2);
 

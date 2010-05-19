@@ -3,6 +3,7 @@
 #	include "cpp_class_ops.h"
 #	include "lua_class_ops.h"
 
+/*
 #	include <csetjmp>
 jmp_buf mark; 
 int OOLua_panic(lua_State* l)
@@ -11,6 +12,8 @@ int OOLua_panic(lua_State* l)
 	longjmp(mark,1);
 	return 0;
 }
+ */
+
 class Exchange_cpp2lua : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Exchange_cpp2lua);
@@ -29,18 +32,38 @@ class Exchange_cpp2lua : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(call_callsLuaFunctionNoParams_callReturnsTrue);
 		CPPUNIT_TEST(call_callsLuaFunctionOneParam_callReturnsTrue);
 		CPPUNIT_TEST(call_callsLuaFunctionThreeParams_callReturnsTrue);
-		CPPUNIT_TEST(call_callsUnknownLuaFunction_callReturnsFalse);
 	
-		CPPUNIT_TEST(push_FunctionReferenceFromDifferentLuaState_longJumpsUsingStateWhichTriedToPushTo);
-		CPPUNIT_TEST(push_FunctionReferenceFromDifferentState_getLastErrorHasAnEntry);
+
 		CPPUNIT_TEST(push_invalidFunctionReference_stackTopisNil);
 		CPPUNIT_TEST(push_invalidFunctionReference_stackSizeIncreasesByOne);
 	
-	CPPUNIT_TEST(push_tableFromDifferentState_longJumpsUsingStateWhichTriedToPushTo);
-	CPPUNIT_TEST(push_tableFromDifferentState_getLastErrorHasAnEntry);
+
 	CPPUNIT_TEST(push_invalidTable_stackSizeIncreasesByOne);
 	CPPUNIT_TEST(push_invalidTable_stackTopIsNil);
+	
+	CPPUNIT_TEST(push_invalidTable_pushReturnsTrue);
+	CPPUNIT_TEST(push_invalidFunctionReference_pushReturnsTrue);
+	
+	
 
+	
+#if OOLUA_STORE_LAST_ERROR == 1
+	CPPUNIT_TEST(call_callsUnknownLuaFunction_callReturnsFalse);
+	
+	CPPUNIT_TEST(push_FunctionReferenceFromDifferentLuaState_pushReturnsFalse);
+	CPPUNIT_TEST(push_FunctionReferenceFromDifferentState_getLastErrorHasAnEntry);
+	CPPUNIT_TEST(push_tableFromDifferentState_pushReturnsFalse);
+	CPPUNIT_TEST(push_tableFromDifferentState_getLastErrorHasAnEntry);
+	
+#endif
+	
+#if OOLUA_USE_EXCEPTIONS == 1
+	CPPUNIT_TEST(call_callsUnknownLuaFunction_throwsRuntimeError);
+	
+	CPPUNIT_TEST(push_FunctionReferenceFromDifferentLuaState_throwRuntimeError);
+	CPPUNIT_TEST(push_tableFromDifferentState_throwRuntimeError);
+#endif
+	
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -160,10 +183,7 @@ public:
 		m_lua->run_chunk(foo);
 		CPPUNIT_ASSERT_EQUAL(true, m_lua->call("foo",1,2,3) );
 	}
-	void call_callsUnknownLuaFunction_callReturnsFalse()
-	{
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo") );
-	}
+
 	void pullFunctionReference(OOLUA::Lua_func_ref& f)
 	{
 		m_lua->run_chunk("f = function() end "
@@ -174,38 +194,12 @@ public:
 		OOLUA::pull2cpp(*m_lua,f);
 	}
 
-	void push_FunctionReferenceFromDifferentLuaState_longJumpsUsingStateWhichTriedToPushTo()
+	void push_invalidFunctionReference_pushReturnsTrue()
 	{
 		OOLUA::Lua_func_ref f;
-		pullFunctionReference(f);
-		
-		OOLUA::Script s;
-		lua_atpanic(s, &OOLua_panic);
-		if (setjmp(mark) == 0)
-		{
-			OOLUA::push2lua(s,f);
-			CPPUNIT_ASSERT_EQUAL(0,1 );
-		}
-		else
-			CPPUNIT_ASSERT_EQUAL(0,0 );
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push2lua(*m_lua,f));
 	}
-	
 
-	void push_FunctionReferenceFromDifferentState_getLastErrorHasAnEntry()
-	{
-		OOLUA::Lua_func_ref f;
-		pullFunctionReference(f);
-		
-		OOLUA::Script s;
-		lua_atpanic(s, &OOLua_panic);
-		if (setjmp(mark) == 0)
-		{
-			OOLUA::push2lua(s,f);
-		}		
-		else
-			CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(s).empty() );
-
-	}
 	void push_invalidFunctionReference_stackTopisNil()
 	{
 		OOLUA::Lua_func_ref f;
@@ -230,35 +224,10 @@ public:
 		m_lua->call("table_ref");
 		OOLUA::pull2cpp(*m_lua,t);
 	}
-	void push_tableFromDifferentState_longJumpsUsingStateWhichTriedToPushTo()
+	void push_invalidTable_pushReturnsTrue()
 	{
 		OOLUA::Lua_table t;
-		pullValidTable(t);
-		
-		OOLUA::Script s;
-		lua_atpanic(s, &OOLua_panic);
-		if (setjmp(mark) == 0)
-		{
-			OOLUA::push2lua(s,t);
-			CPPUNIT_ASSERT_EQUAL(0,1 );
-		}
-		else
-			CPPUNIT_ASSERT_EQUAL(0,0 );
-	}
-	void push_tableFromDifferentState_getLastErrorHasAnEntry()
-	{
-		OOLUA::Lua_table t;
-		pullValidTable(t);
-		
-		OOLUA::Script s;
-		lua_atpanic(s, &OOLua_panic);
-		if (setjmp(mark) == 0)
-		{
-			OOLUA::push2lua(s,t);
-		}		
-		else
-			CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(s).empty() );
-		
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push2lua(*m_lua, t) );
 	}
 	void push_invalidTable_stackSizeIncreasesByOne()
 	{
@@ -272,6 +241,81 @@ public:
 		push2lua(*m_lua, t);
 		CPPUNIT_ASSERT_EQUAL(LUA_TNIL,lua_type(*m_lua, -1) );
 	}
+	
+	
+	
+#if OOLUA_STORE_LAST_ERROR == 1
+	void call_callsUnknownLuaFunction_callReturnsFalse()
+	{
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo") );
+	}
+	
+	void push_tableFromDifferentState_pushReturnsFalse()
+	{
+		OOLUA::Lua_table t;
+		pullValidTable(t);
+		
+		OOLUA::Script s;
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::push2lua(s,t) );
+	}
+	void push_tableFromDifferentState_getLastErrorHasAnEntry()
+	{
+		OOLUA::Lua_table t;
+		pullValidTable(t);
+		
+		OOLUA::Script s;
+		OOLUA::push2lua(s,t);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(s).empty() );
+		
+	}
+	void push_FunctionReferenceFromDifferentLuaState_pushReturnsFalse()
+	{
+		OOLUA::Lua_func_ref f;
+		pullFunctionReference(f);
+		
+		OOLUA::Script s;
+		CPPUNIT_ASSERT_EQUAL(false, OOLUA::push2lua(s,f) );
+	}
+	
+	
+	void push_FunctionReferenceFromDifferentState_getLastErrorHasAnEntry()
+	{
+		OOLUA::Lua_func_ref f;
+		pullFunctionReference(f);
+		
+		OOLUA::Script s;
+		OOLUA::push2lua(s,f);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(s).empty() );
+		
+	}
+#endif
+	
+#if OOLUA_USE_EXCEPTIONS == 1
+	void call_callsUnknownLuaFunction_throwsRuntimeError()
+	{
+		CPPUNIT_ASSERT_THROW((m_lua->call("foo")),OOLUA::Runtime_error );
+	}
+	
+	void push_tableFromDifferentState_throwRuntimeError()
+	{
+		OOLUA::Lua_table t;
+		pullValidTable(t);
+	
+		OOLUA::Script s;
+		CPPUNIT_ASSERT_THROW(OOLUA::push2lua(s,t),OOLUA::Runtime_error );
+
+	}
+	void push_FunctionReferenceFromDifferentLuaState_throwRuntimeError()
+	{
+		OOLUA::Lua_func_ref f;
+		pullFunctionReference(f);
+		
+		OOLUA::Script s;
+		CPPUNIT_ASSERT_THROW(OOLUA::push2lua(s,f),OOLUA::Runtime_error );
+	}
+	
+#endif
+	
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( Exchange_cpp2lua );

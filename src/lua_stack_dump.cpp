@@ -18,15 +18,15 @@ void lua_stack_dump (lua_State * const L)
 		switch (t) 
 		{
 		case LUA_TSTRING:
-			std::cout <<lua_tostring(L, i);
+			std::cout <<"LUA_TSTRING :" <<lua_tostring(L, i);
 			break;
 
 		case LUA_TBOOLEAN:
-			std::cout <<( lua_toboolean(L, i) ? "true" : "false");
+			std::cout <<"LUA_TBOOLEAN :" <<( lua_toboolean(L, i) ? "true" : "false");
 			break;
 
 		case LUA_TNUMBER:
-			std::cout <<lua_tonumber(L, i);
+			std::cout <<"LUA_TNUMBER :" <<lua_tonumber(L, i);
 			break;
 
 		default:

@@ -57,7 +57,7 @@ int oolua_ClassHasStaticFunction_static_function_int(lua_State* l)
 class StaticFunction : public CppUnit::TestFixture 
 {
 	CPPUNIT_TEST_SUITE(StaticFunction);
-	CPPUNIT_TEST(staticFunc_functionIsUnregistered_callReturnsFalse);
+
 	CPPUNIT_TEST(staticFunc_functionIsRegisteredUsingScript_callReturnsTrue);
 	CPPUNIT_TEST(staticFunc_functionIsRegisteredUsingOOLua_callReturnsTrue);
 	CPPUNIT_TEST(staticFunc_generatedProxy_callReturnsTrue);
@@ -76,6 +76,14 @@ class StaticFunction : public CppUnit::TestFixture
 	
 	CPPUNIT_TEST(cFunctionAddedToClassTable_calledProxyStaticWithObjectInstaceAndInputInt_returnEqualsInput);
 	
+#if OOLUA_STORE_LAST_ERROR ==1
+	CPPUNIT_TEST(staticFunc_functionIsUnregistered_callReturnsFalse);
+#endif
+	
+#if OOLUA_USE_EXCEPTIONS ==1 
+	CPPUNIT_TEST(staticFunc_functionIsUnregistered_throwsRuntimeError);
+#endif	
+	
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -89,14 +97,7 @@ public:
 		delete m_lua;
 	}
 	
-	void staticFunc_functionIsUnregistered_callReturnsFalse()
-	{
-		m_lua->run_chunk("foo = function() "
-						 "ClassHasStaticFunction:static_function() "
-						 "end ");
-		bool result = m_lua->call("foo");
-		CPPUNIT_ASSERT_EQUAL(false,result); 
-	}
+
 	void staticFunc_functionIsRegisteredUsingScript_callReturnsTrue()
 	{
 		m_lua->register_class_static<ClassHasStaticFunction>("static_function"
@@ -271,6 +272,31 @@ public:
 		OOLUA::pull2cpp(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(input,result); 
 	}
+	
+	
+	
+#if OOLUA_STORE_LAST_ERROR ==1
+	void staticFunc_functionIsUnregistered_callReturnsFalse()
+	{
+		m_lua->run_chunk("foo = function() "
+						 "ClassHasStaticFunction:static_function() "
+						 "end ");
+		bool result = m_lua->call("foo");
+		CPPUNIT_ASSERT_EQUAL(false,result); 
+	}
+#endif
+	
+#if OOLUA_USE_EXCEPTIONS ==1 
+	void staticFunc_functionIsUnregistered_throwsRuntimeError()
+	{
+		m_lua->run_chunk("foo = function() "
+						 "ClassHasStaticFunction:static_function() "
+						 "end ");
+		CPPUNIT_ASSERT_THROW( (m_lua->call("foo")),OOLUA::Runtime_error);
+	}
+
+	
+#endif
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(StaticFunction);

@@ -13,14 +13,14 @@ namespace OOLUA
             if(pcall_result == 0)return true;
 
 #if OOLUA_STORE_LAST_ERROR == 1
-            set_error_from_top_of_stack(l);
+            set_error_from_top_of_stack_and_pop_the_error(l);
 #elif OOLUA_USE_EXCEPTIONS == 1
             if( pcall_result == LUA_ERRRUN)
-                throw OOLUA::Runtime_error(l);
+                throw OOLUA::Runtime_error(l,(OOLUA::ERROR::PopTheStack*)0);
             else if(pcall_result == LUA_ERRMEM)
-                throw OOLUA::Memory_error(l);
+                throw OOLUA::Memory_error(l,(OOLUA::ERROR::PopTheStack*)0);
             else if(pcall_result == LUA_ERRERR)
-			throw OOLUA::Runtime_error(l);
+			throw OOLUA::Runtime_error(l,(OOLUA::ERROR::PopTheStack*)0);
 #elif OOLUA_DEBUG_CHECKS == 1
             (void)l;
             if( pcall_result == LUA_ERRRUN)
@@ -40,14 +40,14 @@ namespace OOLUA
         {
             if(result == 0)return true;
 #if OOLUA_STORE_LAST_ERROR == 1
-            set_error_from_top_of_stack(l);
+            set_error_from_top_of_stack_and_pop_the_error(l);
 #elif OOLUA_USE_EXCEPTIONS == 1
             if(result == LUA_ERRFILE)
-                throw OOLUA::File_error(l);
+                throw OOLUA::File_error(l,(OOLUA::ERROR::PopTheStack*)0);
             else if(result == LUA_ERRSYNTAX)
-                throw OOLUA::Syntax_error(l);
+                throw OOLUA::Syntax_error(l,(OOLUA::ERROR::PopTheStack*)0);
             else if(result == LUA_ERRMEM )
-                throw OOLUA::Memory_error(l);
+                throw OOLUA::Memory_error(l,(OOLUA::ERROR::PopTheStack*)0);
 #elif OOLUA_DEBUG_CHECKS == 1
             (void)l;
             if(result == LUA_ERRSYNTAX)

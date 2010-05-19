@@ -1,32 +1,9 @@
 
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
+#	include "expose_stub_classes.h"
 
-namespace 
-{
-	struct StubStruct
-	{
-	};
-	struct PullIncorrectType
-	{
-	};
-}
-
-OOLUA_CLASS_NO_BASES(StubStruct)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(StubStruct)
-
-
-OOLUA_CLASS_NO_BASES(PullIncorrectType)
-OOLUA_NO_TYPEDEFS
-OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(PullIncorrectType)
-
+/*
 #	include <csetjmp>
 namespace  
 {
@@ -38,25 +15,45 @@ namespace
 		return 0;
 	}
 }
-
+*/
 
 class Error_test : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Error_test);
+
+		CPPUNIT_TEST(userDataCheck_constUserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue);
+		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue);
+		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_stackIsTheSameSizeAfterCheck);
+
+	
+#if OOLUA_RUNTIME_CHECKS_ENABLED ==1
+		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_stackSizeIncreasesByOne);
+		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_afterCallTopIsMetatable);
+		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_afterCallIndexMinusTwoIsUserdata);	
+		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_resultIsFalse);
+#endif
+
+	
+#if OOLUA_STORE_LAST_ERROR == 1
 		CPPUNIT_TEST( lastError_noError_lastErrorStringIsEmpty);
 		CPPUNIT_TEST( lastError_callUnknownFunction_lastErrorStringIsNotEmpty);
+		CPPUNIT_TEST(call_callUnknownFunction_callReturnsFalse);
+		CPPUNIT_TEST(lastError_callUnknownFunction_stackIsEmpty);
 		CPPUNIT_TEST( errorReset_callUnknownFunctionThenReset_lastErrorStringIsEmpty);
-		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_resultIsFalse);
-		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue);
-		CPPUNIT_TEST(userDataCheck_constUserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue);
-		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_stackSizeIsTwoTheTypeAndItsMetatable);
-		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_stackSizeIsOneJustTheType);
-		CPPUNIT_TEST(pull_UnrelatedClassType_longJumps);
-		
+		CPPUNIT_TEST(pull_UnrelatedClassType_pullReturnsFalse);
+		CPPUNIT_TEST(pull_UnrelatedClassType_ptrIsNull);
+		CPPUNIT_TEST(pull_UnrelatedClassType_lastErrorStringIsNotEmpty);
+		CPPUNIT_TEST(pull_classWhenintIsOnStack_lastErrorStringIsNotEmpty);
+		CPPUNIT_TEST(pull_classWhenintIsOnStack_pullReturnsFalse);
+		CPPUNIT_TEST(pull_intWhenClassIsOnStack_pullReturnsFalse);
+#endif	
 	
-		//CPPUNIT_TEST(pull_intWhenClassIsOnStack_asserts);
-		CPPUNIT_TEST(pull_classWhenintIsOnStack_longJumps);
 	
+#if OOLUA_USE_EXCEPTIONS == 1
+		CPPUNIT_TEST(pull_UnrelatedClassType_throwsTypeError);
+		CPPUNIT_TEST(pull_classWhenintIsOnStack_throwsTypeError);
+		CPPUNIT_TEST(pull_intWhenClassIsOnStack_throwsTypeError);
+#endif	
 	
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
@@ -72,6 +69,100 @@ public:
 		delete m_lua;
 
 	}
+	
+	
+
+	
+	void userDataCheck_runFunction()
+	{
+		m_lua->run_chunk("foo = function() "
+						 "return Stub1:new() "
+						 "end");
+		m_lua->register_class<Stub1>();
+		m_lua->call("foo");
+		
+	}
+	//if the type is a userdata it will always returns true if runtine errors turned off
+	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue()
+	{
+		m_lua->run_chunk("foo = function() "
+						 "return Stub1:new() "
+						 "end");
+		m_lua->register_class<Stub1>();
+		m_lua->call("foo");
+		bool result = OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
+		CPPUNIT_ASSERT_EQUAL(true,result );
+	}
+	
+	void userDataCheck_constUserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue()
+	{
+		m_lua->run_chunk("foo = function(obj) "
+						 "return obj "
+						 "end");
+		m_lua->register_class<Stub1>();
+		Stub1 s;
+		Stub1 const * struct_ptr = &s;
+		m_lua->call("foo",struct_ptr);
+		bool result = OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
+		CPPUNIT_ASSERT_EQUAL(true,result );
+	}
+	//if runtime checks turned off it will never effect the stack size
+	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_stackIsTheSameSizeAfterCheck()
+	{
+		m_lua->run_chunk("foo = function() "
+						 "return newproxy(true) "
+						 "end");
+		m_lua->call("foo");
+		int before = lua_gettop(*m_lua);
+		OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
+		int after = lua_gettop(*m_lua);
+		CPPUNIT_ASSERT_EQUAL(before,after);
+	}
+	
+#if OOLUA_RUNTIME_CHECKS_ENABLED ==1
+
+	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_resultIsFalse()
+	{
+		m_lua->run_chunk("foo = function() "
+						 "return newproxy(true) "
+						 "end");
+		m_lua->call("foo");
+		
+		bool result = OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
+		CPPUNIT_ASSERT_EQUAL(false,result );
+	}
+
+	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_stackSizeIncreasesByOne()
+	{
+		userDataCheck_runFunction();
+		int before = lua_gettop(*m_lua);
+		OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
+		int after = lua_gettop(*m_lua);
+		CPPUNIT_ASSERT_EQUAL(before + 1,after );
+	}
+	
+	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_afterCallTopIsMetatable()
+	{
+		userDataCheck_runFunction();
+		OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
+		CPPUNIT_ASSERT_EQUAL(LUA_TTABLE,lua_type(*m_lua, -1));
+	}
+	
+	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_afterCallIndexMinusTwoIsUserdata()
+	{
+		userDataCheck_runFunction();
+		OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
+		CPPUNIT_ASSERT_EQUAL(LUA_TUSERDATA,lua_type(*m_lua, -2));
+	}
+	
+
+	
+
+	
+#endif	
+
+
+#if OOLUA_STORE_LAST_ERROR == 1
 	void lastError_noError_lastErrorStringIsEmpty()
 	{
 		CPPUNIT_ASSERT_EQUAL(true,OOLUA::get_last_error(*m_lua).empty() );
@@ -81,121 +172,143 @@ public:
 		m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(*m_lua).empty() );
 	}
+	void call_callUnknownFunction_callReturnsFalse()
+	{
+		m_lua->run_chunk("foo = function() "
+						 "bar() "
+						 "end");
+		m_lua->call("foo");
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo"));
+	}
+	void lastError_callUnknownFunction_stackIsEmpty()
+	{
+		m_lua->run_chunk("foo = function() "
+						 "bar() "
+						 "end");
+		m_lua->call("foo");
+		CPPUNIT_ASSERT_EQUAL(0,m_lua->stack_count() );
+	}
 	void errorReset_callUnknownFunctionThenReset_lastErrorStringIsEmpty()
 	{
 		m_lua->call("foo");
 		OOLUA::reset_error_value(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(true,OOLUA::get_last_error(*m_lua).empty() );
 	}	
-	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_resultIsFalse()
-	{
-		m_lua->run_chunk("foo = function() "
-						 "return newproxy(true) "
-						 "end");
-		m_lua->call("foo");
+	
+	
 
-		bool result = OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
-		CPPUNIT_ASSERT_EQUAL(false,result );
-	}
-	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue()
+	void pull_UnrelatedClassType_pullReturnsFalse()
 	{
+		m_lua->register_class<Stub1>();
+		m_lua->register_class<InvalidStub>();
 		m_lua->run_chunk("foo = function() "
-						 "return StubStruct:new() "
+						 "return Stub1:new() "
 						 "end");
-		m_lua->register_class<StubStruct>();
 		m_lua->call("foo");
-		bool result = OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
-		CPPUNIT_ASSERT_EQUAL(true,result );
-	}
-	void userDataCheck_constUserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue()
-	{
-		m_lua->run_chunk("foo = function(obj) "
-						 "return obj "
-						 "end");
-		m_lua->register_class<StubStruct>();
-		StubStruct s;
-		StubStruct const * struct_ptr = &s;
-		m_lua->call("foo",struct_ptr);
-		bool result = OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
-		CPPUNIT_ASSERT_EQUAL(true,result );
+		InvalidStub* ptr;
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull2cpp(*m_lua,ptr) );
 	}
 	
-	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_stackSizeIsTwoTheTypeAndItsMetatable()
+	void pull_UnrelatedClassType_ptrIsNull()
 	{
+		m_lua->register_class<Stub1>();
+		m_lua->register_class<InvalidStub>();
 		m_lua->run_chunk("foo = function() "
-						 "return StubStruct:new() "
+						 "return Stub1:new() "
 						 "end");
-		m_lua->register_class<StubStruct>();
 		m_lua->call("foo");
-		OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
-		CPPUNIT_ASSERT_EQUAL(2,m_lua->stack_count() );
+		InvalidStub* ptr;
+		OOLUA::pull2cpp(*m_lua,ptr);
+		CPPUNIT_ASSERT_EQUAL((InvalidStub*)0,ptr );
 	}
-	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_stackSizeIsOneJustTheType()
+	void pull_UnrelatedClassType_lastErrorStringIsNotEmpty()
 	{
+		m_lua->register_class<Stub1>();
+		m_lua->register_class<InvalidStub>();
 		m_lua->run_chunk("foo = function() "
-						 "return newproxy(true) "
+						 "return Stub1:new() "
 						 "end");
 		m_lua->call("foo");
-		OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
-		CPPUNIT_ASSERT_EQUAL(1,m_lua->stack_count());
-	}
-
-	
-	//TODO move to project with different settings ab
-	//update the check return of pull when runtime checks enabled
-	void pull_intWhenClassIsOnStack_asserts()
-	{
-		m_lua->register_class<StubStruct>();
-		m_lua->run_chunk("foo = function() "
-						 "return StubStruct:new() "
-						 "end");
-		m_lua->call("foo");
-		
-		int result;
-		OOLUA::pull2cpp(*m_lua,result);
+		InvalidStub* ptr;
+		OOLUA::pull2cpp(*m_lua,ptr);
+		CPPUNIT_ASSERT_EQUAL(false, OOLUA::get_last_error(*m_lua).empty() );
 	}
 	
-	//TODO: update these two tests that check for long jumps,
-	//to check last error, the return value of the pull and also that ptr == 0
-	void pull_UnrelatedClassType_longJumps()
+	void pull_classWhenintIsOnStack_lastErrorStringIsNotEmpty()
 	{
-		m_lua->register_class<StubStruct>();
-		m_lua->register_class<PullIncorrectType>();
-		
-		lua_atpanic(*m_lua, &OOLua_panic);
-		
-		m_lua->run_chunk("foo = function() "
-						 "return StubStruct:new() "
-						 "end");
-		m_lua->call("foo");
-		PullIncorrectType* ptr;
-		if (setjmp(mark) == 0)
-		{
-			OOLUA::pull2cpp(*m_lua,ptr);
-			CPPUNIT_ASSERT_EQUAL(0,1 );//did not long jump if it reaches here
-		}
-
-	}
-
-	void pull_classWhenintIsOnStack_longJumps()
-	{
-		m_lua->register_class<StubStruct>();
-		lua_atpanic(*m_lua, &OOLua_panic);
+		m_lua->register_class<Stub1>();
 		m_lua->run_chunk("foo = function() "
 						 "return 1 "
 						 "end");
 		m_lua->call("foo");
-		
-		StubStruct* result;
-		if (setjmp(mark) == 0)
-		{
-			OOLUA::pull2cpp(*m_lua,result);
-			CPPUNIT_ASSERT_EQUAL(0,1 );//did not long jump if it reaches here
-		}
+		Stub1* result;
+		OOLUA::pull2cpp(*m_lua,result);
+		CPPUNIT_ASSERT_EQUAL(false, OOLUA::get_last_error(*m_lua).empty() );
+
+	}
+	void pull_classWhenintIsOnStack_pullReturnsFalse()
+	{
+		m_lua->register_class<Stub1>();
+		m_lua->run_chunk("foo = function() "
+						 "return 1 "
+						 "end");
+		m_lua->call("foo");
+		Stub1* result;
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull2cpp(*m_lua,result));
 	}
 
-
-
+	void pull_intWhenClassIsOnStack_pullReturnsFalse()
+	{
+		m_lua->register_class<Stub1>();
+		m_lua->run_chunk("foo = function() "
+						 "return Stub1:new() "
+						 "end");
+		m_lua->call("foo");
+		int result;
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull2cpp(*m_lua,result));
+	 }
+	
+#endif
+	
+#if OOLUA_USE_EXCEPTIONS == 1
+	void pull_UnrelatedClassType_throwsTypeError()
+	{
+		m_lua->register_class<Stub1>();
+		m_lua->register_class<InvalidStub>();
+		m_lua->run_chunk("foo = function() "
+						 "return Stub1:new() "
+						 "end");
+		m_lua->call("foo");
+		InvalidStub* ptr;
+		CPPUNIT_ASSERT_THROW((OOLUA::pull2cpp(*m_lua,ptr)),OOLUA::Type_error);
+		
+	}
+	
+	void pull_classWhenintIsOnStack_throwsTypeError()
+	{
+		m_lua->register_class<Stub1>();
+		m_lua->run_chunk("foo = function() "
+						 "return 1 "
+						 "end");
+		m_lua->call("foo");
+		Stub1* result;
+		CPPUNIT_ASSERT_THROW((OOLUA::pull2cpp(*m_lua,result)),OOLUA::Type_error);
+	}
+	
+	void pull_intWhenClassIsOnStack_throwsTypeError()
+	{
+		m_lua->register_class<Stub1>();
+		m_lua->run_chunk("foo = function() "
+						 "return Stub1:new() "
+						 "end");
+		m_lua->call("foo");
+		int result;
+		CPPUNIT_ASSERT_THROW(( OOLUA::pull2cpp(*m_lua,result) ),OOLUA::Type_error);
+	}
+	
+	
+#endif
+	
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Error_test);

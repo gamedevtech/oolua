@@ -71,10 +71,21 @@ added string as integral unit tests
 added exceptions enabled unit tests
 How errors are reported now depend on which language called the function and the settings in oolua_config.h
 -	this is implemented using separate functions for Lua code to pull parameters from the stack. * wip *
+OOLUA::push2lua now returns a boolean which is the result of the operation if exceptions are not enabled
+	else it throws on an error
+OOLUA::Lua_function now adds a trackback (copied from Lua code) which is enabled with OOLUA_DEBUG_CHECKS
+Operator functions now use the OOLUA::LUA_CALLED::pull2cpp functions which act differently to OOLUA::pull2cpp on an error
+OOLUA::Lua_ref has two extra functions to be used via Lua code, lua_pull and lua_push 
+OOLUA::Lua_table's safe_at now does the correct thing when exceptions are enabled and does not let an exception escape.
+OOLUA::get_last_error is defined even if store last error is not enabled, in this instance it is a no op. 
+Exceptions now can pop the error of the Lua stack and Runtime_error can be initialsed with a string
+oolua_member_function.h 's proxy calling functions now wrap code in a try block if exceptions are enabled.
 
 
 
-1.2.2
+
+
+2.2
 *Converted premake scripts to premake4 
 *optimised checking of a type against a requested type via casting and storing a function taking the parameters to 
 lua_Cfunction which requires less usage of the Lua stack. 

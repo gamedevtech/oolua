@@ -13,7 +13,11 @@ files
     	"../src/*.cpp",
     	"../include/*.h",
     	"../unit_tests/test_classes/common_cppunit_headers.h",
-    	"../unit_tests/main.cpp"
+    	"../unit_tests/main.cpp",
+    	"../unit_tests/bind_classes/*.cpp",
+		"../unit_tests/cpp_classes/*.cpp",
+		"../unit_tests/test_classes/*h",
+		"../unit_tests/test_classes/*.cpp"
 }
 includedirs 
 {
@@ -24,9 +28,9 @@ includedirs
 	root .. "include/",
 	"/usr/local/include",
 	"/usr/include",
-	"./bind_classes",
-	"./cpp_classes",
-	"./test_classes"
+	"../unit_tests/bind_classes",
+	"../unit_tests/cpp_classes",
+	"../unit_tests/test_classes"
 } 
 --flags{ "NoExceptions"}
 

@@ -12,11 +12,9 @@ class Pulls_stub_param : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Pulls_stub_param);
 		CPPUNIT_TEST(ref_noneConstantPointerPassed_CalledOnce);
-		CPPUNIT_TEST(ref_ConstantPointerPassed_callReturnsFalse);
 		CPPUNIT_TEST(refConst_noneConstantPointerPassed_CalledOnce);
 		CPPUNIT_TEST(refConst_ConstantPointerPassed_CalledOnce);
 		CPPUNIT_TEST(ptr_noneConstantPointerPassed_CalledOnce);
-		CPPUNIT_TEST(ptr_ConstantPointerPassed_callReturnsFalse);
 		CPPUNIT_TEST(ptrConst_noneConstantPointerPassed_CalledOnce);
 		CPPUNIT_TEST(ptrConst_ConstantPointerPassed_CalledOnce);
 		CPPUNIT_TEST(refPtrConst_noneConstantPointerPassed_CalledOnce);
@@ -25,6 +23,19 @@ class Pulls_stub_param : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(refConstPtrConst_ConstantPointerPassed_CalledOnce);
 		CPPUNIT_TEST(constPtrConst_noneConstantPointerPassed_CalledOnce);
 		CPPUNIT_TEST(constPtrConst_ConstantPointerPassed_CalledOnce);
+	
+	
+#if OOLUA_STORE_LAST_ERROR	== 1
+		CPPUNIT_TEST(ref_ConstantPointerPassed_callReturnsFalse);
+		CPPUNIT_TEST(ptr_ConstantPointerPassed_callReturnsFalse);
+#endif
+	
+	
+#if OOLUA_USE_EXCEPTIONS == 1
+		CPPUNIT_TEST(ref_ConstantPointerPassed_throwsRuntimeError);
+		CPPUNIT_TEST(ptr_ConstantPointerPassed_throwsRuntimeError);
+#endif	
+	
 	CPPUNIT_TEST_SUITE_END();
 
 	struct Pull_stub_helper
@@ -98,10 +109,7 @@ public:
 			.Times(1);
 		generate_and_call_func_passing_none_const_ptr("ref");
 	}
-	void ref_ConstantPointerPassed_callReturnsFalse()
-	{
-		CPPUNIT_ASSERT_EQUAL(false,generate_and_call_func_passing_const_ptr("ref"));
-	}
+
 	void refConst_noneConstantPointerPassed_CalledOnce()
 	{
 		EXPECT_CALL(m_helper->mock
@@ -121,10 +129,7 @@ public:
 			.Times(1);
 		generate_and_call_func_passing_none_const_ptr("ptr");
 	}
-	void ptr_ConstantPointerPassed_callReturnsFalse()
-	{
-		CPPUNIT_ASSERT_EQUAL(false,generate_and_call_func_passing_const_ptr("ptr"));
-	}
+
 	void ptrConst_noneConstantPointerPassed_CalledOnce()
 	{
 		EXPECT_CALL(m_helper->mock,ptr_const(::testing::Eq( m_helper->ptr_stub() )))
@@ -175,6 +180,29 @@ public:
 			.Times(1);
 		generate_and_call_func_passing_const_ptr("const_ptr_const");
 	}
+	
+#if OOLUA_STORE_LAST_ERROR	== 1
+	void ref_ConstantPointerPassed_callReturnsFalse()
+	{
+		CPPUNIT_ASSERT_EQUAL(false,generate_and_call_func_passing_const_ptr("ref"));
+	}
+	void ptr_ConstantPointerPassed_callReturnsFalse()
+	{
+		CPPUNIT_ASSERT_EQUAL(false,generate_and_call_func_passing_const_ptr("ptr"));
+	}
+#endif
+	
+	
+#if OOLUA_USE_EXCEPTIONS == 1
+	void ref_ConstantPointerPassed_throwsRuntimeError()
+	{
+		CPPUNIT_ASSERT_THROW( (generate_and_call_func_passing_const_ptr("ref")), OOLUA::Runtime_error);
+	}
+	void ptr_ConstantPointerPassed_throwsRuntimeError()
+	{
+		CPPUNIT_ASSERT_THROW( (generate_and_call_func_passing_const_ptr("ptr")), OOLUA::Runtime_error);
+	}
+#endif	
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( Pulls_stub_param );

@@ -22,7 +22,7 @@ namespace OOLUA
 		void handle_cpp_pull_fail(lua_State* l,char const * lookingFor)
 		{
 #	if OOLUA_USE_EXCEPTIONS == 1
-			std::string message( std::string("Stack type is not ") + lookingFor );
+			std::string message( std::string("Stack type is not a ") + lookingFor );
 			std::string stackType = lua_typename(l, lua_type(l,-1) );
 			message += std::string(", yet ") + stackType;
 			throw OOLUA::Type_error(message);
@@ -31,7 +31,7 @@ namespace OOLUA
 							,lookingFor
 							,lua_typename(l, lua_type(l,-1) ) );
 			
-			OOLUA::INTERNAL::set_error_from_top_of_stack(l);
+			OOLUA::INTERNAL::set_error_from_top_of_stack_and_pop_the_error(l);
 			return ;
 #	else
 			(void)l;
@@ -58,7 +58,7 @@ namespace OOLUA
 		}
 		
 		
-		bool cpp_runtime_type_check_of_top(lua_State* l, is_type compareFunc, char const * type)
+		bool cpp_runtime_type_check_of_top(lua_State* l, compare_lua_type_func_sig compareFunc, char const * type)
 		{
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 			if ( ! compareFunc(l,-1) )
@@ -80,104 +80,116 @@ namespace OOLUA
 	
 	
 	
-	void push2lua(lua_State* const s, bool const& value)
+	bool push2lua(lua_State* const s, bool const& value)
 	{
 		assert(s);
 		lua_pushboolean(s, (value? 1 : 0) );
+		return true;
 	}
-	void push2lua(lua_State* const s, std::string const& value)
+	bool push2lua(lua_State* const s, std::string const& value)
 	{
 		assert(s);
 		lua_pushstring (s, value.c_str());
+		return true;
 	}
-	void push2lua(lua_State* const s, char const * const& value)
+	bool push2lua(lua_State* const s, char const * const& value)
 	{
 		assert(s && value);
 		lua_pushstring (s, value);
+		return true;
 	}
-	void push2lua(lua_State* const s, char * const& value)
+	bool push2lua(lua_State* const s, char * const& value)
 	{
 		assert(s && value);
 		lua_pushstring (s, value);
+		return true;
 	}
-	void push2lua(lua_State* const s, double const& value)
+	bool push2lua(lua_State* const s, double const& value)
 	{
 		assert(s);
 		lua_pushnumber(s, value);
+		return true;
 	}
-	void push2lua(lua_State* const s, float const&  value)
+	bool push2lua(lua_State* const s, float const&  value)
 	{
 		assert(s);
 		lua_pushnumber(s, value);
+		return true;
 	}
-	void push2lua(lua_State* const s, lua_CFunction const &  value)
+	bool push2lua(lua_State* const s, lua_CFunction const &  value)
 	{
 		assert(s );
 		lua_pushcclosure(s,value,0);
+		return true;
 	}
-	void push2lua(lua_State* const s, Lua_table const &  value)
+	bool  push2lua(lua_State* const s, Lua_table const &  value)
 	{
-		assert(s /*&& value.valid() */);
-		//value.get_table();
-		value.push_on_stack(s);
+		assert(s);
+		return value.push_on_stack(s);
 	}
 	
-	void push2lua(lua_State* const s, Lua_func_ref const &  value)
+	bool push2lua(lua_State* const s, Lua_func_ref const &  value)
 	{
-		assert(s /*value.valid()*/ );
-		value.push(s);
+		assert(s  );
+		return value.push(s);
 	}
 	
 
 	
-	void pull2cpp(lua_State* const s, bool& value)
+	bool pull2cpp(lua_State* const s, bool& value)
 	{
-		//assert(lua_isboolean(s,-1));
-		if(! INTERNAL::cpp_runtime_type_check_of_top(s,LUA_TBOOLEAN,"bool") ) return ;//false;
+		/*
+		If it is allowed to pull a bool from an int, check for number instead of boolean
+		if(! INTERNAL::cpp_runtime_type_check_of_top(s,lua_isnumber,"bool") ) return false;
+		 */
+		if(! INTERNAL::cpp_runtime_type_check_of_top(s,LUA_TBOOLEAN,"bool") ) return false;
 		value =  lua_toboolean( s, -1) ? true : false;
 		lua_pop( s, 1);
+		return true;
 	}
-	void pull2cpp(lua_State* const s, std::string& value)
+	bool pull2cpp(lua_State* const s, std::string& value)
 	{
-		if(! INTERNAL::cpp_runtime_type_check_of_top(s,LUA_TSTRING,"string") ) return ;//false;
+		if(! INTERNAL::cpp_runtime_type_check_of_top(s,LUA_TSTRING,"string") ) return false;
 		value = lua_tolstring(s,-1,0);
 		lua_pop( s, 1);
+		return true;
 	}
 	
-	void pull2cpp(lua_State* const s, double& value)
+	bool pull2cpp(lua_State* const s, double& value)
 	{
-		if(! INTERNAL::cpp_runtime_type_check_of_top(s,LUA_TNUMBER,"double") ) return ;//false;
+		if(! INTERNAL::cpp_runtime_type_check_of_top(s,LUA_TNUMBER,"double") ) return false;
 		value = static_cast<double>( lua_tonumber( s, -1) );
 		lua_pop( s, 1);
+		return true;
 	}
-	void pull2cpp(lua_State* const s, float& value)
+	bool pull2cpp(lua_State* const s, float& value)
 	{
-		if(! INTERNAL::cpp_runtime_type_check_of_top(s,LUA_TNUMBER,"float") ) return ;//false;
+		if(! INTERNAL::cpp_runtime_type_check_of_top(s,LUA_TNUMBER,"float") ) return false;
 		value = static_cast<float>( lua_tonumber( s, -1) );
 		lua_pop( s, 1);
+		return true;
 	}
-	void pull2cpp(lua_State* const s, lua_CFunction& value)
+	bool pull2cpp(lua_State* const s, lua_CFunction& value)
 	{
-		if (! INTERNAL::cpp_runtime_type_check_of_top(s,lua_iscfunction,"lua_CFunction") ) return;
+		if (! INTERNAL::cpp_runtime_type_check_of_top(s,lua_iscfunction,"lua_CFunction") ) return false;
 		value = lua_tocfunction( s, -1);
 		lua_pop( s, 1);
+		return true;
 	}
-	void pull2cpp(lua_State* const s, Lua_func_ref& value)
+	bool pull2cpp(lua_State* const s, Lua_func_ref& value)
 	{
-		//TODO: implement
-		value.pull(s);
+		return value.pull(s);
 	}
 	
-	void pull2cpp(lua_State* const s, Lua_table&  value)
+	bool pull2cpp(lua_State* const s, Lua_table&  value)
 	{
-		//TODO: implement
 		value.pull_from_stack(s);
+		return false;
 	}
 	
-	void pull2cpp(lua_State* const s, Lua_table_ref& value)
+	bool pull2cpp(lua_State* const s, Lua_table_ref& value)
 	{
-		//TODO: implement
-		value.pull(s);
+		return value.pull(s);
 	}
 
 	
@@ -200,6 +212,8 @@ namespace OOLUA
 				luaL_error(l,"trying to pull %s when %s is on stack"
 						   ,when_pulling_this_type
 						   , lua_typename(l, lua_type(l,-1)) );
+				
+				//luaL_typerror(l, -1, when_pulling_this_type);
 			}
 			
 			void pull2cpp(lua_State* const s, bool& value)
@@ -246,23 +260,17 @@ namespace OOLUA
 			}
 			void pull2cpp(lua_State* const s, Lua_func_ref& value)
 			{
-				//TODO: implement
-				//value.lua_pull(s);
-				value.pull(s);
+				value.lua_pull(s);
 			}
 		
 			void pull2cpp(lua_State* const s, Lua_table&  value)
 			{
-				//TODO: implement
-				//value.lua_pull_from_stack(s);
-				value.pull_from_stack(s);
+				value.lua_pull_from_stack(s);
 			}
 		
 			void pull2cpp(lua_State* const s, Lua_table_ref& value)
 			{
-				//TODO: implement
-				//value.lua_pull(s);
-				value.pull(s);
+				value.lua_pull(s);
 			}
 		
 		}
