@@ -212,8 +212,6 @@ namespace OOLUA
 				luaL_error(l,"trying to pull %s when %s is on stack"
 						   ,when_pulling_this_type
 						   , lua_typename(l, lua_type(l,-1)) );
-				
-				//luaL_typerror(l, -1, when_pulling_this_type);
 			}
 			
 			void pull2cpp(lua_State* const s, bool& value)
