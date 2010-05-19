@@ -80,6 +80,8 @@ OOLUA::Lua_table's safe_at now does the correct thing when exceptions are enable
 OOLUA::get_last_error is defined even if store last error is not enabled, in this instance it is a no op. 
 Exceptions now can pop the error of the Lua stack and Runtime_error can be initialsed with a string
 oolua_member_function.h 's proxy calling functions now wrap code in a try block if exceptions are enabled.
+Removed LUA_GLOBALSINDEX define from lua_includes when using Lua 5.2 instead lua_getglobal and lua_setglobal are used throughout
+Added a temporary fix in OOLUA::Script constructor. After a call to luaL_loadlibs it leaves two entries on the stack, these are removed
 
 
 

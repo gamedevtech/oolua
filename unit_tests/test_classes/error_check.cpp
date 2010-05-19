@@ -24,7 +24,9 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(userDataCheck_constUserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue);
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue);
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_stackIsTheSameSizeAfterCheck);
-
+	CPPUNIT_TEST(registerClass_checkStackSize_stackIsEmpty);
+	CPPUNIT_TEST(scriptConstructor_checkStackSize_stackIsEmpty);
+	CPPUNIT_TEST(lua_Lopenlibs_checkStackSizeAfterCall_stackIsEmpty);
 	
 #if OOLUA_RUNTIME_CHECKS_ENABLED ==1
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_stackSizeIncreasesByOne);
@@ -118,6 +120,26 @@ public:
 		int after = lua_gettop(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(before,after);
 	}
+	void scriptConstructor_checkStackSize_stackIsEmpty()
+	{
+		OOLUA::Script s;
+		CPPUNIT_ASSERT_EQUAL(0,s.stack_count());
+	}
+	void registerClass_checkStackSize_stackIsEmpty()
+	{
+		OOLUA::Script s;
+		s.register_class<Stub1>();
+		CPPUNIT_ASSERT_EQUAL(0,s.stack_count());
+	}
+	
+	void lua_Lopenlibs_checkStackSizeAfterCall_stackIsEmpty()
+	{
+		lua_State* L = luaL_newstate();
+		luaL_openlibs(L);
+		CPPUNIT_ASSERT_EQUAL(0,lua_gettop(L));
+	}
+
+	
 	
 #if OOLUA_RUNTIME_CHECKS_ENABLED ==1
 

@@ -123,9 +123,14 @@ namespace OOLUA
 
 			// store method table in globals so that
 			// scripts can add functions written in Lua.
+			//REMOVE
+			/*
 			lua_pushstring(l, Proxy_class<T>::class_name);//methods mt name
 			lua_pushvalue(l, methods);//methods mt name methods
 			lua_settable(l, LUA_GLOBALSINDEX);//methods mt
+			 */
+			lua_pushvalue(l, methods);
+			lua_setglobal(l,Proxy_class<T>::class_name);
 			//global[name]=methods
 
 			lua_pushlightuserdata(l,l);//methods mt lua_State*
@@ -175,9 +180,15 @@ namespace OOLUA
 			//registry[name#_const]= const_mt
 			int const_mt = lua_gettop(l);//const_methods const_mt
 
+			//REMOVE
+			/*
 			lua_pushstring(l, Proxy_class<T>::class_name_const );//const_methods const_mt name
 			lua_pushvalue(l, const_methods );//const_methods const_mt name const_methods
 			lua_settable(l, LUA_GLOBALSINDEX);//const_methods const_mt
+			*/
+			lua_pushvalue(l, const_methods);
+			lua_setglobal(l,Proxy_class<T>::class_name_const);
+			
 			//global[name#_const]=const_methods
 
 			lua_pushlightuserdata(l,l);//const_methods const_mt lus_State*

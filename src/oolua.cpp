@@ -35,13 +35,24 @@ namespace
 	}
 	void add_ownership_globals(lua_State* l)
 	{
+		//REMOVE
+		/*
 		push_char_carray(l,OOLUA::INTERNAL::cpp_owns_str);//string
 		lua_pushinteger(l,OOLUA::Cpp);//string int
 		lua_settable(l, LUA_GLOBALSINDEX);//globals[string]=int
+		*/
+		lua_pushinteger(l,OOLUA::Cpp);//string int
+		lua_setglobal(l,OOLUA::INTERNAL::cpp_owns_str);//globals[string]=int
+		
 
+		/*
 		push_char_carray(l,OOLUA::INTERNAL::lua_owns_str);//string
 		lua_pushinteger(l,OOLUA::Lua);//string int
 		lua_settable(l, LUA_GLOBALSINDEX);//globals[string]=int
+		*/
+		
+		lua_pushinteger(l,OOLUA::Lua);//string int
+		lua_setglobal(l,OOLUA::INTERNAL::lua_owns_str);//globals[string]=int
 	}
 }
 
@@ -57,6 +68,14 @@ namespace OOLUA
 	{
 		m_lua = luaL_newstate();
 		luaL_openlibs(m_lua);
+		
+		//temp fix to correct openlibs leaving entries on the stack
+		//in Lua 5.2 work 3
+		int top = lua_gettop(m_lua);
+		if(top != 0)lua_pop(m_lua,top);
+		//
+		
+		
 		call.bind_script(m_lua);//bind the lua state to the function caller
 		setup_user_lua_state(m_lua);
 	}

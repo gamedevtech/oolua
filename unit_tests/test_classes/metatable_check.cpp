@@ -63,7 +63,8 @@ public:
 						  end");
 		luaL_loadbuffer(s,chunk.c_str(),chunk.size(),"userChunk");
 		lua_pcall(s,0,LUA_MULTRET,0);
-		lua_getfield(s, LUA_GLOBALSINDEX, "equal");
+		//lua_getfield(s, LUA_GLOBALSINDEX, "equal");
+		lua_getglobal(s,"equal");
 
 		luaL_newmetatable(s, "mt1");
 		int mt1 = lua_gettop(s);

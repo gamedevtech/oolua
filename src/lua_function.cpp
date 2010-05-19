@@ -113,7 +113,9 @@ namespace OOLUA
 	void Lua_function::set_function(std::string const& func)
 	{
 		m_error_func_index = set_error_callback(m_lua,stack_trace);
-		lua_getfield(m_lua, LUA_GLOBALSINDEX, func.c_str());
+		//REMOVE
+		//lua_getfield(m_lua, LUA_GLOBALSINDEX, func.c_str());
+		lua_getglobal(m_lua,func.c_str() );
 	}
 	void Lua_function::set_function(Lua_func_ref const& func)
 	{

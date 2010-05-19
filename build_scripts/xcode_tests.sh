@@ -13,6 +13,9 @@ xcodebuild  -configuration Release | tee ../build_logs/unit_xcode_release.log
 cd ../tests_may_fail
 xcodebuild  -configuration Debug | tee ../build_logs/may_fail_xcode_debug.log
 xcodebuild  -configuration Release | tee ../build_logs/may_fail_xcode_release.log
+cd ../UsingExceptions
+xcodebuild  -configuration Debug  | tee ./build_logs/unit_exceptions_gnu_debug.log
+xcodebuild  -configuration Release | tee ./build_logs/unit_exceptions_gnu_release.log
 cd ..
 
 premake4 clean

@@ -3,16 +3,6 @@
 #	include "cpp_class_ops.h"
 #	include "lua_class_ops.h"
 
-/*
-#	include <csetjmp>
-jmp_buf mark; 
-int OOLua_panic(lua_State* l)
-{
-	OOLUA::INTERNAL::set_error_from_top_of_stack(l);
-	longjmp(mark,1);
-	return 0;
-}
- */
 
 class Exchange_cpp2lua : public CPPUNIT_NS::TestFixture
 {
