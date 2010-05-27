@@ -2,33 +2,9 @@
 #	include "oolua.h"
 #	include "cpp_class_ops.h"
 #	include "lua_class_ops.h"
+#	include "cpp_private_destructor.h"
 
 #	include "common_cppunit_headers.h"
-struct PrivateDestructor
-{
-	void release()
-	{
-		delete this;
-	}
-	static PrivateDestructor* create()
-	{
-		return new PrivateDestructor;
-	}
-private:
-	PrivateDestructor (PrivateDestructor const&);
-	PrivateDestructor& operator =(PrivateDestructor const&);
-	PrivateDestructor(){}
-	~PrivateDestructor(){}
-};
-
-OOLUA_CLASS_NO_BASES(PrivateDestructor)
-	OOLUA_TYPEDEFS
-		No_public_constructors
-		,No_public_destructor 
-	OOLUA_END_TYPES
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(PrivateDestructor)
 
 class Destruct : public CPPUNIT_NS::TestFixture
 {

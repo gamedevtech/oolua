@@ -1,27 +1,9 @@
 #	include <vector>
 #	include "common_cppunit_headers.h"
 #	include "oolua.h"
+#	include "expose_vector_int.h"
 
 
-///\remark typedef the type of vector into the global namespace
-//TODO: this is required as a vector has more than one template type
-//and the commas in the template confuse a macro.
-typedef std::vector<int> vector_int;
-
-OOLUA_CLASS_NO_BASES(vector_int)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-	OOLUA_MEM_FUNC_1(void ,push_back,vector_int::const_reference  )
-	OOLUA_MEM_FUNC_0(void ,pop_back)
-	OOLUA_MEM_FUNC_0_CONST(vector_int::size_type, size)
-OOLUA_CLASS_END
-
-
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(vector_int,
-								   push_back,
-								   pop_back)
-
-EXPORT_OOLUA_FUNCTIONS_1_CONST(vector_int,size)
 
 class Lua_vector_int : public CPPUNIT_NS::TestFixture
 

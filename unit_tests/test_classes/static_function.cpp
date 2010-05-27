@@ -3,31 +3,9 @@
 
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
+#	include "expose_static_and_c_functions.h"
 
 
-class ClassHasStaticFunction
-{
-public:
-	static void static_function(){}
-	static void static_function(int){}
-	static int returns_input(int t){return t;}
-};
-
-OOLUA_CLASS_NO_BASES(ClassHasStaticFunction)
-	OOLUA_TYPEDEFS No_public_constructors OOLUA_END_TYPES
-	static int returns_input(lua_State* l)
-	{
-		OOLUA_C_FUNCTION_1(int,::ClassHasStaticFunction::returns_input,int)
-	}
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(ClassHasStaticFunction)
-
-int ClassHasStaticFunction_staticFunc(lua_State* /*l*/)
-{
-	ClassHasStaticFunction::static_function();
-	return 0;
-}
 int returns_stack_count(lua_State* l)
 {
 	int top = lua_gettop(l);
@@ -40,16 +18,6 @@ int stack_top_type(lua_State* l)
 	int top = lua_type(l, -1);
 	OOLUA::push2lua(l,top);
 	return 1;
-}
-
-int oolua_ClassHasStaticFunction_static_function(lua_State* l)
-{
-	OOLUA_C_FUNCTION_0(void,ClassHasStaticFunction::static_function)
-}
-
-int oolua_ClassHasStaticFunction_static_function_int(lua_State* l)
-{
-	OOLUA_C_FUNCTION_1(void,ClassHasStaticFunction::static_function,int)
 }
 
 
@@ -101,7 +69,7 @@ public:
 	void staticFunc_functionIsRegisteredUsingScript_callReturnsTrue()
 	{
 		m_lua->register_class_static<ClassHasStaticFunction>("static_function"
-															  ,&ClassHasStaticFunction_staticFunc);
+															  ,&oolua_ClassHasStaticFunction_static_function);
 
 		m_lua->run_chunk("foo = function() "
 						 "ClassHasStaticFunction:static_function() "
@@ -113,7 +81,7 @@ public:
 	{
 		OOLUA::register_class_static<ClassHasStaticFunction>(*m_lua
 															  ,"static_function"
-															  ,&ClassHasStaticFunction_staticFunc);
+															  ,&oolua_ClassHasStaticFunction_static_function);
 		m_lua->run_chunk("foo = function() "
 						 "ClassHasStaticFunction:static_function() "
 						 "end ");

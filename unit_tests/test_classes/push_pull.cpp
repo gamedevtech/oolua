@@ -3,23 +3,7 @@
 #	include <limits>
 #	include "expose_stub_classes.h"
 
-/*
-struct Stub1{};
-OOLUA_CLASS_NO_BASES(Stub1)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
 
-EXPORT_OOLUA_NO_FUNCTIONS(Stub1)
-
-struct Stub2{};
-OOLUA_CLASS_NO_BASES(Stub2)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(Stub2)
-*/
 namespace
 {
 	template<typename T>
@@ -76,6 +60,9 @@ class PushPull : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pushPull_pushDoubleMax_pulledValueWithinEplisonOfDoubleMax);
 
 		CPPUNIT_TEST(pushPull_pushStdString_resultEqualsPushedValue);
+		CPPUNIT_TEST(pushPull_stdStringWithEmbededNull_resultEqualsPushedValue);
+		CPPUNIT_TEST(pushPull_stdStringWithNullAtEnd_resultEqualsPushedValue);
+	CPPUNIT_TEST(pushPull_emptyStdString_resultEqualsPushedValue);
 
 		CPPUNIT_TEST(pushPull_pushEnum_resultEqualsPushedValue);
 
@@ -186,6 +173,29 @@ public:
 		push_then_pull(m_lua,input,result);
 		CPPUNIT_ASSERT_EQUAL(input, result);
 	}
+	void pushPull_stdStringWithEmbededNull_resultEqualsPushedValue()
+	{
+		std::string input("inp\0ut",6);
+		std::string  result;
+		push_then_pull(m_lua,input,result);
+		CPPUNIT_ASSERT_EQUAL(input, result);	
+	}
+
+	void pushPull_stdStringWithNullAtEnd_resultEqualsPushedValue()
+	{
+		std::string input("input\0",6);
+		std::string result;
+		push_then_pull(m_lua,input,result);
+		CPPUNIT_ASSERT_EQUAL(input,result);
+	}
+	void pushPull_emptyStdString_resultEqualsPushedValue()
+	{
+		std::string input;
+		std::string result;
+		push_then_pull(m_lua,input,result);
+		CPPUNIT_ASSERT_EQUAL(input,result);
+	}
+
 
 	void pushPull_pushEnum_resultEqualsPushedValue()
 	{

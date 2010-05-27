@@ -1,98 +1,7 @@
 #	include "class_method_returns_class.h"
+#	include "expose_stub_classes.h"
+#	include "expose_method_returns_class.h"
 
-struct Return_double
-{
-	//Return_double(){}
-	//Return_double() = default;
-};
-
-OOLUA_CLASS_NO_BASES(Return_double)
-OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(Return_double)
-
-
-class Method_returns_class
-{
-public:
-	Method_returns_class()
-		:return_instance()
-		,return_ptr(&return_instance)
-		,return_ptr_const(return_ptr)
-		,return_ref_const_ptr_const(return_ptr_const)
-		{}
-	Return_double& ref(){return return_instance;}
-	Return_double const & ref_const(){return return_instance;}
-	Return_double* ptr(){return return_ptr;}
-	Return_double const* ptr_const(){return return_ptr_const;}
-	Return_double const * & ref_ptr_const(){return return_ptr_const;}
-	Return_double const*const& ref_const_ptr_const(){return return_ref_const_ptr_const;}
-	Method_returns_class& operator = (Method_returns_class const&);
-	Method_returns_class(Method_returns_class const&);
-	Return_double return_stack_instance()
-	{
-		return  Return_double(); 
-	}
-	void overloaded_function(){}
-	//void overloaded_function(int ){}
-	void overloaded_function(float ){}
-	void overloaded_function(int f = 0 ){(void)f;}
-private:
-	Return_double return_instance;
-public:
-	Return_double* return_ptr;
-private:
-	Return_double const* return_ptr_const;
-	Return_double const*const return_ref_const_ptr_const;
-};
-
-OOLUA_CLASS_NO_BASES(Method_returns_class)
-OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-	OOLUA_MEM_FUNC_0(Return_double&,ref)
-	OOLUA_MEM_FUNC_0(Return_double const&,ref_const)
-	OOLUA_MEM_FUNC_0(Return_double*,ptr)
-	OOLUA_MEM_FUNC_0(Return_double const*, ptr_const)
-	OOLUA_MEM_FUNC_0(Return_double const * & ,ref_ptr_const)
-	OOLUA_MEM_FUNC_0(Return_double const*const&, ref_const_ptr_const)
-	OOLUA_MEM_FUNC_0(Return_double, return_stack_instance) 
-
-	int vs9_check(lua_State* const l)
-	{
-		//return type has no explicit constructor and the function pointer was static
-		//this caused a conversion error in visual studio
-		//static R::type (class_::*f )()  = &class_::return_stack_instance;
-		//OOLUA::Proxy_caller<R,class_,LVD::is_void< Return_double >::value >::call(l,m_this,f);
-
-		//check overload functions get matched
-
-		typedef param_type<void > R;
-		typedef R::type (class_::*funcType1 )(int);
-		typedef R::type (class_::*funcType0 )();
-
-		typedef param_type<int> P1;
-
-		OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<funcType0>
-						(l,m_this,&class_::overloaded_function);
-		int i(0);
-		OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<P1,funcType1>
-					(l,m_this,&class_::overloaded_function,i);
-		return 1;
-	}
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_FUNCTIONS_7_NON_CONST(Method_returns_class
-									,ref
-									,ref_const
-									,ptr
-									,ptr_const
-									,ref_ptr_const
-									,ref_const_ptr_const
-								   ,return_stack_instance
-									)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Method_returns_class)
 
 class CppFunctionReturns : public CPPUNIT_NS::TestFixture
 {
@@ -104,6 +13,10 @@ class CppFunctionReturns : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(functionReturn_returnsRefPtrToConstantInstance_resultComparesEqualToInstance);
 		CPPUNIT_TEST(functionReturn_returnsRefConstPtrToConstantInstance_resultComparesEqualToInstance);
 		CPPUNIT_TEST(push_functionReturnsClassOnStackInstance_instanceIsToBeGarbageCollected);
+	
+	
+	//CPPUNIT_TEST(functionReturn_functionReturnsNull_willAssert);
+	
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -129,13 +42,13 @@ public:
 		std::string generated_script = method_name + std::string(" = function(instance) ")
 											+ std::string("return instance:") +method_name +std::string("() ")
 									+std::string("end");
-		return m_lua->run_chunk(generated_script);// can fire a luaL_error
+		return m_lua->run_chunk(generated_script);
 	}
 	bool generate_and_call_class_method(std::string const& method_name)
 	{
-		bool res = generate_lua_function_to_call_class_method(method_name);// can fire a luaL_error
+		bool res = generate_lua_function_to_call_class_method(method_name);
 		if(!res)return res;
-		return m_lua->call(method_name,m_instance);// can fire a luaL_error
+		return m_lua->call(method_name,m_instance);
 	}
 
 	void functionReturn_returnsRefToInstance_resultComparesEqualToInstance()
@@ -172,7 +85,6 @@ public:
 	
 	void push_functionReturnsClassOnStackInstance_instanceIsToBeGarbageCollected()
 	{
-		m_lua->register_class<Return_double>();
 		m_lua->run_chunk("function bugReport() "
 						 "local object = Method_returns_class:new() "
 						 "local stack = object:return_stack_instance() "
@@ -188,6 +100,14 @@ public:
 		
 		
 	}
+	void functionReturn_functionReturnsNull_willAssert()
+	{
+		generate_and_call_class_method("returns_null");
+		Return_double* returnPtr(0);
+		OOLUA::pull2cpp(*m_lua,returnPtr);
+		CPPUNIT_ASSERT_EQUAL((Return_double*)0,returnPtr);
+	}
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CppFunctionReturns);

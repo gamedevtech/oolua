@@ -1,5 +1,5 @@
 #include "lua_push.h"
-
+/*
 
 EXPORT_OOLUA_FUNCTIONS_12_NON_CONST(Push,
 							ref,
@@ -16,3 +16,4 @@ EXPORT_OOLUA_FUNCTIONS_12_NON_CONST(Push,
 							int_ref_ptr_const
 						)
 EXPORT_OOLUA_FUNCTIONS_2_CONST(Push,const_func,get_i_)
+*/

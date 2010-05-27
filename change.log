@@ -81,8 +81,16 @@ OOLUA::get_last_error is defined even if store last error is not enabled, in thi
 Exceptions now can pop the error of the Lua stack and Runtime_error can be initialsed with a string
 oolua_member_function.h 's proxy calling functions now wrap code in a try block if exceptions are enabled.
 Removed LUA_GLOBALSINDEX define from lua_includes when using Lua 5.2 instead lua_getglobal and lua_setglobal are used throughout
-Added a temporary fix in OOLUA::Script constructor. After a call to luaL_loadlibs it leaves two entries on the stack, these are removed
-
+Added a temporary fix in OOLUA::Script constructor. After a call toluaL_loadlibs (in 53.2 work3) it leaves two entries on the stack, these are removed
+Added support for std::string to have embedded nulls as suggested by Tomm on the mailing list
+Moved C++ classes used in tests to cpp_classes directory
+Moved OOLua proxy classes used in tests to bind_classes directory
+Moved all unit tests to the unit_tests directory
+Added string is integral unit test
+Updated build scripts for gnu and xcode
+Started testing of __VA_ARGS__ for macros with >0 parameters see oolua_va_args.h and expose_hierachy.(h/cpp)
+Table::pull_from_stack now returns a bool to indicate the result if called by C++ code and not using exceptions
+Added initialiser to variable "own", a enum value in lua_set_owner
 
 
 

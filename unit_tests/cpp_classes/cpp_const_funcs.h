@@ -1,17 +1,17 @@
 #ifndef CPP_CONST_FUNCS_H
 #	define CPP_CONST_FUNCS_H_
 
-///\todo add pulling a none constant instance from lua when it is really a constant instance
+/*
 class C_simple
 {
 public:
 	C_simple():i_(0){}
 	C_simple(int i):i_(i){}
-	int get_int() const //get method
+	int get_int() const
 	{
 		return i_;	
 	}
-	void set_int(int const& i) //set method
+	void set_int(int const& i)
 	{
 		i_ = i;
 	}
@@ -31,5 +31,32 @@ private:
 	int i_;
 
 };
+*/
 
-#endif//CPP_CONST_FUNCS_H_
+#include "gmock/gmock.h"
+
+class Constant
+{
+public:
+	Constant():i(0){}
+	virtual ~Constant(){}
+	virtual int cpp_func_const() const
+	{
+		return i;
+	}
+	virtual void cpp_func()
+	{
+		++i;
+	}
+private:
+	int i;//stop functions being compiled away
+};
+
+class ConstantMock : public Constant
+{
+public:
+	MOCK_CONST_METHOD0(cpp_func_const,int ());
+	MOCK_METHOD0(cpp_func,void ());
+};
+
+#endif

@@ -2,7 +2,7 @@
 # define CPP_CONSTRUCTOR_MOCK_OOLUA_H_
 
 
-#include "stub_classes.h"
+#include "cpp_stub_classes.h"
 #include "oolua.h"
 
 

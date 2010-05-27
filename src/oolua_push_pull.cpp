@@ -68,7 +68,7 @@ namespace OOLUA
 			}
 #else
 			(void)l;
-			(void)type;
+			(void)compareFunc;
 			(void)type;	
 #endif
 			return true;
@@ -89,7 +89,7 @@ namespace OOLUA
 	bool push2lua(lua_State* const s, std::string const& value)
 	{
 		assert(s);
-		lua_pushstring (s, value.c_str());
+		lua_pushlstring(s, value.data(), value.size() );
 		return true;
 	}
 	bool push2lua(lua_State* const s, char const * const& value)
@@ -150,7 +150,10 @@ namespace OOLUA
 	bool pull2cpp(lua_State* const s, std::string& value)
 	{
 		if(! INTERNAL::cpp_runtime_type_check_of_top(s,LUA_TSTRING,"string") ) return false;
-		value = lua_tolstring(s,-1,0);
+		//value = lua_tolstring(s,-1,0);
+		size_t len(0);
+		char const* str = lua_tolstring(s,-1,&len);
+		value = std::string(str, len);
 		lua_pop( s, 1);
 		return true;
 	}
@@ -183,8 +186,7 @@ namespace OOLUA
 	
 	bool pull2cpp(lua_State* const s, Lua_table&  value)
 	{
-		value.pull_from_stack(s);
-		return false;
+		return value.pull_from_stack(s);
 	}
 	
 	bool pull2cpp(lua_State* const s, Lua_table_ref& value)
@@ -228,7 +230,10 @@ namespace OOLUA
 #ifdef OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 				if(! lua_isstring(s,-1) )pull_error(s,"std::string");
 #endif
-				value = lua_tolstring(s,-1,0);
+				//value = lua_tolstring(s,-1,0);
+				size_t len(0);
+				char const* str = lua_tolstring(s,-1,&len);
+				value = std::string(str, len);
 				lua_pop( s, 1);
 			}
 		

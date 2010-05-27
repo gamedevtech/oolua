@@ -43,17 +43,17 @@ class Pulls_stub_param : public CPPUNIT_NS::TestFixture
 		Pull_stub_helper()
 			:mock(),instance(&mock),stub()
 		{}
-		Stub const* ptr_const_stub()
+		Stub1 const* ptr_const_stub()
 		{
 			return &stub;
 		}
-		Stub* ptr_stub()
+		Stub1* ptr_stub()
 		{
 			return &stub;
 		}
 		Mock_pulls_stub mock;
 		Pulls_stub* instance;
-		Stub stub;
+		Stub1 stub;
 		LVD_NOCOPY(Pull_stub_helper)
 	};
 	OOLUA::Script * m_lua;
@@ -94,7 +94,7 @@ public:
 	{
 		m_lua = new OOLUA::Script;
 		m_lua->register_class<Pulls_stub>();
-		m_lua->register_class<Stub>();
+		m_lua->register_class<Stub1>();
 		m_helper = new Pull_stub_helper;
 	}
 	void tearDown()

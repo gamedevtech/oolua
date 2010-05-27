@@ -2,64 +2,14 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 #	include "gmock/gmock.h"
+#	include "expose_integral_function_params.h"
 
 namespace
 {
-	class Int_params
-	{
-	public:
-		virtual ~Int_params(){}
-		virtual void int_(int i) = 0;
-		virtual void int_ref(int &) = 0;
-		virtual void int_ptr(int *) = 0;
-		virtual void int_const(int const i) = 0;
-		virtual void int_const_ref(int const&) = 0;
-		virtual void int_const_ptr(int const* i) = 0;
-		virtual void int_const_ptr_const(int const * const) = 0;
-		virtual void bool_(bool b) = 0;
-	};
-
-	class MockInt : public Int_params 
-	{
-	public:
-		MOCK_METHOD1(int_,void (int) );
-		MOCK_METHOD1(int_ref,void (int&) );
-		MOCK_METHOD1(int_ptr,void (int*) );
-		MOCK_METHOD1(int_const,void (int const ) );
-		MOCK_METHOD1(int_const_ref,void (int const&) );
-		MOCK_METHOD1(int_const_ptr,void (int const*) );
-		MOCK_METHOD1(int_const_ptr_const,void (int const * const) );
-		MOCK_METHOD1(bool_,void (bool) );
-	};
-	
 	int int_set_value =1;
 	bool bool_set_value= true;
 
 }
-
-OOLUA_CLASS_NO_BASES(Int_params)
-	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
-	OOLUA_MEM_FUNC_1(void, int_,int)
-	OOLUA_MEM_FUNC_1(void, int_ref,int& )
-	OOLUA_MEM_FUNC_1(void, int_ptr,int* )
-	OOLUA_MEM_FUNC_1(void, int_const,int const)
-	OOLUA_MEM_FUNC_1(void, int_const_ref,int const& )
-	OOLUA_MEM_FUNC_1(void, int_const_ptr,int const*  )
-	OOLUA_MEM_FUNC_1(void, int_const_ptr_const,int const * const )
-	OOLUA_MEM_FUNC_1(void, bool_,bool)
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Int_params
-								   ,int_
-								   ,int_ref
-								   ,int_ptr
-								   ,int_const
-								   ,int_const_ref
-								   ,int_const_ptr
-								   ,int_const_ptr_const
-								   ,bool_)
-								
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Int_params)
 
 struct IntParamHelper
 {

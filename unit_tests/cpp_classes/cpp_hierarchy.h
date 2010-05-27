@@ -1,5 +1,5 @@
-#ifndef CPP_HEIRACHY_H_
-#	define CPP_HEIRACHY_H_
+#ifndef CPP_HEIRARCHY_H_
+#	define CPP_HEIRARCHY_H_
 
 /*
 NOTE: A change to this file which is to be propagated to Lua requires a change to the binder classes.

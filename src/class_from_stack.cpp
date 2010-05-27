@@ -7,8 +7,8 @@ namespace OOLUA
 	namespace INTERNAL
 	{
 #if OOLUA_RUNTIME_CHECKS_ENABLED == 1
-		//return : true id index is an OOLua created userdate type 
-		//NOTE: if return is true then the metatable is left on the stack
+		//return : true if id index is an OOLua created userdate type 
+		//NOTE: if result is true then the metatable is left on the stack
 		bool index_is_userdata(lua_State* l,int index)
 		{
 			if( !lua_isuserdata(l,index) )return false;

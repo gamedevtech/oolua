@@ -2,41 +2,8 @@
 #	include "lua_ownership.h"
 #	include "common_cppunit_headers.h"
 
-
-struct Ownership_stub
-{
-};
-
-OOLUA_CLASS_NO_BASES(Ownership_stub)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(Ownership_stub)
-
-
-struct HasPrivateDestructor
-{
-	void release()
-	{
-		delete this;
-	}
-	static HasPrivateDestructor* create()
-	{
-		return new HasPrivateDestructor;
-	}
-private:
-	HasPrivateDestructor (HasPrivateDestructor const&);
-	HasPrivateDestructor& operator =(HasPrivateDestructor const&);
-	HasPrivateDestructor(){}
-	~HasPrivateDestructor(){}
-};
-
-OOLUA_CLASS_NO_BASES(HasPrivateDestructor)
-	OOLUA_TYPEDEFS No_public_destructor, No_public_constructors OOLUA_END_TYPES
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(HasPrivateDestructor)
+#	include "cpp_private_destructor.h"
+#	include "expose_stub_classes.h"
 
 class Ownership : public CPPUNIT_NS::TestFixture
 {
@@ -76,7 +43,7 @@ public:
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
-		m_lua->register_class<Ownership_stub>();
+		m_lua->register_class<Stub1>();
 	}
 	void tearDown()
 	{
@@ -84,18 +51,18 @@ public:
 	}
 	void setOwnerIsRegistered_onConstantPointer_callReturnsTrue()
 	{
-		Ownership_stub stub;
-		Ownership_stub const* s(&stub);
+		Stub1 stub;
+		Stub1 const* s(&stub);
 		CPPUNIT_ASSERT_EQUAL(true,call_set_owner(s,"Cpp_owns"));
 	}
 	void setOwnerIsRegistered_onNoneConstantPointer_callReturnsTrue()
 	{
-		Ownership_stub stub;
+		Stub1 stub;
 		CPPUNIT_ASSERT_EQUAL(true,call_set_owner(&stub,"Cpp_owns"));
 	}
 	void setOwner_luaPassesOwnershipToCpp_udGcBoolIsFalse()
 	{
-		Ownership_stub stub;
+		Stub1 stub;
 		call_set_owner(&stub,"Cpp_owns");
 		OOLUA::INTERNAL::is_there_an_entry_for_this_void_pointer(*m_lua,&stub);
 		OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud *>( lua_touserdata(*m_lua, -1) );
@@ -103,7 +70,7 @@ public:
 	}
 	void setOwner_luaTakesOwnership_udGcBoolIsTrue()
 	{
-		Ownership_stub stub;
+		Stub1 stub;
 		call_set_owner(&stub,"Lua_owns");
 		OOLUA::INTERNAL::is_there_an_entry_for_this_void_pointer(*m_lua,&stub);
 		OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud *>( lua_touserdata(*m_lua, -1) );
@@ -113,7 +80,7 @@ public:
 	}
 	void setOwner_luaTakesOwnershipAndThenPassesItToCpp_udGcBoolIsFalse()
 	{
-		Ownership_stub stub;
+		Stub1 stub;
 		call_set_owner(&stub,"Lua_owns");
 		call_set_owner(&stub,"Cpp_owns");
 		OOLUA::INTERNAL::is_there_an_entry_for_this_void_pointer(*m_lua,&stub);
@@ -125,8 +92,8 @@ public:
 #if OOLUA_STORE_LAST_ERROR	== 1
 	void setOwner_luaOwnsOnInstanceWithNoPublicDestructor_callSetOwnerReturnsFalse()
 	{
-		m_lua->register_class<HasPrivateDestructor>();
-		HasPrivateDestructor* mock = HasPrivateDestructor::create();
+		m_lua->register_class<PrivateDestructor>();
+		PrivateDestructor* mock = PrivateDestructor::create();
 		bool result = call_set_owner(mock,"Lua_owns");
 		CPPUNIT_ASSERT_EQUAL(false,result);
 		mock->release();
@@ -134,8 +101,8 @@ public:
 	}
 	void setOwner_cppOwnsOnInstanceWithNoPublicDestructor_callSetOwnerReturnsFalse()
 	{
-		m_lua->register_class<HasPrivateDestructor>();
-		HasPrivateDestructor* mock = HasPrivateDestructor::create();
+		m_lua->register_class<PrivateDestructor>();
+		PrivateDestructor* mock = PrivateDestructor::create();
 		bool result = call_set_owner(mock,"Cpp_owns");
 		CPPUNIT_ASSERT_EQUAL(false,result);
 		mock->release();
@@ -147,16 +114,16 @@ public:
 #if OOLUA_USE_EXCEPTIONS == 1
 	void setOwner_luaOwnsOnInstanceWithNoPublicDestructor_throwsRuntimeError()
 	{
-		m_lua->register_class<HasPrivateDestructor>();
-		HasPrivateDestructor* mock = HasPrivateDestructor::create();
+		m_lua->register_class<PrivateDestructor>();
+		PrivateDestructor* mock = PrivateDestructor::create();
 		CPPUNIT_ASSERT_THROW((call_set_owner(mock,"Lua_owns")),OOLUA::Runtime_error);
 		mock->release();
 		
 	}
 	void setOwner_cppOwnsOnInstanceWithNoPublicDestructor_throwsRuntimeError()
 	{
-		m_lua->register_class<HasPrivateDestructor>();
-		HasPrivateDestructor* mock = HasPrivateDestructor::create();
+		m_lua->register_class<PrivateDestructor>();
+		PrivateDestructor* mock = PrivateDestructor::create();
 		CPPUNIT_ASSERT_THROW((call_set_owner(mock,"Cpp_owns")),OOLUA::Runtime_error);
 		mock->release();
 		

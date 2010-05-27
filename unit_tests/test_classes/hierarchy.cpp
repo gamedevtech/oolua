@@ -1,8 +1,8 @@
 #	include "common_cppunit_headers.h"
 #	include "gmock/gmock.h"
 #	include "oolua.h"
-#	include "cpp_hierachy.h"
-#	include "expose_hierachy.h"
+#	include "cpp_hierarchy.h"
+#	include "expose_hierarchy.h"
 #include <vector>
 #include <string>
 

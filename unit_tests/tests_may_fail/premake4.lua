@@ -1,6 +1,6 @@
---OOLua test.unit
-local root = "../"
-local name = "test.unit"
+--OOLua tests_may_fail
+local root = "../../"
+local name = "tests_may_fail"
 create_package(name,root,"ConsoleApp")
 
 
@@ -9,26 +9,24 @@ configuration {}
 files 
 { 
     	"**.h",
-    	"**.cpp"
+    	"**.cpp",
+    	--root .. "unit_tests/main.cpp",
+    	root .. "unit_tests/test_classes/common_cppunit_headers.h"
 }
 includedirs 
 {
 	"include/cppunit",
-	"include/gmock",
 	"include/lua",
 	"include/",
 	root .. "include/",
 	"/usr/local/include",
 	"/usr/include",
-	"./bind_classes",
-	"./cpp_classes",
-	"./test_classes"
+	root .. "unit_tests/test_classes"
 } 
 					
 defines 
 {
 	"USING_CPPUNIT",
-	"USING_GMOCK",
 	"OOLUA_STORE_ERROR"
 }
 
@@ -42,10 +40,10 @@ links
 		links{"lua51"}
 		
 	configuration { "vs*","Debug"}
-		links{ "cppunitd" , "gmockd" }
+		links{ "cppunitd" }
 
 	configuration { "vs*","Release"}
-		links{ "cppunit" , "gmock" }
+		links{ "cppunit" }
 		
 	configuration {"codeblocks" }
 		postbuildcommands { "$(TARGET_OUTPUT_FILE)"}
@@ -54,18 +52,17 @@ links
 	configuration {"gmake or codeblocks","linux or macosx" }
 		libdirs {"usr/local/lib","usr/lib"}
 		links{ "cppunit", "lua" }
-		linkoptions{"`gmock-config --cxxflags --ldflags --libs`"}
 
 	configuration {"xcode3" }
 		libdirs {"usr/local/lib","usr/lib"}
-		links{ "gmock","gtest","cppunit", "lua" }
+		links{ "cppunit", "lua" }
 		postbuildcommands {"$TARGET_BUILD_DIR/$TARGET_NAME"}
 
 	configuration {"windows","codeblocks","Debug" }
-		links{ "lua", "cppunitd" , "gmockd" }
+		links{ "lua", "cppunitd" }
 		
 	configuration {"windows","codeblocks","Release" }	
-		links{ "lua", "cppunit" , "gmock" }
+		links{ "lua", "cppunit" }
 		
 	configuration {"gmake","Debug"}	
 		postbuildcommands  { root .. "bin/Debug/" .. name }
@@ -75,5 +72,4 @@ links
 
 	configuration {"linux" }
 		links{ "dl" }
-
 

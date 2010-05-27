@@ -1,9 +1,8 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
-#ifdef USING_GMOCK
 #	include "gmock/gmock.h"
-#endif
 #	include <string>
+
 
 
 class StringInteragal

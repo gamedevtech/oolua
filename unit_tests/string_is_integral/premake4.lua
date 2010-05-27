@@ -1,6 +1,6 @@
---OOLua test.unit.using_exceptions
-local root = "../"
-local name = "test.unit.using_exceptions"
+--OOLua test.unit.string_is_integral
+local root = "../../"
+local name = "string_is_integral"
 create_package(name,root,"ConsoleApp")
 
 
@@ -10,14 +10,10 @@ files
 { 
     	"**.h",
     	"**.cpp",
-    	"../src/*.cpp",
-    	"../include/*.h",
-    	"../unit_tests/test_classes/common_cppunit_headers.h",
-    	"../unit_tests/main.cpp",
-    	"../unit_tests/bind_classes/*.cpp",
-		"../unit_tests/cpp_classes/*.cpp",
-		"../unit_tests/test_classes/*h",
-		"../unit_tests/test_classes/*.cpp"
+    	root .. "src/*.cpp",
+    	root .. "include/*.h",
+    	root .. "unit_tests/test_classes/common_cppunit_headers.h",
+    	root .. "unit_tests/main.cpp"
 }
 includedirs 
 {
@@ -28,22 +24,21 @@ includedirs
 	root .. "include/",
 	"/usr/local/include",
 	"/usr/include",
-	"../unit_tests/bind_classes",
-	"../unit_tests/cpp_classes",
-	"../unit_tests/test_classes"
+	root .. "unit_tests/bind_classes",
+	root .. "unit_tests/cpp_classes",
+	root .. "unit_tests/test_classes"
 } 
---flags{ "NoExceptions"}
-
+					
 defines 
 {
 	"USING_CPPUNIT",
 	"USING_GMOCK",	
 	"OOLUA_RUNTIME_CHECKS_ENABLED=1",
-	"OOLUA_STD_STRING_IS_INTEGRAL=0",
+	"OOLUA_STD_STRING_IS_INTEGRAL=1",
 	"OOLUA_SAFE_ID_COMPARE=1",
 	
-	"OOLUA_STORE_LAST_ERROR=0",
-	"OOLUA_USE_EXCEPTIONS=1"
+	"OOLUA_STORE_LAST_ERROR=1",
+	"OOLUA_USE_EXCEPTIONS=0"
 }
 
 --[[

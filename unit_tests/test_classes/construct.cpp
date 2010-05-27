@@ -1,7 +1,7 @@
 
 #	include "oolua.h"
-#	include "cpp_class_ops.h"
-#	include "lua_class_ops.h"
+
+#	include "expose_stub_classes.h"
 
 #	include "common_cppunit_headers.h"
 #	include "expose_stub_classes.h"
@@ -115,7 +115,7 @@ public:
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
-		m_lua->register_class<Class_ops>();
+		m_lua->register_class<Stub1>();
 	}
 	void tearDown()
 	{
@@ -124,23 +124,23 @@ public:
 
 	void new_luaCreatesInstanceThenReturnsIt_returnIsNoneNull()
 	{
-		createAndReturnClassOps(m_lua);
-		OOLUA::cpp_acquire_ptr<Class_ops> res;
+		createAndReturnStub(m_lua);
+		OOLUA::cpp_acquire_ptr<Stub1> res;
 		OOLUA::pull2cpp(*m_lua,res);
 		CPPUNIT_ASSERT_EQUAL(true, res.m_ptr != 0);
 		delete res.m_ptr;
 	}
 	void new_luaCreatesInstance_noException()
 	{
-		std::string foo("Class_ops:new()");
+		std::string foo("Stub1:new()");
 		CPPUNIT_ASSERT_NO_THROW( m_lua->run_chunk(foo) );
 	}
 
-	void createAndReturnClassOps(OOLUA::Script *lua)
+	void createAndReturnStub(OOLUA::Script *lua)
 	{
 		std::string foo(\
 			"createAndReturn = function() \n"
-				"return Class_ops:new() \n"
+				"return Stub1:new() \n"
 			"end");
 		lua->run_chunk(foo);
 		CPPUNIT_ASSERT_NO_THROW( lua->call("createAndReturn") );

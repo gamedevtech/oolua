@@ -107,7 +107,7 @@ namespace OOLUA
 
 	bool Script::run_chunk(std::string const& chunk)
 	{
-		if(! load_chunk(chunk.c_str()) ) return false;
+		if(! load_chunk(chunk ) ) return false;
 		int result = lua_pcall(m_lua,0,LUA_MULTRET,0);
 		return INTERNAL::protected_call_check_result(m_lua,result);
 	}

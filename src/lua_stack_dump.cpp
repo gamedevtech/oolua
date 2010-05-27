@@ -1,6 +1,7 @@
 #include "lua_includes.h"
 #include "lua_stack_dump.h"
 #include <iostream>
+#include <string>
 
 namespace OOLUA
 {
@@ -18,7 +19,12 @@ void lua_stack_dump (lua_State * const L)
 		switch (t) 
 		{
 		case LUA_TSTRING:
-			std::cout <<"LUA_TSTRING :" <<lua_tostring(L, i);
+			{
+				size_t len(0);
+				char const* str = lua_tolstring(L,-1,&len);
+				std::string value(std::string(str, len) );
+				std::cout <<"LUA_TSTRING :" <<value;
+			}
 			break;
 
 		case LUA_TBOOLEAN:

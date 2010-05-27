@@ -80,9 +80,9 @@ namespace OOLUA
 	{
 		return m_table_ref.push(l);
 	}
-	void Lua_table::pull_from_stack(lua_State* l)
+	bool Lua_table::pull_from_stack(lua_State* l)
 	{
-		m_table_ref.pull(l);
+		return m_table_ref.pull(l);
 	}
 	void Lua_table::lua_pull_from_stack(lua_State* l)
 	{

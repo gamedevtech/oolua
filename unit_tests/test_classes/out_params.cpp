@@ -1,72 +1,11 @@
 
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
-#ifdef USING_GMOCK
 #	include "gmock/gmock.h"
-#endif
-#include <string>
-#include <sstream>
+#	include "expose_out_params.h"
+#	include <string>
+#	include <sstream>
 
-class OutParamsTest
-{
-public:
-	enum PARAM_CONSTANTS{Return=-1,Param1=1,Param2=2,Param3=3,Dummy=6500};
-    virtual ~OutParamsTest(){}
-	virtual void int_ref(int& ) =0;
-	virtual void two_int_refs(int& ,int&) =0;
-	virtual void int_ref_change(int& i)
-	{
-		i =static_cast<int>(Param1);
-	}
-	virtual void int_ptr(int* i)=0;
-	virtual void int_ptr_change_pointee(int* i)
-	{
-		*i =static_cast<int>(Param1);
-	}
-	virtual int return_int_and_2_int_refs(int& i1, int& i2)
-	{
-		i1 = static_cast<int>(Param1);
-		i2 = static_cast<int>(Param2);
-		return Return;
-	}
-};
-
-class MockOutParamsTest : public OutParamsTest
-{
-public:
-	MOCK_METHOD1(int_ref,void (int&));
-	MOCK_METHOD2(two_int_refs,void(int& i,int&) );
-	MOCK_METHOD1(int_ptr,void (int*));
-};
-
-OOLUA_CLASS_NO_BASES(OutParamsTest)
-	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
-	OOLUA_MEM_FUNC_1(void,int_ref,OOLUA::in_out_p<int&>)
-	OOLUA_MEM_FUNC_2(void,two_int_refs,OOLUA::in_out_p<int&>,OOLUA::in_out_p<int&>)
-	OOLUA_MEM_FUNC_1_RENAME(int_ptr_in_out,void,int_ptr,OOLUA::in_out_p<int*>)
-
-	OOLUA_MEM_FUNC_1_RENAME(int_ref_out,void,int_ref,OOLUA::out_p<int&>)
-	OOLUA_MEM_FUNC_1(void,int_ref_change,OOLUA::out_p<int&>)
-	OOLUA_MEM_FUNC_1_RENAME(int_ptr_out,void,int_ptr,OOLUA::out_p<int*>)
-	OOLUA_MEM_FUNC_1(void,int_ptr_change_pointee,OOLUA::out_p<int*>)
-
-	OOLUA_MEM_FUNC_2(int,return_int_and_2_int_refs,OOLUA::in_out_p<int&>,OOLUA::in_out_p<int&>)
-
-	OOLUA_MEM_FUNC_1(void,int_ptr,int*)
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_FUNCTIONS_9_NON_CONST(OutParamsTest
-								   ,int_ref
-								   ,two_int_refs
-								   ,int_ptr_in_out
-								   ,int_ref_out
-								   ,int_ref_change
-								   ,int_ptr
-								   ,int_ptr_out
-								   ,int_ptr_change_pointee
-								   ,return_int_and_2_int_refs
-								   )
-EXPORT_OOLUA_FUNCTIONS_0_CONST(OutParamsTest)
 
 class OutParams : public CPPUNIT_NS::TestFixture
 {
@@ -88,8 +27,8 @@ class OutParams : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(outTrait_luaPassesNoParamFunctionWantsIntPtr_valueAtTopOfStackIsExspectedValue);
 
 		CPPUNIT_TEST(noTraits_luaPassesIntFunctionWantsIntPtr_callsFunctionWithCorrectPointeeValue);
-		CPPUNIT_TEST(noTraits_luaPassesIntFunctionWantsIntPtr_afterCallTheStackIsEmpty);
-		CPPUNIT_TEST(luaReturnOrder_luaFunctionWhichReturnsMultipleValues_orderIsAsExspectedElseException);
+		CPPUNIT_TEST(noTraits_luaPassesIntFunctionWantsIntPtr_afterCallTheStackIsTheSameAsBeforeCall);
+		CPPUNIT_TEST(luaReturnOrder_luaFunctionWhichReturnsMultipleValues_orderIsAsExspectedElseError);
 		CPPUNIT_TEST(luaReturnOrder_luaFunctionWhichReturnsMultipleValuesToCpp_orderFromTopOfStackIsParam3Param2Param1);
 		CPPUNIT_TEST(ordering_functionWhichReturnsValueAndTwoInOutParams_orderFromTopOfStackIsParam2Param1Return);
 	CPPUNIT_TEST_SUITE_END();
@@ -280,20 +219,21 @@ public:
 		m_lua->call("func",(OutParamsTest*)&mock);
 	}
 
-	//TODO: do not exspect the stack to be empty what is it we really want to know??
-	void noTraits_luaPassesIntFunctionWantsIntPtr_afterCallTheStackIsEmpty()
+	void noTraits_luaPassesIntFunctionWantsIntPtr_afterCallTheStackIsTheSameAsBeforeCall()
 	{
 		int input_param(OutParamsTest::Dummy);
-		run_chunk_function_push_int("int_ptr",input_param,false);
+		run_chunk_function_push_int("int_ptr",input_param,true/*false*/);
+		int stackSizeBeforeCall = m_lua->stack_count();
 		::testing::NiceMock<MockOutParamsTest> stub;
 		m_lua->call("func",(OutParamsTest*)&stub);
-		CPPUNIT_ASSERT_EQUAL(0,lua_gettop(*m_lua));
+		int stackSizeAfterCall = m_lua->stack_count();
+		CPPUNIT_ASSERT_EQUAL(stackSizeBeforeCall,stackSizeAfterCall);
 	}
 
-	void luaReturnOrder_luaFunctionWhichReturnsMultipleValues_orderIsAsExspectedElseException()
+	void luaReturnOrder_luaFunctionWhichReturnsMultipleValues_orderIsAsExspectedElseError()
 	{
-
-		//lua_atpanic(*m_lua,&throw_OOLUA_Runtime_at_panic);
+		//NOTE: With exceptions enabled this could throw, yet in reality it will never cause
+		//an error. This test is for demostration purposes to show the return order in Lua.
 		m_lua->run_chunk("bar = function(i1,i2,i3) return i1,i2,i3 end "
 							"func = function() "
 							" i1, i2 , i3 = bar(1,2,3) "

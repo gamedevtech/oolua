@@ -14,10 +14,10 @@ solution("oolua")
 
 
 dofile("./oolua4.lua")
-include("./unit_tests/")
-include("./tests_may_fail/")
+dofile("./unit_tests/test.unit.lua")
+include("./unit_tests/tests_may_fail/")
 include("./file_generator/")
 include("./profile/")
-include("./string_is_integral/")
-include("./UsingExceptions/")
+include("./unit_tests/string_is_integral/")
+dofile("./unit_tests/test.unit.exceptions.lua")
 

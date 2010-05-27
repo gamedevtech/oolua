@@ -1,84 +1,20 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
-
-
-#ifdef USING_GMOCK
 #	include "gmock/gmock.h"
-#endif
 
-#include "lua_const_funcs.h"
-
-namespace
-{
-	char const* hello_world_cstring = "hello world";
-
-	class Abstract_class
-	{
-	public:
-		virtual ~Abstract_class(){}
-		virtual void func(){}
-		virtual void abstract_func_0() = 0;
-		virtual void abstract_func_1(int ) = 0;
-		virtual int abstract_func_3(int  const& , int & ,int ) = 0;
-		virtual void ptr_to_char(char * ) = 0;
-		virtual void ptr_to_const_char(char const * ) = 0;
-		virtual char* returns_char_ptr() = 0;
-		virtual char const* returns_const_char_ptr() = 0;
-		char const* returns(){return hello_world_cstring;}
-	};
-#ifdef USING_GMOCK
-	class Mock : public Abstract_class
-	{
-	public:
-		MOCK_METHOD0(func,void ());
-		MOCK_METHOD0(abstract_func_0,void ());
-		MOCK_METHOD1(abstract_func_1,void (int));
-		MOCK_METHOD3(abstract_func_3,int (int  const&,int & ,int  ));
-		MOCK_METHOD1(ptr_to_char,void (char *) );
-		MOCK_METHOD1(ptr_to_const_char,void (char const*) );
-		MOCK_METHOD0(returns_char_ptr,char* ());
-		MOCK_METHOD0(returns_const_char_ptr,char const* ());
-	};
-#endif
-
-}
+#	include "expose_integral_function_params.h"
+#	include "expose_member_function_calls.h"
 
 
-OOLUA_CLASS_NO_BASES(Abstract_class)
-	OOLUA_TYPEDEFS
-		Abstract
-	OOLUA_END_TYPES
-	OOLUA_MEM_FUNC_0(void,func)
-	OOLUA_MEM_FUNC_0(void,abstract_func_0)
-	OOLUA_MEM_FUNC_1(void,abstract_func_1,int)
-	OOLUA_MEM_FUNC_3(int,abstract_func_3,in_p<int const&> ,in_p<int&> ,in_p<int> )
-	OOLUA_MEM_FUNC_1(void,ptr_to_char,char * )
-	OOLUA_MEM_FUNC_1(void,ptr_to_const_char,char const* )
-	OOLUA_MEM_FUNC_0(char*,returns_char_ptr)
-	OOLUA_MEM_FUNC_0(char const*,returns_const_char_ptr)
-OOLUA_CLASS_END
-
-
-EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Abstract_class
-								   ,func
-								   ,abstract_func_0
-								   ,abstract_func_1
-								   ,abstract_func_3
-								   ,ptr_to_char
-								   ,ptr_to_const_char
-								   ,returns_char_ptr
-								   ,returns_const_char_ptr)
-
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Abstract_class)
 
 struct Abstract_helper
 {
 	Abstract_helper(OOLUA::Script * lua):mock(),abs_class(&mock)
 	{
-		lua->register_class<Abstract_class>();
+		lua->register_class<Function_calls>();
 	}
-	Mock mock;
-	Abstract_class* abs_class;
+	FunctionCallsMock mock;
+	Function_calls* abs_class;
 	LVD_NOCOPY(Abstract_helper)
 };
 
@@ -95,10 +31,13 @@ class LuaCallsCppFunctions : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsHelloWorldCstring_returnCompareEqualToHelloWorldCstring);
 	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsConstHelloWorldCstring_returnCompareEqualToHelloWorldCstring);
 	
-#if OOLUA_STORE_LAST_ERROR == 1
+#if	OOLUA_USE_EXCEPTIONS == 1
+	CPPUNIT_TEST(fromLua_luaPassesBooleanToFunctionWantingInt_throwsRuntimeError);
+#elif OOLUA_STORE_LAST_ERROR == 1
 	CPPUNIT_TEST(fromLua_luaPassesBooleanToFunctionWantingInt_callReturnsFalse);
 	CPPUNIT_TEST(fromLua_luaPassesBooleanToFunctionWantingInt_lastErrorHasAnEntry);
 #endif
+	
 	
 	CPPUNIT_TEST_SUITE_END();
 
@@ -179,9 +118,9 @@ public:
 			"end");
 
 		Abstract_helper helper(m_lua);
-		EXPECT_CALL(helper.mock,ptr_to_char( ::testing::StrEq(hello_world_cstring) ) )
+		EXPECT_CALL(helper.mock,ptr_to_char( ::testing::StrEq(OOLUA_UT::hello_world_cstring) ) )
 			.Times(1);
-		m_lua->call("foo",helper.abs_class,hello_world_cstring);
+		m_lua->call("foo",helper.abs_class,OOLUA_UT::hello_world_cstring);
 	}
 
 	void cppMethodCall_callsPtrToConstCharFunction_calledOnceWithCorrectParam()
@@ -192,9 +131,9 @@ public:
 			"end");
 
 		Abstract_helper helper(m_lua);
-		EXPECT_CALL(helper.mock,ptr_to_const_char( ::testing::StrEq(hello_world_cstring) ) )
+		EXPECT_CALL(helper.mock,ptr_to_const_char( ::testing::StrEq(OOLUA_UT::hello_world_cstring) ) )
 			.Times(1);
-		m_lua->call("foo",helper.abs_class,hello_world_cstring);
+		m_lua->call("foo",helper.abs_class,OOLUA_UT::hello_world_cstring);
 	}
 
 	void cppMethodCall_callsFunctionWhichReturnsCharPtr_calledOnce()
@@ -208,7 +147,7 @@ public:
 		Abstract_helper helper(m_lua);
 		EXPECT_CALL(helper.mock,returns_char_ptr( ) )
 			.Times(1)
-			.WillOnce(::testing::Return((char*)hello_world_cstring));
+			.WillOnce(::testing::Return((char*)OOLUA_UT::hello_world_cstring));
 		m_lua->call("foo",helper.abs_class);
 	}
 	void cppMethodCall_callsFunctionWhichReturnsHelloWorldCstring_returnCompareEqualToHelloWorldCstring()
@@ -222,12 +161,12 @@ public:
 		Abstract_helper helper(m_lua);
 		EXPECT_CALL(helper.mock,returns_char_ptr( ) )
 			.Times(1)
-			.WillOnce(::testing::Return<char*>((char*)hello_world_cstring));
+			.WillOnce(::testing::Return<char*>((char*)OOLUA_UT::hello_world_cstring));
 		m_lua->call("foo",helper.abs_class);
 
 		std::string result;
 		OOLUA::pull2cpp(*m_lua,result);
-		CPPUNIT_ASSERT_EQUAL(std::string(hello_world_cstring),result);
+		CPPUNIT_ASSERT_EQUAL(std::string(OOLUA_UT::hello_world_cstring),result);
 	}
 	void cppMethodCall_callsFunctionWhichReturnsConstHelloWorldCstring_returnCompareEqualToHelloWorldCstring()
 	{
@@ -240,32 +179,44 @@ public:
 		Abstract_helper helper(m_lua);
 		EXPECT_CALL(helper.mock,returns_const_char_ptr( ) )
 			.Times(1)
-			.WillOnce(::testing::Return(hello_world_cstring));
+			.WillOnce(::testing::Return(OOLUA_UT::hello_world_cstring));
 		m_lua->call("foo",helper.abs_class);
 
 		std::string result;
 		OOLUA::pull2cpp(*m_lua,result);
-		CPPUNIT_ASSERT_EQUAL(std::string(hello_world_cstring),result);
+		CPPUNIT_ASSERT_EQUAL(std::string(OOLUA_UT::hello_world_cstring),result);
 	}
-#if OOLUA_STORE_LAST_ERROR == 1
+	
+#if	OOLUA_USE_EXCEPTIONS == 1
+	void fromLua_luaPassesBooleanToFunctionWantingInt_throwsRuntimeError()
+	{
+		m_lua->register_class<Int_params>();
+		m_lua->run_chunk("foo = function(obj) "
+						 "obj:int_(true) "
+						 "end");
+		::testing::NiceMock<MockInt> instance;
+		CPPUNIT_ASSERT_THROW((m_lua->call("foo",(Int_params*)&instance)) ,OOLUA::Runtime_error);
+		
+	}
+#elif OOLUA_STORE_LAST_ERROR == 1
 	void fromLua_luaPassesBooleanToFunctionWantingInt_callReturnsFalse()
 	{
-		m_lua->register_class<C_simple>();
+		m_lua->register_class<Int_params>();
 		m_lua->run_chunk("foo = function(obj) "
-						 "obj:set_int(true) "
+						 "obj:int_(true) "
 						 "end");
-		C_simple s;
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo",&s));
+		::testing::NiceMock<MockInt> instance;
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo",(Int_params*)&instance));
 		
 	}
 	void fromLua_luaPassesBooleanToFunctionWantingInt_lastErrorHasAnEntry()
 	{
-		m_lua->register_class<C_simple>();
+		m_lua->register_class<Int_params>();
 		m_lua->run_chunk("foo = function(obj) "
-						 "obj:set_int(true) "
+						 "obj:int_(true) "
 						 "end");
-		C_simple s;
-		m_lua->call("foo",&s);
+		::testing::NiceMock<MockInt> instance;
+		m_lua->call("foo",(Int_params*)&instance);
 		CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(*m_lua).empty() );
 		
 	}

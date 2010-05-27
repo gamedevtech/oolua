@@ -48,6 +48,7 @@ struct lua_State;
 #   include "oolua_error.h"
 #	include "oolua_version.h"
 #	include "cpp_constructor.h"
+#	include "oolua_va_args.h"
 
 namespace OOLUA
 {

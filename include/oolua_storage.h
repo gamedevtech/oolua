@@ -95,7 +95,7 @@ namespace OOLUA
 		{
 			T* p = class_from_index<T>(l,1);
 			lua_remove(l,1);
-			Owner own;
+			Owner own(No_change);
 			pull2cpp(l,own);
 			set_owner(l,p,own);
 			return 0;

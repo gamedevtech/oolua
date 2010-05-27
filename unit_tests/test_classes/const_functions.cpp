@@ -2,6 +2,8 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 #	include "gmock/gmock.h"
+#	include "expose_const_func.h"
+
 namespace
 {
 	char const* constant_function(OOLUA::Script* l)
@@ -45,45 +47,18 @@ namespace
 			std::string("end") );
 		return "lua_func";
 	}
-
-
-}
-
-class Constant
-{
-public:
-	Constant():i(0){}
-	virtual ~Constant(){}
-	virtual int cpp_func_const() const
+	
+	struct ConstantMockHelper 
 	{
-		return i;
-	}
-	virtual void cpp_func()
-	{
-		++i;
-	}
-private:
-	int i;//stop functions being compiled away
-};
-
-OOLUA_CLASS_NO_BASES(Constant)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-	OOLUA_MEM_FUNC_0_CONST(int,cpp_func_const)
-	OOLUA_MEM_FUNC_0(void,cpp_func)
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Constant,cpp_func)
-EXPORT_OOLUA_FUNCTIONS_1_CONST(Constant,cpp_func_const)
-namespace
-{
-	class Mock : public Constant
-	{
-	public:
-		MOCK_CONST_METHOD0(cpp_func_const,int ());
-		MOCK_METHOD0(cpp_func,void ());
+		ConstantMockHelper():mock(),ptr_to_const(&mock),ptr_to(&mock){}
+		ConstantMock mock;
+		Constant const* ptr_to_const;
+		Constant * ptr_to;
 	};
+
 }
+
+
 class Constant_functions : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE( Constant_functions );
@@ -121,52 +96,47 @@ public:
 	void callConstantFunction_passedConstantInstance_calledOnce()
 	{
 		char const* name = constant_function(m_lua);
-		Mock mock;
-		Constant const* c(&mock);
-		EXPECT_CALL(mock,cpp_func_const() )
+		ConstantMockHelper helper;
+		EXPECT_CALL(helper.mock,cpp_func_const() )
 			.Times(1);
-		m_lua->call(name,c);
+		m_lua->call(name,helper.ptr_to_const);
 	}
 	void callConstantFunction_passedNoneConstantInstance_calledOnce()
 	{
 		char const* name = constant_function(m_lua);
-		Mock mock;
-		Constant * c(&mock);
-		EXPECT_CALL(mock,cpp_func_const() )
+		ConstantMockHelper helper;
+		EXPECT_CALL(helper.mock,cpp_func_const() )
 			.Times(1);
-		m_lua->call(name,c);
+		m_lua->call(name,helper.ptr_to);
 	}
 
 
 	void callNoneConstantFunction_passedNoneConstantInstance_calledOnce()
 	{
 		char const* name = none_constant_function(m_lua);
-		Mock mock;
-		Constant * c(&mock);
-		EXPECT_CALL(mock,cpp_func() )
+		ConstantMockHelper helper;
+		EXPECT_CALL(helper.mock,cpp_func() )
 			.Times(1);
-		m_lua->call(name,c);
+		m_lua->call(name,helper.ptr_to);
 	}
 
 	void callLuaAddedConstantFunction_passedConstantInstance_calledOnce()
 	{
 		char const* name = add_lua_constant_function(m_lua);
 		char const* func_name = lua_added_func(m_lua,name);
-		Mock mock;
-		Constant const* c(&mock);
-		EXPECT_CALL(mock,cpp_func_const() )
+		ConstantMockHelper helper;
+		EXPECT_CALL(helper.mock,cpp_func_const() )
 			.Times(1);
-		m_lua->call(func_name,c);
+		m_lua->call(func_name,helper.ptr_to_const);
 	}
 	void callLuaAddedConstantFunction_passedNoneConstantInstance_calledOnce()
 	{
 		char const* name = add_lua_constant_function(m_lua);
 		char const* func_name = lua_added_func(m_lua,name);
-		Mock mock;
-		Constant * c(&mock);
-		EXPECT_CALL(mock,cpp_func_const() )
+		ConstantMockHelper helper;
+		EXPECT_CALL(helper.mock,cpp_func_const() )
 			.Times(1);
-		m_lua->call(func_name,c);
+		m_lua->call(func_name,helper.ptr_to);
 	}
 
 
@@ -175,25 +145,24 @@ public:
 	{
 		char const* name = add_lua_none_constant_function(m_lua);
 		char const* func_name = lua_added_func(m_lua,name);
-		Mock mock;
-		Constant * c(&mock);
-		EXPECT_CALL(mock,cpp_func() )
+		ConstantMockHelper helper;
+		EXPECT_CALL(helper.mock,cpp_func() )
 			.Times(1);
-		m_lua->call(func_name,c);
+		m_lua->call(func_name,helper.ptr_to);
 	}
 #if OOLUA_STORE_LAST_ERROR ==1
 	void callNoneConstantFunction_passedConstantInstance_callReturnsFalse()
 	{
 		char const* name = none_constant_function(m_lua);
-		Constant const c;
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(name,&c));
+		ConstantMockHelper helper;
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(name,helper.ptr_to_const));
 	}
 	void callLuaAddedNoneConstantFunction_passedConstantInstance_callReturnsFalse()
 	{
 		char const* name = add_lua_none_constant_function(m_lua);
 		char const* func_name = lua_added_func(m_lua,name);
-		Constant const c;
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(func_name,&c));
+		ConstantMockHelper helper;
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(func_name,helper.ptr_to_const));
 	}
 #endif
 	
@@ -201,15 +170,15 @@ public:
 	void callNoneConstantFunction_passedConstantInstance_throwsRuntimeError()
 	{
 		char const* name = none_constant_function(m_lua);
-		Constant const c;
-		CPPUNIT_ASSERT_THROW( (m_lua->call(name,&c)),OOLUA::Runtime_error);
+		ConstantMockHelper helper;
+		CPPUNIT_ASSERT_THROW( (m_lua->call(name,helper.ptr_to_const)),OOLUA::Runtime_error);
 	}
 	void callLuaAddedNoneConstantFunction_passedConstantInstance_throwsRuntimeError()
 	{
 		char const* name = add_lua_none_constant_function(m_lua);
 		char const* func_name = lua_added_func(m_lua,name);
-		Constant const c;
-		CPPUNIT_ASSERT_THROW( (m_lua->call(func_name,&c)),OOLUA::Runtime_error);
+		ConstantMockHelper helper;
+		CPPUNIT_ASSERT_THROW( (m_lua->call(func_name,helper.ptr_to_const)),OOLUA::Runtime_error);
 	}
 	
 #endif

@@ -1,6 +1,6 @@
---OOLua test.unit.string_is_integral
+--OOLua test.unit
 local root = "../"
-local name = "test.unit.string_is_integral"
+local name = "test.unit"
 create_package(name,root,"ConsoleApp")
 
 
@@ -8,12 +8,13 @@ configuration {}
 
 files 
 { 
-    	"**.h",
-    	"**.cpp",
-    	"../src/*.cpp",
-    	"../include/*.h",
-    	"../unit_tests/test_classes/common_cppunit_headers.h",
-    	"../unit_tests/main.cpp"
+    	root .. "unit_tests/main.cpp",
+    	root .. "unit_tests/bind_classes/*.h",
+    	root .. "unit_tests/bind_classes/*.cpp",
+		root .. "unit_tests/cpp_classes/*.h",
+		root .. "unit_tests/cpp_classes/*.cpp",
+		root .. "unit_tests/test_classes/*h",
+		root .. "unit_tests/test_classes/*.cpp"
 }
 includedirs 
 {
@@ -24,29 +25,22 @@ includedirs
 	root .. "include/",
 	"/usr/local/include",
 	"/usr/include",
-	"./bind_classes",
-	"./cpp_classes",
-	"./test_classes"
+	root .. "unit_tests/bind_classes",
+	root .. "unit_tests/cpp_classes",
+	root .. "unit_tests/test_classes"
 } 
 					
 defines 
 {
 	"USING_CPPUNIT",
-	"USING_GMOCK",	
-	"OOLUA_RUNTIME_CHECKS_ENABLED=1",
-	"OOLUA_STD_STRING_IS_INTEGRAL=1",
-	"OOLUA_SAFE_ID_COMPARE=1",
-	
-	"OOLUA_STORE_LAST_ERROR=1",
-	"OOLUA_USE_EXCEPTIONS=0"
+	"USING_GMOCK",
+	"OOLUA_STORE_ERROR"
 }
 
---[[
 links
 {
 	"oolua"
 }
---]]
 
 	configuration { "vs*"}
 		postbuildcommands { "\"$(TargetPath)\"" }

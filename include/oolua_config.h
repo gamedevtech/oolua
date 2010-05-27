@@ -45,11 +45,12 @@
 #endif
 
 #if OOLUA_USE_EXCEPTIONS == 1 && OOLUA_STORE_LAST_ERROR == 1
-#	error Only one of these setting can be on
+#	error Only one of these settings can be on
 #endif
 
 ///def OOLUA_DEBUG_CHECKS
 ///Checks for null pointers 
+///adds a stack trace to messages called within pcall
 #if defined DEBUG || defined _DEBUG
 #	define OOLUA_DEBUG_CHECKS 1
 #else

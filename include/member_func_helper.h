@@ -1,6 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file member_func_helper.h
-///  <TODO: insert file description here>
 ///  @author Liam Devine
 ///  @email
 ///  See http://www.liamdevine.co.uk for contact details.

@@ -1,69 +1,7 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
-#ifdef USING_GMOCK
+#	include "expose_max_params.h"
 #	include "gmock/gmock.h"
-#endif
-
-namespace
-{
-	template<typename Return,typename Param>
-	class Max_params
-	{
-	public:
-		virtual ~Max_params(){}
-		virtual Return one(Param a) = 0;
-		virtual Return two(Param a, Param b) = 0;
-		virtual Return three(Param a, Param b,Param c) = 0;
-		virtual Return four(Param a, Param b,Param c,Param d) = 0;
-		virtual Return five(Param a, Param b,Param c,Param d,Param e) = 0;
-		virtual Return six(Param a, Param b,Param c,Param d,Param e,Param f) = 0;
-		virtual Return seven(Param a, Param b,Param c,Param d,Param e,Param f,Param g) = 0;
-		virtual Return eight(Param a, Param b,Param c,Param d,Param e,Param f,Param g,Param h) = 0;
-	};
-}
-
-typedef Max_params<void,int> ParamIntNoReturn;
-typedef Max_params<int,int> ParamIntReturnInt;
-
-#define PARAMS_TEST_MOCK_GENERATE(ooluaReturn,ooluaParam) \
-class Mock##ooluaReturn##ooluaParam : public Max_params<ooluaReturn,ooluaParam> \
-{\
-public:\
-	MOCK_METHOD1(one,ooluaReturn   (ooluaParam) );\
-	MOCK_METHOD2(two,ooluaReturn   (ooluaParam,ooluaParam) );\
-	MOCK_METHOD3(three,ooluaReturn (ooluaParam,ooluaParam,ooluaParam) );\
-	MOCK_METHOD4(four,ooluaReturn  (ooluaParam,ooluaParam,ooluaParam,ooluaParam) );\
-	MOCK_METHOD5(five,ooluaReturn  (ooluaParam,ooluaParam,ooluaParam,ooluaParam,ooluaParam) );\
-	MOCK_METHOD6(six,ooluaReturn   (ooluaParam,ooluaParam,ooluaParam,ooluaParam,ooluaParam,ooluaParam) );\
-	MOCK_METHOD7(seven,ooluaReturn (ooluaParam,ooluaParam,ooluaParam,ooluaParam,ooluaParam,ooluaParam,ooluaParam) );\
-	MOCK_METHOD8(eight,ooluaReturn (ooluaParam,ooluaParam,ooluaParam,ooluaParam,ooluaParam,ooluaParam,ooluaParam,ooluaParam) );\
-};
-
-PARAMS_TEST_MOCK_GENERATE(void,int)
-
-#undef PARAMS_TEST_MOCK_GENERATE
-
-OOLUA_CLASS_NO_BASES(ParamIntNoReturn)
-	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
-	OOLUA_MEM_FUNC_1(void, one,int)
-	OOLUA_MEM_FUNC_2(void,two,int, int)
-	OOLUA_MEM_FUNC_3(void, three,int, int ,int )
-	OOLUA_MEM_FUNC_4(void, four,int, int ,int ,int )
-	OOLUA_MEM_FUNC_5(void, five,int, int ,int ,int ,int )
-	OOLUA_MEM_FUNC_6(void, six,int, int, int ,int ,int ,int )
-	OOLUA_MEM_FUNC_7(void, seven,int, int ,int ,int ,int ,int ,int )
-	OOLUA_MEM_FUNC_8(void, eight,int, int ,int ,int ,int ,int ,int ,int)
-OOLUA_CLASS_END
-EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(ParamIntNoReturn,
-								   one,
-								   two,
-								   three,
-								   four,
-								   five,
-								   six,
-								   seven,
-								   eight)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(ParamIntNoReturn)
 
 struct MockHelper
 {
@@ -73,8 +11,8 @@ struct MockHelper
         ,mockBase(&mock)
 	{}
 	int p1,p2,p3,p4,p5,p6,p7,p8;
-	Mockvoidint mock;
-	ParamIntNoReturn* mockBase;
+	MockVoidReturnIntParam mock;
+	VoidReturnIntParam* mockBase;
 	LVD_NOCOPY(MockHelper)
 
 };
@@ -98,7 +36,7 @@ public:
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
-		m_lua->register_class<ParamIntNoReturn>();
+		m_lua->register_class<VoidReturnIntParam>();
 	}
 	void tearDown()
 	{

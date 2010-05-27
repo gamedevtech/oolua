@@ -1,48 +1,12 @@
 #	include "common_cppunit_headers.h"
 #	include "oolua.h"
+#	include "expose_stub_classes.h"
 
 
 namespace 
 {
-	struct StubProxy {};
 	struct StubNoneProxy {};
-	
-	StubProxy bad_namespaced_scope;
-
-	struct HasPublicMemberStub
-	{
-		StubProxy stub;
-		StubProxy* stub_ptr;
-		StubProxy& stub_ref;
-		HasPublicMemberStub():stub(),stub_ptr(0),stub_ref(bad_namespaced_scope)
-		{}
-		int i;
-		static int const const_i = 5;
-		LVD_NOCOPY(HasPublicMemberStub)
-	};
-	int const  HasPublicMemberStub::const_i;
-	
 }
-
-
-OOLUA_CLASS_NO_BASES(StubProxy)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(StubProxy)
-
-OOLUA_CLASS_NO_BASES(HasPublicMemberStub)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-	OOLUA_PUBLIC_MEMBER_GET(stub)
-	OOLUA_PUBLIC_MEMBER_GET(stub_ptr)
-	OOLUA_PUBLIC_MEMBER_GET(stub_ref)
-	OOLUA_PUBLIC_MEMBER_GET(i)
-	OOLUA_PUBLIC_MEMBER_GET(const_i)
-OOLUA_CLASS_END
-
-EXPORT_OOLUA_NO_FUNCTIONS(HasPublicMemberStub)
 
 
 class Traits_test : public CPPUNIT_NS::TestFixture
@@ -62,8 +26,7 @@ public:
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
-		m_lua->register_class<StubProxy>();
-		m_lua->register_class<HasPublicMemberStub>();
+		m_lua->register_class<Stub1>();
 	}
 	void tearDown()
 	{
@@ -76,14 +39,14 @@ public:
 	}
 	void isProxy_ProxyClass_valueIsOne()
 	{
-		int value = OOLUA::INTERNAL::has_a_proxy_type<StubProxy>::value;
+		int value = OOLUA::INTERNAL::has_a_proxy_type<Stub1>::value;
 		CPPUNIT_ASSERT_EQUAL(int(1),value);
 	}
 	void needsToBePushedByReference_isCurrentlyByValue_valueEqualsOne()
 	{
-		int value = OOLUA::INTERNAL::shouldPushValueByReference< StubProxy,
-									!LVD::by_reference<StubProxy>::value 
-										&& OOLUA::INTERNAL::has_a_proxy_type<StubProxy>::value >::value;
+		int value = OOLUA::INTERNAL::shouldPushValueByReference< Stub1,
+									!LVD::by_reference<Stub1>::value 
+										&& OOLUA::INTERNAL::has_a_proxy_type<Stub1>::value >::value;
 		CPPUNIT_ASSERT_EQUAL(int(1),value);
 	}
 	void needsToBePushedByReference_isCurrentlyByValue_valueEqualsZero()
@@ -95,9 +58,9 @@ public:
 	}
 	void needsToBePushedByReference_isCurrentlyByReference_valueEqualsZero()
 	{
-		int value = OOLUA::INTERNAL::shouldPushValueByReference< StubProxy*,
-									OOLUA::is_param_by_value<StubProxy*>::value 
-										&& OOLUA::INTERNAL::has_a_proxy_type<OOLUA::Raw_type<StubProxy*>::type >::value >::value;
+		int value = OOLUA::INTERNAL::shouldPushValueByReference< Stub1*,
+									OOLUA::is_param_by_value<Stub1*>::value 
+										&& OOLUA::INTERNAL::has_a_proxy_type<OOLUA::Raw_type<Stub1*>::type >::value >::value;
 		CPPUNIT_ASSERT_EQUAL(int(0),value);
 	}
 };

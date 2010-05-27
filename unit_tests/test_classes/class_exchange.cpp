@@ -1,7 +1,7 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 
-#	include "expose_hierachy.h"
+#	include "expose_hierarchy.h"
 
 template<typename Base_type,typename Derived_type>
 struct BaseAndDerived

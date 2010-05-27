@@ -56,6 +56,7 @@ class Exchange_lua2cpp : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(pullLuaFunction_luaFunctionOnStack_functionIsValid);
 	
 	CPPUNIT_TEST(pullTable_nilOnStack_tableIsInValid);
+	CPPUNIT_TEST(pullTable_luaTableOnStack_pullReturnsTrue);
 	CPPUNIT_TEST(pullTableRef_nilOnStack_tableIsInValid);
 	CPPUNIT_TEST(pullLuaFunction_nilOnStack_functionIsInValid);
 	CPPUNIT_TEST_SUITE_END();
@@ -205,6 +206,13 @@ public:
 		callFunctionThatReturnsTable();
 		OOLUA::pull2cpp(*m_lua,table);
 		CPPUNIT_ASSERT_EQUAL(true, table.valid() );
+	}
+	void pullTable_luaTableOnStack_pullReturnsTrue()
+	{
+		OOLUA::Lua_table table;
+		callFunctionThatReturnsTable();
+		bool result = OOLUA::pull2cpp(*m_lua,table);
+		CPPUNIT_ASSERT_EQUAL(true, result );
 	}
 	void pullLuaFunction_luaFunctionOnStack_functionIsValid()
 	{

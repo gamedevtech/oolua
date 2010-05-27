@@ -19,7 +19,9 @@ namespace OOLUA
 	namespace INTERNAL
 	{
 		
-		//pushes the weak top and returns its index
+		//pushes the weak table on top and returns its absolute index
+		//The weak table is a table in the Lua registry specific to OOLua,
+		//which has void pointer keys and values of userdata pointers.
 		int push_weak_table(lua_State* l)
 		{
 			Weak_table::getWeakTable(l);

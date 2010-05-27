@@ -159,7 +159,7 @@ namespace OOLUA
 		
 		bool push_on_stack(lua_State* l)const;
 		void swap(Lua_table & rhs);
-		void pull_from_stack(lua_State* l);
+		bool pull_from_stack(lua_State* l);
 		void lua_pull_from_stack(lua_State* l);
 	private:
 		bool get_table()const;

@@ -17,6 +17,8 @@ class Exchange_cpp2lua : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(push_doublePushed_luaValueIsInput);
 		CPPUNIT_TEST(push_stringPushed_topOfStackTypeIsString);
 		CPPUNIT_TEST(push_stringPushed_luaValueIsInput);
+	//CPPUNIT_TEST(push_stringWithNullsPushed_luaValueIsInput);
+	
 		CPPUNIT_TEST(push_classPointerPushed_topOfStackTypeIsUserdata);
 
 		CPPUNIT_TEST(call_callsLuaFunctionNoParams_callReturnsTrue);
@@ -144,6 +146,12 @@ public:
 	void push_stringPushed_luaValueIsInput()
 	{
 		std::string input("hello world");
+		assert_lua_value_is_input(input);
+	}
+	void push_stringWithNullsPushed_luaValueIsInput()
+	{
+		std::string input("\0hel\0lo wo\0rl\0d\0",16);
+		std::cout <<"size with nulls " << input.size() <<std::endl;
 		assert_lua_value_is_input(input);
 	}
 

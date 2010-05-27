@@ -2,7 +2,9 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 #	include <sstream>
-#	include "lua_class_ops.h"
+#	include "expose_stub_classes.h"
+#	include "expose_functions_with_ref_params.h"
+
 namespace
 {
 	template<typename T>
@@ -27,37 +29,13 @@ namespace
 	}
 	void assign_valid_table(OOLUA::Script* s,OOLUA::Lua_table& t)
 	{
-		s->register_class<Class_ops>();
-		lua_getfield(*s, LUA_REGISTRYINDEX,OOLUA::Proxy_class<Class_ops>::class_name);
+		s->register_class<Stub1>();
+		lua_getfield(*s, LUA_REGISTRYINDEX,OOLUA::Proxy_class<Stub1>::class_name);
 		OOLUA::pull2cpp(*s,t);
 	}
-	
-	struct TableMemberFunction
-	{
-		void function_which_takes_a_table(OOLUA::Lua_table t)
-		{
-			t.set_value(1,2);
-}
-		bool function_takes_table_returns_result_of_valid(OOLUA::Lua_table t)
-		{
-			return t.valid();
-		}
-	};
-	
+
 }
 
-OOLUA_CLASS_NO_BASES(TableMemberFunction)
-	OOLUA_TYPEDEFS No_public_constructors OOLUA_END_TYPES
-	OOLUA_MEM_FUNC_1(void,function_which_takes_a_table,OOLUA::Lua_table)
-	OOLUA_MEM_FUNC_1(bool,function_takes_table_returns_result_of_valid,OOLUA::Lua_table)
-OOLUA_CLASS_END
-
-
-
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(TableMemberFunction
-									   ,function_which_takes_a_table
-								   ,function_takes_table_returns_result_of_valid)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(TableMemberFunction)
 	
 class Table : public CPPUNIT_NS::TestFixture
 {
@@ -213,8 +191,8 @@ public:
 	}
 	void valid_constructedWithValidLuaPointAndValidGlobalName_resultIsTrue()
 	{
-		m_lua->register_class<Class_ops>();
-		OOLUA::Lua_table t(*m_lua,OOLUA::Proxy_class<Class_ops>::class_name);
+		m_lua->register_class<Stub1>();
+		OOLUA::Lua_table t(*m_lua,OOLUA::Proxy_class<Stub1>::class_name);
 		CPPUNIT_ASSERT_EQUAL(true, t.valid() );
 	}
 	void valid_assignedNullLuaPointer_resultIsFalse()
@@ -229,16 +207,16 @@ public:
 	}
 	void valid_assignedValidLuaPointerAndValidGlobalName_resultIsTrue()
 	{
-		m_lua->register_class<Class_ops>();
+		m_lua->register_class<Stub1>();
 		table->bind_script(*m_lua);
-		table->set_table(OOLUA::Proxy_class<Class_ops>::class_name);
+		table->set_table(OOLUA::Proxy_class<Stub1>::class_name);
 		CPPUNIT_ASSERT_EQUAL(true, table->valid() );
 	}
 	void valid_assignedValidLuaPointerAndValidGlobalName_stackIsEmptyAfterCall()
 	{
-		m_lua->register_class<Class_ops>();
+		m_lua->register_class<Stub1>();
 		table->bind_script(*m_lua);
-		table->set_table(OOLUA::Proxy_class<Class_ops>::class_name);
+		table->set_table(OOLUA::Proxy_class<Stub1>::class_name);
 		table->valid();
 		CPPUNIT_ASSERT_EQUAL(0,lua_gettop(*m_lua) );
 	}
