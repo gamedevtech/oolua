@@ -6,10 +6,10 @@ namespace
 }
 
 
-
+#ifndef _MSC_VER
 const int Public_variables::set_value;
 const int Public_variables::initail_value;
-
+#endif
 
 Public_variables::Public_variables()
 	:an_int(initail_value)

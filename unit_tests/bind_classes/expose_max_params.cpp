@@ -2,7 +2,7 @@
 
 
 
-
+/*
 TEST_EXPORT_OOLUA_FUNCTIONS_NON_CONST(VoidReturnIntParam,
 								   one,
 								   two,
@@ -14,8 +14,8 @@ TEST_EXPORT_OOLUA_FUNCTIONS_NON_CONST(VoidReturnIntParam,
 								   eight)
 
 
+*/
 
-/*
 EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(VoidReturnIntParam,
 								   one,
 								   two,
@@ -25,7 +25,6 @@ EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(VoidReturnIntParam,
 								   six,
 								   seven,
 								   eight)
-*/
 
 EXPORT_OOLUA_FUNCTIONS_0_CONST(VoidReturnIntParam)
 

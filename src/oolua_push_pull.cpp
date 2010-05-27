@@ -219,7 +219,7 @@ namespace OOLUA
 			void pull2cpp(lua_State* const s, bool& value)
 			{
 
-#ifdef OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 				if(! lua_isboolean(s,-1) )pull_error(s,"bool");
 #endif	
 				value =  lua_toboolean( s, -1) ? true : false;
@@ -227,7 +227,7 @@ namespace OOLUA
 			}
 			void pull2cpp(lua_State* const s, std::string& value)
 			{
-#ifdef OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 				if(! lua_isstring(s,-1) )pull_error(s,"std::string");
 #endif
 				//value = lua_tolstring(s,-1,0);
@@ -239,7 +239,7 @@ namespace OOLUA
 		
 			void pull2cpp(lua_State* const s, double& value)
 			{
-#ifdef OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 				if(! lua_isnumber(s,-1) )pull_error(s,"double");
 #endif
 				value = static_cast<double>( lua_tonumber( s, -1) );
@@ -247,7 +247,7 @@ namespace OOLUA
 			}
 			void pull2cpp(lua_State* const s, float& value)
 			{
-#ifdef OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 				if(! lua_isnumber(s,-1) )pull_error(s,"float");
 #endif
 				value = static_cast<float>( lua_tonumber( s, -1) );
@@ -255,7 +255,7 @@ namespace OOLUA
 			}
 			void pull2cpp(lua_State* const s, lua_CFunction& value)
 			{
-#ifdef OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 				if(! lua_iscfunction(s,-1) )pull_error(s,"lua_CFunction");
 #endif
 				value = lua_tocfunction( s, -1);
