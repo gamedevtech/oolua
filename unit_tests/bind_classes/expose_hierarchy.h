@@ -4,7 +4,7 @@
 #include "oolua.h"
 #include "cpp_hierarchy.h"
 
-#define OOLUA_TEST_VA_ARGS 0
+#define OOLUA_TEST_VA_ARGS 1
 
 OOLUA_CLASS_NO_BASES(Abstract1)
 	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
