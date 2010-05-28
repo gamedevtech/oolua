@@ -15,7 +15,7 @@
 
 
 
-#ifdef __GNC__
+#ifdef __GNUC__
 //The only difference between the code at the following URL and used below, is
 //that macro names got an OOLUA prefix as per all macros in the library
 //http://groups.google.com/group/comp.std.c/browse_thread/thread/77ee8c8f92e4a3fb/346fc464319b1ee5
@@ -197,7 +197,7 @@ int func_name(lua_State* const l)mod\
 	OOLUA_BASES_START __VA_ARGS__ OOLUA_BASES_END
 
 
-#else
+#elif defined __GNUC__
 
 #define TEST_OOLUA_MEM_FUNC(return_type,func_name,...)\
 	TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__))( return_type,func_name,__VA_ARGS__ )
