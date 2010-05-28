@@ -151,7 +151,10 @@ namespace OOLUA
 #	if OOLUA_DEBUG_CHECKS == 1
 		//	assert(0 && "Can not push a valid Lua reference from one lua_State to a different state");
 #	endif
+
+#	if OOLUA_USE_EXCEPTIONS == 0
 			return false;
+#	endif
 		}
 #endif
 		lua_rawgeti(m_lua, LUA_REGISTRYINDEX, m_ref );

@@ -100,8 +100,10 @@ __pragma(warning(pop))
 #if OOLUA_USE_EXCEPTIONS == 1
 #	if defined __GNUC__ && ( ( !defined __EXCEPTIONS) || (defined __EXCEPTIONS && __EXCEPTIONS != 1) ) 
 #			error OOLua has been compiled with exceptions yet they have been disabled for this build 
-#	elif defined _MSC_VER && !defined _HAS_EXCEPTIONS
+#	elif defined _MSC_VER //&& !defined _HAS_EXCEPTIONS
+#		if defined(_HAS_EXCEPTIONS) && (_HAS_EXCEPTIONS == 0) 
 #			error OOLua has been compiled with exceptions yet they have been disabled for this build
+#		endif
 #	endif
 #endif
 
