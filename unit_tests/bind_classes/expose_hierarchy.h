@@ -12,9 +12,11 @@ OOLUA_CLASS_NO_BASES(Abstract1)
 
 #if OOLUA_TEST_VA_ARGS == 1
 	TEST_OOLUA_MEM_FUNC(void,virtualVoidParam3Int,int,int,int)
+
 #else
 	OOLUA_MEM_FUNC_3(void,virtualVoidParam3Int,int,int,int)
 #endif
+
 OOLUA_CLASS_END
 
 
