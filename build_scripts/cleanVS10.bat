@@ -4,7 +4,7 @@ premake4.exe clean
 
 if exist oolua.vcxproj.filters del oolua.vcxproj.filters
 if exist oolua.vcxproj del oolua.vcxproj
-if exist oolua.vcxproj del oolua.vcxproj.user
+if exist oolua.vcxproj.user del oolua.vcxproj.user
 
 
 if exist ooluaVS10.sdf del ooluaVS10.sdf
@@ -45,7 +45,7 @@ cd..
 cd file_generator
 if exist file_generator.vcxproj.filters del file_generator.vcxproj.filters
 if exist file_generator.vcxproj del file_generator.vcxproj
-if exist file_generator.vcxproj del file_generator.vcxproj.user
+if exist file_generator.vcxproj.user del file_generator.vcxproj.user
 cd ..
 
 cd build_scripts
