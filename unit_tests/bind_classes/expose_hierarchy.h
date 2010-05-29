@@ -11,7 +11,7 @@ OOLUA_CLASS_NO_BASES(Abstract1)
 	OOLUA_MEM_FUNC_0(void,func1)
 
 #if OOLUA_TEST_VA_ARGS == 1
-	TEST_OOLUA_MEM_FUNC(void,virtualVoidParam3Int,int,int,int)
+	OOLUA_MEM_FUNC(void,virtualVoidParam3Int,int,int,int)
 
 #else
 	OOLUA_MEM_FUNC_3(void,virtualVoidParam3Int,int,int,int)
@@ -32,7 +32,7 @@ OOLUA_CLASS_NO_BASES(Abstract3)
 OOLUA_CLASS_END
 
 #if OOLUA_TEST_VA_ARGS == 1
-TEST_OOLUA_CLASS_WITH_BASES(Derived1Abstract1,Abstract1)
+OOLUA_CLASS_WITH_BASES(Derived1Abstract1,Abstract1)
 	OOLUA_NO_TYPEDEFS
 	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
@@ -48,7 +48,7 @@ OOLUA_CLASS_END
 #endif
 
 #if OOLUA_TEST_VA_ARGS == 1
-TEST_OOLUA_CLASS_WITH_BASES(TwoAbstractBases,Abstract1,Abstract2)
+OOLUA_CLASS_WITH_BASES(TwoAbstractBases,Abstract1,Abstract2)
 	OOLUA_NO_TYPEDEFS
 	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
@@ -63,7 +63,7 @@ OOLUA_CLASS_END
 #endif
 
 #if OOLUA_TEST_VA_ARGS == 1
-TEST_OOLUA_CLASS_WITH_BASES(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
+OOLUA_CLASS_WITH_BASES(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
 	OOLUA_NO_TYPEDEFS
 	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END

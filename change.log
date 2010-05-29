@@ -91,7 +91,8 @@ Updated build scripts for gnu and xcode
 Started testing of __VA_ARGS__ for macros with >0 parameters see oolua_va_args.h and expose_hierachy.(h/cpp)
 Table::pull_from_stack now returns a bool to indicate the result if called by C++ code and not using exceptions
 Added initialiser to variable "own", a enum value in lua_set_owner
-
+__VA_ARGS__ supported with g++ and mscv
+__VA_ARGS__ and static and c function
 
 
 

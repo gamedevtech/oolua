@@ -73,6 +73,8 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pull_pushBoolThenPullInt_throwTypeError);
 		CPPUNIT_TEST(exceptionSafe_memberFunctionThrowsStdRuntimeError_callThrowsOoluaRuntimeError);
 		CPPUNIT_TEST(call_afterAnExceptionTheStackIsEmpty_stackCountEqualsZero);
+	
+	//CPPUNIT_TEST(push_unregisteredClass_LuaPanic);
 #endif	
 	
 	CPPUNIT_TEST_SUITE_END();
@@ -366,17 +368,7 @@ public:
 		OOLUA::push2lua(*m_lua,i);
 		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,fp))  ,OOLUA::Type_error);
 	}
-
-	//TODO
-	//not registered calls lua_error
-	/*
-	 void push_unregisteredClass_LuaPanic()
-	 {
-	 Stub1 stubtmp;
-	 Stub1* stubptr(&stubtmp);
-	 OOLUA::push2lua(*m_lua,stubptr);
-	 }
-	 */
+	
 	void pull_boolFromEmptyStack_throwTypeError()
 	{
 		bool stub;
@@ -427,6 +419,15 @@ public:
 		
 		CPPUNIT_ASSERT_THROW(m_lua->call("foo",&m),OOLUA::Runtime_error);
 		CPPUNIT_ASSERT_EQUAL(0, m_lua->stack_count() );
+	}
+	
+	//TODO
+	//not registered calls lua_error
+	void push_unregisteredClass_LuaPanic()
+	{
+		Stub1 stubtmp;
+		Stub1* stubptr(&stubtmp);
+		OOLUA::push2lua(*m_lua,stubptr);
 	}
 	
 #endif
