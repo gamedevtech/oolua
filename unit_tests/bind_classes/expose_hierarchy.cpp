@@ -1,11 +1,12 @@
 #include "expose_hierarchy.h"
 
 //this part using va args is not yet fixed
+/*
 #if OOLUA_TEST_VA_ARGS == 1
 #	undef OOLUA_TEST_VA_ARGS
 #	define OOLUA_TEST_VA_ARGS  0
 #endif
-
+*/
 #if OOLUA_TEST_VA_ARGS == 1
 TEST_EXPORT_OOLUA_FUNCTIONS_NON_CONST(Abstract1,func1,virtualVoidParam3Int)
 #else
