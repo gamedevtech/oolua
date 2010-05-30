@@ -80,6 +80,9 @@ public:
     LVD_NOCOPY(StringAsInteragal)
 	void setUp()
 	{
+		std::cout <<"should be 0 :"<<OOLUA_NARG_ALLOW_ZERO(1)<<std::endl;
+		std::cout <<"should be 1 :"<<OOLUA_NARG_ALLOW_ZERO(1,1)<<std::endl;
+		std::cout <<"should be 2 :"<<OOLUA_NARG_ALLOW_ZERO(1,1,1)<<std::endl;
 		m_lua = new OOLUA::Script;
 		m_lua->register_class<StringInteragal>();
 	}

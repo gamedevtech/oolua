@@ -8,9 +8,7 @@ if exist oolua.vcxproj.user del oolua.vcxproj.user
 
 
 if exist ooluaVS10.sdf del ooluaVS10.sdf
-if exist ooluaVS10.suo del ooluaVS10.suo
-::if exist iph rd /S /Q iph
-::if exist ipch deltree /y ipch
+if exist ooluaVS10.suo del /a:h ooluaVS10.suo
 if exist ipch rmdir /s /q ipch
 
 cd unit_tests 
