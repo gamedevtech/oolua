@@ -14,3 +14,5 @@ CALL "C:\Program Files\Microsoft Visual Studio 10.0\Common7\Tools\vcupgrade.exe"
 CALL "C:\Program Files\Microsoft Visual Studio 10.0\Common7\Tools\vcupgrade.exe" .\\unit_tests\\string_is_integral\\string_is_integral.vcproj
 CALL "C:\Program Files\Microsoft Visual Studio 10.0\Common7\Tools\vcupgrade.exe" .\\file_generator\\file_generator.vcproj
 CALL "C:\Program Files\Microsoft Visual Studio 10.0\Common7\Tools\vcupgrade.exe" .\\profile\\profile.vcproj
+
+cd  build_scripts

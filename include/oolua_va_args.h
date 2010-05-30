@@ -10,7 +10,7 @@
 
 
 //any other compilers use the _MSC_VER define?
-#ifdef _MSC_VER && !defined __INTEL_COMPILER
+#if defined _MSC_VER && !defined __INTEL_COMPILER
 #	if _MSC_VER >= 1400 && _MSC_VER <= 1600
 //		vs8(2005) vs9(2008) and vs10(2010) should all be fine with the work around their __VA_ARGS__ bug
 //		https://connect.microsoft.com/VisualStudio/feedback/details/521844/variadic-macro-treating-va-args-as-a-single-parameter-for-other-macros#details
@@ -75,7 +75,7 @@
 
 #elif defined __GNUC__ && __GNUC__ < 3 
 #	warning if you are using a version of g++ less than 3.0 please send a message\
-		to the mailing list @ http://groups.google.com/group/oolua-user \
+		to the mailing list @ http:\/\/groups.google.com\/group\/oolua-user \
 		and I will provide a work around using named variadic arguments.
 #else
 //	Assume the compiler supports __VA_ARGS__ and uses the standard implementation.
