@@ -136,7 +136,7 @@ The token preceding the special `##' must be a comma, and there must be white sp
 		TEST_CONCAT(TEST_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_ALLOW_ZERO(1 ,##__VA_ARGS__)),_CONST) (ClassType ,##__VA_ARGS__)
 
 #	define OOLUA_C_FUNCTION(return_type,func,...)\
-		TEST_CONCAT(OOLUA_C_FUNCTION_,OOLUA_NARG(__VA_ARGS__))(return_type,func ,##__VA_ARGS__)
+		TEST_CONCAT(OOLUA_C_FUNCTION_,OOLUA_NARG_ALLOW_ZERO(1 ,##__VA_ARGS__))(return_type,func ,##__VA_ARGS__)
 
 
 #	define OOLUA_BASES_NONE_NULL(...)\
