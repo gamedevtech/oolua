@@ -26,8 +26,7 @@ includedirs
 					
 defines 
 {
-	--"USING_CPPUNIT",
-	--"OOLUA_STORE_ERROR"
+
 }
 
 links

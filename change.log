@@ -97,7 +97,9 @@ added unit_test_config(root,name) to premake helper file
 added support for __VA_ARGS__ macros with zero arguments for gcc < 3 and uses extension to remove comma
 	i.e. functions that were using EXPORT_OOLUA_FUNCTIONS_0_CONST(Abstract1) can now use
 			EXPORT_OOLUA_FUNCTIONS_CONST(Abstract1)
-Uncommented USING_CPPUNIT and USING_GMOCK macro checks for unit tests in main.cpp			
+Uncommented USING_CPPUNIT and USING_GMOCK macro checks for unit tests in main.cpp	
+OOLUA_PROXY_CLASS_GCC added which always classes with an without bases (name will be changed when coding on another platform)
+
 
 
 2.2

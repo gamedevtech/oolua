@@ -30,9 +30,7 @@ includedirs
 } 
 					
 defines 
-{
-	--"USING_CPPUNIT",
-	--"USING_GMOCK",	
+{	
 	"OOLUA_RUNTIME_CHECKS_ENABLED=1",
 	"OOLUA_STD_STRING_IS_INTEGRAL=1",
 	"OOLUA_SAFE_ID_COMPARE=0",
