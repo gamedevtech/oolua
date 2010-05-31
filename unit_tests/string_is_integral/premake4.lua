@@ -31,12 +31,11 @@ includedirs
 					
 defines 
 {
-	"USING_CPPUNIT",
-	"USING_GMOCK",	
+	--"USING_CPPUNIT",
+	--"USING_GMOCK",	
 	"OOLUA_RUNTIME_CHECKS_ENABLED=1",
 	"OOLUA_STD_STRING_IS_INTEGRAL=1",
-	"OOLUA_SAFE_ID_COMPARE=1",
-	
+	"OOLUA_SAFE_ID_COMPARE=0",
 	"OOLUA_STORE_LAST_ERROR=1",
 	"OOLUA_USE_EXCEPTIONS=0"
 }
@@ -48,6 +47,9 @@ links
 }
 --]]
 
+unit_test_config(root,name)
+
+--[[
 	configuration { "vs*"}
 		postbuildcommands { "\"$(TargetPath)\"" }
 		links{"lua51"}
@@ -87,4 +89,4 @@ links
 	configuration {"linux" }
 		links{ "dl" }
 
-
+--]]

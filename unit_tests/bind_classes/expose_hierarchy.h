@@ -5,16 +5,19 @@
 #include "cpp_hierarchy.h"
 
 #define OOLUA_TEST_VA_ARGS 1
-
+//#if OOLUA_TEST_VA_ARGS == 1
+//OOLUA_CLASS_WITH_BASES(Abstract1)
+//#else
 OOLUA_CLASS_NO_BASES(Abstract1)
+//#endif
 	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
-	OOLUA_MEM_FUNC_0(void,func1)
 
 #if OOLUA_TEST_VA_ARGS == 1
 	OOLUA_MEM_FUNC(void,virtualVoidParam3Int,int,int,int)
-
+	OOLUA_MEM_FUNC(void,func1)
 #else
 	OOLUA_MEM_FUNC_3(void,virtualVoidParam3Int,int,int,int)
+	OOLUA_MEM_FUNC_0(void,func1)
 #endif
 
 OOLUA_CLASS_END
@@ -22,13 +25,23 @@ OOLUA_CLASS_END
 
 OOLUA_CLASS_NO_BASES(Abstract2)
 	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
+
+#if OOLUA_TEST_VA_ARGS == 1
+	OOLUA_MEM_FUNC(void,func2_1)
+#else
 	OOLUA_MEM_FUNC_0(void,func2_1)
+#endif
 OOLUA_CLASS_END
 
 
 OOLUA_CLASS_NO_BASES(Abstract3)
 	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
+
+#if OOLUA_TEST_VA_ARGS == 1
+	OOLUA_MEM_FUNC(void,func3_1)
+#else
 	OOLUA_MEM_FUNC_0(void,func3_1)
+#endif
 OOLUA_CLASS_END
 
 #if OOLUA_TEST_VA_ARGS == 1

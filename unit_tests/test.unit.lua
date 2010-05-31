@@ -42,6 +42,10 @@ links
 	"oolua"
 }
 
+
+unit_test_config(root,name)
+
+--[[
 	configuration { "vs*"}
 		postbuildcommands { "\"$(TargetPath)\"" }
 		links{"lua51"}
@@ -81,4 +85,4 @@ links
 	configuration {"linux" }
 		links{ "dl" }
 
-
+--]]

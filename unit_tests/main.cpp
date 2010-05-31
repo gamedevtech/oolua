@@ -1,27 +1,27 @@
 
-#ifdef USING_CPPUNIT
+//#ifdef USING_CPPUNIT
 #		include <fstream>
 #		include "cppunit/CompilerOutputter.h"
 #		include "cppunit/extensions/TestFactoryRegistry.h"
 #		include "cppunit/ui/text/TestRunner.h"
-#endif
+//#endif
 
-#ifdef USING_GMOCK
+//#ifdef USING_GMOCK
 #	include "gmock/gmock.h"
-#endif
+//#endif
 
 int main(int argc, char** argv)
 {
 	(void)argc;
 	(void)argv;
 
-#ifdef USING_GMOCK
+//#ifdef USING_GMOCK
 	::testing::GTEST_FLAG(throw_on_failure) = true;
 	::testing::InitGoogleMock(&argc, argv);
-#endif
+//#endif
 
 
-#ifdef USING_CPPUNIT
+//#ifdef USING_CPPUNIT
 #	ifdef USING_XML_OUTPUT
 		CPPUNIT_NS::Test *suite = CPPUNIT_NS::TestFactoryRegistry::getRegistry().makeTest();
 		CPPUNIT_NS::TextTestRunner runner;
@@ -39,9 +39,9 @@ int main(int argc, char** argv)
 		runner.addTest( registry.makeTest() );
 		return !runner.run( "", false );
 #	endif
-#else
-		return 0;
-#endif
+//#else
+//		return 0;
+//#endif
 
 }
 
