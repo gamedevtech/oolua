@@ -1,19 +1,16 @@
 
-#ifdef USING_CPPUNIT
+
 #		include <fstream>
 #		include "cppunit/CompilerOutputter.h"
 #		include "cppunit/extensions/TestFactoryRegistry.h"
 #		include "cppunit/ui/text/TestRunner.h"
-#endif
+
 
 int main(int argc, char** argv)
 {
 	(void)argc;
 	(void)argv;
 
-
-
-#ifdef USING_CPPUNIT
 #	ifdef USING_XML_OUTPUT
 		CPPUNIT_NS::Test *suite = CPPUNIT_NS::TestFactoryRegistry::getRegistry().makeTest();
 		CPPUNIT_NS::TextTestRunner runner;
@@ -34,9 +31,7 @@ int main(int argc, char** argv)
 		//as they may fail lets not brake a build yet just report the error
 		return 0;
 #	endif
-#else
-		return 0;
-#endif
+
 
 }
 

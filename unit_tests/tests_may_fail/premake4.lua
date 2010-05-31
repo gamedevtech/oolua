@@ -10,7 +10,7 @@ files
 { 
     	"**.h",
     	"**.cpp",
-    	--root .. "unit_tests/main.cpp",
+    	--root .. "unit_tests/main.cpp", fails soft by returning 1 for own main function
     	root .. "unit_tests/test_classes/common_cppunit_headers.h"
 }
 includedirs 
@@ -26,8 +26,8 @@ includedirs
 					
 defines 
 {
-	"USING_CPPUNIT",
-	"OOLUA_STORE_ERROR"
+	--"USING_CPPUNIT",
+	--"OOLUA_STORE_ERROR"
 }
 
 links
@@ -35,41 +35,5 @@ links
 	"oolua"
 }
 
-	configuration { "vs*"}
-		postbuildcommands { "\"$(TargetPath)\"" }
-		links{"lua51"}
-		
-	configuration { "vs*","Debug"}
-		links{ "cppunitd" }
-
-	configuration { "vs*","Release"}
-		links{ "cppunit" }
-		
-	configuration {"codeblocks" }
-		postbuildcommands { "$(TARGET_OUTPUT_FILE)"}
-				
-
-	configuration {"gmake or codeblocks","linux or macosx" }
-		libdirs {"usr/local/lib","usr/lib"}
-		links{ "cppunit", "lua" }
-
-	configuration {"xcode3" }
-		libdirs {"usr/local/lib","usr/lib"}
-		links{ "cppunit", "lua" }
-		postbuildcommands {"$TARGET_BUILD_DIR/$TARGET_NAME"}
-
-	configuration {"windows","codeblocks","Debug" }
-		links{ "lua", "cppunitd" }
-		
-	configuration {"windows","codeblocks","Release" }	
-		links{ "lua", "cppunit" }
-		
-	configuration {"gmake","Debug"}	
-		postbuildcommands  { root .. "bin/Debug/" .. name }
-		
-	configuration {"gmake","Release"}	
-		postbuildcommands { root .. "bin/Release/" .. name }
-
-	configuration {"linux" }
-		links{ "dl" }
+unit_test_config(root,name)
 
