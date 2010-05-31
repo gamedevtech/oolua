@@ -7,7 +7,7 @@
 #define OOLUA_TEST_VA_ARGS 1
 
 #if OOLUA_TEST_VA_ARGS == 1
-		OOLUA_PROXY_CLASS_GCC(Abstract1)
+	OOLUA_PROXY_CLASS(Abstract1)
 		OOLUA_MEM_FUNC(void,virtualVoidParam3Int,int,int,int)
 		OOLUA_MEM_FUNC(void,func1)
 		OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
@@ -23,7 +23,7 @@
 
 
 #if OOLUA_TEST_VA_ARGS == 1
-	OOLUA_PROXY_CLASS_GCC(Abstract2)
+	OOLUA_PROXY_CLASS(Abstract2)
 		OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
 		OOLUA_MEM_FUNC(void,func2_1)
 	OOLUA_CLASS_END
@@ -37,7 +37,7 @@
 
 
 #if OOLUA_TEST_VA_ARGS == 1
-	OOLUA_PROXY_CLASS_GCC(Abstract3)
+	OOLUA_PROXY_CLASS(Abstract3)
 		OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
 		OOLUA_MEM_FUNC(void,func3_1)
 	OOLUA_CLASS_END
@@ -50,7 +50,7 @@
 
 
 #if OOLUA_TEST_VA_ARGS == 1
-	OOLUA_PROXY_CLASS_GCC(Derived1Abstract1,Abstract1)
+	OOLUA_PROXY_CLASS(Derived1Abstract1,Abstract1)
 		OOLUA_NO_TYPEDEFS
 		OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 	OOLUA_CLASS_END
@@ -82,7 +82,7 @@
 
 #if OOLUA_TEST_VA_ARGS == 1
 //OOLUA_CLASS_WITH_BASES(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
-	OOLUA_PROXY_CLASS_GCC(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
+	OOLUA_PROXY_CLASS(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
 		OOLUA_NO_TYPEDEFS
 		OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 	OOLUA_CLASS_END

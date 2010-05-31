@@ -81,9 +81,9 @@ public:
 	void setUp()
 	{
 		std::cout <<"allow zero"<<std::endl;
-		std::cout <<"should be zero :" <<OOLUA_NARG_ALLOW_ZERO(F) <<std::endl;
-		std::cout <<"should be one :" <<OOLUA_NARG_ALLOW_ZERO(F,A) <<std::endl;
-		std::cout <<"should be two :" <<OOLUA_NARG_ALLOW_ZERO(F,A,B) <<std::endl;
+		std::cout <<"should be zero :" <<OOLUA_NARG_ALLOW_ZERO(11) <<std::endl;
+		std::cout <<"should be one :" <<OOLUA_NARG_ALLOW_ZERO(11,12) <<std::endl;
+		std::cout <<"should be two :" <<OOLUA_NARG_ALLOW_ZERO(11,12,13) <<std::endl;
 		
 		std::cout <<"narg"<<std::endl;
 		std::cout <<"should be one :" <<OOLUA_NARG(1) <<std::endl;

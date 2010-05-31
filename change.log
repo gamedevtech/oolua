@@ -99,8 +99,12 @@ added support for __VA_ARGS__ macros with zero arguments for gcc < 3 and uses ex
 			EXPORT_OOLUA_FUNCTIONS_CONST(Abstract1)
 Uncommented USING_CPPUNIT and USING_GMOCK macro checks for unit tests in main.cpp	
 OOLUA_PROXY_CLASS_GCC added which always classes with an without bases (name will be changed when coding on another platform)
-
-
+OOLUA_PROXT_CLASS_GGC removed suffix
+mscv now supports :
+	EXPORT_OOLUA_FUNCTIONS_CONST(Abstract1
+	EXPORT_OOLUA_FUNCTIONS_NONE_CONST(Abstract1)
+	OOLUA_PROXY_CLASS(Abstract1
+	OOLUA_MEM_FUNC(void,func)
 
 2.2
 *Converted premake scripts to premake4 
