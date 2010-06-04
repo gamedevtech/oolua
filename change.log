@@ -105,6 +105,13 @@ mscv now supports :
 	EXPORT_OOLUA_FUNCTIONS_NONE_CONST(Abstract1)
 	OOLUA_PROXY_CLASS(Abstract1
 	OOLUA_MEM_FUNC(void,func)
+added g++ support for OOLUA_CONSTRUCTOR
+added helper functions
+ OOLUA::get_global
+ OOLUA::set_global
+ and OOLUA::set_global_to_nil
+Fixed calling a static function on a derived instance when the function was registered with a base class
+
 
 2.2
 *Converted premake scripts to premake4 

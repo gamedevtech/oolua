@@ -118,7 +118,28 @@ namespace OOLUA
 	//or supplied by some third party then calling this function
 	//adds the necessary tables and globals for it to work with oolua.
 	void setup_user_lua_state(lua_State* l);
-
+	
+	template<typename T>
+	bool set_global(lua_State* l, char const* name, T& instance)
+	{
+		bool result = OOLUA::push2lua(l, instance);
+		if (!result) return false;
+		lua_setglobal(l, name);
+		return true;
+	}
+	inline void set_global_to_nil(lua_State*l, char const * name)
+	{
+		lua_pushnil(l);
+		lua_setglobal(l, name);
+	}
+	
+	template<typename T>
+	bool get_global(lua_State* l, char const* name, T& instance)
+	{
+		lua_getglobal(l, name);
+		return OOLUA::pull2cpp(l, instance);
+	}
+	
 }//endof namepsace OOLUA
 
 

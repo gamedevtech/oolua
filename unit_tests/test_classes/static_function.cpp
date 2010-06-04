@@ -1,10 +1,8 @@
-#ifndef STATIC_FUNCTIONS_H_
-#	define STATIC_FUNCTIONS_H_
 
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 #	include "expose_static_and_c_functions.h"
-
+#	include "expose_hierarchy.h"
 
 int returns_stack_count(lua_State* l)
 {
@@ -19,8 +17,32 @@ int stack_top_type(lua_State* l)
 	OOLUA::push2lua(l,top);
 	return 1;
 }
+namespace 
+{
+	int static_func_base_return(0);
+	int static_func_derived_return(1);
+}
+int staticFunction_pushes0(lua_State* l)
+{
+	OOLUA::push2lua(l,static_func_base_return);
+	return 1;
+}
+int staticFunction_pushes1(lua_State* l)
+{
+	OOLUA::push2lua(l,static_func_derived_return);
+	return 1;
+}
 
+struct DerivedClassHasStaticFunction : public ClassHasStaticFunction
+{
+};
 
+OOLUA_PROXY_CLASS(DerivedClassHasStaticFunction,ClassHasStaticFunction)
+	OOLUA_NO_TYPEDEFS
+	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
+OOLUA_CLASS_END
+
+EXPORT_OOLUA_NO_FUNCTIONS(DerivedClassHasStaticFunction)
 
 class StaticFunction : public CppUnit::TestFixture 
 {
@@ -43,6 +65,12 @@ class StaticFunction : public CppUnit::TestFixture
 	CPPUNIT_TEST(cFunctionAddedToClassTable_calledOnObjectInstaceWithFloatParamReturnsOneTypeOnStack_SecondReturnIsNil);
 	
 	CPPUNIT_TEST(cFunctionAddedToClassTable_calledProxyStaticWithObjectInstaceAndInputInt_returnEqualsInput);
+	
+	CPPUNIT_TEST(staticFunction_addedToBaseCalledInDerived_callReturnsTrue);
+	CPPUNIT_TEST(staticFunction_addedToBaseOverriddenInDerived_callsDerivedVersion);
+	CPPUNIT_TEST(staticFunction_addedToBaseInLuaAndCalledFromDerivedClassName_callReturnsTrue);
+	CPPUNIT_TEST(staticData_addedOnBaseInLuaOnBase_calledOnDerived_callReturnsTrue);
+	CPPUNIT_TEST(staticData_addedOnBaseInLuaOnBase_calledOnDerived_resultIsSetValue);
 	
 #if OOLUA_STORE_LAST_ERROR ==1
 	CPPUNIT_TEST(staticFunc_functionIsUnregistered_callReturnsFalse);
@@ -240,7 +268,93 @@ public:
 		OOLUA::pull2cpp(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(input,result); 
 	}
+	void staticFunction_registeredInBaseCalledInDerived_resultReturnsTrue()
+	{
+		OOLUA::register_class_and_bases<DerivedClassHasStaticFunction>(*m_lua);
+		m_lua->register_class_static<ClassHasStaticFunction>("stack_count"
+															 ,&returns_stack_count);
+		
+		m_lua->run_chunk("foo = function(obj) "
+						 "return obj:stack_count() "
+						 "end ");
+		DerivedClassHasStaticFunction derived;
+		DerivedClassHasStaticFunction* dp = &derived;
+		//std::cout <<"length of bases  " <<TYPELIST::Length<OOLUA::Proxy_class<DerivedClassHasStaticFunction>::Bases>::value 
+		//<<"\twrote in file :" <<__FILE__ <<std::endl;
+		bool result = m_lua->call("foo",dp);
+		CPPUNIT_ASSERT_EQUAL(result, true);
+	}
+
+	void staticFunction_addedToBaseCalledInDerived_callReturnsTrue()
+	{
+		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		m_lua->register_class_static<Abstract3>("stack_count",&returns_stack_count);
+		
+		m_lua->run_chunk("foo = function(obj) "
+						 "return obj:stack_count() "
+						 "end ");
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		bool result = m_lua->call("foo",&derived);
+		CPPUNIT_ASSERT_EQUAL(result, true);
+	}
+
+	void staticFunction_addedToBaseOverriddenInDerived_callsDerivedVersion()
+	{
+		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		m_lua->register_class_static<Abstract3>("static_func",&staticFunction_pushes0);
+		m_lua->register_class_static<DerivedFromTwoAbstractBasesAndAbstract3>("static_func",&staticFunction_pushes1);
+		
+		m_lua->run_chunk("foo = function(obj) "
+						 "return obj:static_func() "
+						 "end ");
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		m_lua->call("foo",&derived);
+		int result;
+		OOLUA::pull2cpp(*m_lua,result);
+		CPPUNIT_ASSERT_EQUAL(static_func_derived_return, result);
+	}
+	void staticFunction_addedToBaseInLuaAndCalledFromDerivedClassName_callReturnsTrue()
+	{
+		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		m_lua->run_chunk("function Abstract3:lua_func() return 1 end ");
+		
+		//m_lua->run_chunk("Abstract3[\"static_data\"]=3 ");
+
+		m_lua->run_chunk("foo = function() "
+						 "return DerivedFromTwoAbstractBasesAndAbstract3:lua_func() "
+						 "end ");
+		bool result = m_lua->call("foo");
+		CPPUNIT_ASSERT_EQUAL(result, true);
+	}
+	void staticData_addedOnBaseInLuaOnBase_calledOnDerived_callReturnsTrue()
+	{
+		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		m_lua->run_chunk("Abstract3[\"static_data\"]=1 ");
+		
+		m_lua->run_chunk("foo = function() "
+						 "return DerivedFromTwoAbstractBasesAndAbstract3.static_data "
+						 "end ");
+		bool result = m_lua->call("foo");
+		CPPUNIT_ASSERT_EQUAL(result, true);
+	}
 	
+	void staticData_addedOnBaseInLuaOnBase_calledOnDerived_resultIsSetValue()
+	{
+		OOLUA::register_class_and_bases<DerivedFromTwoAbstractBasesAndAbstract3>(*m_lua);
+		m_lua->run_chunk("Abstract3[\"static_data\"]=1 ");
+		
+		m_lua->run_chunk("foo = function() "
+						 "return DerivedFromTwoAbstractBasesAndAbstract3.static_data "
+						 "end ");
+		m_lua->call("foo");
+		int result;
+		OOLUA::pull2cpp(*m_lua,result);
+		CPPUNIT_ASSERT_EQUAL(int(1),result);
+	}
+
+
+
+
 	
 	
 #if OOLUA_STORE_LAST_ERROR ==1
@@ -271,8 +385,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION(StaticFunction);
 
 
 
-
-#endif
 
 
 
