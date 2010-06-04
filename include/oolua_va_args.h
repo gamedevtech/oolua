@@ -139,7 +139,8 @@ The token preceding the special `##' must be a comma, and there must be white sp
 		TEST_CONCAT(OOLUA_C_FUNCTION_,OOLUA_NARG_ALLOW_ZERO(1 ,##__VA_ARGS__))(return_type,func ,##__VA_ARGS__)
 
 #	define OOLUA_CONSTRUCTOR(...)\
-		TEST_CONCAT(OOLUA_CONSTRUCTOR_,OOLUA_NARG_ALLOW_ZERO(1 ,##__VA_ARGS__))(__VA_ARGS__)
+		TEST_CONCAT(OOLUA_CONSTRUCTOR_,OOLUA_NARG(__VA_ARGS__))(__VA_ARGS__)
+		//TEST_CONCAT(OOLUA_CONSTRUCTOR_,OOLUA_NARG_ALLOW_ZERO(1 ,##__VA_ARGS__))(__VA_ARGS__)
 
 
 #	define OOLUA_BASES_NONE_NULL(...)\
@@ -220,7 +221,9 @@ The token preceding the special `##' must be a comma, and there must be white sp
 		TEST_CONCAT OOLUA_LEFT_PAREN OOLUA_C_FUNCTION_,OOLUA_NARG_ALLOW_ZERO OOLUA_LEFT_PAREN 1 , ##__VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN return_type,func , ##__VA_ARGS__ OOLUA_RIGHT_PAREN
 		/*TEST_CONCAT(OOLUA_C_FUNCTION_,OOLUA_NARG(__VA_ARGS__))(return_type,func,__VA_ARGS__)*/
 
-
+#	define OOLUA_CONSTRUCTOR(...)\
+		TEST_CONCAT OOLUA_LEFT_PAREN OOLUA_CONSTRUCTOR_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+		//TEST_CONCAT(OOLUA_CONSTRUCTOR_,OOLUA_NARG(__VA_ARGS__))(__VA_ARGS__)
 
 #	define OOLUA_BASES_NONE_NULL(...)\
 		OOLUA_BASIC \
@@ -285,6 +288,9 @@ The token preceding the special `##' must be a comma, and there must be white sp
 
 #	define OOLUA_C_FUNCTION(return_type,func,...)\
 		TEST_CONCAT(OOLUA_C_FUNCTION_,OOLUA_NARG(__VA_ARGS__))(return_type,func,__VA_ARGS__)
+
+#	define OOLUA_CONSTRUCTOR(...)\
+		TEST_CONCAT(OOLUA_CONSTRUCTOR_,OOLUA_NARG(__VA_ARGS__))(__VA_ARGS__)
 
 #endif
 
