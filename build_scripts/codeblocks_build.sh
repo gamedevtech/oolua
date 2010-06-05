@@ -1,4 +1,5 @@
 #!/bin/bash 
+cd ..
 premake4 clean
 premake4 codeblocks linux
 
@@ -24,3 +25,5 @@ cp ./bin/Debug/*.a ./local_install/
 cp ./bin/Release/*.a ./local_install/
 
 premake4 clean
+
+cd build_scripts
