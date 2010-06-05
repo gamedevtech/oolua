@@ -20,8 +20,7 @@ codeblocks --build ./unit_tests/string_is_integral/string_is_integral.cbp --targ
 
 
 codeblocks --build ./unit_tests/test.unit.using_exceptions.cbp --target="Debug" | tee ./build_logs/exceptions_codeblocks_debug.log
-codeblocks --build ./unit_tests/test.unit.using_exceptions.cbp --target="Release" | tee ./build_logs
-exceptions_codeblocks_debug.log
+codeblocks --build ./unit_tests/test.unit.using_exceptions.cbp --target="Release" | tee ./build_logs/exceptions_codeblocks_debug.log
 
 
 premake4 clean
