@@ -20,7 +20,7 @@ namespace OOLUA
 		typedef bool (*is_const_func_sig)(Lua_ud* ud);
 		template<int NotTheSameSize>
 		struct VoidPointerSameSizeAsFunctionPointer;
-		
+
 		template<int NotTheSameSize>
 		struct VoidPointerSameSizeAsFunctionPointer
 		{
@@ -36,7 +36,7 @@ namespace OOLUA
 			}
 		};
 
-		
+
 		template<>
 		struct VoidPointerSameSizeAsFunctionPointer< sizeof(is_const_func_sig) >
 		{
@@ -45,28 +45,41 @@ namespace OOLUA
 				//it is safe as the pointers are the same size
 				//yet we need to stop warnings
 				is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
-				lua_pushlightuserdata(l,*(void**)&func );
-				lua_gettable(l, LUA_REGISTRYINDEX); 
+                                void** stopwarnings ( (void**)&func );
+				lua_pushlightuserdata(l,*stopwarnings);
+				//lua_pushlightuserdata(l,*(void**)&func );
+				//lua_CFunction func = (lua_CFunction)(OOLUA::INTERNAL::id_is_const);
+				//lua_pushcfunction( l, func);
+				lua_gettable(l, LUA_REGISTRYINDEX);
 			}
-			static void setWeakTable(lua_State* l,int value_index)			
+			static void setWeakTable(lua_State* l,int value_index)
 			{
 				//it is safe as the pointers are the same size
 				//yet we need to stop warnings
-				is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
-				lua_pushlightuserdata(l,*(void**)&func );
+				//is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
+				//lua_pushlightuserdata(l,*(void**)&func );
+				//lua_CFunction func = (lua_CFunction)(OOLUA::INTERNAL::id_is_const);
+				//lua_pushcfunction( l, func);
+
+								is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
+                                void** stopwarnings ( (void**)&func );
+				lua_pushlightuserdata(l,*stopwarnings);
+
 				lua_pushvalue(l, value_index);
 				lua_settable(l, LUA_REGISTRYINDEX);
 			}
 		};
-		
-		typedef VoidPointerSameSizeAsFunctionPointer<sizeof(void*)> Weak_table;
-		
+
+		//typedef VoidPointerSameSizeAsFunctionPointer<sizeof(void*)> Weak_table;
+
+		typedef VoidPointerSameSizeAsFunctionPointer<sizeof(is_const_func_sig)> Weak_table;
+
 		//pushes the weak top and returns its index
 		int push_weak_table(lua_State* l);
 		template<typename T>Lua_ud* add_ptr(lua_State* /*const*/ l,T* const ptr,bool isConst);
 
 		template<typename T>Lua_ud* find_ud(lua_State* /*const*/ l,T* ptr,bool is_const);
-	
+
 		bool is_there_an_entry_for_this_void_pointer(lua_State* l,void* ptr);
 		bool is_there_an_entry_for_this_void_pointer(lua_State* l,void* ptr,int tableIndex);
 
@@ -184,7 +197,7 @@ namespace OOLUA
 			ud->name = (char*) (use_const_name? OOLUA::Proxy_class<T>::class_name_const :OOLUA::Proxy_class<T>::class_name);
 			ud->none_const_name = (char*) OOLUA::Proxy_class<T>::class_name;
 			ud->name_size = OOLUA::Proxy_class<T>::name_size;
-			
+
 			//change the metatable associated with the ud
 			lua_getfield(l, LUA_REGISTRYINDEX,ud->name);
 			lua_setmetatable(l,-2);//set ud's metatable to this
