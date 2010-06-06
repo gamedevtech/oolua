@@ -44,35 +44,26 @@ namespace OOLUA
 			{
 				//it is safe as the pointers are the same size
 				//yet we need to stop warnings
+				//NOTE: in 5.2 we can push a light c function here
 				is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
                                 void** stopwarnings ( (void**)&func );
 				lua_pushlightuserdata(l,*stopwarnings);
-				//lua_pushlightuserdata(l,*(void**)&func );
-				//lua_CFunction func = (lua_CFunction)(OOLUA::INTERNAL::id_is_const);
-				//lua_pushcfunction( l, func);
 				lua_gettable(l, LUA_REGISTRYINDEX);
 			}
 			static void setWeakTable(lua_State* l,int value_index)
 			{
 				//it is safe as the pointers are the same size
 				//yet we need to stop warnings
-				//is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
-				//lua_pushlightuserdata(l,*(void**)&func );
-				//lua_CFunction func = (lua_CFunction)(OOLUA::INTERNAL::id_is_const);
-				//lua_pushcfunction( l, func);
-
-								is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
-                                void** stopwarnings ( (void**)&func );
+				//NOTE: in 5.2 we can push a light c function here
+				is_const_func_sig func = OOLUA::INTERNAL::id_is_const;
+                void** stopwarnings ( (void**)&func );
 				lua_pushlightuserdata(l,*stopwarnings);
-
 				lua_pushvalue(l, value_index);
 				lua_settable(l, LUA_REGISTRYINDEX);
 			}
 		};
 
-		//typedef VoidPointerSameSizeAsFunctionPointer<sizeof(void*)> Weak_table;
-
-		typedef VoidPointerSameSizeAsFunctionPointer<sizeof(is_const_func_sig)> Weak_table;
+		typedef VoidPointerSameSizeAsFunctionPointer<sizeof(void*)> Weak_table;
 
 		//pushes the weak top and returns its index
 		int push_weak_table(lua_State* l);
