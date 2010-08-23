@@ -14,6 +14,7 @@ OOLUA_CLASS_NO_BASES(Function_calls)
 	OOLUA_MEM_FUNC_1(void,ptr_to_const_char,char const* )
 	OOLUA_MEM_FUNC_0(char*,returns_char_ptr)
 	OOLUA_MEM_FUNC_0(char const*,returns_const_char_ptr)
+	OOLUA_MEM_FUNC_RENAME(renamedUsingVaArgs,void,abstract_func_1,int);
 OOLUA_CLASS_END
 
 

@@ -1,37 +1,6 @@
 #ifndef CPP_CONST_FUNCS_H
 #	define CPP_CONST_FUNCS_H_
 
-/*
-class C_simple
-{
-public:
-	C_simple():i_(0){}
-	C_simple(int i):i_(i){}
-	int get_int() const
-	{
-		return i_;	
-	}
-	void set_int(int const& i)
-	{
-		i_ = i;
-	}
-	void func()
-	{
-		++i_;
-	}
-	C_simple const bar()const
-	{
-		return *this;
-	}
-	C_simple const* bar1()const
-	{
-		return this;
-	}
-private:
-	int i_;
-
-};
-*/
 
 #include "gmock/gmock.h"
 
@@ -47,6 +16,10 @@ public:
 	virtual void cpp_func()
 	{
 		++i;
+	}
+	int function_to_test_rename_using_varags(int dont_care)const
+	{
+		return dont_care;
 	}
 private:
 	int i;//stop functions being compiled away

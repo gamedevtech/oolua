@@ -9,6 +9,8 @@ OOLUA_CLASS_NO_BASES(Constant)
 	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 	OOLUA_MEM_FUNC_0_CONST(int,cpp_func_const)
 	OOLUA_MEM_FUNC_0(void,cpp_func)
+	OOLUA_MEM_FUNC_CONST_RENAME(renamedUsingVaArgs,int,function_to_test_rename_using_varags,int)
+
 OOLUA_CLASS_END
 
 
