@@ -29,14 +29,16 @@ void export_func_to_lua_header(std::string & save_directory,int amount)
 	}
 	f<<std::endl <<std::endl;
 	f<<"/// @def end the assigning of functions to the array\n"
-		<<"#define CLASS_LIST_MEMBERS_END {0,0}};\n\n"
+		<<"#define CLASS_LIST_MEMBERS_END {0,0}};}\n\n"
 		<<"/// @def define the constants in the class, which are the the class name and the member function array\n"
 		<<"#define CLASS_LIST_MEMBERS_START_OOLUA_NON_CONST(Class)\\" <<std::endl
+		<<"namespace OOLUA { \\" <<std::endl
 		<<"char const OOLUA::Proxy_class< Class >::class_name[] = #Class;\\" <<std::endl
 		<<"int const OOLUA::Proxy_class< Class >::name_size = sizeof(#Class)-1; \\" <<std::endl
 		<<"OOLUA::Proxy_class< Class >::Reg_type OOLUA::Proxy_class< Class >::class_methods[]={" <<std::endl
 		<<std::endl
 		<<"#define CLASS_LIST_MEMBERS_START_OOLUA_CONST(Class)\\" <<std::endl
+		<<"namespace OOLUA { \\" <<std::endl
 		<<"char const OOLUA::Proxy_class< Class >::class_name_const[] = #Class \"_const\";\\" <<std::endl
 		<<"OOLUA::Proxy_class< Class >::Reg_type_const OOLUA::Proxy_class< Class >::class_methods_const[]={"<<std::endl<<std::endl;
 

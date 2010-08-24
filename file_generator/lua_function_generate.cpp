@@ -39,7 +39,8 @@ void rest_of_struct_body(std::ofstream&f)
 	<<tab<<"bool call(int const& count);\n"
 	<<tab<<"void set_function(std::string const& func);\n"
 	<<tab<<"void set_function(Lua_func_ref const& func);\n"
-	<<tab<<"lua_State* m_lua;\n";
+	<<tab<<"lua_State* m_lua;\n"
+	<<tab<<"int m_error_func_index;\n";
 }
 void lua_function_header(std::string & save_directory,int maxParams)
 {

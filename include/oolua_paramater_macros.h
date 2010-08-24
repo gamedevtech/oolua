@@ -11,8 +11,7 @@
 #ifndef OOLUA_PARAMETER_MACROS_H_
 #	define OOLUA_PARAMETER_MACROS_H_
 
-#include "oolua_config.h"
-
+#	include "oolua_config.h"
 //param return macros
 #define OOLUA_BACK_INTERNAL_(NUM)\
 MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT_OOLUA \

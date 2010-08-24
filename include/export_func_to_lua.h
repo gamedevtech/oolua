@@ -29,15 +29,17 @@
 
 
 /// @def end the assigning of functions to the array
-#define CLASS_LIST_MEMBERS_END {0,0}};
+#define CLASS_LIST_MEMBERS_END {0,0}};}
 
 /// @def define the constants in the class, which are the the class name and the member function array
 #define CLASS_LIST_MEMBERS_START_OOLUA_NON_CONST(Class)\
+namespace OOLUA { \
 char const OOLUA::Proxy_class< Class >::class_name[] = #Class;\
 int const OOLUA::Proxy_class< Class >::name_size = sizeof(#Class)-1; \
 OOLUA::Proxy_class< Class >::Reg_type OOLUA::Proxy_class< Class >::class_methods[]={
 
 #define CLASS_LIST_MEMBERS_START_OOLUA_CONST(Class)\
+namespace OOLUA { \
 char const OOLUA::Proxy_class< Class >::class_name_const[] = #Class "_const";\
 OOLUA::Proxy_class< Class >::Reg_type_const OOLUA::Proxy_class< Class >::class_methods_const[]={
 

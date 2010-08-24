@@ -15,10 +15,10 @@ void print_back_helper_macros(std::ofstream& f,int num)
 	f<<"//param return macros\n";
 
 	f<<"#define OOLUA_BACK_INTERNAL_(NUM)\\\n";
-	f<<"MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT \\\n";
+	f<<"MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT_OOLUA \\\n";
 	f<<tab<<"if( P ## NUM ## _::out )\\\n";
 	f<<tab<<tab<<"OOLUA::Member_func_helper<P ## NUM ##_,P ## NUM ##_::owner>::push2lua(l,p ## NUM);\\\n";
-	f<<"MSC_POP_COMPILER_WARNING\n\n";
+	f<<"MSC_POP_COMPILER_WARNING_OOLUA\n\n";
 
 	for(int i = 1; i <=num; ++i)
 	{
@@ -38,10 +38,10 @@ void print_param_macros(std::ofstream& f,int num)
 	//a null pointer which it is an error to be constructed from
 	//<<tab<<"P ## NUM ##_::pull_type p ## NUM( static_cast<P ## NUM ##_::pull_type>(0) );\\\n"
 	f<<tab<<"P ## NUM ##_::pull_type p ## NUM;\\\n"
-		<<tab<<"MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT\\\n"
+		<<tab<<"MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT_OOLUA\\\n"
 		<<tab<<"if( P ## NUM ##_::in )\\\n"
 		<<tab<<tab<<"OOLUA::Member_func_helper<P ## NUM ##_,P ## NUM ##_::owner>::pull2cpp(l,p ## NUM);\\\n"
-		<<tab<<"MSC_POP_COMPILER_WARNING\n\n";
+		<<tab<<"MSC_POP_COMPILER_WARNING_OOLUA\n\n";
 
 	std::string params("OOLUA_PARAMS_INTERNAL_");
 	std::string params_define(std::string("#define ") + params);
@@ -224,7 +224,9 @@ void paramater_helper_macros(std::string & save_directory,int noOfParams)
 	std::ofstream f( file.c_str() );
 	add_file_header(f,fileName);
 	include_guard_top(f,"OOLUA_PARAMETER_MACROS_H_");
-
+	
+	include_header(f,"oolua_config.h");
+	/*
 	f<<"#ifdef _MSC_VER \n"
 		<<"#"<<tab<<"define MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT \\\n"
 		<<tab<<"__pragma(warning(push)) \\\n"
@@ -235,7 +237,7 @@ void paramater_helper_macros(std::string & save_directory,int noOfParams)
 		<<"#"<<tab<<"define MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT \n"
 		<<"#"<<tab<<"define MSC_POP_COMPILER_WARNING \n"
 	<<"#endif\n";
-
+	 */
 	print_back_helper_macros(f,noOfParams);
 	print_param_macros(f,noOfParams);
 
