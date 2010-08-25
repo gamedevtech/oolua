@@ -489,8 +489,8 @@ namespace OOLUA
 		typedef typename out_param::type type;
 		typedef typename out_param::pull_type pull_type;
 		typedef typename out_param::raw raw;
-		enum { in = 0};
-		enum { out = 1};
+		enum { in = out_param::in};
+		enum { out = out_param::out};
 		enum { owner = No_change};
 		enum { is_by_value = out_param::is_by_value };
 		enum { is_constant = out_param::is_constant };
