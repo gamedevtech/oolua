@@ -117,7 +117,7 @@ The token preceding the special `##' must be a comma, and there must be white sp
 #	define OOLUA_MEM_FUNC(return_type,func_name,...)\
 		TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG_ALLOW_ZERO(1 , ##__VA_ARGS__))( return_type,func_name ,##__VA_ARGS__ )
 
-#	define OOLUA_MEM_FUNC_CONST(return_value,func,...)\
+#	define OOLUA_MEM_FUNC_CONST(return_type,func_name,...)\
 		TEST_CONCAT(TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG_ALLOW_ZERO(1 ,##__VA_ARGS__)),_CONST)(return_type,func_name ,##__VA_ARGS__)
 
 #	define OOLUA_MEM_FUNC_RENAME(new_name,return_type,func_name,...)\
@@ -188,15 +188,15 @@ The token preceding the special `##' must be a comma, and there must be white sp
 	TEST_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_,OOLUA_NARG_ALLOW_ZERO OOLUA_LEFT_PAREN 1 , ##__VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN return_type,func_name , ##__VA_ARGS__ OOLUA_RIGHT_PAREN
 		/*TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__))( return_type,func_name,__VA_ARGS__ )*/
 
-#	define OOLUA_MEM_FUNC_CONST(return_value,func,...)\
+#	define OOLUA_MEM_FUNC_CONST(return_type,func_name,...)\
 		TEST_CONCAT OOLUA_LEFT_PAREN TEST_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_,OOLUA_NARG_ALLOW_ZERO OOLUA_LEFT_PAREN 1 , ## __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN ,_CONST OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN return_type,func_name , ##__VA_ARGS__ OOLUA_RIGHT_PAREN
 		/*TEST_CONCAT(TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__)),_CONST)(return_type,func_name,__VA_ARGS__) */
 
-#	define OOLUA_MEM_FUNC_RENAME(new_name,return_value,func_name,...)\
+#	define OOLUA_MEM_FUNC_RENAME(new_name,return_type,func_name,...)\
 		TEST_CONCAT OOLUA_LEFT_PAREN TEST_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_,OOLUA_NARG_ALLOW_ZERO OOLUA_LEFT_PAREN 1 , ##__VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN ,_RENAME OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN new_name,return_type,func_name , ##__VA_ARGS__ OOLUA_RIGHT_PAREN
 		/*TEST_CONCAT(TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__)),_RENAME)(new_name,return_type,func_name,__VA_ARGS__)*/
 
-#	define OOLUA_MEM_FUNC_CONST_RENAME(new_name,return_value,...)\
+#	define OOLUA_MEM_FUNC_CONST_RENAME(new_name,return_type,...)\
 		TEST_CONCAT OOLUA_LEFT_PAREN TEST_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_,OOLUA_NARG_ALLOW_ZERO OOLUA_LEFT_PAREN 1 , ##__VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN ,_CONST_RENAME OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN new_name,return_type,func_name , ##__VA_ARGS__ OOLUA_RIGHT_PAREN
 		/*TEST_CONCAT(TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__)),_CONST_RENAME)(new_name,return_type,func_name,__VA_ARGS__)*/
 
@@ -268,13 +268,13 @@ The token preceding the special `##' must be a comma, and there must be white sp
 #	define OOLUA_MEM_FUNC(return_type,func_name,...)\
 		TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__))( return_type,func_name,__VA_ARGS__ )
 
-#	define OOLUA_MEM_FUNC_CONST(return_value,func,...)\
+#	define OOLUA_MEM_FUNC_CONST(return_type,func_name,...)\
 		TEST_CONCAT(TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__)),_CONST)(return_type,func_name,__VA_ARGS__)
 
-#	define OOLUA_MEM_FUNC_RENAME(new_name,return_value,func_name,...)\
+#	define OOLUA_MEM_FUNC_RENAME(new_name,return_type,func_name,...)\
 		TEST_CONCAT(TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__)),_RENAME)(new_name,return_type,func_name,__VA_ARGS__)
 
-#	define OOLUA_MEM_FUNC_CONST_RENAME(new_name,return_value,...)\
+#	define OOLUA_MEM_FUNC_CONST_RENAME(new_name,return_type,...)\
 		TEST_CONCAT(TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__)),_CONST_RENAME)(new_name,return_type,func_name,__VA_ARGS__)
 
 #	define OOLUA_PUBLIC_INHERIT(...) \

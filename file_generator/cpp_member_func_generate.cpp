@@ -125,7 +125,7 @@ void print_proxy_imps(std::ofstream&f,int num_params)
 			<<"{"<<macro_endl
 			<<tab<<"assert(m_this);"<<macro_endl;
 		if(i!=0)f<<tab<<"OOLUA_PARAMS_INTERNAL_"<<i<<"("<<params.str().c_str()<<")"<<macro_endl;
-		f<<tab<<"typedef param_type<return_value > R;"<<macro_endl;
+		f<<tab<<"typedef return_type_traits<return_value > R;"<<macro_endl;
 		std::stringstream types;
 		std::stringstream template_types;
 		std::stringstream param_types;

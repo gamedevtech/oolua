@@ -467,21 +467,50 @@ namespace OOLUA
 		enum { is_integral = p_type::is_integral };
 	};
 
-	template<typename T>
-	struct return_type_
+	
+	template<typename T, bool True>
+	struct return_type_typedef
 	{
-		typedef param_type_typedef<T,has_param_traits<T>::value> p_type;
-		typedef typename p_type::type  type;
-		typedef typename p_type::pull_type pull_type;
-		typedef typename p_type::raw raw_type;
+		typedef typename T::type type;
+		typedef typename T::pull_type pull_type;
+		typedef typename T::raw raw;
+		enum { in = T::in};
+		enum { out = T::out};
+		enum { owner = T::owner};
+		enum { is_by_value = T::is_by_value };
+		enum { is_constant = T::is_constant };
+		enum { is_integral = T::is_integral };
+	};
+	
+	template<typename T>
+	struct return_type_typedef<T,false>
+	{
+		typedef out_p<T> out_param;
+		typedef typename out_param::type type;
+		typedef typename out_param::pull_type pull_type;
+		typedef typename out_param::raw raw;
+		enum { in = 0};
+		enum { out = 1};
+		enum { owner = No_change};
+		enum { is_by_value = out_param::is_by_value };
+		enum { is_constant = out_param::is_constant };
+		enum { is_integral = out_param::is_integral };
+	};
+	
+	template<typename T>
+	struct return_type_traits
+	{
+		typedef return_type_typedef<T,has_param_traits<T>::value> r_type;
+		typedef typename r_type::type  type;
+		typedef typename r_type::pull_type pull_type;
+		typedef typename r_type::raw raw_type;
 
-		enum { in = p_type::in };
-		enum { out = p_type::out };
-		enum { owner = p_type::owner };
-		enum { is_by_value = p_type::is_by_value  };
-		enum { is_constant = p_type::is_constant  };
-		enum { is_integral = p_type::is_integral  };
-
+		enum { in = r_type::in };
+		enum { out = r_type::out };
+		enum { owner = r_type::owner };
+		enum { is_by_value = r_type::is_by_value  };
+		enum { is_constant = r_type::is_constant  };
+		enum { is_integral = r_type::is_integral  };
 	};
 
 	template<typename Pull_type,typename Real_type>struct Converter;
@@ -1012,6 +1041,19 @@ namespace OOLUA
 		enum { out = 1};
 		enum { owner = No_change};
 		enum { is_by_value = 1 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+	template<>
+	struct out_p<std::string&>
+	{
+		typedef std::string& type;
+		typedef std::string pull_type;
+		typedef std::string raw;
+		enum { in = 0};
+		enum { out = 1};
+		enum { owner = No_change};
+		enum { is_by_value = 0 };
 		enum { is_constant = 0 };
 		enum { is_integral = 1 };
 	};

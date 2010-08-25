@@ -13,6 +13,7 @@ public:
     virtual std::string param_string_returnsString(std::string s)=0;
 	virtual void param_ref_2_string(std::string& s)=0;
 	virtual void param_ref_2_constString(std::string const& s)=0;
+	virtual std::string& returns_ref_2_string() = 0;
 };
 
 	class MockStringInteragal : public StringInteragal
@@ -22,6 +23,7 @@ public:
 		MOCK_METHOD1(param_string_returnsString,std::string (std::string));
 		MOCK_METHOD1(param_ref_2_string,void(std::string&));
 		MOCK_METHOD1(param_ref_2_constString,void (std::string const&));
+		MOCK_METHOD0(returns_ref_2_string,std::string& ());
 	};
 
 	OOLUA_CLASS_NO_BASES(StringInteragal)
@@ -30,13 +32,25 @@ public:
         OOLUA_MEM_FUNC_1(void,param_ref_2_string,OOLUA::in_out_p<std::string&>)
         OOLUA_MEM_FUNC_1(void,param_ref_2_constString,OOLUA::in_p<std::string const&>)
         OOLUA_MEM_FUNC_1(std::string,param_string_returnsString,std::string)
-    OOLUA_CLASS_END
+		OOLUA_MEM_FUNC_0(OOLUA::out_p<std::string&>,returns_ref_2_string)
+/*
+int returns_ref_2_string(lua_State* const l)
+{
+	assert(m_this);
+	typedef return_type_traits<std::string&> R;
+	typedef R::type (class_::*funcType )() ;
+	OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<funcType>(l,m_this,&class_::returns_ref_2_string);
+	return total_out_params< Type_list<out_p<std::string& > >::type> ::out;
+}
+*/
+	OOLUA_CLASS_END
 
-EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(StringInteragal
+EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(StringInteragal
 								   ,param_string
 								   ,param_ref_2_string
 								   ,param_ref_2_constString
 								   ,param_string_returnsString
+								   ,returns_ref_2_string
 								   )
 EXPORT_OOLUA_FUNCTIONS_0_CONST(StringInteragal)
 
