@@ -505,7 +505,6 @@ MSC_POP_COMPILER_WARNING_OOLUA
 						pull_class_type_error(s,OOLUA::param_type<T*>::is_constant 
 												? Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name_const 
 												: Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name);
-						return ;
 					}
 #endif
 					value = class_ptr;
@@ -521,7 +520,6 @@ MSC_POP_COMPILER_WARNING_OOLUA
 					if(!value)
 					{
 						pull_error(s,"pulling pointer to intergral type and was passed NULL. OOLua can not dereference it");
-						return;
 					}
 #endif				
 					OOLUA::INTERNAL::LUA_CALLED::pull2cpp(s,*value);
@@ -555,10 +553,8 @@ MSC_POP_COMPILER_WARNING_OOLUA
 					pull_class_type_error(s,OOLUA::param_type<T*>::is_constant 
 										  ? Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name_const 
 										  : Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name);
-					return ;
 				}
 #endif
-				//assert(class_ptr);
 				value.m_ptr = class_ptr;
 				INTERNAL::set_owner(s,value.m_ptr,OOLUA::Cpp);
 				lua_pop( s, 1);
