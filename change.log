@@ -4,6 +4,7 @@ platforms fixed: gcc > 3.0
 added ability to typedef classes inside the OOLUA namespace see:
 http://groups.google.com/group/oolua-user/browse_thread/thread/688ddac870fb76d5
 fix for va args to rename a function in Visual Studio
+fix for va args to rename a function when not Visual Studio or gcc
 
 1.3.1
 Work around for Visual Studio as reported by Tom on the mailing list added

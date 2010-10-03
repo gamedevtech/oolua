@@ -274,7 +274,7 @@ The token preceding the special `##' must be a comma, and there must be white sp
 #	define OOLUA_MEM_FUNC_RENAME(new_name,return_type,func_name,...)\
 		TEST_CONCAT(TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__)),_RENAME)(new_name,return_type,func_name,__VA_ARGS__)
 
-#	define OOLUA_MEM_FUNC_CONST_RENAME(new_name,return_type,...)\
+#	define OOLUA_MEM_FUNC_CONST_RENAME(new_name,return_type,func_name,...)\
 		TEST_CONCAT(TEST_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG(__VA_ARGS__)),_CONST_RENAME)(new_name,return_type,func_name,__VA_ARGS__)
 
 #	define OOLUA_PUBLIC_INHERIT(...) \
