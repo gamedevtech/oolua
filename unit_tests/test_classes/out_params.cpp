@@ -291,6 +291,7 @@ public:
 		OOLUA::INTERNAL::Lua_ud * ud = static_cast<OOLUA::INTERNAL::Lua_ud *>(lua_touserdata(*m_lua,-1) );
 		CPPUNIT_ASSERT_EQUAL(true,ud->gc);
 		
+		
 #warning later on when this passes it will leak, but as yet we can not call delete on it
 	}
 };

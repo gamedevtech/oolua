@@ -37,12 +37,14 @@ public:
 };
 
 
+
 class OutParamsUserData
 {
 public:
 	virtual ~OutParamsUserData(){}
 	virtual void ref(Stub1 & stub)=0;
 };
+
 
 class MockOutParamsUserData : public OutParamsUserData
 {

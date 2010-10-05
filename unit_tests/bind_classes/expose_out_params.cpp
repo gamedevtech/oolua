@@ -13,6 +13,7 @@ EXPORT_OOLUA_FUNCTIONS_9_NON_CONST(OutParamsTest
 								   )
 EXPORT_OOLUA_FUNCTIONS_0_CONST(OutParamsTest)
 
+
 EXPORT_OOLUA_FUNCTIONS_NON_CONST(OutParamsUserData
 								   ,ref
 									)

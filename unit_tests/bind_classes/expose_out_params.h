@@ -19,6 +19,7 @@ OOLUA_CLASS_NO_BASES(OutParamsTest)
 OOLUA_CLASS_END
 
 
+
 OOLUA_PROXY_CLASS(OutParamsUserData)
 	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
 	OOLUA_MEM_FUNC(void, ref,out_p<Stub1&>)
