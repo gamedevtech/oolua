@@ -35,6 +35,10 @@ namespace OOLUA
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct out_p
 	///  Output parameter trait
+	///  Lua code does not pass an instance to the C++ function, instead one is 
+	///  created using the default constructor and it's value after the function 
+	///  call will be pushed back to Lua. If this is a type which has a proxy
+	///  then it will cause a heap allocation of the type, which Lua will own.
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct out_p;
 	///////////////////////////////////////////////////////////////////////////////
@@ -54,7 +58,8 @@ namespace OOLUA
 	///  Output parameter trait which Lua takes ownership of
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct lua_out_p;
-
+	
+	
 	//which language owns the parameter Lua, Cpp or no change to ownership
 	enum Owner{No_change,Cpp,Lua};
 
@@ -173,76 +178,29 @@ namespace OOLUA
 		enum { is_integral = Type_enum_defaults<type>::is_integral  };
 	};
 
+
+	
+	template<>
+	struct out_p<void>;
+	
+
 	template<typename T>
 	struct out_p
 	{
 		typedef T type;
 		typedef typename Raw_type<T>::type raw;
-        typedef typename Pull_type<T,LVD::is_integral_type<raw>::value >::type pull_type;
+		typedef raw pull_type;
 		enum { in = 0};
 		enum { out = 1};
-		enum { owner = No_change};
-		enum { is_by_value = Type_enum_defaults<type>::is_by_value  };
+		enum { owner = Type_enum_defaults<raw>::is_integral? No_change : Lua};
+		enum { is_by_value = 1};//yes OOLua creates on the stack
 		enum { is_constant = Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = Type_enum_defaults<type>::is_integral  };
+		enum { is_integral = Type_enum_defaults<raw>::is_integral  };
+		typedef char a_type_that_is_not_by_reference_can_not_have_this_trait
+					[Type_enum_defaults<type>::is_by_value ? -1 : 1 ];
 	};
-	/*
-	template<>
-	struct out_p<void>
-	{
-		typedef void type;
-		typedef void pull_type;
-		typedef void raw;
-		enum { in = 0};
-		enum { out = 0};
-		enum { owner = No_change};
-		enum { is_by_value = 1 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
-	 */
-	template<typename T>
-	struct out_p<T*>
-	{
-		typedef T* type;
-		typedef typename Raw_type<T>::type raw;
-        typedef typename Pull_type<T,LVD::is_integral_type<raw>::value >::type pull_type;
-		enum { in = 0};
-		enum { out = 1};
-		enum { owner = No_change};
-		enum { is_by_value = Type_enum_defaults<type>::is_by_value  };
-		enum { is_constant = Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = Type_enum_defaults<type>::is_integral  };
-	};
-
-	template<typename T>
-	struct out_p<T const*>
-	{
-		typedef T const* type;
-		typedef typename Raw_type<T>::type raw;
-        typedef typename Pull_type<T,LVD::is_integral_type<raw>::value >::type pull_type;
-		enum { in = 0};
-		enum { out = 1};
-		enum { owner = No_change};
-		enum { is_by_value = Type_enum_defaults<type>::is_by_value  };
-		enum { is_constant = Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = Type_enum_defaults<type>::is_integral  };
-	};
-	template<typename T>
-	struct out_p<T&>
-	{
-		typedef T& type;
-		typedef typename Raw_type<T>::type raw;
-        typedef typename Pull_type<T,LVD::is_integral_type<raw>::value >::type pull_type;
-		enum { in = 0};
-		enum { out = 1};
-		enum { owner = No_change};
-		enum { is_by_value = Type_enum_defaults<type>::is_by_value  };
-		enum { is_constant = Type_enum_defaults<type>::is_constant  };
-		enum { is_integral = Type_enum_defaults<type>::is_integral  };
-	};
-
-
+	
+		
 	//cpp takes ownership
 	template<typename T>
 	struct cpp_in_p<T&>
@@ -341,14 +299,7 @@ namespace OOLUA
 		raw* m_ptr;
 	};
 
-//////////////////////////////////////////////////////////////////////
-/*
-	template<typename T, typename T1>
-	struct add_out_param
-	{
-		enum { out = T::out + T1::out };
-	};
-*/
+
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct lua_return_count
 	///  Adds together the out values of the traits in the typelist
@@ -384,11 +335,13 @@ namespace OOLUA
 	{
 		enum {value = 1};
 	};
+
 	template<typename T>
 	struct has_param_traits< out_p<T> >
 	{
 		enum {value = 1};
 	};
+
 	template<typename T>
 	struct has_param_traits< in_out_p<T> >
 	{
@@ -699,6 +652,7 @@ namespace OOLUA
 		enum { is_integral = 1 };
 	};
 	
+	/*
 	template<int ID>
 	struct out_p<Lua_ref<ID> >
 	{
@@ -712,6 +666,7 @@ namespace OOLUA
 		enum { is_constant = 0 };
 		enum { is_integral = 1 };
 	};
+	 */
 	
 	template<>
 	struct in_p<Lua_table>
@@ -822,19 +777,10 @@ namespace OOLUA
 		enum { is_constant = 0 };
 		enum { is_integral = 1 };
 	};
+	
 	template<>
-	struct out_p<std::string>
-	{
-		typedef std::string type;
-		typedef std::string pull_type;
-		typedef std::string raw;
-		enum { in = 0};
-		enum { out = 1};
-		enum { owner = No_change};
-		enum { is_by_value = 1 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
+	struct out_p<std::string>;
+
 	template<>
 	struct out_p<std::string&>
 	{

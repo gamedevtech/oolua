@@ -1,6 +1,7 @@
 #ifndef OOLUA_PUSH_PULL_H_
 #	define OOLUA_PUSH_PULL_H_
 
+#include <cassert>
 #include <string>
 #include "lua_includes.h"
 #include "lua_table.h"
@@ -13,13 +14,9 @@
 #include "fwd_push_pull.h"
 #include "oolua_storage.h"
 #include "oolua_parameter_helper.h"
-
-//TODO: remove include
-#warning either remove this comment or the include
-#include <cassert>
-
 #include "oolua_config.h"
 #include "oolua_error.h"
+
 namespace OOLUA
 {
 	
@@ -192,8 +189,7 @@ namespace OOLUA
 		template<typename T>
 		struct push_ptr_2lua<T,true>
 		{
-			//why is owner here?
-#warning why is owner here
+			//owner is here as it can be supplied but is ignored as the type is integral
 			static bool push2lua(lua_State* const l, T * const &  value,Owner/* owner*/)
 			{
 				assert(l && value);

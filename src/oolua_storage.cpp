@@ -83,9 +83,7 @@ namespace OOLUA
 			if(own == No_change){return;}//should never get called but...
 			Lua_ud* ud = find_ud_dont_care_about_type_and_clean_stack(l,ptr);
 			if(!ud)
-			{
-				//TODO: who has called this? 
-#warning who called this comment				
+			{			
 #if OOLUA_DEBUG_CHECKS == 1
 				assert(0);
 #endif

@@ -155,6 +155,19 @@ namespace OOLUA
 			OOLUA::push2lua(s,p);
 		}
 		template<typename T>
+		static void push2lua(lua_State* const s, T& value)
+		{
+			Is_intergal_pushpull<T,Type,Type::is_integral>::push(s,value);
+		}
+		
+		template<typename T>
+		static void pull2cpp(lua_State* const /*s*/, T& /*value*/)//noop
+		{
+			//this function should never be called
+			assert(0 && "this function should never be called");
+		}
+		
+		template<typename T>
 		static void pull2cpp(lua_State* const /*s*/, T*& /*value*/)//noop
 		{
 			//this function should never be called

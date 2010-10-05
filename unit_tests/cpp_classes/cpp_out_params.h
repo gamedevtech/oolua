@@ -36,13 +36,20 @@ public:
 	MOCK_METHOD1(int_ptr,void (int*));
 };
 
-
+struct MockParamWithStringMember 
+{
+	std::string str;
+};
 
 class OutParamsUserData
 {
 public:
 	virtual ~OutParamsUserData(){}
 	virtual void ref(Stub1 & stub)=0;
+	virtual void ptr(Stub1* stub) = 0;
+	virtual void by_value(Stub1 stub) = 0;
+	virtual void ref_param(MockParamWithStringMember& mock) = 0;
+
 };
 
 
@@ -50,6 +57,9 @@ class MockOutParamsUserData : public OutParamsUserData
 {
 public:
 	MOCK_METHOD1(ref,void (Stub1&));
+	MOCK_METHOD1(ptr,void (Stub1*));
+	MOCK_METHOD1(by_value,void (Stub1));
+	MOCK_METHOD1(ref_param,void (MockParamWithStringMember& ));
 };
 
 #endif

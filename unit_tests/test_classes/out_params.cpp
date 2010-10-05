@@ -6,6 +6,11 @@
 #	include <string>
 #	include <sstream>
 
+const std::string hello_world_str = "hello world";
+void set_string_in_MockParamWithStringMember_ref(MockParamWithStringMember& mock)
+{
+	mock.str = hello_world_str;
+}
 
 class OutParams : public CPPUNIT_NS::TestFixture
 {
@@ -33,6 +38,9 @@ class OutParams : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(ordering_functionWhichReturnsValueAndTwoInOutParams_orderFromTopOfStackIsParam2Param1Return);
 	
 	CPPUNIT_TEST(OutTrait_luaPassesNoParamFunctionWantsRefToUserData_topOfStackIsOwnedByLua);
+	CPPUNIT_TEST(OutTrait_luaPassesNoParamFunctionWantsPtrToUserData_topOfStackIsOwnedByLua);
+	
+	CPPUNIT_TEST(OutTrait_luaPassesNoParamFunctionWantsRefToUserData_stringMemberIsSetToHelloWorld);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -290,9 +298,34 @@ public:
 		m_lua->call("foo",(OutParamsUserData*)&stub);
 		OOLUA::INTERNAL::Lua_ud * ud = static_cast<OOLUA::INTERNAL::Lua_ud *>(lua_touserdata(*m_lua,-1) );
 		CPPUNIT_ASSERT_EQUAL(true,ud->gc);
-		
-		
-#warning later on when this passes it will leak, but as yet we can not call delete on it
+	}
+
+	void OutTrait_luaPassesNoParamFunctionWantsPtrToUserData_topOfStackIsOwnedByLua()
+	{
+		m_lua->register_class<OutParamsUserData>();
+		m_lua->register_class<Stub1>();
+		m_lua->run_chunk("foo = function(obj) return obj:ptr() end");
+		::testing::NiceMock<MockOutParamsUserData> stub;
+		m_lua->call("foo",(OutParamsUserData*)&stub);
+		OOLUA::INTERNAL::Lua_ud * ud = static_cast<OOLUA::INTERNAL::Lua_ud *>(lua_touserdata(*m_lua,-1) );
+		CPPUNIT_ASSERT_EQUAL(true,ud->gc);
+	}
+
+	
+	void OutTrait_luaPassesNoParamFunctionWantsRefToUserData_stringMemberIsSetToHelloWorld()
+	{
+		m_lua->register_class<OutParamsUserData>();
+		m_lua->register_class<MockParamWithStringMember>();
+		m_lua->run_chunk("foo = function(obj) return obj:ref_param() end");
+		MockOutParamsUserData stub;
+		EXPECT_CALL(stub,ref_param(::testing::_))
+					 .Times(1)
+						.WillOnce(::testing::Invoke(&set_string_in_MockParamWithStringMember_ref));
+					 
+		m_lua->call("foo",(OutParamsUserData*)&stub);
+		MockParamWithStringMember* ptr;
+		OOLUA::pull2cpp(*m_lua,ptr);
+		CPPUNIT_ASSERT_EQUAL(hello_world_str,ptr->str);
 	}
 };
 

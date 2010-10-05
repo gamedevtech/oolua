@@ -19,10 +19,18 @@ OOLUA_CLASS_NO_BASES(OutParamsTest)
 OOLUA_CLASS_END
 
 
+OOLUA_PROXY_CLASS(MockParamWithStringMember)
+	OOLUA_NO_TYPEDEFS
+	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
+OOLUA_CLASS_END
 
 OOLUA_PROXY_CLASS(OutParamsUserData)
 	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
 	OOLUA_MEM_FUNC(void, ref,out_p<Stub1&>)
+	OOLUA_MEM_FUNC(void,ptr,out_p<Stub1*>)
+	OOLUA_MEM_FUNC(void,ref_param,out_p<MockParamWithStringMember&>)
+	/*when enabled should give a compile time error*/
+	//OOLUA_MEM_FUNC(void,by_value,out_p<Stub1>)
 OOLUA_CLASS_END
 
 #endif

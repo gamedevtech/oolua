@@ -16,5 +16,10 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(OutParamsTest)
 
 EXPORT_OOLUA_FUNCTIONS_NON_CONST(OutParamsUserData
 								   ,ref
+									,ptr
+									,ref_param
 									)
+
 EXPORT_OOLUA_FUNCTIONS_CONST(OutParamsUserData)
+
+EXPORT_OOLUA_NO_FUNCTIONS(MockParamWithStringMember)
