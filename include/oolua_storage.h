@@ -67,17 +67,17 @@ namespace OOLUA
 
 		//pushes the weak top and returns its index
 		int push_weak_table(lua_State* l);
-		template<typename T>Lua_ud* add_ptr(lua_State* /*const*/ l,T* const ptr,bool isConst);
+		template<typename T>Lua_ud* add_ptr(lua_State*  l,T* const ptr,bool isConst);
 
-		template<typename T>Lua_ud* find_ud(lua_State* /*const*/ l,T* ptr,bool is_const);
+		template<typename T>Lua_ud* find_ud(lua_State*  l,T* ptr,bool is_const);
 
 		bool is_there_an_entry_for_this_void_pointer(lua_State* l,void* ptr);
 		bool is_there_an_entry_for_this_void_pointer(lua_State* l,void* ptr,int tableIndex);
 
 		template<typename T>
-		Lua_ud* reset_metatable(lua_State* /*const*/ l,T* ptr,bool use_const_name);
+		Lua_ud* reset_metatable(lua_State*  l,T* ptr,bool use_const_name);
 
-		Lua_ud* find_ud_dont_care_about_type_and_clean_stack(lua_State* /*const*/ l,void* ptr);
+		Lua_ud* find_ud_dont_care_about_type_and_clean_stack(lua_State*  l,void* ptr);
 
 		void set_owner( lua_State* l,void* ptr, Owner own);
 

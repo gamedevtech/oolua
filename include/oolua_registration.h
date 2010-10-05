@@ -37,9 +37,14 @@
 #include "oolua_char_arrays.h"
 #include "lvd_types.h"
 
+#include "oolua_config.h"
+#if OOLUA_USING_SHARED_PTR == 1
+#	include OOLUA_SHARED_PTR_INCLUDE
+#endif
+
 namespace OOLUA
 {
-    template<typename T>void register_class(lua_State * /*const*/ l);
+    template<typename T>void register_class(lua_State *  l);
 
 	template<typename T,typename K,typename V>
 	void register_class_static(lua_State * const l,K const& k, V const& v);
@@ -48,25 +53,35 @@ namespace OOLUA
 
 	namespace INTERNAL
 	{
-		template<typename T>int garbage_collect(lua_State * /*const*/ l);
-		template<typename T>int set_methods(lua_State*  /*const*/ l);
-		template<typename T>int set_const_methods(lua_State*  /*const*/ l,int none_const_methods,int none_const_mt);
+		template<typename T>struct garbage_collect;
+		template<typename T>int set_methods(lua_State*  l);
+		template<typename T>int set_const_methods(lua_State*   l,int none_const_methods,int none_const_mt);
         template<typename T, bool IsAbstract>struct set_create_function;
         template<typename T,typename B>struct Add_base;
         template<typename T,typename TL, int index,typename B>struct Register_base;
-		template<typename T>int set_type_top_to_none_const(lua_State * /*const*/ l);
+		template<typename T>int set_type_top_to_none_const(lua_State *  l);
 		
 		template<typename T,int HasNoPublicDestructor>struct set_delete_function;
 		template<typename T,bool HasNoPublicDestructor>struct set_owner_function;
 		
 		template<typename T, bool IsAbstractOrNoConstructors>struct set_create_function;
+		
+		void set_function_in_table_with_upvalue(lua_State* l, char const * func_name, lua_CFunction func
+														, int tableIndex, void* upvalue);
+		void set_function_in_table(lua_State* l, char const* func_name,lua_CFunction func,int tableIndex);
+		void set_void_key_and_function_value_in_table(lua_State* l ,void* key ,lua_CFunction value,int tableIndex);
+		void set_key_value_in_table(lua_State* l,char const* key_name,int valueIndex,int tableIndex);
+		int check_for_key_in_stack_top(lua_State* l);
+		
+		bool class_name_is_already_registered(lua_State*l, char const* name);
+
 	}
 
     namespace INTERNAL
 	{
 
 		template<typename T>
-		inline int set_type_top_to_none_const(lua_State * /*const*/ l)
+		inline int set_type_top_to_none_const(lua_State * l)
 		{
 			luaL_getmetatable(l,Proxy_class<T>::class_name);//ud metatable
 			lua_setmetatable(l,-2);//ud
@@ -75,31 +90,47 @@ namespace OOLUA
 			ud->none_const_name = (char*)Proxy_class<T>::class_name;
 			return 0;
 		}
-
+		
 		template<typename T>
-		inline int garbage_collect(lua_State * /*const*/ l)
+		struct garbage_collect 
 		{
-			//get the userdata
-			Lua_ud *ud = static_cast<Lua_ud*>(lua_touserdata(l, 1));
-			lua_pop(l,1);
-			//cast to correct type
-			//if responsible then clean up the cpp class
-			if(ud->gc)
+			static int gc(lua_State *  l)
 			{
-				delete static_cast<T*>(ud->void_class_ptr);
+				Lua_ud *ud = static_cast<Lua_ud*>(lua_touserdata(l, 1));
+				lua_pop(l,1);
+				if(ud->gc)//if responsible then clean up the cpp class
+				{
+					delete static_cast<T*>(ud->void_class_ptr);
+				}
+				//ud will be cleaned up by the Lua API
+				return 0;
 			}
-			//ud will be cleaned up by the Lua API
-			return 0;
-		}
+		};
+		/*	
+		template<typename T>
+		struct garbage_collect<OOLUA_SHARED_PTR_TYPE<T> >
+		{
+			static int gc(lua_State *  l)
+			{
+				//get the userdata
+				Lua_ud *ud = static_cast<Lua_ud*>(lua_touserdata(l, 1));
+				lua_pop(l,1);
+				//cast to correct type
+				//always responsible for cleaning up
+				delete static_cast<OOLUA_SHARED_PTR_TYPE<T> *>(ud->void_shared_ptr);
+				//ud will be cleaned up by the Lua API
+				return 0;
+			}
+		};
+		*/
+		
 		
 		template<typename T,int HasNoPublicDestructor>
 		struct set_delete_function
 		{
 			static void set(lua_State* l, int methods)
 			{
-				lua_pushliteral(l, "__gc");// __gc
-				lua_pushcclosure(l, &INTERNAL::garbage_collect<T>, 0);//__gc func
-				lua_settable(l, methods);
+				set_function_in_table(l,"__gc",&INTERNAL::garbage_collect<T>::gc,methods);
 			}
 		};
 		
@@ -108,23 +139,6 @@ namespace OOLUA
 		{
 			static void set( lua_State* /*l*/, int /*methods*/){}//no op
 		};
-		
-
-		inline int check_for_key_in_stack_top(lua_State* l)
-		{
-			//on entry stack is : table keyString basetable
-			lua_pushvalue(l, -2);//table keyString basetable keyString
-			lua_gettable(l, -2);//check for keyString in basetable
-			//table string basetable valueOrNil
-			if( lua_isnil(l,-1) == 1)
-			{
-				lua_pop(l,2);//table keyString
-				return 0;
-			}
-			
-			lua_remove(l,-2);//table keyString TheValueThatWeWereLookingFor
-			return 1;
-		}
 		
 
 		template<typename Base>
@@ -145,7 +159,9 @@ namespace OOLUA
 			static int findInBase(lua_State* l)
 			{
 				if (Base_looker<BaseAtIndex>::findInBase(l) )return 1;
-				return R_Base_looker<T,Bases,Index+1,typename TYPELIST::At_default<Bases,Index+1,TYPE::Null_type>::Result>::findInBase(l);
+				return R_Base_looker<T,Bases,Index+1
+								,typename TYPELIST::At_default<Bases,Index+1,TYPE::Null_type>::Result
+								>::findInBase(l);
 			}
 		};
 		
@@ -170,7 +186,7 @@ namespace OOLUA
 		
 		typedef int(*function_sig_to_check_base_)(lua_State* const l,INTERNAL::Lua_ud*,int const&);
 		template<typename T>
-		inline int set_methods(lua_State* /*const*/ l,int& mt)
+		inline int set_methods(lua_State* l,int& mt)
 		{
 			lua_newtable(l);
 			int methods = lua_gettop(l);//methods
@@ -179,29 +195,21 @@ namespace OOLUA
 			//registry[name]= mt
 			mt = lua_gettop(l);
 
-			// store method table in globals so that
-			// scripts can add functions written in Lua.
+			// store method table in globals so that scripts can add functions written in Lua.
 			lua_pushvalue(l, methods);
 			lua_setglobal(l,Proxy_class<T>::class_name);
 			//global[name]=methods
-
-			lua_pushlightuserdata(l,l);//methods mt lua_State*
+			
 			function_sig_to_check_base_ temp_func = &stack_top_type_is_base< T>;
 			lua_CFunction func = reinterpret_cast<lua_CFunction>( temp_func);
-			lua_pushcfunction(l, func);//methods mt __mt_check func
-			lua_settable(l, mt);//methods mt 
+			set_void_key_and_function_value_in_table(l ,l ,func,mt);
 			//mt[lua_State*]= &stack_top_type_is_base<T>;
 
-
-			lua_pushliteral(l, "__index");//methods mt __index
-			lua_pushvalue(l, methods);//methods mt __index methods
-			lua_settable(l, mt);//methods mt
+			set_key_value_in_table(l,"__index",methods,mt);
 			//mt["__index"]= methods
 
 			//allow statics and functions to be added to the userdatatype metatable
-			lua_pushliteral(l, "__newindex");//methods mt __newindex
-			lua_pushvalue(l, methods);//methods mt __newindex methods
-			lua_settable(l, mt);//methods mt
+			set_key_value_in_table(l,"__newindex",methods,mt);
 			//mt["__newindex"]= methods
 
 			set_delete_function<T,has_typedef<Proxy_class<T>, No_public_destructor >::Result>::set(l,mt);
@@ -223,7 +231,7 @@ namespace OOLUA
 		///  @return int requirement of a Lua function
 		///////////////////////////////////////////////////////////////////////////////
 		template<typename T>
-		inline int set_const_methods(lua_State*  /*const*/ l,int none_const_methods,int none_const_mt)
+		inline int set_const_methods(lua_State* l,int none_const_methods,int none_const_mt)
 		{
 			lua_newtable(l);
 			int const_methods = lua_gettop(l);//const_methods
@@ -232,51 +240,41 @@ namespace OOLUA
 			//registry[name#_const]= const_mt
 			int const_mt = lua_gettop(l);//const_methods const_mt
 
-			// store method table in globals so that
-			// scripts can add functions written in Lua.
+			// store method table in globals so that scripts can add functions written in Lua.
 			lua_pushvalue(l, const_methods);
 			lua_setglobal(l,Proxy_class<T>::class_name_const);
 			//global[name#_const]=const_methods
 
-			lua_pushlightuserdata(l,l);//const_methods const_mt lus_State*
 			function_sig_to_check_base_ temp_func = &stack_top_type_is_base< T>;
 			lua_CFunction func = reinterpret_cast<lua_CFunction>( temp_func);
-			lua_pushcfunction(l, func);//const_methods const_mt lus_State* func
-			lua_settable(l, const_mt);//const_methods const_mt
+			set_void_key_and_function_value_in_table(l ,l ,func,const_mt);
 			//const_mt[lua_State*]= &stack_top_type_is_base<T>;
 			
-			push_char_carray(l,change_mt_to_none_const_field);//const_methods const_mt __gc
-			lua_pushcclosure(l, &INTERNAL::set_type_top_to_none_const<T>, 0);//const_methods const_mt __gc func
-			lua_settable(l, const_mt);//const_methods const_mt
-			//const_mt["__gc"]=&set_type_top_to_none_const()
+			set_function_in_table(l,change_mt_to_none_const_field
+								  ,&INTERNAL::set_type_top_to_none_const<T>,const_mt);
+			//const_mt[change_string_key]=&set_type_top_to_none_const()
 			
-			lua_pushliteral(l, "__index");//const_methods const_mt __index
-			lua_pushvalue(l, const_methods );//const_methods const_mt __index const_methods
-			lua_settable(l, const_mt);//const_methods const_mt
+			set_key_value_in_table(l,"__index",const_methods,const_mt);
 			//const_mt["__index"]= const_methods
 
 			//allow statics and new functions to be added to the userdatatype metatable
-			lua_pushliteral(l, "__newindex");//const_methods const_mt __newindex
-			lua_pushvalue(l, const_methods );//const_methods const_mt __newindex const_methods
-			lua_settable(l, const_mt);//const_methods const_mt
+			set_key_value_in_table(l,"__newindex",const_methods,const_mt);
 			//const_mt["__newindex"]= const_methods
-
-			//TEMP
 			
-			lua_pushvalue(l, const_methods);//const_methods const_mt helper_mt helper_mt
-			lua_setmetatable(l, const_methods);//const_methods const_mt helper_mt
-			
-			lua_pushliteral(l, "__index");
-			lua_pushcfunction(l,&search_in_base_classes<T>);
-			lua_settable(l, const_methods);
-			//const_methods["__index"]= &help_can_not_find<T>
+			//set const_methods as it's own metatable
+			lua_pushvalue(l, const_methods);
+			lua_setmetatable(l, const_methods);
+	
+			set_function_in_table(l,"__index",&INTERNAL::search_in_base_classes<T>,const_methods);
+			//const_methods["__index"]= function to search bases classes for the key
 			
 			set_owner_function<T,has_typedef<Proxy_class<T>, No_public_destructor >::Result>::set(l,const_methods);
 
 			set_delete_function<T,has_typedef<Proxy_class<T>, No_public_destructor >::Result>::set(l,const_mt);
 
-			lua_pushvalue(l, const_mt);//const_methods const_mt helper_mt helper_mt
-			lua_setmetatable(l, none_const_methods);//const_methods const_mt helper_mt
+			//set none const methods as the metatable for the const metatable
+			lua_pushvalue(l, const_mt);//const_methods const_mt const_mt
+			lua_setmetatable(l, none_const_methods);//const_methods const_mt
 			//none_const_methods[mt] = const_mt
 
 			set_equal_function<T, has_typedef<Proxy_class<T>,Equal_op>::Result>::set(l,const_mt,none_const_mt);
@@ -299,20 +297,21 @@ namespace OOLUA
 			{
 				for (typename Proxy_class<B >::Reg_type *r = Proxy_class<B >::class_methods; r->name; r++)
 				{
-					lua_pushstring(l, r->name);
-					lua_pushlightuserdata( l, reinterpret_cast<void*>(r) );
-					lua_pushcclosure(l, &OOLUA::INTERNAL::member_caller<T,B >, 1);
-					lua_settable(l, methods);
+					set_function_in_table_with_upvalue(l, r->name, &OOLUA::INTERNAL::member_caller<T,B >
+													   , methods, reinterpret_cast<void*> (r));
 				}
 				// fill constant method table with methods from class Proxy_class<T>
 				for (typename Proxy_class<B >::Reg_type_const *r = Proxy_class<B >::class_methods_const; r->name; ++r)
 				{
-					lua_pushstring(l, r->name);
-					lua_pushlightuserdata( l, reinterpret_cast<void*>(r) );
-					lua_pushcclosure(l, &OOLUA::INTERNAL::const_member_caller<T,B >, 1);
-					lua_settable(l, const_methods);
+					set_function_in_table_with_upvalue(l, r->name, &OOLUA::INTERNAL::member_caller<T,B >
+													   , const_methods, reinterpret_cast<void*> (r));
 				}
-				Register_base<T,typename Proxy_class<B>::Bases,0,typename TYPELIST::At_default< typename Proxy_class<B>::Bases, 0, TYPE::Null_type >::Result> b;
+				Register_base<T
+								,typename Proxy_class<B>::Bases
+								,0
+								,typename TYPELIST::At_default< typename Proxy_class<B>::Bases, 0, TYPE::Null_type >::Result
+							> b;
+				
 				b(l,methods,const_methods);
 			}
 		};
@@ -345,9 +344,10 @@ namespace OOLUA
 		{
 			static void set(lua_State*  const l, int methods)
 			{
-				push_char_carray(l,new_str);
-				lua_pushcfunction(l, &OOLUA::Proxy_class<T>::oolua_factory_function);
-				lua_settable(l, methods);
+				set_function_in_table(l
+									  ,new_str
+									  ,&OOLUA::Proxy_class<T>::oolua_factory_function
+									  ,methods);
 				// methods["new"] = create_type
 			}
 			
@@ -365,11 +365,12 @@ namespace OOLUA
 		{
 			static void set(lua_State*  const l, int methods)
 			{
-				push_char_carray(l,set_owner_str);//set_owner
-				lua_pushcclosure(l, &INTERNAL::lua_set_owner<T>, 0);//set_owner func
-				lua_settable(l, methods);
+				set_function_in_table(l
+									  ,set_owner_str
+									  ,&INTERNAL::lua_set_owner<T>
+									  ,methods);
 				//methods["set_owner"]=&lua_set_owner()
-	}
+			}
 
 		};
 		
@@ -385,14 +386,7 @@ namespace OOLUA
 	inline void register_class(lua_State * /*const*/ l)
 	{
 
-		//check if it is already registered
-		lua_getfield(l, LUA_REGISTRYINDEX, Proxy_class<T>::class_name);
-		if( lua_isnil(l,-1) == 0 )
-		{
-			lua_pop(l,1);//pop the table
-			return;
-		}
-		lua_pop(l,1);//pop the null
+		if(OOLUA::INTERNAL::class_name_is_already_registered(l,Proxy_class<T>::class_name)) return;
 
 		//set none constant operator methods, constructor etc...
 		int none_const_mt(0);
@@ -403,23 +397,29 @@ namespace OOLUA
 		// fill method table with methods from class Proxy_class<T>
 		for (typename Proxy_class<T >::Reg_type *r = Proxy_class<T >::class_methods; r->name; r++)
 		{
-			lua_pushstring(l, r->name);
-			lua_pushlightuserdata( l, reinterpret_cast<void*>(r) );
-			lua_pushcclosure(l, &OOLUA::INTERNAL::member_caller<Proxy_class<T>,T>, 1);
-			lua_settable(l, none_const_methods);
+			set_function_in_table_with_upvalue(l
+											   , r->name
+											   ,&OOLUA::INTERNAL::member_caller<Proxy_class<T>,T>
+											   , none_const_methods
+											    , reinterpret_cast<void*> (r));
 		}
 
 		// fill constant method table with methods from class Proxy_class<T>
 		for (typename Proxy_class<T >::Reg_type_const *r = Proxy_class<T >::class_methods_const; r->name; ++r)
 		{
-			lua_pushstring(l, r->name);
-			lua_pushlightuserdata( l, reinterpret_cast<void*>(r) );
-			lua_pushcclosure(l, &OOLUA::INTERNAL::const_member_caller<Proxy_class<T>,T>, 1);
-			lua_settable(l, const_methods);
+			set_function_in_table_with_upvalue(l
+											   , r->name
+											   ,&OOLUA::INTERNAL::const_member_caller<Proxy_class<T>,T>
+											   , const_methods
+											   , reinterpret_cast<void*> (r));
 		}
 		//recursively register any base class methods
-		INTERNAL::Register_base<Proxy_class<T>,typename Proxy_class<T>::Bases,0,typename TYPELIST::At_default<typename Proxy_class<T>::Bases, 0, TYPE::Null_type >::Result> b;
-		b(l,none_const_methods,const_methods);
+		INTERNAL::Register_base<Proxy_class<T>
+									,typename Proxy_class<T>::Bases
+									,0
+									,typename TYPELIST::At_default<typename Proxy_class<T>::Bases, 0, TYPE::Null_type >::Result
+								> recursive_worker;
+		recursive_worker(l,none_const_methods,const_methods);
 
 		lua_pop(l, 3);//stack = methods|mt|const_methods    |const_mt
 	}

@@ -2,7 +2,11 @@
 #	define OOLUA_USERDATA_H_
 
 #include "oolua_config.h"
-#include <cstring>
+
+#if OOLUA_SAFE_ID_COMPARE == 1
+#	include <cstring>
+#endif
+
 namespace OOLUA
 {
     namespace INTERNAL

@@ -78,7 +78,6 @@ namespace OOLUA
 int set_##id(lua_State* l)\
 {\
 	OOLUA::INTERNAL::LUA_CALLED::pull2cpp(l,m_this->id);\
- 	/*OOLUA::pull2cpp(l,m_this->id);*/ \
  	return 0;\
 }
 

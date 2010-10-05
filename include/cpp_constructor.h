@@ -59,7 +59,7 @@ struct Constructor1
 	{
 		typename Param1WithTraits::pull_type p1;
 		OOLUA::Member_func_helper<Param1WithTraits,Param1WithTraits::owner>::pull2cpp(l,p1);
-		OOLUA::Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
+		Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
 		Class* obj = new Class( p1_);
 		OOLUA::INTERNAL::Lua_ud* ud = OOLUA::INTERNAL::add_ptr(l,obj,false);
 		ud->gc = true;
@@ -82,10 +82,10 @@ struct Constructor2
 	{
 		typename Param2WithTraits::pull_type p2;
 		OOLUA::Member_func_helper<Param2WithTraits,Param2WithTraits::owner>::pull2cpp(l,p2);
-		OOLUA::Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
+		Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
 		typename Param1WithTraits::pull_type p1;
 		OOLUA::Member_func_helper<Param1WithTraits,Param1WithTraits::owner>::pull2cpp(l,p1);
-		OOLUA::Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
+		Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
 		Class* obj = new Class( p1_,p2_);
 		OOLUA::INTERNAL::Lua_ud* ud = OOLUA::INTERNAL::add_ptr(l,obj,false);
 		ud->gc = true;
@@ -109,13 +109,13 @@ struct Constructor3
 	{
 		typename Param3WithTraits::pull_type p3;
 		OOLUA::Member_func_helper<Param3WithTraits,Param3WithTraits::owner>::pull2cpp(l,p3);
-		OOLUA::Converter<typename Param3WithTraits::pull_type,typename Param3WithTraits::type> p3_(p3);
+		Converter<typename Param3WithTraits::pull_type,typename Param3WithTraits::type> p3_(p3);
 		typename Param2WithTraits::pull_type p2;
 		OOLUA::Member_func_helper<Param2WithTraits,Param2WithTraits::owner>::pull2cpp(l,p2);
-		OOLUA::Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
+		Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
 		typename Param1WithTraits::pull_type p1;
 		OOLUA::Member_func_helper<Param1WithTraits,Param1WithTraits::owner>::pull2cpp(l,p1);
-		OOLUA::Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
+		Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
 		Class* obj = new Class( p1_,p2_,p3_);
 		OOLUA::INTERNAL::Lua_ud* ud = OOLUA::INTERNAL::add_ptr(l,obj,false);
 		ud->gc = true;
@@ -140,16 +140,16 @@ struct Constructor4
 	{
 		typename Param4WithTraits::pull_type p4;
 		OOLUA::Member_func_helper<Param4WithTraits,Param4WithTraits::owner>::pull2cpp(l,p4);
-		OOLUA::Converter<typename Param4WithTraits::pull_type,typename Param4WithTraits::type> p4_(p4);
+		Converter<typename Param4WithTraits::pull_type,typename Param4WithTraits::type> p4_(p4);
 		typename Param3WithTraits::pull_type p3;
 		OOLUA::Member_func_helper<Param3WithTraits,Param3WithTraits::owner>::pull2cpp(l,p3);
-		OOLUA::Converter<typename Param3WithTraits::pull_type,typename Param3WithTraits::type> p3_(p3);
+		Converter<typename Param3WithTraits::pull_type,typename Param3WithTraits::type> p3_(p3);
 		typename Param2WithTraits::pull_type p2;
 		OOLUA::Member_func_helper<Param2WithTraits,Param2WithTraits::owner>::pull2cpp(l,p2);
-		OOLUA::Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
+		Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
 		typename Param1WithTraits::pull_type p1;
 		OOLUA::Member_func_helper<Param1WithTraits,Param1WithTraits::owner>::pull2cpp(l,p1);
-		OOLUA::Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
+		Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
 		Class* obj = new Class( p1_,p2_,p3_,p4_);
 		OOLUA::INTERNAL::Lua_ud* ud = OOLUA::INTERNAL::add_ptr(l,obj,false);
 		ud->gc = true;
@@ -175,19 +175,19 @@ struct Constructor5
 	{
 		typename Param5WithTraits::pull_type p5;
 		OOLUA::Member_func_helper<Param5WithTraits,Param5WithTraits::owner>::pull2cpp(l,p5);
-		OOLUA::Converter<typename Param5WithTraits::pull_type,typename Param5WithTraits::type> p5_(p5);
+		Converter<typename Param5WithTraits::pull_type,typename Param5WithTraits::type> p5_(p5);
 		typename Param4WithTraits::pull_type p4;
 		OOLUA::Member_func_helper<Param4WithTraits,Param4WithTraits::owner>::pull2cpp(l,p4);
-		OOLUA::Converter<typename Param4WithTraits::pull_type,typename Param4WithTraits::type> p4_(p4);
+		Converter<typename Param4WithTraits::pull_type,typename Param4WithTraits::type> p4_(p4);
 		typename Param3WithTraits::pull_type p3;
 		OOLUA::Member_func_helper<Param3WithTraits,Param3WithTraits::owner>::pull2cpp(l,p3);
-		OOLUA::Converter<typename Param3WithTraits::pull_type,typename Param3WithTraits::type> p3_(p3);
+		Converter<typename Param3WithTraits::pull_type,typename Param3WithTraits::type> p3_(p3);
 		typename Param2WithTraits::pull_type p2;
 		OOLUA::Member_func_helper<Param2WithTraits,Param2WithTraits::owner>::pull2cpp(l,p2);
-		OOLUA::Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
+		Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
 		typename Param1WithTraits::pull_type p1;
 		OOLUA::Member_func_helper<Param1WithTraits,Param1WithTraits::owner>::pull2cpp(l,p1);
-		OOLUA::Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
+		Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
 		Class* obj = new Class( p1_,p2_,p3_,p4_,p5_);
 		OOLUA::INTERNAL::Lua_ud* ud = OOLUA::INTERNAL::add_ptr(l,obj,false);
 		ud->gc = true;

@@ -3,6 +3,7 @@
 
 #include "oolua.h"
 #include "cpp_out_params.h"
+#include "expose_stub_classes.h"
 
 OOLUA_CLASS_NO_BASES(OutParamsTest)
 	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
@@ -17,5 +18,10 @@ OOLUA_CLASS_NO_BASES(OutParamsTest)
 	OOLUA_MEM_FUNC_1(void,int_ptr,int*)
 OOLUA_CLASS_END
 
+
+OOLUA_PROXY_CLASS(OutParamsUserData)
+	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
+	OOLUA_MEM_FUNC(void, ref,out_p<Stub1&>)
+OOLUA_CLASS_END
 
 #endif

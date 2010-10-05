@@ -15,6 +15,7 @@
 #include "oolua_parameter_helper.h"
 
 //TODO: remove include
+#warning either remove this comment or the include
 #include <cassert>
 
 #include "oolua_config.h"
@@ -192,6 +193,7 @@ namespace OOLUA
 		struct push_ptr_2lua<T,true>
 		{
 			//why is owner here?
+#warning why is owner here
 			static bool push2lua(lua_State* const l, T * const &  value,Owner/* owner*/)
 			{
 				assert(l && value);

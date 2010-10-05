@@ -8,11 +8,8 @@
 #	include "proxy_class.h"
 #	include "lua_table.h"
 #	include "oolua_userdata.h"
+#	include "oolua_error.h"
 
-//#define OOLUA_ABSOLUTE_LUA_INDEX(L, i)
-//		((i) > 0 || (i) <= LUA_REGISTRYINDEX ? (i) : lua_gettop(L) + (i) + 1)
-
-#include "oolua_error.h"
 namespace OOLUA
 {
 
@@ -83,7 +80,7 @@ namespace OOLUA
 
 
 		template<typename T>
-		T* check_index(lua_State * /*const*/ l, int narg)
+		T* check_index(lua_State *  l, int narg)
 		{
 			if( ! index_is_userdata(l,narg ))
 				return 0;
@@ -156,7 +153,7 @@ namespace OOLUA
 		}
 		
 		template<typename T>
-		T* no_stack_checks_class_from_index(lua_State * /*const*/ l, int narg)
+		T* no_stack_checks_class_from_index(lua_State *  l, int narg)
 		{
 			INTERNAL::Lua_ud * ud = static_cast<INTERNAL::Lua_ud *>( lua_touserdata(l, narg) );
 			if(! INTERNAL::ids_equal(ud->none_const_name,ud->name_size

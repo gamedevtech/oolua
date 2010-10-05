@@ -18,18 +18,6 @@ namespace LVD
     struct is_true{};
 	struct is_false{};
 	
-//	template< bool B, typename Then = void, typename Else = void >
-//	struct if_else 
-//	{
-//		typedef Then type;
-//	};
-//
-//	template< typename Then, typename Else >
-//	struct if_else< false, Then, Else > 
-//	{
-//		typedef Else type;
-//	};
-	
 	template<typename T,typename T1>
 	struct is_same
 	{

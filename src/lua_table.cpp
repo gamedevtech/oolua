@@ -37,8 +37,7 @@ namespace OOLUA
 			return;
 		}
 		if(!m_table_ref.m_lua)return;
-		//REMOVE
-		//lua_getfield(m_table_ref.m_lua, LUA_GLOBALSINDEX, name.c_str() );
+
 		lua_getglobal(m_table_ref.m_lua,name.c_str() );
 		if(lua_type(m_table_ref.m_lua, -1) != LUA_TTABLE)
 		{

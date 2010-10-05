@@ -1,8 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file oolua.h
-///  This is the header file to be include to use Object Oriented Lua.
-///  It also defines the Script class and the push and pull methods to
-///  to transfer data to and from Lua and C++.
+///  This is the header file to be included to use Object Oriented Lua.
+///  It also defines the helper class called Script.
 ///
 ///  @author Liam Devine
 ///  @email
@@ -64,10 +63,10 @@ namespace OOLUA
 	///  To accomplish this a counted reference to the lua_State would need to be
 	///  maintained.
 	///  The class is only a helper, anything you can do with this class can be
-	///  done either done via using a Lua_function struct, interfacing with
-	///  Lua_interface and Lua API code to read a file. The class gives access to
-	///  the lua_State via a cast operator and a function, the whole of OOLUA works
-	///  with a lua_State and not a Script instance.
+	///  done either via using a Lua_function struct, calling OOLUA namespaced 
+	///  functions or using the Lua C API. The class gives access to the lua_State 
+	//   via a cast operator and a function, the whole of OOLUA works with a
+	///  lua_State and not a Script instance.
 	///////////////////////////////////////////////////////////////////////////////
 	class Script
 	{
@@ -81,10 +80,10 @@ namespace OOLUA
 		void register_class(T* );
 		template<typename T,typename K,typename V>
 		void register_class_static(K const& k, V const& v);
-		bool run_file(std::string const & filename/*,bool multi_return = true*/);
+		bool run_file(std::string const & filename);
 		bool load_file(std::string const & filename);
 		int stack_count(){ return lua_gettop(m_lua); }
-		operator lua_State * /*const*/() const {return m_lua;}
+		operator lua_State * () const {return m_lua;}
 		lua_State * const & get_ptr() const {return m_lua;}
 		bool load_chunk(std::string const& chunk);
 		bool run_chunk(std::string const& chunk);
@@ -127,11 +126,8 @@ namespace OOLUA
 		lua_setglobal(l, name);
 		return true;
 	}
-	inline void set_global_to_nil(lua_State*l, char const * name)
-	{
-		lua_pushnil(l);
-		lua_setglobal(l, name);
-	}
+	
+	void set_global_to_nil(lua_State*l, char const * name);
 	
 	template<typename T>
 	bool get_global(lua_State* l, char const* name, T& instance)

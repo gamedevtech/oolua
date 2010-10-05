@@ -12,3 +12,8 @@ EXPORT_OOLUA_FUNCTIONS_9_NON_CONST(OutParamsTest
 								   ,return_int_and_2_int_refs
 								   )
 EXPORT_OOLUA_FUNCTIONS_0_CONST(OutParamsTest)
+
+EXPORT_OOLUA_FUNCTIONS_NON_CONST(OutParamsUserData
+								   ,ref
+									)
+EXPORT_OOLUA_FUNCTIONS_CONST(OutParamsUserData)

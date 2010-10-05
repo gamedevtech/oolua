@@ -115,7 +115,7 @@ int func_name(lua_State* const l)mod\
 	typedef return_type_traits<return_value > R;\
 	typedef R::type (class_::*funcType )()mod ;\
 	OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<funcType>(l,m_this,&class_::func);\
-	return total_out_params< Type_list<out_p<return_value > >::type> ::out;\
+	return lua_return_count< Type_list<R >::type> ::out;\
 }
 #define LUA_CLASS_MEMBER_FUNCTION_1(func_name,return_value,func,P1,mod)\
 int func_name(lua_State* const l)mod\
@@ -126,7 +126,7 @@ int func_name(lua_State* const l)mod\
 	typedef R::type (class_::*funcType )(P1_::type)mod ;\
 	OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<P1_,funcType>(l,m_this,&class_::func,p1);\
 	OOLUA_BACK_INTERNAL_1\
-	return total_out_params< Type_list<out_p<return_value >,P1_ >::type> ::out;\
+	return lua_return_count< Type_list<R,P1_ >::type> ::out;\
 }
 #define LUA_CLASS_MEMBER_FUNCTION_2(func_name,return_value,func,P1,P2,mod)\
 int func_name(lua_State* const l)mod\
@@ -137,7 +137,7 @@ int func_name(lua_State* const l)mod\
 	typedef R::type (class_::*funcType )(P1_::type,P2_::type)mod ;\
 	OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<P1_,P2_,funcType>(l,m_this,&class_::func,p1,p2);\
 	OOLUA_BACK_INTERNAL_2\
-	return total_out_params< Type_list<out_p<return_value >,P1_,P2_ >::type> ::out;\
+	return lua_return_count< Type_list<R,P1_,P2_ >::type> ::out;\
 }
 #define LUA_CLASS_MEMBER_FUNCTION_3(func_name,return_value,func,P1,P2,P3,mod)\
 int func_name(lua_State* const l)mod\
@@ -148,7 +148,7 @@ int func_name(lua_State* const l)mod\
 	typedef R::type (class_::*funcType )(P1_::type,P2_::type,P3_::type)mod ;\
 	OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<P1_,P2_,P3_,funcType>(l,m_this,&class_::func,p1,p2,p3);\
 	OOLUA_BACK_INTERNAL_3\
-	return total_out_params< Type_list<out_p<return_value >,P1_,P2_,P3_ >::type> ::out;\
+	return lua_return_count< Type_list<R,P1_,P2_,P3_ >::type> ::out;\
 }
 #define LUA_CLASS_MEMBER_FUNCTION_4(func_name,return_value,func,P1,P2,P3,P4,mod)\
 int func_name(lua_State* const l)mod\
@@ -159,7 +159,7 @@ int func_name(lua_State* const l)mod\
 	typedef R::type (class_::*funcType )(P1_::type,P2_::type,P3_::type,P4_::type)mod ;\
 	OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<P1_,P2_,P3_,P4_,funcType>(l,m_this,&class_::func,p1,p2,p3,p4);\
 	OOLUA_BACK_INTERNAL_4\
-	return total_out_params< Type_list<out_p<return_value >,P1_,P2_,P3_,P4_ >::type> ::out;\
+	return lua_return_count< Type_list<R,P1_,P2_,P3_,P4_ >::type> ::out;\
 }
 #define LUA_CLASS_MEMBER_FUNCTION_5(func_name,return_value,func,P1,P2,P3,P4,P5,mod)\
 int func_name(lua_State* const l)mod\
@@ -170,7 +170,7 @@ int func_name(lua_State* const l)mod\
 	typedef R::type (class_::*funcType )(P1_::type,P2_::type,P3_::type,P4_::type,P5_::type)mod ;\
 	OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<P1_,P2_,P3_,P4_,P5_,funcType>(l,m_this,&class_::func,p1,p2,p3,p4,p5);\
 	OOLUA_BACK_INTERNAL_5\
-	return total_out_params< Type_list<out_p<return_value >,P1_,P2_,P3_,P4_,P5_ >::type> ::out;\
+	return lua_return_count< Type_list<R,P1_,P2_,P3_,P4_,P5_ >::type> ::out;\
 }
 #define LUA_CLASS_MEMBER_FUNCTION_6(func_name,return_value,func,P1,P2,P3,P4,P5,P6,mod)\
 int func_name(lua_State* const l)mod\
@@ -181,7 +181,7 @@ int func_name(lua_State* const l)mod\
 	typedef R::type (class_::*funcType )(P1_::type,P2_::type,P3_::type,P4_::type,P5_::type,P6_::type)mod ;\
 	OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<P1_,P2_,P3_,P4_,P5_,P6_,funcType>(l,m_this,&class_::func,p1,p2,p3,p4,p5,p6);\
 	OOLUA_BACK_INTERNAL_6\
-	return total_out_params< Type_list<out_p<return_value >,P1_,P2_,P3_,P4_,P5_,P6_ >::type> ::out;\
+	return lua_return_count< Type_list<R,P1_,P2_,P3_,P4_,P5_,P6_ >::type> ::out;\
 }
 #define LUA_CLASS_MEMBER_FUNCTION_7(func_name,return_value,func,P1,P2,P3,P4,P5,P6,P7,mod)\
 int func_name(lua_State* const l)mod\
@@ -192,7 +192,7 @@ int func_name(lua_State* const l)mod\
 	typedef R::type (class_::*funcType )(P1_::type,P2_::type,P3_::type,P4_::type,P5_::type,P6_::type,P7_::type)mod ;\
 	OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<P1_,P2_,P3_,P4_,P5_,P6_,P7_,funcType>(l,m_this,&class_::func,p1,p2,p3,p4,p5,p6,p7);\
 	OOLUA_BACK_INTERNAL_7\
-	return total_out_params< Type_list<out_p<return_value >,P1_,P2_,P3_,P4_,P5_,P6_,P7_ >::type> ::out;\
+	return lua_return_count< Type_list<R,P1_,P2_,P3_,P4_,P5_,P6_,P7_ >::type> ::out;\
 }
 #define LUA_CLASS_MEMBER_FUNCTION_8(func_name,return_value,func,P1,P2,P3,P4,P5,P6,P7,P8,mod)\
 int func_name(lua_State* const l)mod\
@@ -203,7 +203,7 @@ int func_name(lua_State* const l)mod\
 	typedef R::type (class_::*funcType )(P1_::type,P2_::type,P3_::type,P4_::type,P5_::type,P6_::type,P7_::type,P8_::type)mod ;\
 	OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<P1_,P2_,P3_,P4_,P5_,P6_,P7_,P8_,funcType>(l,m_this,&class_::func,p1,p2,p3,p4,p5,p6,p7,p8);\
 	OOLUA_BACK_INTERNAL_8\
-	return total_out_params< Type_list<out_p<return_value >,P1_,P2_,P3_,P4_,P5_,P6_,P7_,P8_ >::type> ::out;\
+	return lua_return_count< Type_list<R,P1_,P2_,P3_,P4_,P5_,P6_,P7_,P8_ >::type> ::out;\
 }
 
 

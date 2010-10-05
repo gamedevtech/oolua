@@ -15,7 +15,7 @@
 #	include "param_traits.h"
 
 #define OOLUA_CONVERTER(NUM)\
-	Converter<typename P##NUM::pull_type, typename P##NUM::type> p##NUM##_(p##NUM);
+	OOLUA::INTERNAL::Converter<typename P##NUM::pull_type, typename P##NUM::type> p##NUM##_(p##NUM);
 
 #define OOLUA_CONVERTER1\
 	OOLUA_CONVERTER(1)

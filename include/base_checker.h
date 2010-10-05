@@ -8,14 +8,16 @@
 
 namespace OOLUA
 {
-    template<typename T>
-	int stack_top_type_is_base(lua_State* const l
-								,INTERNAL::Lua_ud* requested_ud
-								,int const& userdata_index);
+
 
 	namespace INTERNAL
 	{
 
+		template<typename T>
+		int stack_top_type_is_base(lua_State* const l
+								   ,Lua_ud* requested_ud
+								   ,int const& userdata_index);
+		
 		template<typename ProxyStackType,typename BaseType,int DoWork>
 		struct CastToRequestedProxyType;
 
@@ -31,7 +33,7 @@ namespace OOLUA
 			static void cast(lua_State* const l,int const& userdata_index)
 			{
 				//get the userdata
-				OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud*>( lua_touserdata(l, userdata_index) );
+				Lua_ud* ud = static_cast<Lua_ud*>( lua_touserdata(l, userdata_index) );
 				//cast the class void ptr from the stack to the stacktype
 				//then to base type to get correct offset
 				BaseType* baseptr = static_cast<typename ProxyStackType::class_* > ( ud->void_class_ptr );
@@ -49,11 +51,11 @@ namespace OOLUA
 		template<typename ProxyStackType,typename Bases, int BaseIndex,typename BaseType>
 		struct Is_a_base
 		{
-			void operator()(lua_State * const l,int const& userdata_index,INTERNAL::Lua_ud* requested_ud,bool & result)
+			void operator()(lua_State * const l,int const& userdata_index,Lua_ud* requested_ud,bool & result)
 			{
 				if(result) return;
 				//is this a base
-				if( INTERNAL::ids_equal(requested_ud->none_const_name,requested_ud->name_size,
+				if( ids_equal(requested_ud->none_const_name,requested_ud->name_size,
 					(char*)OOLUA::Proxy_class<BaseType>::class_name,OOLUA::Proxy_class<BaseType>::name_size ) )
 				{
 					result = true;
@@ -79,12 +81,12 @@ namespace OOLUA
 			}
 		};
 
-	}
+	//}
 
 
 	template<typename T>
 	inline int stack_top_type_is_base(lua_State* const l
-										,INTERNAL::Lua_ud* requested_ud
+										,Lua_ud* requested_ud
 										,int const& userdata_index)
 	{
 		//ud... 
@@ -96,6 +98,8 @@ namespace OOLUA
 		bool result(false);
 		checkBases(l,userdata_index,requested_ud,result);
 		return !!result;
+	}
+	
 	}
 }
 #endif

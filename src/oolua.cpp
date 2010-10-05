@@ -35,23 +35,11 @@ namespace
 	}
 	void add_ownership_globals(lua_State* l)
 	{
-		//REMOVE
-		/*
-		push_char_carray(l,OOLUA::INTERNAL::cpp_owns_str);//string
-		lua_pushinteger(l,OOLUA::Cpp);//string int
-		lua_settable(l, LUA_GLOBALSINDEX);//globals[string]=int
-		*/
-		lua_pushinteger(l,OOLUA::Cpp);//string int
+		lua_pushinteger(l,OOLUA::Cpp);//int
 		lua_setglobal(l,OOLUA::INTERNAL::cpp_owns_str);//globals[string]=int
 		
-
-		/*
-		push_char_carray(l,OOLUA::INTERNAL::lua_owns_str);//string
-		lua_pushinteger(l,OOLUA::Lua);//string int
-		lua_settable(l, LUA_GLOBALSINDEX);//globals[string]=int
-		*/
 		
-		lua_pushinteger(l,OOLUA::Lua);//string int
+		lua_pushinteger(l,OOLUA::Lua);//int
 		lua_setglobal(l,OOLUA::INTERNAL::lua_owns_str);//globals[string]=int
 	}
 }
@@ -112,7 +100,7 @@ namespace OOLUA
 		return INTERNAL::protected_call_check_result(m_lua,result);
 	}
 
-	bool Script::run_file(std::string const & filename/*,bool multi_return*/)
+	bool Script::run_file(std::string const & filename)
 	{
 		bool status = load_file(filename);
 		if( !status )return false;
@@ -124,6 +112,12 @@ namespace OOLUA
 	{
 		int result = luaL_loadfile(m_lua, filename.c_str() );
 		return INTERNAL::load_buffer_check_result(m_lua,result);;
+	}
+	
+	void set_global_to_nil(lua_State*l, char const * name)
+	{
+		lua_pushnil(l);
+		lua_setglobal(l, name);
 	}
 
 }

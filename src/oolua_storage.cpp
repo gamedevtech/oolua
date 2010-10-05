@@ -49,7 +49,7 @@ namespace OOLUA
 			return false;
 		}
 		//returns the ud if found and cleans the stack else a NULL pointer
-		Lua_ud* find_ud_dont_care_about_type_and_clean_stack(lua_State* /*const*/ l,void* ptr)
+		Lua_ud* find_ud_dont_care_about_type_and_clean_stack(lua_State*  l,void* ptr)
 		{
 			Lua_ud* ud(0);
 			if( is_there_an_entry_for_this_void_pointer(l,ptr) )
@@ -85,6 +85,7 @@ namespace OOLUA
 			if(!ud)
 			{
 				//TODO: who has called this? 
+#warning who called this comment				
 #if OOLUA_DEBUG_CHECKS == 1
 				assert(0);
 #endif

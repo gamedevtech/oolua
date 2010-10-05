@@ -2,7 +2,7 @@
 # define CPP_OUT_PARAMS_OOLUA_H_
 
 #	include "gmock/gmock.h"
-
+#	include "cpp_stub_classes.h"
 class OutParamsTest
 {
 public:
@@ -25,6 +25,7 @@ public:
 		i2 = static_cast<int>(Param2);
 		return Return;
 	}
+
 };
 
 class MockOutParamsTest : public OutParamsTest
@@ -33,6 +34,20 @@ public:
 	MOCK_METHOD1(int_ref,void (int&));
 	MOCK_METHOD2(two_int_refs,void(int& i,int&) );
 	MOCK_METHOD1(int_ptr,void (int*));
+};
+
+
+class OutParamsUserData
+{
+public:
+	virtual ~OutParamsUserData(){}
+	virtual void ref(Stub1 & stub)=0;
+};
+
+class MockOutParamsUserData : public OutParamsUserData
+{
+public:
+	MOCK_METHOD1(ref,void (Stub1&));
 };
 
 #endif

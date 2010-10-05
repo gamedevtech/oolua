@@ -22,6 +22,7 @@
 #	include "lua_includes.h"
 #	include "lua_ref.h"
 #	include "oolua_config.h"
+#	include "oolua_converters.h"
 
 namespace OOLUA
 {
@@ -185,6 +186,7 @@ namespace OOLUA
 		enum { is_constant = Type_enum_defaults<type>::is_constant  };
 		enum { is_integral = Type_enum_defaults<type>::is_integral  };
 	};
+	/*
 	template<>
 	struct out_p<void>
 	{
@@ -198,6 +200,7 @@ namespace OOLUA
 		enum { is_constant = 0 };
 		enum { is_integral = 1 };
 	};
+	 */
 	template<typename T>
 	struct out_p<T*>
 	{
@@ -339,30 +342,30 @@ namespace OOLUA
 	};
 
 //////////////////////////////////////////////////////////////////////
-
+/*
 	template<typename T, typename T1>
 	struct add_out_param
 	{
 		enum { out = T::out + T1::out };
 	};
-
+*/
 	///////////////////////////////////////////////////////////////////////////////
-	///  @struct total_out_params
-	///  Adds the amount of return parameters together
+	///  @struct lua_return_count
+	///  Adds together the out values of the traits in the typelist
 	///  which is an enum in the type
 	///////////////////////////////////////////////////////////////////////////////
-	template<typename T>struct total_out_params;
+	template<typename T>struct lua_return_count;
 
 	template <>
-	struct total_out_params<TYPE::Null_type>
+	struct lua_return_count<TYPE::Null_type>
 	{
 		enum { out = 0 };
 	};
 
 	template<typename T, typename T1>
-	struct total_out_params< Type_node<T, T1> >
+	struct lua_return_count< Type_node<T, T1> >
 	{
-		enum { out = T::out + total_out_params<T1>::out };
+		enum { out = T::out + lua_return_count<T1>::out };
 	};
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct has_param_traits
@@ -468,6 +471,83 @@ namespace OOLUA
 	};
 
 	
+
+	
+	
+	template<typename T>
+	struct function_return
+	{
+		typedef T type;//real type
+		typedef typename Raw_type<T>::type raw;//all modifiers removed
+		typedef typename Pull_type<raw,LVD::is_integral_type<raw>::value >::type pull_type;
+		enum { in = 0};
+		enum { out = 1};
+		enum { owner = No_change};
+		enum { is_by_value = Type_enum_defaults<type>::is_by_value  };
+		enum { is_constant = Type_enum_defaults<type>::is_constant  };
+		enum { is_integral = Type_enum_defaults<type>::is_integral  };
+	};
+	
+	template<>
+	struct function_return<void>
+	{
+		typedef void type;
+		typedef void pull_type;
+		typedef void raw;
+		enum { in = 0};
+		enum { out = 0};
+		enum { owner = No_change};
+		enum { is_by_value = 1 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+	
+	template<int ID>
+	struct function_return<Lua_ref<ID> >
+	{
+		typedef Lua_ref<ID> type;
+		typedef Lua_ref<ID> pull_type;
+		typedef Lua_ref<ID> raw;
+		enum { in = 0};
+		enum { out = 1};
+		enum { owner = No_change};
+		enum { is_by_value = 1 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+	
+#if OOLUA_STD_STRING_IS_INTEGRAL == 1	
+	template<>
+	struct function_return<std::string>
+	{
+		typedef std::string type;
+		typedef std::string pull_type;
+		typedef std::string raw;
+		enum { in = 0};
+		enum { out = 1};
+		enum { owner = No_change};
+		enum { is_by_value = 1 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+	template<>
+	struct function_return<std::string&>
+	{
+		typedef std::string& type;
+		typedef std::string pull_type;
+		typedef std::string raw;
+		enum { in = 0};
+		enum { out = 1};
+		enum { owner = No_change};
+		enum { is_by_value = 0 };
+		enum { is_constant = 0 };
+		enum { is_integral = 1 };
+	};
+#endif
+	
+	
+	
+	
 	template<typename T, bool True>
 	struct return_type_typedef
 	{
@@ -482,10 +562,13 @@ namespace OOLUA
 		enum { is_integral = T::is_integral };
 	};
 	
+	
+	
+	//uses default traits
 	template<typename T>
 	struct return_type_typedef<T,false>
 	{
-		typedef out_p<T> out_param;
+		typedef function_return<T> out_param;
 		typedef typename out_param::type type;
 		typedef typename out_param::pull_type pull_type;
 		typedef typename out_param::raw raw;
@@ -497,10 +580,35 @@ namespace OOLUA
 		enum { is_integral = out_param::is_integral };
 	};
 	
+	
+	template<typename T>
+	struct has_return_traits
+	{
+		enum{value = 0};
+	};
+	
+	template<typename T>
+	struct has_return_traits< lua_out_p<T> >
+	{
+		enum {value = 1};
+	};
+	
+	template<typename T>
+	struct has_return_traits< lua_acquire_ptr<T> >
+	{
+		enum {value = 1};
+	};
+	
+	template<typename T>
+	struct has_return_traits< function_return<T> >
+	{
+		enum {value = 1};
+	};
+	
 	template<typename T>
 	struct return_type_traits
 	{
-		typedef return_type_typedef<T,has_param_traits<T>::value> r_type;
+		typedef return_type_typedef<T,has_return_traits<T>::value> r_type;
 		typedef typename r_type::type  type;
 		typedef typename r_type::pull_type pull_type;
 		typedef typename r_type::raw raw_type;
@@ -513,296 +621,6 @@ namespace OOLUA
 		enum { is_integral = r_type::is_integral  };
 	};
 
-	template<typename Pull_type,typename Real_type>struct Converter;
-
-	template<typename T>
-	struct Converter<T*,T&>
-	{
-		Converter(T*& t):m_t(t){}
-		operator T& () const
-		{
-			return *m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-
-
-	template<typename T>
-	struct Converter<T*,T>
-	{
-		Converter(T* t):m_t(t){}
-		operator T& () const
-		{
-			return *m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-
-	template<typename T>
-	struct Converter<T,T*>
-	{
-		Converter(T& t):m_t(t){}
-		operator T* () const
-		{
-			return &m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T& m_t;
-	};
-	template<typename T>
-	struct Converter<T*,T*&>
-	{
-		Converter(T* t):m_t(t){}
-		operator T*& () const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-	template<typename T>
-	struct Converter<T*,T const&>
-	{
-		Converter(T* t):m_t(t){}
-		operator T const&() const
-		{
-			return *m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-
-	template<typename T>
-	struct Converter<T*,T const*&>
-	{
-		Converter(T* t):m_t(t){}
-		operator T const*&()
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T const* m_t;
-	};
-
-	template<typename T>
-	struct Converter<T*,T const*>
-	{
-		Converter(T* t):m_t(t){}
-		operator T const*() const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-
-	template<typename T>
-	struct Converter<T,T*const&>
-	{
-		Converter(T & t):m_t(t){}
-		operator T* /*const*/  () const
-		{
-			return &m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T & m_t;
-	};
-
-	template<typename T>
-	struct Converter<T,T const*&>
-	{
-		Converter(T & t):m_t(&t){}
-		operator T const*&()
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T const* m_t;
-	};
-	template<typename T>
-	struct Converter<T,T const *const &>
-	{
-		Converter(T& t):m_t(&t){}
-		operator T*const &() const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-	template<typename T>
-	struct Converter<T*,T *const&>
-	{
-		Converter(T* t):m_t(t){}
-		operator T *const&() const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-	template<typename T>
-	struct Converter<T*,T const*const&>
-	{
-		Converter(T* t):m_t(t){}
-        operator T const * /*const*/() const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-	template<typename T>
-	struct Converter<T*,T const*const>
-	{
-		Converter(T* t):m_t(t){}
-		operator T const * /*const*/() const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-	template<typename T>
-	struct Converter<T*,T*>
-	{
-		Converter(T* t):m_t(t){}
-		operator T* () const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-
-	template<typename T>
-	struct Converter<T,T>
-	{
-		Converter(T& t):m_t(t){}
-		operator T& () const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T& m_t;
-	};
-	template<typename T>
-	struct Converter<T,T&>
-	{
-		Converter(T& t):m_t(t){}
-		operator T& () const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T& m_t;
-	};
-	template<typename T>
-	struct Converter<T,T*&>
-	{
-		Converter(T& t):m_t(&t){}
-		operator T*& ()
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-	template<typename T>
-	struct Converter<T,T const&>
-	{
-		Converter(T& t):m_t(t){}
-		operator T const& () const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T& m_t;
-	};
-
-	template<typename T>
-	struct Converter<T*,T *const>
-	{
-		Converter(T* t):m_t(t){}
-		operator T * () const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
-	template<typename T>
-	struct Converter<T const*,T const*&>
-	{
-		Converter(T const* t):m_t(t){}
-		operator T const*&()
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T const* m_t;
-	};
-
-
-	template<typename T>
-	struct Converter<T,T const>
-	{
-		Converter(T& t):m_t(t){}
-		operator T () const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T const & m_t;
-	};
-	
-	template<typename T>
-	struct Converter<T,T const*>
-	{
-		Converter(T & t):m_t(&t){}
-		operator T const*&()
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T const* m_t;
-	};
-	template<typename T>
-	struct Converter<T,T const *const>
-	{
-		Converter(T& t):m_t(&t){}
-		operator T*const &() const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		T* m_t;
-	};
 	///////////////////////////////////////////////////////////////////////////////
 	///  Specialisation for C style strings
 	///////////////////////////////////////////////////////////////////////////////
@@ -819,20 +637,7 @@ namespace OOLUA
 		enum { is_constant = 0 };
 		enum { is_integral = 1 };
 	};
-
-	template<>
-	struct Converter<std::string,char *>
-	{
-		Converter(std::string & t):m_t(&t[0]){}
-		operator char * () const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		char * m_t;
-	};
-
+	
 	template<>
 	struct in_p<char const*>
 	{
@@ -846,20 +651,6 @@ namespace OOLUA
 		enum { is_constant = 1 };
 		enum { is_integral = 1 };
 	};
-
-	template<>
-	struct Converter<std::string,char const*>
-	{
-		Converter(std::string const& t):m_t(t.c_str()){}
-		operator char const* () const
-		{
-			return m_t;
-		}
-		Converter& operator =(Converter const &);
-		Converter(Converter const &);
-		char const* m_t;
-	};
-
 	
 	
 	///////////////////////////////////////////////////////////////////////////////

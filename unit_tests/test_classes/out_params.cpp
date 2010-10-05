@@ -31,6 +31,8 @@ class OutParams : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(luaReturnOrder_luaFunctionWhichReturnsMultipleValues_orderIsAsExspectedElseError);
 		CPPUNIT_TEST(luaReturnOrder_luaFunctionWhichReturnsMultipleValuesToCpp_orderFromTopOfStackIsParam3Param2Param1);
 		CPPUNIT_TEST(ordering_functionWhichReturnsValueAndTwoInOutParams_orderFromTopOfStackIsParam2Param1Return);
+	
+	CPPUNIT_TEST(OutTrait_luaPassesNoParamFunctionWantsRefToUserData_topOfStackIsOwnedByLua);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -277,6 +279,19 @@ public:
 		CPPUNIT_ASSERT_EQUAL((int)OutParamsTest::Param2,r1);
 		CPPUNIT_ASSERT_EQUAL((int)OutParamsTest::Param1,r2);
 		CPPUNIT_ASSERT_EQUAL((int)OutParamsTest::Return,r3);
+	}
+	
+	void OutTrait_luaPassesNoParamFunctionWantsRefToUserData_topOfStackIsOwnedByLua()
+	{
+		m_lua->register_class<OutParamsUserData>();
+		m_lua->register_class<Stub1>();
+		m_lua->run_chunk("foo = function(obj) return obj:ref() end");
+		::testing::NiceMock<MockOutParamsUserData> stub;
+		m_lua->call("foo",(OutParamsUserData*)&stub);
+		OOLUA::INTERNAL::Lua_ud * ud = static_cast<OOLUA::INTERNAL::Lua_ud *>(lua_touserdata(*m_lua,-1) );
+		CPPUNIT_ASSERT_EQUAL(true,ud->gc);
+		
+#warning later on when this passes it will leak, but as yet we can not call delete on it
 	}
 };
 
