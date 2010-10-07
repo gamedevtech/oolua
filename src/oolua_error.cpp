@@ -32,13 +32,6 @@ namespace OOLUA
     }
     namespace INTERNAL
     {
-        void set_error_from_top_of_stack(lua_State*l)
-        {
-            int error_index = lua_gettop(l);
-            push_error_id_str(l);
-            lua_pushvalue(l,error_index);
-            lua_settable(l, LUA_REGISTRYINDEX);
-        }
 		void set_error_from_top_of_stack_and_pop_the_error(lua_State*l)
 		{
 			int error_index = lua_gettop(l);
@@ -64,9 +57,9 @@ namespace OOLUA
     }
 	namespace INTERNAL
     {
-        void set_error_from_top_of_stack(lua_State*	/*l*/)
-        {
-        }
+		void set_error_from_top_of_stack_and_pop_the_error(lua_State* /*l*/)
+		{
+		}
     }
 }
 #endif

@@ -19,17 +19,21 @@
 #	include "lvd_types.h"
 #	include "determin_qualifier.h"
 #	include <string>
-#	include "lua_includes.h"
-#	include "lua_ref.h"
 #	include "oolua_config.h"
-#	include "oolua_converters.h"
+
+
+//LUA_TTABLE LUA_TFUNCTION LUA_TBOOLEAN LUA_TSTRING LUA_TNUMBER
 
 namespace OOLUA
 {
 	class Lua_table;
+	template<int ID>struct Lua_ref;
+	
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct in_p
 	///  Input parameter trait
+	///  Informs that a parameter is supplied via Lua and that no change of 
+	///  ownership occurs.
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct in_p;
 	///////////////////////////////////////////////////////////////////////////////
@@ -44,20 +48,45 @@ namespace OOLUA
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct in_out_p
 	///  Input and output parameter trait
+	///  Informs that a parameter is supplied via Lua and the value is also pushed
+	///  back to the stack. No change of ownership occurs.
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct in_out_p;
 
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct cpp_in_p
-	///  Input parameter trait which cpp takes ownership of
+	///  Input parameter trait 
+	///  Parameter supplied via Lua changes ownership to C++. 
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct cpp_in_p;
 
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct lua_out_p
-	///  Output parameter trait which Lua takes ownership of
+	///  Output parameter trait 
+	///  Lua code does not pass an instance to the C++ function, yet the pushed back
+	///  value after the function call will be owned by Lua. This is meaningful only
+	///  if called with a type which has a proxy and it is by reference, otherwise 
+	///  undefined.
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct lua_out_p;
+	
+	
+	
+	///////////////////////////////////////////////////////////////////////////////
+	///  @struct cpp_acquire_ptr
+	///  Informs the binding that Lua will take control of the pointer being used
+	///  and call delete on it when appropriate. This is only valid for 
+	///  OOLUA::pull2cpp calls.
+	///////////////////////////////////////////////////////////////////////////////
+	template<typename T>struct cpp_acquire_ptr;
+	
+	///////////////////////////////////////////////////////////////////////////////
+	///  @struct lua_acquire_ptr
+	///  Informs the binding that Lua will take control of the pointer being used
+	///  and call delete on it when appropriate. This is only valid for 
+	///  OOLUA::push2lua calls.
+	///////////////////////////////////////////////////////////////////////////////
+	template<typename T>struct lua_acquire_ptr;
 	
 	
 	//which language owns the parameter Lua, Cpp or no change to ownership
@@ -203,38 +232,45 @@ namespace OOLUA
 		
 	//cpp takes ownership
 	template<typename T>
-	struct cpp_in_p<T&>
+	struct cpp_in_p
 	{
-		typedef T& type;
+		typedef T type;
 		typedef typename Raw_type<T>::type raw;
-        typedef typename Pull_type<T,LVD::is_integral_type<raw>::value >::type pull_type;
+        typedef typename Pull_type<raw,LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 1};
 		enum { out = 0};
 		enum { owner = Cpp};
 		enum { is_by_value = Type_enum_defaults<type>::is_by_value  };
 		enum { is_constant = Type_enum_defaults<type>::is_constant  };
 		enum { is_integral = Type_enum_defaults<type>::is_integral  };
+		typedef char type_has_to_be_by_reference [Type_enum_defaults<type>::is_by_value ? -1 : 1 ];
+		typedef char type_can_not_be_intergal [Type_enum_defaults<raw>::is_integral ? -1 : 1 ];
 	};
+
+	
 	template<typename T>
-	struct cpp_in_p<T*>
+	struct lua_out_p
 	{
-		typedef T* type;
+		typedef T type;
 		typedef typename Raw_type<T>::type raw;
-        typedef typename Pull_type<T,LVD::is_integral_type<raw>::value >::type pull_type;
-		enum { in = 1};
-		enum { out = 0};
-		enum { owner = Cpp};
+        typedef typename Pull_type<raw,LVD::is_integral_type<raw>::value >::type pull_type;
+		enum { in = 0};
+		enum { out = 1};
+		enum { owner = Lua};
 		enum { is_by_value = Type_enum_defaults<type>::is_by_value  };
 		enum { is_constant = Type_enum_defaults<type>::is_constant  };
 		enum { is_integral = Type_enum_defaults<type>::is_integral  };
+		typedef char type_has_to_be_by_reference [Type_enum_defaults<type>::is_by_value ? -1 : 1 ];
+		typedef char type_can_not_be_intergal [Type_enum_defaults<raw>::is_integral ? -1 : 1 ];
 	};
-	//lua takes ownership
+	
+	/*
 	template<typename T>
 	struct lua_out_p<T&>
 	{
 		typedef T& type;
 		typedef typename Raw_type<T>::type raw;
-        typedef typename Pull_type<T,LVD::is_integral_type<raw>::value >::type pull_type;
+        typedef typename Pull_type<raw,LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
 		enum { owner = Lua};
@@ -242,6 +278,7 @@ namespace OOLUA
 		enum { is_constant = Type_enum_defaults<type>::is_constant  };
 		enum { is_integral = Type_enum_defaults<type>::is_integral  };
 	};
+	
 	template<typename T>
 	struct lua_out_p<T*>
 	{
@@ -255,13 +292,9 @@ namespace OOLUA
 		enum { is_constant = Type_enum_defaults<type>::is_constant  };
 		enum { is_integral = Type_enum_defaults<type>::is_integral  };
 	};
+	*/
 
-	///////////////////////////////////////////////////////////////////////////////
-	///  @struct cpp_owned_ptr
-	///  Informs the binding that Cpp will take control of the pointer and call
-	///  delete on it when appropriate.
-	///////////////////////////////////////////////////////////////////////////////
-	template<typename T>struct cpp_acquire_ptr;
+
 
 	template<typename T>
 	struct cpp_acquire_ptr
@@ -468,6 +501,7 @@ namespace OOLUA
 		enum { is_constant = 0 };
 		enum { is_integral = 1 };
 	};
+	
 	
 #if OOLUA_STD_STRING_IS_INTEGRAL == 1	
 	template<>
@@ -688,11 +722,33 @@ namespace OOLUA
 {
 	namespace INTERNAL
 	{
+		
+		enum LUA
+		{
+			BOOLEAN = 1,
+
+			NUMBER = 3,
+			STRING = 4,
+			TABLE = 5,
+			FUNCTION = 6
+		};
+/*		
+#define LUA_TNIL		0
+#define LUA_TBOOLEAN		1
+#define LUA_TLIGHTUSERDATA	2
+#define LUA_TNUMBER		3
+#define LUA_TSTRING		4
+#define LUA_TTABLE		5
+#define LUA_TFUNCTION		6
+#define LUA_TUSERDATA		7
+#define LUA_TTHREAD		8
+*/
+		
 		template<typename Cpp_type,int Lua_type>
 		struct lua_type_is_cpp_type;
 
 		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type,LUA_TNUMBER>
+		struct lua_type_is_cpp_type<Cpp_type,NUMBER>//LUA_TNUMBER>
 		{
 			typedef Type_list<
 			char,unsigned char, signed char,
@@ -705,7 +761,7 @@ namespace OOLUA
 		};
 		
 		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type,LUA_TSTRING>
+		struct lua_type_is_cpp_type<Cpp_type,STRING>//LUA_TSTRING>
 		{
 			typedef Type_list<
 			char*,std::string
@@ -714,26 +770,27 @@ namespace OOLUA
 		};
 		
 		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type,LUA_TBOOLEAN>
+		struct lua_type_is_cpp_type<Cpp_type,BOOLEAN>//LUA_TBOOLEAN>
 		{
 			enum {value = LVD::is_same<bool,Cpp_type>::value};
 		};
 		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type,LUA_TFUNCTION>
+		struct lua_type_is_cpp_type<Cpp_type,FUNCTION>//LUA_TFUNCTION>
 		{
-			enum {value = LVD::is_same<Lua_ref<LUA_TFUNCTION> ,Cpp_type>::value};
+			enum {value = LVD::is_same<Lua_ref<FUNCTION/*LUA_TFUNCTION*/> ,Cpp_type>::value};
 		};
 		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type,LUA_TTABLE>
+		struct lua_type_is_cpp_type<Cpp_type,TABLE>//LUA_TTABLE>
 		{
 			
 			typedef Type_list<
-			Lua_ref<LUA_TTABLE>,Lua_table
+			Lua_ref<TABLE/*LUA_TTABLE*/>,Lua_table
 			>::type Table_types;
 			enum {value = TYPELIST::IndexOf<Table_types,Cpp_type>::value == -1 ? 0 : 1};
 		};
 	}
 }
+
 
 #if OOLUA_STD_STRING_IS_INTEGRAL == 1
 namespace OOLUA

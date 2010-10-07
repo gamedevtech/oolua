@@ -1,12 +1,22 @@
 #include "lua_ownership.h"
 
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(A_simple)
-EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(B_simple,
-								   add_A_ptr,create_A,
-								   return_this,
-								   return_this_const)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(A_simple)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(B_simple)
+EXPORT_OOLUA_FUNCTIONS_NON_CONST(OwnershipParamsAndReturns
+								 
+								,cpp_acquire_pointer
+								 ,param_cpp_in
+								 
+								 ,lua_acquire_pointer
+								 ,param_lua_outP
+								 
+								 ,returns_new_stub
+								 ,acquire_new_stub
+								 //   ,cpp_acquire_pointer
+								//,lua_acquire_pointer
+								//,returns_new_stub
+								//,returns_stack_stub
+								//,return_reference_to_stub
+								//,returns_cpp_owned_ptr
+								)
+								//,returns_cpp_owned_ptr_to_const)
 
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(A_derived)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(A_derived)
+EXPORT_OOLUA_FUNCTIONS_CONST(OwnershipParamsAndReturns)

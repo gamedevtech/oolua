@@ -10,8 +10,9 @@
 #	define MEMBER_FUNC_HELPER_H_
 
 #	include "lua_includes.h"
-#	include "oolua_push_pull.h"
+#	include "fwd_push_pull.h"
 #	include "oolua_error.h"
+#	include "push_pointer_internal.h"
 
 namespace OOLUA
 {
@@ -142,7 +143,7 @@ namespace OOLUA
 		template<typename T>
 		static void push2lua(lua_State* const /*s*/, T*& /*value*/)
 		{
-			assert(0 && "this function should never be called");
+			//assert(0 && "this function should never be called");
 		}//noop
 	};
 	template<typename Type>
@@ -164,14 +165,14 @@ namespace OOLUA
 		static void pull2cpp(lua_State* const /*s*/, T& /*value*/)//noop
 		{
 			//this function should never be called
-			assert(0 && "this function should never be called");
+			//assert(0 && "this function should never be called");
 		}
 		
 		template<typename T>
 		static void pull2cpp(lua_State* const /*s*/, T*& /*value*/)//noop
 		{
 			//this function should never be called
-			assert(0 && "this function should never be called");
+			//assert(0 && "this function should never be called");
 		}
 	};
 

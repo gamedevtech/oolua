@@ -57,10 +57,12 @@ class StringAsInteragal : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST_SUITE(StringAsInteragal);
         CPPUNIT_TEST(LuaCallsCppFunction_paramIsString_callsMethodPassingString);
 		CPPUNIT_TEST(LuaCallsCppFunction_paramIsRefToString_callsMethodPassingString);
+		CPPUNIT_TEST(LuaCallsCppFunction_paramIsRefToString_returnsExspectedString);
 		CPPUNIT_TEST(LuaCallsCppFunction_paramIsStringFunctionReturnsTheString_returnsExspectedString);
 		CPPUNIT_TEST(LuaCallsCppFunction_paramIsRef2ConstString_callsMethodPassingString);
-	CPPUNIT_TEST(LuaClassCppFunction_returnsReferenceToString_returnValueIsEqualToConstantString);
-	CPPUNIT_TEST(outParam_stringReference_returnValueIsEqualToConstantString);
+		CPPUNIT_TEST(LuaClassCppFunction_returnsReferenceToString_returnValueIsEqualToConstantString);
+		CPPUNIT_TEST(outParam_stringReference_returnValueIsEqualToConstantString);
+
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -131,6 +133,7 @@ public:
 		m_lua->call(func_name,(StringInteragal*)&stub);
         assert_return_string_equals(input_str);
     }
+
 	void LuaCallsCppFunction_paramIsStringFunctionReturnsTheString_returnsExspectedString()
 	{
         std::string input_str( constant_string() );

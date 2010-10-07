@@ -8,13 +8,15 @@
 
 
 #if	OOLUA_USE_EXCEPTIONS ==1
+#	include "oolua_error.h"
+
 #	define OOLUA_PROXY_CALL_CATCH_RESPONSE(exception_type,what_message)\
 		luaL_error(l, "Type of exception: %s.\n what(): %s.\n When calling function on proxy type: %s\n" \
 					, exception_type \
 					, what_message   \
 					, Proxy_type::class_name );
 
-#define PROXY_MEMBER_CALLER_CATCHES \
+#	define PROXY_MEMBER_CALLER_CATCHES \
 	catch (OOLUA::Type_error const & e)\
 	{\
 		OOLUA_PROXY_CALL_CATCH_RESPONSE("OOLUA::Type_error",e.what())\

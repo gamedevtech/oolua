@@ -7,7 +7,8 @@ if _ACTION == "clean" then
   os.rmdir("bin")
 end
 
-
+--[[
+Old premake
 newaction {
    trigger     = "vs2010",
    description = "Generate Microsoft Visual Studio 2010 project files",
@@ -25,6 +26,7 @@ newaction {
 				os.execute("\"cd build_scripts&&cleanVS10.bat\"")
    end
 }
+--]]
 
 solution("oolua")
    configurations { "Debug", "Release" }
@@ -37,4 +39,5 @@ include("./file_generator/")
 include("./profile/")
 include("./unit_tests/string_is_integral/")
 dofile("./unit_tests/test.unit.exceptions.lua")
+dofile("./unit_tests/test.coverage.lua")
 

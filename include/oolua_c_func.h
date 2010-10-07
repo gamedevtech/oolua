@@ -13,7 +13,7 @@
 
 #	include "param_traits.h"
 #	include "oolua_paramater_macros.h"
-
+#	include "proxy_caller.h"
 
 //proxy implementations
 #define OOLUA_C_FUNCTION_0(return_value,func) \

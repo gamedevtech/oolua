@@ -9,6 +9,15 @@ class Lua_function_ref : public CppUnit::TestFixture
 	CPPUNIT_TEST_SUITE(Lua_function_ref);
 	CPPUNIT_TEST(classMethod_takesLuaFuncRef_callReturnsTrue);
 	CPPUNIT_TEST(returnsInput_takesRefAndReturnsIt_luaFunctionReturnsCorrectValueThenCallReturnsTrue);
+#if OOLUA_USE_EXCEPTIONS == 1
+	CPPUNIT_TEST(pull_CFunctionFromStackTopIsNotFunc_throwsRunTimeError);
+#endif
+	
+#if OOLUA_STORE_LAST_ERROR == 1
+	CPPUNIT_TEST(pull_CFunctionFromStackTopIsNotFunc_callReturnsFalse);
+	CPPUNIT_TEST(pull_CFunctionFromStackTopIsNotFunc_errorStringIsNotEmpty);
+#endif
+	
 	CPPUNIT_TEST_SUITE_END();
 	
 	OOLUA::Script* m_lua;
@@ -48,8 +57,30 @@ public:
 		CPPUNIT_ASSERT_EQUAL(true,result);	
 	}
 
+#if OOLUA_USE_EXCEPTIONS == 1	
+	void pull_CFunctionFromStackTopIsNotFunc_throwsRunTimeError()
+	{
+		OOLUA::Lua_func_ref func;
+		CPPUNIT_ASSERT_THROW( OOLUA::pull2cpp(*m_lua,func),OOLUA::Runtime_error);
+	}
+#endif
 	
-
+#if OOLUA_STORE_LAST_ERROR == 1	
+	void pull_CFunctionFromStackTopIsNotFunc_callReturnsFalse()
+	{	
+		OOLUA::Lua_func_ref func;
+		bool result = OOLUA::pull2cpp(*m_lua,func);
+		CPPUNIT_ASSERT_EQUAL(false,result);
+	}
+	void pull_CFunctionFromStackTopIsNotFunc_errorStringIsNotEmpty()
+	{	
+		OOLUA::Lua_func_ref func;
+		OOLUA::pull2cpp(*m_lua,func);
+		std::string error_str = OOLUA::get_last_error(*m_lua);
+		CPPUNIT_ASSERT_EQUAL(false,error_str.empty() );
+	}
+	
+#endif
 	
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(Lua_function_ref);

@@ -12,10 +12,8 @@
 #include "class_from_stack.h"
 #include "push_pointer_internal.h"
 #include "fwd_push_pull.h"
-#include "oolua_storage.h"
 #include "oolua_parameter_helper.h"
 #include "oolua_config.h"
-#include "oolua_error.h"
 
 namespace OOLUA
 {
@@ -48,7 +46,7 @@ namespace OOLUA
 		bool cpp_runtime_type_check_of_top(lua_State* l, int looking_for_lua_type, char const * type);
 		bool cpp_runtime_type_check_of_top(lua_State* l, compare_lua_type_func_sig compareFunc, char const * type);
 		void handle_cpp_pull_fail(lua_State* l,char const * lookingFor);
-
+		void local_function_to_set_owner( lua_State* l,void* ptr, Owner own);
 		
 		namespace LUA_CALLED
 		{
@@ -415,7 +413,9 @@ MSC_POP_COMPILER_WARNING_OOLUA
 		}
 		assert(class_ptr);
 		value.m_ptr = class_ptr;
-		INTERNAL::set_owner(s,value.m_ptr,OOLUA::Cpp);
+		//INTERNAL::set_owner(s,value.m_ptr,OOLUA::Cpp);
+		INTERNAL::local_function_to_set_owner(s,value.m_ptr,OOLUA::Cpp);
+//#warning oolua_storgage.h is required for this
 		lua_pop( s, 1);
 		return true;
 	}
@@ -554,7 +554,9 @@ MSC_POP_COMPILER_WARNING_OOLUA
 				}
 #endif
 				value.m_ptr = class_ptr;
-				INTERNAL::set_owner(s,value.m_ptr,OOLUA::Cpp);
+				//INTERNAL::set_owner(s,value.m_ptr,OOLUA::Cpp);
+				INTERNAL::local_function_to_set_owner(s,value.m_ptr,OOLUA::Cpp);
+//#warning oolua_storage.h is required for this function
 				lua_pop( s, 1);
 			}
 			

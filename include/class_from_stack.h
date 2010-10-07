@@ -3,12 +3,15 @@
 #	define CLASS_FROM_STACK_H_
 
 #	include "lua_includes.h"
-#	include "fwd_push_pull.h"
 #	include "oolua_typedefs.h"
 #	include "proxy_class.h"
 #	include "lua_table.h"
 #	include "oolua_userdata.h"
-#	include "oolua_error.h"
+#	include "oolua_config.h"
+
+#if OOLUA_DEBUG_CHECKS == 1
+#	include <cassert>
+#endif
 
 namespace OOLUA
 {
@@ -114,7 +117,7 @@ namespace OOLUA
 					,OOLUA::Proxy_class<T>::class_name
 					,"pointer from a const pointer"
 					);
-				return (T*)0;
+				return (T*)0;//never hit, it is just to prevent a warning
 			}
 			if( ! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
 									,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size) )
@@ -141,7 +144,7 @@ namespace OOLUA
 							,OOLUA::Proxy_class<T>::class_name
 							,"pointer from a const pointer"
 							);
-				return (T*)0;
+				return (T*)0;//never hit, it is just to prevent a warning
 			}
 			if( ! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
 									  ,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size) )

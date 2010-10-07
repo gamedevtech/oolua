@@ -5,6 +5,9 @@
 #	include "cpp_private_destructor.h"
 #	include "expose_stub_classes.h"
 
+
+#	include "lua_ownership.h"
+
 class Ownership : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Ownership);
@@ -25,6 +28,16 @@ class Ownership : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(setOwner_cppOwnsOnInstanceWithNoPublicDestructor_throwsRuntimeError);
 #endif	
 	
+		CPPUNIT_TEST(cppAcquirePtr_passNewClassInstanceToFunction_topOfStackGcIsFalse);
+		CPPUNIT_TEST(cppParamInPtr_passNewClassInstanceToFunction_topOfStackGcIsFalse);
+	
+	
+	//	CPPUNIT_TEST(luaAcquirePtr_passNewClassInstanceToFunction_topOfStackGcIsTrue);
+		CPPUNIT_TEST(luaParamOutP_passedNothing_topOfStackGcIsTrue);	
+		
+	
+	//CPPUNIT_TEST(luaAcquirePtr_refToPtrStub_traitNoneConst);
+		//CPPUNIT_TEST(luaAcquirePtr_refToPtrStub_pullTypeIsStubPointer);
 	
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
@@ -129,6 +142,98 @@ public:
 		
 	}
 #endif	
+	
+	void cppAcquirePtr_passNewClassInstanceToFunction_topOfStackGcIsFalse()
+	{
+		m_lua->run_chunk("foo=function(obj) "
+						 "local c = Stub1:new() "
+						 "obj:cpp_acquire_pointer(c) "
+						 "return c "
+						 "end");
+		m_lua->register_class<OwnershipParamsAndReturns>();
+		OwnershipParamsAndReturns object;
+		m_lua->call("foo",&object);
+		OOLUA::INTERNAL::Lua_ud * ud = static_cast<OOLUA::INTERNAL::Lua_ud *>(lua_touserdata(*m_lua,-1) );
+		CPPUNIT_ASSERT_EQUAL(false,ud->gc);
+	}
+	void cppParamInPtr_passNewClassInstanceToFunction_topOfStackGcIsFalse()
+	{
+		m_lua->run_chunk("foo=function(obj) "
+						 "local c = Stub1:new() "
+						 "obj:param_cpp_in(c) "
+						 "return c "
+						 "end");
+		m_lua->register_class<OwnershipParamsAndReturns>();
+		OwnershipParamsAndReturns object;
+		m_lua->call("foo",&object);
+		OOLUA::INTERNAL::Lua_ud * ud = static_cast<OOLUA::INTERNAL::Lua_ud *>(lua_touserdata(*m_lua,-1) );
+		CPPUNIT_ASSERT_EQUAL(false,ud->gc);
+	}
+	/*
+	void luaAcquirePtr_passNewClassInstanceToFunction_topOfStackGcIsTrue()
+	{
+		m_lua->run_chunk("foo=function(obj) "
+						 "local c = Stub1:new() "
+						 "local param_returned obj:lua_acquire_pointer(c) "
+						 //"print( tostring(param_returned) ) "
+						 //"if param_returned then return param_returned "
+						 //"else return c end " 
+						 "return param_returned "
+						 "end");
+		m_lua->register_class<OwnershipParamsAndReturns>();
+		OwnershipParamsAndReturns object;
+		m_lua->call("foo",&object);
+		OOLUA::INTERNAL::Lua_ud * ud = static_cast<OOLUA::INTERNAL::Lua_ud *>(lua_touserdata(*m_lua,-1) );
+		CPPUNIT_ASSERT_EQUAL(false,ud->gc);//////////////
+	}
+	*/
+	//OOLUA::out_p<int> out_int;
+	//OOLUA::out_p<int*> out_int_ptr;//allowed
+	//OOLUA::cpp_in_p<int> int_cpp_in;
+	//OOLUA::cpp_in_p<int*> intPtr_cpp_in;
+	//OOLUA::in_out_p<int> int_in_out;
+	//OOLUA::in_out_p<int*> intPtr_in_out;//allowed
+	//OOLUA::lua_out_p<int> lua_out_int;
+	//OOLUA::lua_out_p<int*> lua_out_intPtr;
+	
+	void luaParamOutP_passedNothing_topOfStackGcIsTrue()
+	{
+		m_lua->run_chunk("foo=function(obj) "
+						 "return obj:param_lua_outP()"
+						 "end");
+		m_lua->register_class<OwnershipParamsAndReturns>();
+		OwnershipParamsAndReturns object;
+		m_lua->call("foo",&object);
+		OOLUA::INTERNAL::Lua_ud * ud = static_cast<OOLUA::INTERNAL::Lua_ud *>(lua_touserdata(*m_lua,-1) );
+		CPPUNIT_ASSERT_EQUAL(true,ud->gc);
+	}
+	
+/*
+	void luaAcquirePtr_refToPtrStub_traitNoneConst()
+	{
+		CPPUNIT_ASSERT_EQUAL(0,(int)OOLUA::lua_acquire_ptr<Stub1*&>::is_constant);
+	}
+
+	void luaAcquirePtr_refToPtrStub_pullTypeIsStubPointer()
+	{
+		int is_same_type =LVD::is_same<OOLUA::lua_acquire_ptr<Stub1*&>::pull_type,Stub1*>::value;
+		OOLUA::lua_acquire_ptr<Stub1*&> p;
+		CPPUNIT_ASSERT_EQUAL(1,is_same_type);
+
+	}
+
+	
+	void luaAcquirePtr_canCompile()
+	{
+		OOLUA::lua_acquire_ptr<Stub1*&> p;
+		Stub1 stub;
+		//pull, real
+		OOLUA::INTERNAL::Converter<Stub1*,Stub1*&> c(&stub);	
+		Stub1*& real_type = c;
+		
+	}
+	*/
+
 
 };
 

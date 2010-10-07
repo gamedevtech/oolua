@@ -13,6 +13,9 @@
 
 #	include "param_traits.h"
 #	include "oolua_paramater_macros.h"
+#	include "proxy_caller.h"
+#	include <cassert>
+
 #define OOLUA_CONST_FUNC const
 #define OOLUA_NON_CONST_FUNC
 

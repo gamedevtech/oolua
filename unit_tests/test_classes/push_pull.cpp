@@ -62,11 +62,13 @@ class PushPull : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pushPull_pushStdString_resultEqualsPushedValue);
 		CPPUNIT_TEST(pushPull_stdStringWithEmbededNull_resultEqualsPushedValue);
 		CPPUNIT_TEST(pushPull_stdStringWithNullAtEnd_resultEqualsPushedValue);
-	CPPUNIT_TEST(pushPull_emptyStdString_resultEqualsPushedValue);
+		CPPUNIT_TEST(pushPull_emptyStdString_resultEqualsPushedValue);
 
 		CPPUNIT_TEST(pushPull_pushEnum_resultEqualsPushedValue);
 
 		CPPUNIT_TEST(pushpull_pushClassPointer_resultAddressEqualsPushValue);
+		
+		CPPUNIT_TEST(pushPull_constPtrToCChar_pulledValueEqualsInput);
 
 	CPPUNIT_TEST_SUITE_END();
 
@@ -213,7 +215,17 @@ public:
 		push_then_pull(m_lua,input,result);
 		CPPUNIT_ASSERT_EQUAL(input, result);
 	}
-	
+	void pushPull_constPtrToCChar_pulledValueEqualsInput()
+	{
+		/*cast stops the warning that char is not const,this is the type I want*/
+		char * const  constPtrToChar =(char * const )"hello world";
+		OOLUA::push2lua(*m_lua,constPtrToChar);
+		std::string result;
+		OOLUA::pull2cpp(*m_lua,result);
+		CPPUNIT_ASSERT_EQUAL(std::string(constPtrToChar),result);
+	}
+
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( PushPull );

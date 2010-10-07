@@ -3,6 +3,8 @@
 #	include "expose_max_params.h"
 #	include "gmock/gmock.h"
 
+#if 1
+
 struct MockHelper
 {
 	MockHelper()
@@ -185,3 +187,5 @@ public:
 	}
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(ParamsTest);
+
+#endif

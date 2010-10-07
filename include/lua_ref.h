@@ -198,10 +198,20 @@ namespace OOLUA
 	{
 		if( !pull_if_valid(lua) )
 		{
-			////NOT IN C++ handle the error
-#if OOLUA_DEBUG_CHECKS ==1
-			assert( 0 &&  "pulling incorrect type from stack");
-#endif
+#	if OOLUA_STORE_LAST_ERROR == 1 || 	OOLUA_USE_EXCEPTIONS ==1
+			lua_pushfstring(lua,
+						"pulling incorrect type from stack. This is a Lua registry reference to id%d, stack contains %s"
+						,ID
+						,lua_typename(lua,lua_type(lua, -1)));	
+#		if OOLUA_USE_EXCEPTIONS ==1
+							throw OOLUA::Runtime_error(lua,(OOLUA::ERROR::PopTheStack*)0);
+#		else // OOLUA_STORE_LAST_ERROR ==1								
+							OOLUA::INTERNAL::set_error_from_top_of_stack_and_pop_the_error(lua);
+#		endif
+#	elif OOLUA_DEBUG_CHECKS == 1
+		assert(0 && "pulling incorrect type from stack");
+#	endif
+				
 			return false;
 		}
 		return true;

@@ -22,12 +22,7 @@
 		{
 			struct PopTheStack{};
 		}
-        struct Bad_cast_error : public std::runtime_error
-        {
-            Bad_cast_error(std::string const & msg)
-				:std::runtime_error(msg)
-			{}
-        };
+
         struct Syntax_error : public std::runtime_error
         {
             Syntax_error(lua_State* s)

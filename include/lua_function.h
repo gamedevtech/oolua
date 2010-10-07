@@ -25,6 +25,7 @@ namespace OOLUA
 ///////////////////////////////////////////////////////////////////////////////
 struct Lua_function
 {
+	Lua_function();
 	template<typename FUNC>
 	bool operator()(FUNC const&  func_name)
 	{

@@ -102,6 +102,11 @@ namespace OOLUA
 #endif
 		m_lua = lua;
 	}
+	
+	Lua_function::Lua_function()
+		:m_lua(0),m_error_func_index(0)
+	{}
+	
 	bool Lua_function::call(int const& count)
 	{
 		int result = lua_pcall(m_lua,count,LUA_MULTRET,m_error_func_index);

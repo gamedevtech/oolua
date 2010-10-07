@@ -112,3 +112,9 @@ unit_test_config = function(root,name)
 		links{ "dl" }
 		
 end
+
+coverage = function()
+	configuration{"xcode3 or gmake"}
+		links{ "gcov" }
+		buildoptions {"-fprofile-arcs -ftest-coverage"}
+end

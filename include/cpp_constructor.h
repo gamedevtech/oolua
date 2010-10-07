@@ -17,6 +17,8 @@
 #	include "oolua_userdata.h"
 #	include "member_func_helper.h"
 #	include "oolua_parameter_helper.h"
+#	include "oolua_converters.h"
+
 namespace OOLUA
 {
 namespace INTERNAL

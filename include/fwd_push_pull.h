@@ -25,7 +25,6 @@ namespace OOLUA
 {
 
     template<int ID>struct Lua_ref;
-
     class Lua_table;
 
 	template<typename T>struct lua_acquire_ptr;
@@ -47,7 +46,7 @@ namespace OOLUA
 	bool push2lua(lua_State* const s, lua_CFunction const &  value);
 	
 	bool push2lua(lua_State* const s, Lua_table const &  value);
-	bool push2lua(lua_State* const s, Lua_func_ref const &  value);
+	bool push2lua(lua_State* const s, Lua_ref<OOLUA::INTERNAL::FUNCTION>/*Lua_func_ref*/ const &  value);
 	
 
 	template<typename T>bool push2lua(lua_State* const s, T * const &  value);
@@ -91,9 +90,9 @@ namespace OOLUA
 			void pull2cpp(lua_State* const s, double& value);
 			void pull2cpp(lua_State* const s, float& value);
 			void pull2cpp(lua_State* const s, lua_CFunction& value);
-			void pull2cpp(lua_State* const s, Lua_func_ref& value);
+			void pull2cpp(lua_State* const s, Lua_ref<OOLUA::INTERNAL::FUNCTION>/*Lua_func_ref*/& value);
 			void pull2cpp(lua_State* const s, Lua_table&  value);
-			void pull2cpp(lua_State* const s, Lua_table_ref& value);
+			void pull2cpp(lua_State* const s, Lua_ref<OOLUA::INTERNAL::TABLE>/*Lua_table_ref*/& value);
 			
 			template<typename T> 
 			void pull2cpp(lua_State* const s, T& value);

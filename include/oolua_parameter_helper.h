@@ -1,7 +1,7 @@
 #ifndef OOLUA_PARAMETER_HELPER_H_
 #	define OOLUA_PARAMETER_HELPER_H_
 
-#	include "param_traits.h"
+//#	include "param_traits.h"
 #	include "oolua_userdata.h"
 #	include "lua_includes.h"
 #	include "class_from_stack.h"

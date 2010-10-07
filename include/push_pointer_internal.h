@@ -3,7 +3,6 @@
 #	define PUSH_POINTER_INTERAL_H_
 
 #include "lua_includes.h"
-#include "param_traits.h"
 #include "oolua_userdata.h"
 #include "oolua_storage.h"
 

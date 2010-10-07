@@ -3,6 +3,19 @@
 #	include "common_cppunit_headers.h"
 #	include "expose_stub_classes.h"
 
+
+#       include <csetjmp>
+
+namespace  
+{
+	jmp_buf mark; 
+	int OOLua_panic(lua_State* /*l*/)
+	{
+		longjmp(mark,1);
+		return 0;
+	}
+}
+
 #if OOLUA_USE_EXCEPTIONS ==  1
 struct ExceptionMock
 {
@@ -36,11 +49,13 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(scriptConstructor_checkStackSize_stackIsEmpty);
 		CPPUNIT_TEST(lua_Lopenlibs_checkStackSizeAfterCall_stackIsEmpty);
 	
+	
 #if OOLUA_RUNTIME_CHECKS_ENABLED ==1
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_stackSizeIncreasesByOne);
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_afterCallTopIsMetatable);
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_afterCallIndexMinusTwoIsUserdata);	
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_resultIsFalse);
+		CPPUNIT_TEST(userDataCheck_lightUserDataWithNoMetaTable_resultIsFalse);
 #endif
 
 	
@@ -56,6 +71,9 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pull_classWhenintIsOnStack_lastErrorStringIsNotEmpty);
 		CPPUNIT_TEST(pull_classWhenintIsOnStack_pullReturnsFalse);
 		CPPUNIT_TEST(pull_intWhenClassIsOnStack_pullReturnsFalse);
+	
+		CPPUNIT_TEST(loadFile_fileDoesNotExist_returnsFalse);
+		CPPUNIT_TEST(runFile_fileDoesNotExist_returnsFalse);
 #endif	
 	
 	
@@ -74,9 +92,14 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(exceptionSafe_memberFunctionThrowsStdRuntimeError_callThrowsOoluaRuntimeError);
 		CPPUNIT_TEST(call_afterAnExceptionTheStackIsEmpty_stackCountEqualsZero);
 	
-	//CPPUNIT_TEST(push_unregisteredClass_LuaPanic);
+		CPPUNIT_TEST(loadFile_fileDoesNotExist_callThrowsOoluaFileError);
+		CPPUNIT_TEST(runFile_fileDoesNotExist_callThrowsOoluaFileError);
 #endif	
-	
+
+#if OOLUA_DEBUG_CHECKS == 1
+		CPPUNIT_TEST(push_unregisteredClass_callsLuaPanic);
+#endif
+
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 public:
@@ -140,6 +163,8 @@ public:
 		int after = lua_gettop(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(before,after);
 	}
+
+
 	void scriptConstructor_checkStackSize_stackIsEmpty()
 	{
 		OOLUA::Script s;
@@ -163,6 +188,13 @@ public:
 	
 #if OOLUA_RUNTIME_CHECKS_ENABLED ==1
 
+	void userDataCheck_lightUserDataWithNoMetaTable_resultIsFalse()
+	{
+		lua_pushlightuserdata(*m_lua,this);
+		bool result = OOLUA::INTERNAL::index_is_userdata(*m_lua,-1);
+		CPPUNIT_ASSERT_EQUAL(false,result );
+	}
+	
 	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_resultIsFalse()
 	{
 		m_lua->run_chunk("foo = function() "
@@ -309,7 +341,16 @@ public:
 		int result;
 		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull2cpp(*m_lua,result));
 	 }
-	
+				 
+	void loadFile_fileDoesNotExist_returnsFalse()
+	{
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->load_file("does_not_exist"));
+	}
+	void runFile_fileDoesNotExist_returnsFalse()
+	{
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_file("does_not_exist"));
+	}
+										
 #endif
 	
 #if OOLUA_USE_EXCEPTIONS == 1
@@ -420,17 +461,36 @@ public:
 		CPPUNIT_ASSERT_THROW(m_lua->call("foo",&m),OOLUA::Runtime_error);
 		CPPUNIT_ASSERT_EQUAL(0, m_lua->stack_count() );
 	}
-	
-	//TODO
-	//not registered calls lua_error
-	void push_unregisteredClass_LuaPanic()
+	void loadFile_fileDoesNotExist_callThrowsOoluaFileError()
 	{
-		Stub1 stubtmp;
-		Stub1* stubptr(&stubtmp);
-		OOLUA::push2lua(*m_lua,stubptr);
+		CPPUNIT_ASSERT_THROW(m_lua->load_file("does_not_exist"),OOLUA::File_error);
+	}
+	void runFile_fileDoesNotExist_callThrowsOoluaFileError()
+	{
+		CPPUNIT_ASSERT_THROW(m_lua->run_file("does_not_exist"),OOLUA::File_error);
 	}
 	
 #endif
+	
+	
+#if OOLUA_DEBUG_CHECKS == 1
+	void push_unregisteredClass_callsLuaPanic()
+	{
+		Stub1 stubtmp;
+		Stub1* stubptr(&stubtmp);
+		
+		lua_atpanic(*m_lua,&OOLua_panic);
+		
+		if (setjmp(mark) == 0)
+		{
+			OOLUA::push2lua(*m_lua,stubptr);
+			CPPUNIT_ASSERT_EQUAL(false,true );//never jumped back
+		}
+		else
+			CPPUNIT_ASSERT_EQUAL(true,true );//we hit the at panic
+	}
+#endif
+	
 	
 };
 

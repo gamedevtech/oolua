@@ -1,5 +1,5 @@
 #include "class_from_stack.h"
-#include "oolua_config.h"
+
 
 
 namespace OOLUA

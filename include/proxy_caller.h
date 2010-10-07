@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #	include "member_func_helper.h"
 #	include "param_traits.h"
+#	include "oolua_converters.h"
 
 #define OOLUA_CONVERTER(NUM)\
 	OOLUA::INTERNAL::Converter<typename P##NUM::pull_type, typename P##NUM::type> p##NUM##_(p##NUM);

@@ -83,6 +83,10 @@ class Table : public CPPUNIT_NS::TestFixture
 		
 		CPPUNIT_TEST(callFunction_memberFunctiontakesTableYetPassedNilReturnsValidityOfTable_returnsFalse);
 	
+	CPPUNIT_TEST(valid_assignedValidLuaPointerAndInvalidName_resultIsFalse);
+	
+	CPPUNIT_TEST(valid_assignedValidLuaPointerAndEmptyStringName_resultIsFalse);
+	
 #if OOLUA_STORE_LAST_ERROR == 1
 	CPPUNIT_TEST(callFunction_memberFunctionWhichTakesTableYetPassedInt_callReturnsFalse);
 #endif
@@ -220,7 +224,19 @@ public:
 		table->valid();
 		CPPUNIT_ASSERT_EQUAL(0,lua_gettop(*m_lua) );
 	}
-
+	
+	void valid_assignedValidLuaPointerAndInvalidName_resultIsFalse()
+	{
+		table->bind_script(*m_lua);
+		table->set_table("Does not exist");
+		CPPUNIT_ASSERT_EQUAL(false, table->valid() );
+	}
+	void valid_assignedValidLuaPointerAndEmptyStringName_resultIsFalse()
+	{
+		table->bind_script(*m_lua);
+		table->set_table("");
+		CPPUNIT_ASSERT_EQUAL(false, table->valid() );
+	}
 	void newTable_callValidOnTable_returnsTrue()
 	{
 		CPPUNIT_ASSERT_EQUAL(true, OOLUA::new_table(*m_lua).valid() );
@@ -246,13 +262,10 @@ public:
 	}
 	void copyConstruct_usingNewTable_orginalIsValid()
 	{
-		int stackTop = lua_gettop(*m_lua);
 		OOLUA::Lua_table orignal;
-		stackTop = lua_gettop(*m_lua);
 		OOLUA::new_table(*m_lua,orignal);
-		stackTop = lua_gettop(*m_lua);
 		OOLUA::Lua_table copy(orignal);
-		stackTop = lua_gettop(*m_lua);
+
 		CPPUNIT_ASSERT_EQUAL(true, orignal.valid() );
 	}
 	

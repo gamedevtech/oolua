@@ -11,10 +11,12 @@
 #	define LUA_TABLE_H_
 
 #	include "lua_includes.h"
+#	include <string>
 #	include "fwd_push_pull.h"
 #	include "lua_ref.h"
 #	include "oolua_config.h"
-#	include <string>
+#	include "oolua_error.h"
+
 
 namespace OOLUA
 {

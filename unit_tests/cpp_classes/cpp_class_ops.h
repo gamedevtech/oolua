@@ -39,17 +39,9 @@ public:
 	{
 		return Class_ops( m_i + rhs.m_i );
 	}
-	void operator += (Class_ops const& rhs)
-	{
-		m_i += rhs.m_i;
-	}
 	Class_ops operator * (Class_ops const& rhs)const
 	{
 		return Class_ops(m_i * rhs.m_i);
-	}
-	void operator *= (Class_ops const& rhs)
-	{
-		m_i *= rhs.m_i;
 	}
 	Class_ops operator - (Class_ops const& rhs)const
 	{

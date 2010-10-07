@@ -22,7 +22,6 @@ namespace OOLUA
 	
     namespace INTERNAL
     {
-        void set_error_from_top_of_stack(lua_State*l);
 		void set_error_from_top_of_stack_and_pop_the_error(lua_State*l);
     }
 }

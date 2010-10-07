@@ -48,18 +48,22 @@ namespace OOLUA
 		Converter(Converter const &);
 		T& m_t;
 	};
+	
+		
 	template<typename T>
 	struct Converter<T*,T*&>
 	{
-		Converter(T* t):m_t(t){}
-		operator T*& () const
+		Converter(T*& t):m_t(t){}//added reference
+		operator T*& () //const
 		{
 			return m_t;
 		}
 		Converter& operator =(Converter const &);
 		Converter(Converter const &);
-		T* m_t;
+		T*& m_t;//added reference
 	};
+	
+		
 	template<typename T>
 	struct Converter<T*,T const&>
 	{
