@@ -97,7 +97,7 @@ class Construct : public CPPUNIT_NS::TestFixture
 	}
 	struct ParamConstructorWrapper 
 	{
-		OOLUA::cpp_acquire_ptr<ParamConstructor> instance;
+		OOLUA::cpp_acquire_ptr<ParamConstructor*> instance;
 		std::auto_ptr<ParamConstructor> auto_delete_instance;
 		void set_ptr_to_auto_delete()
 		{
@@ -125,7 +125,7 @@ public:
 	void new_luaCreatesInstanceThenReturnsIt_returnIsNoneNull()
 	{
 		createAndReturnStub(m_lua);
-		OOLUA::cpp_acquire_ptr<Stub1> res;
+		OOLUA::cpp_acquire_ptr<Stub1*> res;
 		OOLUA::pull2cpp(*m_lua,res);
 		CPPUNIT_ASSERT_EQUAL(true, res.m_ptr != 0);
 		delete res.m_ptr;

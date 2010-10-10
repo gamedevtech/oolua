@@ -42,7 +42,7 @@ struct Constructor<Type,1>
 		luaL_error(l,"%s %s %s","No parameters passed to the constructor of the type"
 			,OOLUA::Proxy_class<Type>::class_name
 			,"which does not have a default constructor.");
-		return 0;
+		return 0;//required by function sig yet never hits here
 	}
 };
 template<typename Class,typename Param1WithTraits >
@@ -205,42 +205,42 @@ static int oolua_factory_function(lua_State* l) \
 	int stack_count = lua_gettop(l); \
 	if(stack_count == 0 ) \
 	{ \
-		return OOLUA::INTERNAL::Constructor<class_,has_typedef<this_type, No_default_constructor>::Result>::construct(l); \
+		return OOLUA::INTERNAL::Constructor<class_,OOLUA::INTERNAL::has_typedef<this_type, No_default_constructor>::Result>::construct(l); \
 	}
 
 #define OOLUA_CONSTRUCTOR_1(param1Type) \
 	if(stack_count == 1) \
 	{ \
-		if(OOLUA::INTERNAL::Constructor1<class_,param_type<param1Type > >::construct(l) ) return 1; \
+		if(OOLUA::INTERNAL::Constructor1<class_,INTERNAL::param_type<param1Type > >::construct(l) ) return 1; \
 	}
 
 #define OOLUA_CONSTRUCTOR_2(param1Type,param2Type) \
 	if(stack_count == 2) \
 	{ \
-		if(OOLUA::INTERNAL::Constructor2<class_,param_type<param1Type >,param_type<param2Type > >::construct(l) ) return 1; \
+		if(OOLUA::INTERNAL::Constructor2<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type > >::construct(l) ) return 1; \
 	}
 
 #define OOLUA_CONSTRUCTOR_3(param1Type,param2Type,param3Type) \
 	if(stack_count == 3) \
 	{ \
-		if(OOLUA::INTERNAL::Constructor3<class_,param_type<param1Type >,param_type<param2Type >,param_type<param3Type > >::construct(l) ) return 1; \
+		if(OOLUA::INTERNAL::Constructor3<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type >,INTERNAL::param_type<param3Type > >::construct(l) ) return 1; \
 	}
 
 #define OOLUA_CONSTRUCTOR_4(param1Type,param2Type,param3Type,param4Type) \
 	if(stack_count == 4) \
 	{ \
-		if(OOLUA::INTERNAL::Constructor4<class_,param_type<param1Type >,param_type<param2Type >,param_type<param3Type >,param_type<param4Type > >::construct(l) ) return 1; \
+		if(OOLUA::INTERNAL::Constructor4<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type >,INTERNAL::param_type<param3Type >,INTERNAL::param_type<param4Type > >::construct(l) ) return 1; \
 	}
 
 #define OOLUA_CONSTRUCTOR_5(param1Type,param2Type,param3Type,param4Type,param5Type) \
 	if(stack_count == 5) \
 	{ \
-		if(OOLUA::INTERNAL::Constructor5<class_,param_type<param1Type >,param_type<param2Type >,param_type<param3Type >,param_type<param4Type >,param_type<param5Type > >::construct(l) ) return 1; \
+		if(OOLUA::INTERNAL::Constructor5<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type >,INTERNAL::param_type<param3Type >,INTERNAL::param_type<param4Type >,INTERNAL::param_type<param5Type > >::construct(l) ) return 1; \
 	}
 
 #define OOLUA_CONSTRUCTORS_END \
 	luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",class_name); \
-	return 0; \
+	return 0; /*never hit yet required due to function sig*/ \
 }
 
 #define OOLUA_ONLY_DEFAULT_CONSTRUCTOR \

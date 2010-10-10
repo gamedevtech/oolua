@@ -97,7 +97,10 @@ namespace OOLUA
 		struct push_basic_type;
 
 
-
+		template<typename T,bool IsIntegral>
+		struct push_ptr_2lua;
+		
+		
 		template<typename T>
 		struct push_basic_type<T,0>
 		{
@@ -124,28 +127,7 @@ namespace OOLUA
 		};
 
 
-		template<typename T,int is_it_const>
-		struct ptr_push
-		{
-			static bool push(lua_State* const s, OOLUA::lua_acquire_ptr<T>&  value)
-			{
-				INTERNAL::push_pointer<T>(s,value.m_ptr,Lua);
-				return true;
-			}
-		};
 
-		template<typename T>
-		struct ptr_push<T,1>
-		{
-			static bool push(lua_State* const s, OOLUA::lua_acquire_ptr<T>&  value)
-			{
-				INTERNAL::push_const_pointer<typename LVD::remove_const<T>::type>(s,value.m_ptr,Lua);
-				return true;
-			}
-		};
-
-		template<typename T,bool IsIntegral>
-		struct push_ptr_2lua;
 
 		template<typename T>
 		struct push_ptr_2lua<T,false>
@@ -153,34 +135,13 @@ namespace OOLUA
 			static bool push2lua(lua_State* const l, T * const &  value,Owner owner)
 			{
 				assert(l && value);
-				return push(l,value,LVD::Int2type<LVD::is_const<T>::value>(),owner);
+				OOLUA::INTERNAL::push_pointer_which_has_a_proxy_class<typename Raw_type<T>::type>(l,value,owner);
+				return true;
 			}
 
 			static bool push2lua(lua_State* const l, T * const &  value)
 			{
-				assert(l && value);
-				return push(l,value,LVD::Int2type<LVD::is_const<T>::value>());
-			}
-		private:
-			static bool push(lua_State* const l, T* const & value, LVD::Int2type<0> /*is_const*/ )
-			{
-				INTERNAL::push_pointer<T>(l,value,No_change);
-				return true;
-			}
-			static bool push(lua_State* const l, T* const & value, LVD::Int2type<1>   /*is_const*/)
-			{
-				INTERNAL::push_const_pointer<typename LVD::remove_const<T>::type >(l,value,No_change);
-				return true;
-			}
-			static bool push(lua_State* const l, T* const & value, LVD::Int2type<0> /*is_const*/ ,Owner owner )
-			{
-				INTERNAL::push_pointer<T>(l,value,owner);
-				return true;
-			}
-			static bool push(lua_State* const l, T* const & value, LVD::Int2type<1> /*is_const*/ ,Owner owner  )
-			{
-				INTERNAL::push_const_pointer<typename LVD::remove_const<T>::type>(l,value,owner);
-				return true;
+				return push_ptr_2lua<T,false>::push2lua(l,value,No_change);
 			}
 		};
 
@@ -250,12 +211,12 @@ namespace OOLUA
 		return INTERNAL::push_basic_type<T,LVD::is_integral_type<T>::value >::push2lua(s,value);
 	}
 
-	//pushes a pointer onto the stack which Lua will then own and call delete on
 	template<typename T>
 	bool push2lua(lua_State* const s, OOLUA::lua_acquire_ptr<T>&  value)
 	{
 		assert(s && value.m_ptr);
-		return INTERNAL::ptr_push<T,LVD::is_const<T>::value >::push(s,value);
+		INTERNAL::push_pointer_which_has_a_proxy_class<typename OOLUA::lua_acquire_ptr<T>::raw>(s,value.m_ptr,Lua);
+		return true;
 	}
 
 	template<typename T>
@@ -329,12 +290,12 @@ namespace OOLUA
 		
 		void pull_class_type_error(lua_State* const s,char const* type);
 
-		template<typename Pull_type>
-		inline void pull_class_type(lua_State *const s,int Is_const,Pull_type*& class_type)
+		template<typename Raw_type>
+		inline void pull_class_type(lua_State *const s,int Is_const,Raw_type*& class_type)
 		{
 MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT_OOLUA
-			if(Is_const) class_type = INTERNAL::class_from_stack_top< Pull_type >(s);
-			else class_type = INTERNAL::none_const_class_from_stack_top<Pull_type>(s);
+			if(Is_const) class_type = INTERNAL::class_from_stack_top< Raw_type >(s);
+			else class_type = INTERNAL::none_const_class_from_stack_top<Raw_type>(s);
 MSC_POP_COMPILER_WARNING_OOLUA
 		}
 
@@ -346,15 +307,15 @@ MSC_POP_COMPILER_WARNING_OOLUA
 			static bool pull2cpp(lua_State* const s, T *&  value)
 			{
 				assert(s);
-				typename OOLUA::param_type<T>::raw_type* class_ptr;
-				pull_class_type<typename OOLUA::param_type<T>::raw_type>(s,OOLUA::param_type<T*>::is_constant,class_ptr);
+				typename OOLUA::INTERNAL::param_type<T>::raw_type* class_ptr;
+				pull_class_type<typename OOLUA::INTERNAL::param_type<T>::raw_type>(s,OOLUA::INTERNAL::param_type<T*>::is_constant,class_ptr);
 
 				if(!class_ptr )
 				{
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-					INTERNAL::handle_cpp_pull_fail(s,OOLUA::param_type<T*>::is_constant
-												   ? Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name_const 
-												   : Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name);
+					INTERNAL::handle_cpp_pull_fail(s,OOLUA::INTERNAL::param_type<T*>::is_constant
+												   ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name_const 
+												   : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name);
 #elif OOLUA_DEBUG_CHECKS == 1
 					assert(class_ptr);
 #endif
@@ -397,12 +358,12 @@ MSC_POP_COMPILER_WARNING_OOLUA
 	inline bool pull2cpp(lua_State* const s, OOLUA::cpp_acquire_ptr<T>&  value)
 	{
 		typename cpp_acquire_ptr<T>::raw* class_ptr;
-		INTERNAL::pull_class_type<typename cpp_acquire_ptr<T>::raw>(s,OOLUA::param_type<T*>::is_constant,class_ptr);
+		INTERNAL::pull_class_type<typename cpp_acquire_ptr<T>::raw>(s,OOLUA::INTERNAL::param_type<T*>::is_constant,class_ptr);
 		
 		if(!class_ptr )
 		{
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-			INTERNAL::handle_cpp_pull_fail(s,OOLUA::param_type<T*>::is_constant
+			INTERNAL::handle_cpp_pull_fail(s,OOLUA::INTERNAL::param_type<T*>::is_constant
 										   ? Proxy_class<typename cpp_acquire_ptr<T>::raw>::class_name_const 
 										   : Proxy_class<typename cpp_acquire_ptr<T>::raw>::class_name);
 #elif OOLUA_DEBUG_CHECKS == 1
@@ -413,9 +374,8 @@ MSC_POP_COMPILER_WARNING_OOLUA
 		}
 		assert(class_ptr);
 		value.m_ptr = class_ptr;
-		//INTERNAL::set_owner(s,value.m_ptr,OOLUA::Cpp);
+
 		INTERNAL::local_function_to_set_owner(s,value.m_ptr,OOLUA::Cpp);
-//#warning oolua_storgage.h is required for this
 		lua_pop( s, 1);
 		return true;
 	}
@@ -495,14 +455,14 @@ MSC_POP_COMPILER_WARNING_OOLUA
 			{
 				static void pull2cpp(lua_State* const s, T *&  value)
 				{
-					typename OOLUA::param_type<T>::raw_type* class_ptr;
-					INTERNAL::pull_class_type<typename OOLUA::param_type<T>::raw_type>(s,OOLUA::param_type<T*>::is_constant,class_ptr);
+					typename OOLUA::INTERNAL::param_type<T>::raw_type* class_ptr;
+					INTERNAL::pull_class_type<typename OOLUA::INTERNAL::param_type<T>::raw_type>(s,OOLUA::INTERNAL::param_type<T*>::is_constant,class_ptr);
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 					if(!class_ptr )
 					{
-						pull_class_type_error(s,OOLUA::param_type<T*>::is_constant 
-												? Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name_const 
-												: Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name);
+						pull_class_type_error(s,OOLUA::INTERNAL::param_type<T*>::is_constant 
+												? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name_const 
+												: Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name);
 					}
 #endif
 					value = class_ptr;
@@ -539,27 +499,25 @@ MSC_POP_COMPILER_WARNING_OOLUA
 				LUA_CALLED::pull_ptr_2cpp<T,LVD::is_integral_type<T>::value>::pull2cpp(s,value);
 			}
 			
+			
 			//pulls a pointer from the stack which Cpp will then own and call delete on
 			template<typename T>
 			inline void pull2cpp(lua_State* const s, OOLUA::cpp_acquire_ptr<T>&  value)
 			{
-				typename cpp_acquire_ptr<T>::raw* class_ptr;
-				INTERNAL::pull_class_type<typename cpp_acquire_ptr<T>::raw>(s,OOLUA::param_type<T*>::is_constant,class_ptr);
+				typedef cpp_acquire_ptr<T> Type;
+				typedef typename Type::raw raw;
+				INTERNAL::pull_class_type<raw>(s,Type::is_constant,value.m_ptr);
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-				if(!class_ptr )
+				if(! value.m_ptr )
 				{
-					pull_class_type_error(s,OOLUA::param_type<T*>::is_constant 
-										  ? Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name_const 
-										  : Proxy_class<typename OOLUA::param_type<T>::raw_type>::class_name);
+					pull_class_type_error(s,Type::is_constant 
+										  ? Proxy_class<raw>::class_name_const 
+										  : Proxy_class<raw>::class_name);
 				}
 #endif
-				value.m_ptr = class_ptr;
-				//INTERNAL::set_owner(s,value.m_ptr,OOLUA::Cpp);
 				INTERNAL::local_function_to_set_owner(s,value.m_ptr,OOLUA::Cpp);
-//#warning oolua_storage.h is required for this function
 				lua_pop( s, 1);
 			}
-			
 		}
 		
 		

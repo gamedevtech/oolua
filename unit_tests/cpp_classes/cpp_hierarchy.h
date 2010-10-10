@@ -27,6 +27,7 @@ class Abstract2
 public:
 	virtual ~Abstract2(){}
 	virtual void func2_1()=0;
+	virtual void constVirtualFunction() const = 0;
 };
 class Abstract3
 {
@@ -49,6 +50,7 @@ public:
 	MOCK_METHOD0(func1,void ());
 	MOCK_METHOD3(virtualVoidParam3Int,void (int,int,int));
 	MOCK_METHOD0(func2_1,void ());
+	MOCK_CONST_METHOD0(constVirtualFunction,void());
 };
 
 class DerivedFromTwoAbstractBasesAndAbstract3 : public TwoAbstractBases, public Abstract3

@@ -64,8 +64,8 @@ namespace OOLUA
 					//can not have a pointer to reference.
 					//T will either be a pointer to type
 					//or type
-					OOLUA::is_param_by_value<T>::value 
-					&& has_a_proxy_type<typename OOLUA::Raw_type<T>::type >::value >
+					OOLUA::INTERNAL::is_param_by_value<T>::value 
+					&& has_a_proxy_type<typename OOLUA::INTERNAL::Raw_type<T>::type >::value >
 						::push(l,input);
 			}
 		

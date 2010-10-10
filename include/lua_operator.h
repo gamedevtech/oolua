@@ -5,7 +5,7 @@
 ///  @email
 ///  See http://www.liamdevine.co.uk for contact details.
 ///  @licence
-///  See licence.txt for more details. \n 
+///  See licence.txt for more d etails. \n 
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef LUA_OPERATOR_H_
@@ -304,96 +304,98 @@ access to objects with no metatables does not fail (it simply results in nil).\n
 
 namespace OOLUA
 {
-	//rhs is top of stack lhs is below (lhs op rhs)
-	template<typename T>
-	int lua_equal(lua_State*  const l)
+	namespace INTERNAL 
 	{
-		T const* lhs(0);
- 		T const* rhs(0);
-		INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
-    	INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
-		bool result (*lhs == *rhs);
-		push2lua(l,result);
-		return 1;
-	}
+		//rhs is top of stack lhs is below (lhs op rhs)
+		template<typename T>
+		int lua_equal(lua_State*  const l)
+		{
+			T const* lhs(0);
+			T const* rhs(0);
+			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
+			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
+			bool result (*lhs == *rhs);
+			OOLUA::push2lua(l,result);
+			return 1;
+		}
 
- 	template<typename T>
-	int lua_less_than(lua_State*  const l)
-	{
-		T const* lhs(0);
-		T const* rhs(0);
-		INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
-		INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
-		bool result (*lhs < *rhs);
-		push2lua(l,result);
-		return 1;
-	}
+		template<typename T>
+		int lua_less_than(lua_State*  const l)
+		{
+			T const* lhs(0);
+			T const* rhs(0);
+			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
+			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
+			bool result (*lhs < *rhs);
+			OOLUA::push2lua(l,result);
+			return 1;
+		}
 
- 	template<typename T>
-	int lua_less_than_or_equal(lua_State*  const l)
-	{
-		T const* lhs(0);
-		T const* rhs(0);
-		INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
-		INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
-		bool result (*lhs <= *rhs);
-		push2lua(l,result);
-		return 1;
-	}
+		template<typename T>
+		int lua_less_than_or_equal(lua_State*  const l)
+		{
+			T const* lhs(0);
+			T const* rhs(0);
+			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
+			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
+			bool result (*lhs <= *rhs);
+			OOLUA::push2lua(l,result);
+			return 1;
+		}
 
-	//these following operator functions return a type that they are working on
- 	template<typename T>
-	int lua_add(lua_State*  const l)
-	{
-		T const* lhs(0);
-		T const* rhs(0);
-		INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
-		INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
-    	T* result ( new T( *lhs + *rhs ) );
-		OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
-		ud->gc = true;
-    	return 1;
-	}
+		//these following operator functions return a type that they are working on
+		template<typename T>
+		int lua_add(lua_State*  const l)
+		{
+			T const* lhs(0);
+			T const* rhs(0);
+			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
+			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
+			T* result ( new T( *lhs + *rhs ) );
+			OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
+			ud->gc = true;
+			return 1;
+		}
 
 
-	template<typename T>
-	int lua_sub(lua_State*  const l)
-	{
-		T const* lhs(0);
-		T const* rhs(0);
-		INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
-		INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
-		T* result ( new T( *lhs - *rhs ) );
-		OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
-		ud->gc = true;
-		return 1;
-	}
+		template<typename T>
+		int lua_sub(lua_State*  const l)
+		{
+			T const* lhs(0);
+			T const* rhs(0);
+			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
+			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
+			T* result ( new T( *lhs - *rhs ) );
+			OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
+			ud->gc = true;
+			return 1;
+		}
 
-	template<typename T>
-	int lua_mul(lua_State*  const l)
-	{
-		T const* lhs(0);
-		T const* rhs(0);
-		INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
-		INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
-		T* result ( new T( *lhs * *rhs ) );
-		OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
-		ud->gc = true;
-		return 1;
-	}
+		template<typename T>
+		int lua_mul(lua_State*  const l)
+		{
+			T const* lhs(0);
+			T const* rhs(0);
+			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
+			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
+			T* result ( new T( *lhs * *rhs ) );
+			OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
+			ud->gc = true;
+			return 1;
+		}
 
-	template<typename T>
-	int lua_div(lua_State*  const l)
-	{
-		T const* lhs(0);
-		T const* rhs(0);
-		INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
-		INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
-		T* result ( new T( *lhs / *rhs ) );
-		OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
-		ud->gc = true;
-		return 1;
-	}
+		template<typename T>
+		int lua_div(lua_State*  const l)
+		{
+			T const* lhs(0);
+			T const* rhs(0);
+			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
+			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
+			T* result ( new T( *lhs / *rhs ) );
+			OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
+			ud->gc = true;
+			return 1;
+		}
 
 #define DEFINE_OOLUA_OPERATOR_FUNCTION_(operation,lua_string_op)\
 template<typename T, bool hasOperator >\
@@ -431,12 +433,13 @@ DEFINE_OOLUA_OPERATOR_FUNCTION_(div,"__div")
 
 #undef DEFINE_OOLUA_OPERATOR_FUNCTION_
 
-template<typename T,typename TyDef>
-struct has_typedef
-{
-	enum {Result = TYPELIST::IndexOf<typename T::Typedef,TyDef>::value == -1 ? 0 : 1};
-};
-
+		template<typename T,typename TyDef>
+		struct has_typedef
+		{
+			enum {Result = TYPELIST::IndexOf<typename T::Typedef,TyDef>::value == -1 ? 0 : 1};
+		};
+	}
+	
 }
 
 #endif //LUA_OPERATOR_H_

@@ -102,7 +102,8 @@ class Hierarchy : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(call_passedBasePointer_callsFunc1Once);
 		CPPUNIT_TEST(call_passedDerivedPointer_callsFunc1Once);
 		CPPUNIT_TEST(call_virtualVoidParam3Int_calledOnceWithCorrectInput);
-
+		CPPUNIT_TEST(call_constFunctionOnBaseClass_calledOnce);
+		
 		CPPUNIT_TEST(pullBase_derviedCreatedInLuaOnStack_returnsNoneNullPtr);
 		CPPUNIT_TEST(pullBase_derviedOnStackPullsBase_resultEqualsInputCastToBase);
 		CPPUNIT_TEST(pullAbstract1_derviedFromTwoBasesOnStack_resultEqualsInputCastToAbstract1);
@@ -171,6 +172,17 @@ public:
 					"obj:virtualVoidParam3Int(i1,i2,i3) \n"
 				"end");
 		m_lua->call("func",&mock,i1,i2,i3);
+	}
+
+	void call_constFunctionOnBaseClass_calledOnce()
+	{
+		TwoAbstractBases mock;
+		EXPECT_CALL(mock,constVirtualFunction()).Times(1);
+		
+		m_lua->run_chunk("foo=function(obj) "
+							"obj:constVirtualFunction() "
+						 "end");
+		m_lua->call("foo",(Abstract2*)&mock);
 	}
 
 	void pullBase_derviedCreatedInLuaOnStack_returnsNoneNullPtr()

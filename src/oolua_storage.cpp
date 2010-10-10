@@ -80,12 +80,16 @@ namespace OOLUA
 		}
 		void set_owner( lua_State* l,void* ptr, Owner own)
 		{
-			if(own == No_change){return;}//should never get called but...
+#if OOLUA_DEBUG_CHECKS == 1
+			//It is an error to ever call this function with No_change
+			assert(own != No_change);
+			//if(own == No_change){return;}//should never get called but...
+#endif
 			Lua_ud* ud = find_ud_dont_care_about_type_and_clean_stack(l,ptr);
 			if(!ud)
 			{			
 #if OOLUA_DEBUG_CHECKS == 1
-				assert(0);
+				assert(0 && "Did not find the user data");
 #endif
 			}
 			ud->gc = ( own == Cpp ? false : true);

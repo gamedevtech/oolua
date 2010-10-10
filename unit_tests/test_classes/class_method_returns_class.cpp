@@ -94,7 +94,7 @@ public:
 
 		OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud *>( lua_touserdata(*m_lua, -1) );
 		CPPUNIT_ASSERT_EQUAL(true,ud->gc);
-		OOLUA::cpp_acquire_ptr<Return_double> ret;
+		OOLUA::cpp_acquire_ptr<Return_double*> ret;
 		OOLUA::pull2cpp(*m_lua,ret);
 		delete ret.m_ptr;
 		

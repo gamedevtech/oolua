@@ -20,8 +20,12 @@ fi
 rm -rf build_logs/coverage_report
 
 cd unit_tests
+echo "building Test Coverage | Debug | store error : "
 xcodebuild  -project test.coverage.xcodeproj -configuration Debug >  ../build_logs/test.coverage_debug_store_error.log || failed Debug build;
+echo "build passed"
+echo "building Test Coverage | Release | exceptions | string is intergal : "
 xcodebuild  -project test.coverage.xcodeproj -configuration Release >  ../build_logs/test.coverage_release_exceptions.log || failed Release build;
+echo "build passed"
 cd ..
 
 gcov -a -f --object-directory obj/Debug/test.coverage/test.coverage.build/Objects-normal/x86_64 --object-directory obj/Release/test.coverage/test.coverage.build/Objects-normal/x86_64 src/*.cpp

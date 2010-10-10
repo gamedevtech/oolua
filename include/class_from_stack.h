@@ -117,7 +117,7 @@ namespace OOLUA
 					,OOLUA::Proxy_class<T>::class_name
 					,"pointer from a const pointer"
 					);
-				return (T*)0;//never hit, it is just to prevent a warning
+				//return (T*)0;//never hit, it is just to prevent a warning
 			}
 			if( ! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
 									,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size) )
@@ -144,14 +144,21 @@ namespace OOLUA
 							,OOLUA::Proxy_class<T>::class_name
 							,"pointer from a const pointer"
 							);
-				return (T*)0;//never hit, it is just to prevent a warning
+				//return (T*)0;//never hit, it is just to prevent a warning
 			}
+#if OOLUA_DEBUG_CHECKS == 1
+			assert(INTERNAL::ids_equal(ud->none_const_name,ud->name_size
+									   ,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size));
+#endif
+			/*
+			 is it safe to remove this section?
 			if( ! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
 									  ,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size) )
 			{
 				lua_getmetatable(l,narg);//userdata ... stackmt
 				return valid_base_ptr_or_null<T>(l,narg);
 			}
+			*/
 			return static_cast<T* >(ud->void_class_ptr);
 		}
 		
@@ -159,12 +166,21 @@ namespace OOLUA
 		T* no_stack_checks_class_from_index(lua_State *  l, int narg)
 		{
 			INTERNAL::Lua_ud * ud = static_cast<INTERNAL::Lua_ud *>( lua_touserdata(l, narg) );
-			if(! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
+			
+#if OOLUA_DEBUG_CHECKS == 1
+			assert(INTERNAL::ids_equal(ud->none_const_name,ud->name_size
+									   ,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size));
+#endif
+			
+			/*
+			 is it safe to remove this section?
+			 if(! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
 									 ,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size) )
 			{
 				lua_getmetatable(l,narg);//userdata ... stackmt
 				return valid_base_ptr_or_null<T>(l,narg);
 			}
+			*/
 			
 			return static_cast<T* >(ud->void_class_ptr);
 		}

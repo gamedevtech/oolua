@@ -16,7 +16,16 @@
 					, what_message   \
 					, Proxy_type::class_name );
 
-#	define PROXY_MEMBER_CALLER_CATCHES \
+
+
+#	define OOLUA_MEMBER_FUNCTION_TRY \
+	try \
+	{ /*start try block*/ 
+
+
+
+#	define OOLUA_MEMBER_FUNCTION_CATCH \
+	} /*end try block */ \
 	catch (OOLUA::Type_error const & e)\
 	{\
 		OOLUA_PROXY_CALL_CATCH_RESPONSE("OOLUA::Type_error",e.what())\
@@ -28,7 +37,11 @@
 	catch (...) \
 	{\
 		OOLUA_PROXY_CALL_CATCH_RESPONSE("Unknown type"," " )\
-	}
+	}\
+	/*can not return here yet required for the function signature */ \
+	/* as it would have either returned in the */ \
+	/*try block or called luaL_error which never returns */ \
+	return 0;
 
 #endif
 
@@ -52,11 +65,9 @@ namespace OOLUA
 		template<typename Proxy_type, typename Base_type>
 		inline int member_caller(lua_State * /*const*/ l)
 		{
-#if	OOLUA_USE_EXCEPTIONS ==1
-			try
-			{
+#if	OOLUA_USE_EXCEPTIONS ==1			
+			OOLUA_MEMBER_FUNCTION_TRY
 #endif
-				//typename Proxy_type::class_ *obj = INTERNAL::none_const_class_from_index<typename Proxy_type::class_>(l, 1)
 				typename Proxy_type::class_ *obj = 
 						INTERNAL::no_stack_checks_none_const_class_from_index<typename Proxy_type::class_>(l, 1);
 				lua_remove(l, 1);
@@ -66,32 +77,25 @@ namespace OOLUA
 				Proxy_type P(obj);
 				return (P.*(r->mfunc))(l);  ///call member function
 #if	OOLUA_USE_EXCEPTIONS ==1
-			}
-			PROXY_MEMBER_CALLER_CATCHES
-			return 0;//prevent a warning about non void function not returning a value through this path
+			OOLUA_MEMBER_FUNCTION_CATCH
 #endif
 		}
 		template<typename Proxy_type, typename Base_type>
 		inline int const_member_caller(lua_State * /*const*/ l)
 		{
-#if	OOLUA_USE_EXCEPTIONS ==1
-			try
-			{
+#if	OOLUA_USE_EXCEPTIONS ==1			
+			OOLUA_MEMBER_FUNCTION_TRY
 #endif
-				//typename Proxy_type::class_ *obj = INTERNAL::class_from_index<typename Proxy_type::class_>(l, 1);
-				typename Proxy_type::class_ *obj = INTERNAL::no_stack_checks_class_from_index<typename Proxy_type::class_>(l, 1);
-
+				typename Proxy_type::class_ *obj = 
+						INTERNAL::no_stack_checks_class_from_index<typename Proxy_type::class_>(l, 1);
 				lua_remove(l, 1);
 				///get member function from upvalue
 				typename Proxy_class<Base_type >::Reg_type_const* r =
 						static_cast<typename Proxy_class<Base_type >::Reg_type_const*>(lua_touserdata(l, lua_upvalueindex(1)));
 				Proxy_type P(obj);
 				return (P.*(r->mfunc))(l);  ///call member function
-				
-#if	OOLUA_USE_EXCEPTIONS ==1
-			}
-			PROXY_MEMBER_CALLER_CATCHES
-			return 0;//prevent a warning about non void function not returning a value through this path
+#if	OOLUA_USE_EXCEPTIONS ==1	
+			OOLUA_MEMBER_FUNCTION_CATCH
 #endif
 		}
 	}
@@ -99,9 +103,12 @@ namespace OOLUA
 }
 
 
+
+
 #if	OOLUA_USE_EXCEPTIONS == 1
 #	undef OOLUA_PROXY_CALL_CATCH_RESPONSE
-#	undef MEMBER_CALLER_CATCHES
+#	undef OOLUA_MEMBER_FUNCTION_TRY
+#	undef OOLUA_MEMBER_FUNCTION_CATCH
 #endif
 
 #endif

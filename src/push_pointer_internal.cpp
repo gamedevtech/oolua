@@ -1,3 +1,5 @@
+
+#include "lua_includes.h"
 #include "push_pointer_internal.h"
 #include "oolua_config.h"
 

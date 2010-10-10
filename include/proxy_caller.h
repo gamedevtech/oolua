@@ -51,7 +51,11 @@
 
 namespace OOLUA
 {
-template <typename Return, typename Class, int ReturnIsVoid>struct Proxy_caller;
+	
+	namespace INTERNAL 
+	{
+
+		template <typename Return, typename Class, int ReturnIsVoid>struct Proxy_caller;
 
 template <typename R, typename C>
 struct Proxy_caller<R,C, 0 >
@@ -307,6 +311,8 @@ struct Proxy_none_member_caller<R, 1 >
 
 };
 
+	}
+	
 }
 #undef OOLUA_CONVERTER
 #undef OOLUA_CONVERTER1

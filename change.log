@@ -8,6 +8,26 @@ fix for va args to rename a function when not Visual Studio or gcc
 remove return statements which generate warning with gcc reported by 	
 Tim Mensch see http://groups.google.com/group/oolua-user/browse_thread/thread/57c0f7b23d7458fa
 
+refactored -anything which is not meant to be called by a user is now in the OOLUA::INTERNAL namespace, 
+	stopping most potential name space clashes. The reason for this is that mailing list postings have 
+	shown and detailed how to registered namespace classes (including nested classes) using the OOLUA 
+	namespace. Also a user "using namespace OOLUA" in a header only pulles in what is necessary.
+refactored - push_pointer and push_const_pointer to push_pointer_which_has_a_proxy_class
+refactored - in_out_p trait and added compile time constraint on type
+refactored - lua_out_p traitn and added compile time constraints on type
+added compile time constraints to cpp_acquire_ptr and lua_acquire_ptr
+OOLUA::cpp_acquire_ptr and lua_acquire_ptr - Type supplied to template is now the real type <foo*> or <foo const*> 
+	for example instead of the raw type <foo>
+refactored push_ptr_2lua<T, Not_integral> 
+renamed structures in member_func_helper.h to give better descriptions
+Fix - applied to converter that was not taking the parameter by reference when it needed to.
+updated xcode coverage script to print a success message for unit tests yet not all the compiler output.
+Unit tests for lua_acquire_ptr, lua_out_p and out_p to check pull types are correct
+Unit tests for traits which change ownership
+Compile time tests to traits for valid parameters
+
+ 
+
 1.3.1
 Work around for Visual Studio as reported by Tom on the mailing list added
 

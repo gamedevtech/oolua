@@ -1,22 +1,22 @@
 #include "lua_ownership.h"
 
 EXPORT_OOLUA_FUNCTIONS_NON_CONST(OwnershipParamsAndReturns
+								,lua_takes_ownership_of_ptr_param
+								,lua_takes_ownership_of_ref_2_ptr
+								,lua_takes_ownership_of_ref_2_ptr_const
+													   
+								,cpp_takes_ownership_of_ptr_param
+								,cpp_takes_ownership_of_ref_to_ptr_param
 								 
-								,cpp_acquire_pointer
-								 ,param_cpp_in
+								,cpp_takes_ownership_of_const_ptr_param
+								,cpp_takes_ownership_of_ref_2_const_ptr_param
 								 
-								 ,lua_acquire_pointer
-								 ,param_lua_outP
+								,cpp_takes_ownership_of_ptr_to_const_param
+								,cpp_takes_ownership_of_ref_to_ptr_to_const_param
 								 
-								 ,returns_new_stub
-								 ,acquire_new_stub
-								 //   ,cpp_acquire_pointer
-								//,lua_acquire_pointer
-								//,returns_new_stub
-								//,returns_stack_stub
-								//,return_reference_to_stub
-								//,returns_cpp_owned_ptr
+								,cpp_takes_ownership_of_const_ptr_to_const_param
+								,cpp_takes_ownership_of_ref_to_const_ptr_to_const_param		
+								
 								)
-								//,returns_cpp_owned_ptr_to_const)
-
+								 
 EXPORT_OOLUA_FUNCTIONS_CONST(OwnershipParamsAndReturns)
