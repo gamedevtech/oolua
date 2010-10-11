@@ -117,7 +117,7 @@ namespace OOLUA
 					,OOLUA::Proxy_class<T>::class_name
 					,"pointer from a const pointer"
 					);
-				//return (T*)0;//never hit, it is just to prevent a warning
+				//luaL_error does not return
 			}
 			if( ! INTERNAL::ids_equal(ud->none_const_name,ud->name_size
 									,(char*)Proxy_class<T>::class_name,Proxy_class<T>::name_size) )
@@ -139,12 +139,12 @@ namespace OOLUA
 			INTERNAL::Lua_ud * ud = static_cast<INTERNAL::Lua_ud *>( lua_touserdata(l, narg) );
 			if( INTERNAL::id_is_const(ud) )
 			{
-				//NOTE: proxy caller via Lua code called
+				//called by proxy caller via Lua code
 				luaL_error (l, "%s \"%s\" %s", "Tried to pull a none constant"
 							,OOLUA::Proxy_class<T>::class_name
 							,"pointer from a const pointer"
 							);
-				//return (T*)0;//never hit, it is just to prevent a warning
+				//luaL_error does not return
 			}
 #if OOLUA_DEBUG_CHECKS == 1
 			assert(INTERNAL::ids_equal(ud->none_const_name,ud->name_size

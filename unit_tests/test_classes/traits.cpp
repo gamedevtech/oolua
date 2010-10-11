@@ -3,10 +3,14 @@
 #	include "expose_stub_classes.h"
 
 
+
+
+	
 namespace 
 {
 	struct StubNoneProxy {};
 }
+
 
 
 class Traits_test : public CPPUNIT_NS::TestFixture
@@ -36,7 +40,6 @@ class Traits_test : public CPPUNIT_NS::TestFixture
 		
 	CPPUNIT_TEST(outP_refToPtrToUserType_pullIsPtrToUserType);	
 		
-
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 public:
@@ -158,16 +161,13 @@ public:
 		CPPUNIT_ASSERT_EQUAL(1,is_same);
 	}	
 	
-	/*
-	OOLUA::out_p<Stub1*&>			pass1;(void)pass1;
-	OOLUA::out_p<Stub1 const * &>	pass2;(void)pass2;
-	OOLUA::out_p<int*>				pass3;(void)pass3;
-	OOLUA::out_p<int&>				pass4;(void)pass4;
-	OOLUA::out_p<int*&>				pass5;(void)pass5;
-	 */
-	
+
 };
 
+
+//OOLUA::lua_out_p<Stub1**> OOLuaDoesNotCurrentlyHandle_ptrPtr;
+//OOLUA::lua_out_p<Stub1 * const * & >OOLuaDoesNotCurrentlyHandle_refPtrConstPtr;
+//OOLUA::lua_out_p<Stub1 ** & >OOLuaDoesNotCurrentlyHandle_refPtrPtr;
 
 
 /*
@@ -175,9 +175,6 @@ public:
  ones that will fail.
 */
 
-//OOLUA::lua_out_p<Stub1**> OOLuaDoesNotCurrentlyHandle_ptrPtr;
-//OOLUA::lua_out_p<Stub1 * const * & >OOLuaDoesNotCurrentlyHandle_refPtrConstPtr;
-//OOLUA::lua_out_p<Stub1 ** & >OOLuaDoesNotCurrentlyHandle_refPtrPtr;
 
 
 void luaOutp_validTraits_willCompile()
@@ -188,12 +185,12 @@ void luaOutp_validTraits_willCompile()
 void luaOutp_invalidTraits_willNotCompile()
 {
 	//OOLUA::lua_out_p<Stub1 * const&>	fail1;
-	//OOLUA::lua_out_p<Stub1&>			fail2;//this should fail Lua can not take ownership
+	//OOLUA::lua_out_p<Stub1&>			fail2;
 	//OOLUA::lua_out_p<Stub1 const &>	fail3;
 	//OOLUA::lua_out_p<int>				fail4;
 	//OOLUA::lua_out_p<int*>			fail5;
 	//OOLUA::lua_out_p<int&>			fail6;
-	
+	//OOLUA::lua_out_p<Stub1*>			fail7;
 }
 
 
@@ -281,8 +278,8 @@ void cppAcquire_invalidTraits_willNotCompile()
 {
 	//OOLUA::cpp_acquire_ptr<int> fail1;
 	//OOLUA::cpp_acquire_ptr<int*> fail2;
-	//OOLUA::cpp_acquire_ptr<Stub1> fail3;//this should fail
-	//OOLUA::cpp_acquire_ptr<Stub1&> fail4;//this should fail	
+	//OOLUA::cpp_acquire_ptr<Stub1> fail3;
+	//OOLUA::cpp_acquire_ptr<Stub1&> fail4;
 }
 
 

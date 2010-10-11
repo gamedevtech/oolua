@@ -42,7 +42,7 @@ struct Constructor<Type,1>
 		luaL_error(l,"%s %s %s","No parameters passed to the constructor of the type"
 			,OOLUA::Proxy_class<Type>::class_name
 			,"which does not have a default constructor.");
-		return 0;//required by function sig yet never hits here
+		return 0;//required by function sig yet luaL_error never returns
 	}
 };
 template<typename Class,typename Param1WithTraits >
@@ -240,7 +240,7 @@ static int oolua_factory_function(lua_State* l) \
 
 #define OOLUA_CONSTRUCTORS_END \
 	luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",class_name); \
-	return 0; /*never hit yet required due to function sig*/ \
+	return 0; /*required by function sig yet luaL_error never returns*/ \
 }
 
 #define OOLUA_ONLY_DEFAULT_CONSTRUCTOR \

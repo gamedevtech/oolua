@@ -30,10 +30,10 @@ cd ..
 
 gcov -a -f --object-directory obj/Debug/test.coverage/test.coverage.build/Objects-normal/x86_64 --object-directory obj/Release/test.coverage/test.coverage.build/Objects-normal/x86_64 src/*.cpp
 lcov --directory ./ --capture --output-file lcov_tmp.info -b ./
-lcov --extract lcov_tmp.info "$(pwd)/*" --output-file lcov.info
-genhtml lcov.info -o build_logs/coverage_report
+lcov --extract lcov_tmp.info "$(pwd)/*" --output-file oolua.info
+genhtml oolua.info -o build_logs/coverage_report
 
-rm lcov.info lcov_tmp.info
+rm oolua.info lcov_tmp.info
 premake4 clean
 
 cd build_scripts

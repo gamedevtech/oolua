@@ -95,6 +95,8 @@ class Table : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(callFunction_memberFunctionWhichTakesTableYetPassedInt_throwsRuntimeError);
 #endif
 
+	CPPUNIT_TEST(bindScript_tableReferenceIsAlreadyValid_validReturnsFalse);
+	
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -397,6 +399,18 @@ public:
 	}
 #endif
 	
+	/*
+	 table references are only valid for there own vm
+	 */
+	void bindScript_tableReferenceIsAlreadyValid_validReturnsFalse()
+	{
+		OOLUA::Lua_table table_;
+		OOLUA::new_table(*m_lua,table_);
+		OOLUA::Script another_lua_instance;
+		table_.bind_script(another_lua_instance);
+		CPPUNIT_ASSERT_EQUAL(false,table_.valid());
+	}
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION( Table );

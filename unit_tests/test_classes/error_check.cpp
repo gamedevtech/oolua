@@ -2,6 +2,8 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 #	include "expose_stub_classes.h"
+#	include "expose_pulls_stub_param.h"
+
 
 
 #       include <csetjmp>
@@ -14,7 +16,9 @@ namespace
 		longjmp(mark,1);
 		return 0;
 	}
+	enum  SomeEnum {someEnumValue};	
 }
+
 
 #if OOLUA_USE_EXCEPTIONS ==  1
 struct ExceptionMock
@@ -24,6 +28,8 @@ struct ExceptionMock
 		throw std::runtime_error("member function throwing an error");
 	}
 };
+
+
 
 OOLUA_CLASS_NO_BASES(ExceptionMock)
 	OOLUA_TYPEDEFS 
@@ -61,34 +67,56 @@ class Error_test : public CPPUNIT_NS::TestFixture
 	
 #if OOLUA_STORE_LAST_ERROR == 1
 		CPPUNIT_TEST( lastError_noError_lastErrorStringIsEmpty);
+	
 		CPPUNIT_TEST( lastError_callUnknownFunction_lastErrorStringIsNotEmpty);
 		CPPUNIT_TEST(call_callUnknownFunction_callReturnsFalse);
 		CPPUNIT_TEST(lastError_callUnknownFunction_stackIsEmpty);
 		CPPUNIT_TEST( errorReset_callUnknownFunctionThenReset_lastErrorStringIsEmpty);
+	
 		CPPUNIT_TEST(pull_UnrelatedClassType_pullReturnsFalse);
 		CPPUNIT_TEST(pull_UnrelatedClassType_ptrIsNull);
 		CPPUNIT_TEST(pull_UnrelatedClassType_lastErrorStringIsNotEmpty);
+	
 		CPPUNIT_TEST(pull_classWhenintIsOnStack_lastErrorStringIsNotEmpty);
 		CPPUNIT_TEST(pull_classWhenintIsOnStack_pullReturnsFalse);
 		CPPUNIT_TEST(pull_intWhenClassIsOnStack_pullReturnsFalse);
+		CPPUNIT_TEST(pull_enumWhenStringIsOnStack_callReturnsFalse);
+		CPPUNIT_TEST(pull_memberFunctionPullsClassWhenintIsOnStack_callReturnsFalse);
 	
 		CPPUNIT_TEST(loadFile_fileDoesNotExist_returnsFalse);
 		CPPUNIT_TEST(runFile_fileDoesNotExist_returnsFalse);
 #endif	
 	
-	
+
 #if OOLUA_USE_EXCEPTIONS == 1
+	
+		CPPUNIT_TEST(pull_ptrToconstUserDataTypeWhenStackIsNoneOoluaUserData_throwsTypeError);
+	
 		CPPUNIT_TEST(pull_UnrelatedClassType_throwsTypeError);
-		CPPUNIT_TEST(pull_classWhenintIsOnStack_throwsTypeError);
-		CPPUNIT_TEST(pull_intWhenClassIsOnStack_throwsTypeError);
-		CPPUNIT_TEST(callUnknownFunction_fromCpp_throwsOoluaRuntimeRrror );
+
+		CPPUNIT_TEST(callUnknownFunction_fromCpp_throwsOoluaRuntimeError );
+	
 		CPPUNIT_TEST(runChunk_chunkHasSyntaxError_throwSyntaxError);
+	
 		CPPUNIT_TEST(pullUnregisteredClass_fromEmptyStackInCpp_throwTypeError );
 		CPPUNIT_TEST(pullUnregisteredClass_fromStackContainingAnIntInCpp_throwTypeError );
+	
+		CPPUNIT_TEST(pull_classWhenintIsOnStack_throwsTypeError);
+	
+		CPPUNIT_TEST(pull_memberFunctionPullsClassWhenintIsOnStack_throwsOoluaRuntimeError);
+	
+		CPPUNIT_TEST(pull_intWhenClassIsOnStack_throwsTypeError);
+	
 		CPPUNIT_TEST(pull_boolFromEmptyStack_throwTypeError);
-		CPPUNIT_TEST(pull_pushIntThenPullFloat_noException);
 		CPPUNIT_TEST(pull_pushAnIntThenPullBool_throwTypeError);
 		CPPUNIT_TEST(pull_pushBoolThenPullInt_throwTypeError);
+	
+		CPPUNIT_TEST(pull_pushIntThenPullFloat_noException);
+	
+		CPPUNIT_TEST(pull_enumWhenStringIsOnStack_throwTypeError);
+		
+		CPPUNIT_TEST(pull_cppAcquirePtrWhenIntOnStack_throwsTypeError);
+		
 		CPPUNIT_TEST(exceptionSafe_memberFunctionThrowsStdRuntimeError_callThrowsOoluaRuntimeError);
 		CPPUNIT_TEST(call_afterAnExceptionTheStackIsEmpty_stackCountEqualsZero);
 	
@@ -237,6 +265,37 @@ public:
 
 
 #if OOLUA_STORE_LAST_ERROR == 1
+	
+	void pull_ptrToconstUserDataTypeWhenStackIsNoneOoluaUserData_pullResultIsFalse()
+	{
+		m_lua->run_chunk("foo = function() return newproxy() end");
+		m_lua->call("foo");
+		Stub1 const*  cpp_type =  0;
+		bool result = OOLUA::pull2cpp(*m_lua,cpp_type);
+		CPPUNIT_ASSERT_EQUAL( false,result);	
+	}
+	
+	void pull_enumWhenStringIsOnStack_callReturnsFalse()
+	{
+		m_lua->run_chunk("foo = function()return 'DontCareAboutStringValue' end");
+		m_lua->call("foo");
+		
+		SomeEnum enum_value;
+		bool result = OOLUA::pull2cpp(*m_lua,enum_value);
+		CPPUNIT_ASSERT_EQUAL( false ,result);
+	}
+	
+	void pull_memberFunctionPullsClassWhenintIsOnStack_callReturnsFalse()
+	{
+		m_lua->run_chunk("foo = function(obj)"
+						 " obj:ptr(1) "
+						 "end");
+		m_lua->register_class<Pulls_stub>();
+		::testing::NiceMock<Mock_pulls_stub> object;
+		bool result = m_lua->call("foo",(Pulls_stub*)&object);
+		CPPUNIT_ASSERT_EQUAL( false,result);
+	}
+	
 	void lastError_noError_lastErrorStringIsEmpty()
 	{
 		CPPUNIT_ASSERT_EQUAL(true,OOLUA::get_last_error(*m_lua).empty() );
@@ -354,6 +413,41 @@ public:
 #endif
 	
 #if OOLUA_USE_EXCEPTIONS == 1
+	
+	void pull_ptrToconstUserDataTypeWhenStackIsNoneOoluaUserData_throwsTypeError()
+	{
+		m_lua->run_chunk("foo = function() return newproxy() end");
+		m_lua->call("foo");
+		Stub1 const*  cpp_type =  0;
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,cpp_type)),OOLUA::Type_error);	
+	}
+	void pull_cppAcquirePtrWhenIntOnStack_throwsTypeError()
+	{
+		m_lua->run_chunk("foo = function() return 1 end");
+		m_lua->call("foo");
+		OOLUA::cpp_acquire_ptr<Stub1*> cpp_type;
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,cpp_type) ),OOLUA::Type_error);
+		
+	}
+	void pull_enumWhenStringIsOnStack_throwTypeError()
+	{
+		m_lua->run_chunk("foo = function()return 'DontCareAboutStringValue' end");
+		m_lua->call("foo");
+
+		SomeEnum enum_value;
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,enum_value)) ,OOLUA::Type_error);
+	}
+	void pull_memberFunctionPullsClassWhenintIsOnStack_throwsOoluaRuntimeError()
+	{
+		m_lua->run_chunk("foo = function(obj)"
+						 " obj:ptr(1) "
+						 "end");
+		m_lua->register_class<Pulls_stub>();
+		::testing::NiceMock<Mock_pulls_stub> object;
+		CPPUNIT_ASSERT_THROW( (m_lua->call("foo",(Pulls_stub*)&object) ),OOLUA::Runtime_error);
+	}
+	
+	
 	void pull_UnrelatedClassType_throwsTypeError()
 	{
 		m_lua->register_class<Stub1>();
@@ -364,7 +458,6 @@ public:
 		m_lua->call("foo");
 		InvalidStub* ptr;
 		CPPUNIT_ASSERT_THROW((OOLUA::pull2cpp(*m_lua,ptr)),OOLUA::Type_error);
-		
 	}
 	
 	void pull_classWhenintIsOnStack_throwsTypeError()
@@ -389,7 +482,7 @@ public:
 		CPPUNIT_ASSERT_THROW(( OOLUA::pull2cpp(*m_lua,result) ),OOLUA::Type_error);
 	}
 	
-	void callUnknownFunction_fromCpp_throwsOoluaRuntimeRrror()
+	void callUnknownFunction_fromCpp_throwsOoluaRuntimeError()
 	{
 		CPPUNIT_ASSERT_THROW(m_lua->call("InvalidFunctionName"),OOLUA::Runtime_error);
 	}

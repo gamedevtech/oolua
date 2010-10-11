@@ -24,11 +24,6 @@ public:
 	virtual void const_2_ptr_2_const(Stub1 const* const) = 0;
 	virtual void ref_2_const_2_ptr_2_const(Stub1 const* const&) = 0;
 	
-	
-	//virtual void ref_2_type(Stub1& ) = 0;//value of stub can change, no ownership change possible
-	//virtual void ref_2_const(Stub1 const & ) = 0;//no change of stub possible
-	
-	
 
 };
 
@@ -48,9 +43,6 @@ public:
 	
 	MOCK_METHOD1(const_2_ptr_2_const,		void(Stub1 const* const));
 	MOCK_METHOD1(ref_2_const_2_ptr_2_const,	void(Stub1 const* const&));
-	
-	//MOCK_METHOD1(ref_2_type,				void(Stub1& ));
-	//MOCK_METHOD1(ref_2_const,				void(Stub1 const & ));
 };
 
 

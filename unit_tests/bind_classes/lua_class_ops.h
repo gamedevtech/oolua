@@ -16,8 +16,6 @@ OOLUA_CLASS_NO_BASES(Class_ops)
 		OOLUA::Div_op
 	OOLUA_END_TYPES
 	OOLUA_MEM_FUNC_0_CONST(int const &,geti )
-	OOLUA_MEM_FUNC_1(void,seti,int const& )
-	OOLUA_MEM_FUNC_0_CONST(Class_ops const*,pointer_to_const)
 	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
 

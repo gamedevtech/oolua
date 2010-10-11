@@ -308,7 +308,9 @@ MSC_POP_COMPILER_WARNING_OOLUA
 			{
 				assert(s);
 				typename OOLUA::INTERNAL::param_type<T>::raw_type* class_ptr;
-				pull_class_type<typename OOLUA::INTERNAL::param_type<T>::raw_type>(s,OOLUA::INTERNAL::param_type<T*>::is_constant,class_ptr);
+				pull_class_type<typename OOLUA::INTERNAL::param_type<T>::raw_type>(s
+																				   ,OOLUA::INTERNAL::param_type<T*>::is_constant
+																				   ,class_ptr);
 
 				if(!class_ptr )
 				{
@@ -353,38 +355,37 @@ MSC_POP_COMPILER_WARNING_OOLUA
 		return INTERNAL::pull_basic_type<T,LVD::is_integral_type<T>::value>::pull2cpp(s,value);
 	}
 	
+	
 	//pulls a pointer from the stack which Cpp will then own and call delete on
 	template<typename T>
 	inline bool pull2cpp(lua_State* const s, OOLUA::cpp_acquire_ptr<T>&  value)
 	{
-		typename cpp_acquire_ptr<T>::raw* class_ptr;
-		INTERNAL::pull_class_type<typename cpp_acquire_ptr<T>::raw>(s,OOLUA::INTERNAL::param_type<T*>::is_constant,class_ptr);
+		INTERNAL::pull_class_type<typename OOLUA::cpp_acquire_ptr<T>::raw>(s
+																	,OOLUA::cpp_acquire_ptr<T>::is_constant
+																	,value.m_ptr);
 		
-		if(!class_ptr )
+		if(!value.m_ptr )
 		{
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-			INTERNAL::handle_cpp_pull_fail(s,OOLUA::INTERNAL::param_type<T*>::is_constant
+			INTERNAL::handle_cpp_pull_fail(s,OOLUA::cpp_acquire_ptr<T>::is_constant
 										   ? Proxy_class<typename cpp_acquire_ptr<T>::raw>::class_name_const 
 										   : Proxy_class<typename cpp_acquire_ptr<T>::raw>::class_name);
 #elif OOLUA_DEBUG_CHECKS == 1
-			assert(class_ptr);
+			assert(value.m_ptr);
 #endif
-			value = 0;
 			return false;
 		}
-		assert(class_ptr);
-		value.m_ptr = class_ptr;
-
 		INTERNAL::local_function_to_set_owner(s,value.m_ptr,OOLUA::Cpp);
 		lua_pop( s, 1);
 		return true;
 	}
 	
+	
+	
 	///////////////////////////////////////////////////////////////////////////////
 	///  inline public overloaded  pull2cpp
 	///  Checks if it is an integral type( LVD::is_intergal_type ) or that is a type
-	///  that should be registered to the OOLUA::Lua_interface and call the correct
-	///  function.
+	///  that should be registered to OOLUA and calls the correct function.
 	///  @param [in]       s lua_State *const \copydoc lua_State
 	///  @param [in, out]  value T *&
 	///  This function doesn't return a value

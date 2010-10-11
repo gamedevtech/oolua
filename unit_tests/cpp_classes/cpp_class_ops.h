@@ -11,17 +11,10 @@ public:
 	Class_ops( Class_ops const& rhs)
         :m_i(rhs.m_i)
 	{}
+	
 	int const& geti()const
 	{
 		return m_i;
-	}
-	void seti(int const& i)
-	{
-		m_i = i;
-	}
-	Class_ops const * pointer_to_const()const
-	{
-		return this;
 	}
 	bool operator == (Class_ops const& rhs)const
 	{

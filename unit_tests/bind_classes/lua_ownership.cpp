@@ -1,7 +1,6 @@
 #include "lua_ownership.h"
 
 EXPORT_OOLUA_FUNCTIONS_NON_CONST(OwnershipParamsAndReturns
-								,lua_takes_ownership_of_ptr_param
 								,lua_takes_ownership_of_ref_2_ptr
 								,lua_takes_ownership_of_ref_2_ptr_const
 													   

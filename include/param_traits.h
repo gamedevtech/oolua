@@ -278,6 +278,7 @@ namespace OOLUA
 										 || ( ref_to_const_ptr<type>::value )
 											? -1 : 1];
 		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&,type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_pointer_to_type [LVD::is_same<raw*,type>::value ? -1 : 1];
 	};
 	
 	
@@ -300,7 +301,6 @@ namespace OOLUA
 		cpp_acquire_ptr():m_ptr(0){}
 
 		raw* m_ptr;
-		//typedef char type_has_to_be_by_reference [Type_enum_defaults<type>::is_by_value ? -1 : 1 ];
 		typedef char type_can_not_be_intergal [is_integral ? -1 : 1 ];
 		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
 		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&,type>::value ? -1 : 1];
@@ -326,7 +326,6 @@ namespace OOLUA
 		lua_acquire_ptr():m_ptr(0){}
 		//raw* m_ptr;
 		pull_type m_ptr;
-		//typedef char type_has_to_be_by_reference [Type_enum_defaults<type>::is_by_value ? -1 : 1 ];
 		typedef char type_can_not_be_intergal [is_integral ? -1 : 1 ];
 		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
 		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&,type>::value ? -1 : 1];

@@ -82,7 +82,6 @@ namespace OOLUA
 		static void pull2cpp(lua_State* const s, T*& value)
 		{
 			maybe_integral<T,TypeWithTraits,TypeWithTraits::is_integral>::pull(s,value);
-			//OOLUA::INTERNAL::LUA_CALLED::pull2cpp(s,value);
 		}
 		template<typename T>
 		static void pull2cpp(lua_State* const s, T& value)
@@ -90,15 +89,6 @@ namespace OOLUA
 			maybe_integral<T,TypeWithTraits,TypeWithTraits::is_integral>::pull(s,value);
 		}
 		
-		
-		/* I do not understand why with this function instead of the above two it fails unit tests?
-		template<typename T>
-		static void pull2cpp(lua_State* const s, T value)
-		{
-			OOLUA::INTERNAL::LUA_CALLED::pull2cpp(s,value);
-		}
-		*/
-			
 		
 		template<typename T>
 		static void push2lua(lua_State* const s, T& value)
