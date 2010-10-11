@@ -297,13 +297,13 @@ namespace OOLUA
 			{
 				for (typename Proxy_class<B >::Reg_type *r = Proxy_class<B >::class_methods; r->name; r++)
 				{
-					set_function_in_table_with_upvalue(l, r->name, &OOLUA::INTERNAL::member_caller<T,B >
+					INTERNAL::set_function_in_table_with_upvalue(l, r->name, &OOLUA::INTERNAL::member_caller<T,B >
 													   , methods, reinterpret_cast<void*> (r));
 				}
 				// fill constant method table with methods from class Proxy_class<T>
 				for (typename Proxy_class<B >::Reg_type_const *r = Proxy_class<B >::class_methods_const; r->name; ++r)
 				{
-					set_function_in_table_with_upvalue(l, r->name, &OOLUA::INTERNAL::member_caller<T,B >
+					INTERNAL::set_function_in_table_with_upvalue(l, r->name, &OOLUA::INTERNAL::member_caller<T,B >
 													   , const_methods, reinterpret_cast<void*> (r));
 				}
 				Register_base<T
@@ -397,7 +397,7 @@ namespace OOLUA
 		// fill method table with methods from class Proxy_class<T>
 		for (typename Proxy_class<T >::Reg_type *r = Proxy_class<T >::class_methods; r->name; r++)
 		{
-			set_function_in_table_with_upvalue(l
+			INTERNAL::set_function_in_table_with_upvalue(l
 											   , r->name
 											   ,&OOLUA::INTERNAL::member_caller<Proxy_class<T>,T>
 											   , none_const_methods
@@ -407,7 +407,7 @@ namespace OOLUA
 		// fill constant method table with methods from class Proxy_class<T>
 		for (typename Proxy_class<T >::Reg_type_const *r = Proxy_class<T >::class_methods_const; r->name; ++r)
 		{
-			set_function_in_table_with_upvalue(l
+			INTERNAL::set_function_in_table_with_upvalue(l
 											   , r->name
 											   ,&OOLUA::INTERNAL::const_member_caller<Proxy_class<T>,T>
 											   , const_methods
