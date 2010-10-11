@@ -16,13 +16,17 @@ function configure_for_os()
 	configuration { "vs*" }
 		defines{ "WIN32" }
 		flags { "No64BitChecks"}
-		
+	
 	configuration{"vs*","Debug"}
 		buildoptions {"/Gm","/Zi"}
 
 --[[		
 	configuration { "vs2008" }
 		buildoptions {"/analyze"}
+
+		configuration { "vs2010" }
+		buildoptions {"/analyze"}
+
 --]]
 			
 	configuration{"vs*","Release"}
@@ -75,6 +79,7 @@ unit_test_config = function(root,name)
 	configuration { "vs*"}
 		postbuildcommands { "\"$(TargetPath)\"" }
 		links{"lua51"}
+		buildoptions {"/MP"}
 		
 	configuration { "vs*","Debug"}
 		links{ "cppunitd" , "gmockd" }

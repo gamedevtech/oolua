@@ -83,16 +83,20 @@ namespace OOLUA
 #if OOLUA_DEBUG_CHECKS == 1
 			//It is an error to ever call this function with No_change
 			assert(own != No_change);
-			//if(own == No_change){return;}//should never get called but...
 #endif
 			Lua_ud* ud = find_ud_dont_care_about_type_and_clean_stack(l,ptr);
-			if(!ud)
-			{			
+	
 #if OOLUA_DEBUG_CHECKS == 1
+			//ud will always be found, if there is no entry it is an error
+			if(!ud)
+			{	
 				assert(0 && "Did not find the user data");
-#endif
 			}
-			ud->gc = ( own == Cpp ? false : true);
+			else
+#endif
+			{
+				ud->gc = ( own == Cpp ? false : true);
+			}
 		}
 
 		bool ud_at_index_is_const(lua_State* l, int index)
