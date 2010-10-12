@@ -2,14 +2,14 @@
 function failed()
 {
     echo "Failed: $@" >&2
-    echo "build_logs/"$current_test"_xcode_"$current_config".log"
+    echo build_logs/${current_test}_xcode_${current_config}.log
     exit 1
 }
 
 function failing_may_not_be_an_error()
 {
 	echo "Failed: $@. For details of the error and how to correct it, see the log file for this configuration in the directory build_logs" >&2 
-	echo "build_logs/"$current_test"_xcode_"$current_config".log"
+	echo build_logs/${current_test}_xcode_${current_config}.log
 }
 set -e
 
@@ -18,7 +18,7 @@ call_this_function_on_failure=failed
 function run_test()
 {
 	echo building $current_test $current_config;
-	xcodebuild  -project $current_test.xcodeproj -configuration $current_config > $root_dir"build_logs/"$current_test"_xcode_"$current_config".log"  || $call_this_function_on_failure $current_test $current_config build;
+	xcodebuild  -project $current_test.xcodeproj -configuration $current_config > ${root_dir}build_logs/${current_test}_xcode_${current_config}.log  || $call_this_function_on_failure $current_test $current_config build;
 
 }
 
