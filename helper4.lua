@@ -79,13 +79,13 @@ unit_test_config = function(root,name)
 	configuration { "vs*"}
 		postbuildcommands { "\"$(TargetPath)\"" }
 		links{"lua51"}
-		buildoptions {"/MP"}
-		
+
 	configuration { "vs*","Debug"}
 		links{ "cppunitd" , "gmockd" }
-
+		
 	configuration { "vs*","Release"}
 		links{ "cppunit" , "gmock" }
+		buildoptions {"/MP"}
 		
 	configuration {"codeblocks" }
 		postbuildcommands { "$(TARGET_OUTPUT_FILE)"}

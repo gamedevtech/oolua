@@ -64,63 +64,63 @@ struct Proxy_caller<R,C, 0 >
 	static void call(lua_State*  const l,C* m_this, FuncType ptr2mem )
 	{
 		typename R::type r( (m_this->*ptr2mem)() );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename FuncType>
 	static void call(lua_State* const  l,C* m_this,FuncType ptr2mem,typename P1::pull_type&  p1)
 	{
 		OOLUA_CONVERTER1
 		typename R::type r( (m_this->*ptr2mem) (p1_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename FuncType>
 	static void call(lua_State* const  l,C* m_this,FuncType ptr2mem,typename P1::pull_type&  p1,typename P2::pull_type&  p2)
 	{
 		OOLUA_CONVERTER2
 		typename R::type r( (m_this->*ptr2mem) (p1_,p2_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename FuncType>
 	static void call(lua_State* const  l,C* m_this,FuncType ptr2mem,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3)
 	{
 		OOLUA_CONVERTER3
 		typename R::type r( (m_this->*ptr2mem) (p1_,p2_,p3_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename P4,typename FuncType>
 	static void call(lua_State* const  l,C* m_this,FuncType ptr2mem,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3,typename P4::pull_type&  p4)
 	{
 		OOLUA_CONVERTER4
 		typename R::type r( (m_this->*ptr2mem) (p1_,p2_,p3_,p4_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename P4,typename P5,typename FuncType>
 	static void call(lua_State* const  l,C* m_this,FuncType ptr2mem,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3,typename P4::pull_type&  p4,typename P5::pull_type&  p5)
 	{
 		OOLUA_CONVERTER5
 		typename R::type r( (m_this->*ptr2mem) (p1_,p2_,p3_,p4_,p5_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename P4,typename P5,typename P6,typename FuncType>
 	static void call(lua_State* const  l,C* m_this,FuncType ptr2mem,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3,typename P4::pull_type&  p4,typename P5::pull_type&  p5,typename P6::pull_type&  p6)
 	{
 		OOLUA_CONVERTER6
 		typename R::type r( (m_this->*ptr2mem) (p1_,p2_,p3_,p4_,p5_,p6_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename P4,typename P5,typename P6,typename P7,typename FuncType>
 	static void call(lua_State* const  l,C* m_this,FuncType ptr2mem,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3,typename P4::pull_type&  p4,typename P5::pull_type&  p5,typename P6::pull_type&  p6,typename P7::pull_type&  p7)
 	{
 		OOLUA_CONVERTER7
 		typename R::type r( (m_this->*ptr2mem) (p1_,p2_,p3_,p4_,p5_,p6_,p7_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename P4,typename P5,typename P6,typename P7,typename P8,typename FuncType>
 	static void call(lua_State* const  l,C* m_this,FuncType ptr2mem,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3,typename P4::pull_type&  p4,typename P5::pull_type&  p5,typename P6::pull_type&  p6,typename P7::pull_type&  p7,typename P8::pull_type&  p8)
 	{
 		OOLUA_CONVERTER8
 		typename R::type r( (m_this->*ptr2mem) (p1_,p2_,p3_,p4_,p5_,p6_,p7_,p8_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 
 };
@@ -192,63 +192,63 @@ struct Proxy_none_member_caller<R,0 >
 	static void call(lua_State*  const l,FuncType ptr2func ) 
 	{
 		typename R::type r( (*ptr2func)() );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename FuncType>
 	static void call(lua_State* const  l,FuncType ptr2func,typename P1::pull_type&  p1)
 	{
 		OOLUA_CONVERTER1
 		typename R::type r( (*ptr2func) (p1_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename FuncType>
 	static void call(lua_State* const  l,FuncType ptr2func,typename P1::pull_type&  p1,typename P2::pull_type&  p2)
 	{
 		OOLUA_CONVERTER2
 		typename R::type r( (*ptr2func) (p1_,p2_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename FuncType>
 	static void call(lua_State* const  l,FuncType ptr2func,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3)
 	{
 		OOLUA_CONVERTER3
 		typename R::type r( (*ptr2func) (p1_,p2_,p3_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename P4,typename FuncType>
 	static void call(lua_State* const  l,FuncType ptr2func,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3,typename P4::pull_type&  p4)
 	{
 		OOLUA_CONVERTER4
 		typename R::type r( (*ptr2func) (p1_,p2_,p3_,p4_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename P4,typename P5,typename FuncType>
 	static void call(lua_State* const  l,FuncType ptr2func,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3,typename P4::pull_type&  p4,typename P5::pull_type&  p5)
 	{
 		OOLUA_CONVERTER5
 		typename R::type r( (*ptr2func) (p1_,p2_,p3_,p4_,p5_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename P4,typename P5,typename P6,typename FuncType>
 	static void call(lua_State* const  l,FuncType ptr2func,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3,typename P4::pull_type&  p4,typename P5::pull_type&  p5,typename P6::pull_type&  p6)
 	{
 		OOLUA_CONVERTER6
 		typename R::type r( (*ptr2func) (p1_,p2_,p3_,p4_,p5_,p6_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename P4,typename P5,typename P6,typename P7,typename FuncType>
 	static void call(lua_State* const  l,FuncType ptr2func,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3,typename P4::pull_type&  p4,typename P5::pull_type&  p5,typename P6::pull_type&  p6,typename P7::pull_type&  p7)
 	{
 		OOLUA_CONVERTER7
 		typename R::type r( (*ptr2func) (p1_,p2_,p3_,p4_,p5_,p6_,p7_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 	template<typename P1,typename P2,typename P3,typename P4,typename P5,typename P6,typename P7,typename P8,typename FuncType>
 	static void call(lua_State* const  l,FuncType ptr2func,typename P1::pull_type&  p1,typename P2::pull_type&  p2,typename P3::pull_type&  p3,typename P4::pull_type&  p4,typename P5::pull_type&  p5,typename P6::pull_type&  p6,typename P7::pull_type&  p7,typename P8::pull_type&  p8)
 	{
 		OOLUA_CONVERTER8
 		typename R::type r( (*ptr2func) (p1_,p2_,p3_,p4_,p5_,p6_,p7_,p8_) );
-		OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);
+		Member_func_helper<R,R::owner>::push2lua(l,r);
 	}
 };
 

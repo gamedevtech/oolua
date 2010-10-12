@@ -71,7 +71,9 @@ namespace OOLUA
 
 
 	
-	
+	namespace INTERNAL
+	{
+
 	template<typename TypeWithTraits, int owner>struct Member_func_helper;
 	
 	template<typename TypeWithTraits>
@@ -155,6 +157,8 @@ namespace OOLUA
 			assert(0 && "this function should never be called");
 		}
 	};
+
+	}
 
 
 }
