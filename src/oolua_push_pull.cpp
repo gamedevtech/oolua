@@ -53,7 +53,9 @@ namespace OOLUA
 			if ( lua_type(l,-1) != looking_for_lua_type )
 			{
 				handle_cpp_pull_fail(l,type);
+#	if OOLUA_USE_EXCEPTIONS == 0//prevent vs warnings
 				return false;//dependant on config if the flow can return through this path
+#	endif
 			}
 #else
 			(void)l;
@@ -70,7 +72,9 @@ namespace OOLUA
 			if ( ! compareFunc(l,-1) )
 			{
 				handle_cpp_pull_fail(l,type);
+#	if OOLUA_USE_EXCEPTIONS == 0//prevent vs warnings
 				return false;//dependant on config if the flow can return through this path
+#	endif
 			}
 #else
 			(void)l;

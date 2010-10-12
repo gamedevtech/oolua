@@ -41,6 +41,7 @@ includedirs
 	"include/",
 	"/usr/local/include",
 	"/usr/include",
+	root .. "include",
 	root .. "unit_tests/bind_classes",
 	root .. "unit_tests/cpp_classes",
 	root .. "unit_tests/test_classes"

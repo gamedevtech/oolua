@@ -5,6 +5,7 @@ dofile("helper4.lua")
 if _ACTION == "clean" then
   os.rmdir("obj")
   os.rmdir("bin")
+  os.rmdir("ipch")
 end
 
 solution("oolua")

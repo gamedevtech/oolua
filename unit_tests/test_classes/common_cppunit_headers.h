@@ -23,7 +23,30 @@
 #		include "cppunit/CompilerOutputter.h"
 #		ifdef _MSC_VER
 #			include "cppunit/config/SourcePrefix.h"
+
+#			if defined CPPUNIT_ASSERT_THROW
+#			undef CPPUNIT_ASSERT_THROW
+#			define CPPUNIT_ASSERT_THROW( expression, ExceptionType ) \
+				__pragma(warning(push)) \
+				__pragma(warning(disable : 4127)) \
+				CPPUNIT_ASSERT_THROW_MESSAGE( CPPUNIT_NS::AdditionalMessage(), \
+							                 expression, \
+										     ExceptionType ) \
+				__pragma(warning(pop)) 
+#			endif
+
+
+#			if defined CPPUNIT_ASSERT_NO_THROW
+#				undef CPPUNIT_ASSERT_NO_THROW
+#				define CPPUNIT_ASSERT_NO_THROW( expression ) \
+				__pragma(warning(push)) \
+				__pragma(warning(disable : 4127)) \
+				CPPUNIT_ASSERT_NO_THROW_MESSAGE( CPPUNIT_NS::AdditionalMessage(), \
+                                    expression ) \
+				__pragma(warning(pop)) 
+#			endif
 #		endif
+
 
 #define LVD_NOCOPY(TYPE) \
 	TYPE(TYPE const&); \

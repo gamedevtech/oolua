@@ -314,15 +314,23 @@ MSC_POP_COMPILER_WARNING_OOLUA
 
 				if(!class_ptr )
 				{
-#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+#	if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 					INTERNAL::handle_cpp_pull_fail(s,OOLUA::INTERNAL::param_type<T*>::is_constant
 												   ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name_const 
 												   : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name);
-#elif OOLUA_DEBUG_CHECKS == 1
+#	elif OOLUA_DEBUG_CHECKS == 1
 					assert(class_ptr);
-#endif
+					//value = 0;//added due to vs unreachable code warnings
+					//return false;//added due to vs unreachable code warnings
+//#else	//added due to vs unreachable code warnings
+					//value = 0;
+					//return false;
+#	endif
+#	if OOLUA_USE_EXCEPTIONS == 0//prevent vs warnings
 					value = 0;
 					return false;
+#	endif
+
 				}
 				
 				value = class_ptr;
@@ -373,7 +381,9 @@ MSC_POP_COMPILER_WARNING_OOLUA
 #elif OOLUA_DEBUG_CHECKS == 1
 			assert(value.m_ptr);
 #endif
+#	if OOLUA_USE_EXCEPTIONS == 0//prevent vs warnings
 			return false;
+#	endif
 		}
 		INTERNAL::local_function_to_set_owner(s,value.m_ptr,OOLUA::Cpp);
 		lua_pop( s, 1);
