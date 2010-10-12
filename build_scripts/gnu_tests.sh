@@ -1,22 +1,46 @@
 #!/bin/bash 
+function failed()
+{
+    echo "Failed: $@" >&1
+    echo build_logs/${1}_gnu_${2}.log
+    exit 1
+}
+
+function failing_may_not_be_an_error()
+{
+	echo "Failed: $@. For details of the error and how to correct it, see the log file " >&1 
+	echo build_logs/${1}_gnu_${2}.log
+}
+
 cd ..
 premake4 clean
 premake4 gmake linux
+
+function_to_call_on_error=failed
 
 if [ ! -d build_logs ]; then 
 	mkdir build_logs
 fi
 
-make config=debug test.unit | tee ./build_logs/unit_gnu_debug.log
-make config=release test.unit | tee ./build_logs/unit_gnu_release.log
-make config=debug tests_may_fail | tee ./build_logs/may_fail_gnu_debug.log
-make config=release tests_may_fail | tee ./build_logs/may_fail_gnu_release.log
+#1: test_name 2:config
+function run_test() 
+{
+	echo running $1 $2  
+	make config=${2} ${1} >  ./build_logs/${1}_gnu_${2}.log || $function_to_call_on_error ${1} ${2}
+}
 
-make config=debug test.unit.using_exceptions | tee ./build_logs/unit_exceptions_gnu_debug.log
-make config=release test.unit.using_exceptions | tee ./build_logs/unit_exceptions_gnu_release.log
+run_test test.unit debug
+run_test test.unit release
 
-make config=debug string_is_integral | tee ./build_logs/string_is_integral_gnu_debug.log
-make config=release string_is_integral | tee ./build_logs/string_is_integral_gnu_release.log
+run_test test.unit.using_exceptions debug
+run_test test.unit.using_exceptions release
+
+run_test string_is_integral debug
+run_test string_is_integral release
+
+function_to_call_on_error=failing_may_not_be_an_error
+run_test tests_may_fail debug
+run_test tests_may_fail release
 
 premake4 clean
 cd build_scripts

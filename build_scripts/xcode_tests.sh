@@ -2,27 +2,26 @@
 function failed()
 {
     echo "Failed: $@" >&2
-    echo build_logs/${current_test}_xcode_${current_config}.log
+    echo build_logs/${1}_xcode_${2}.log
     exit 1
 }
 
 function failing_may_not_be_an_error()
 {
-	echo "Failed: $@. For details of the error and how to correct it, see the log file for this configuration in the directory build_logs" >&2 
-	echo build_logs/${current_test}_xcode_${current_config}.log
+	echo "Failed: $@. For details of the error and how to correct it, see the log file." >&1 
+	echo build_logs/${1}_xcode_${2}.log
 }
 set -e
 
 call_this_function_on_failure=failed
 
+#1: test_name 2:config
 function run_test()
 {
-	echo building $current_test $current_config;
-	xcodebuild  -project $current_test.xcodeproj -configuration $current_config > ${root_dir}build_logs/${current_test}_xcode_${current_config}.log  || $call_this_function_on_failure $current_test $current_config build;
+	echo building $1 $2;
+	xcodebuild  -project ${1}.xcodeproj -configuration $2 > ${root_dir}build_logs/${1}_xcode_${2}.log  || $call_this_function_on_failure $1 $2
 
 }
-
-
 
 cd ..
 premake4 clean
@@ -36,43 +35,25 @@ fi
 cd unit_tests
 root_dir="../"
 
-current_config=Debug
-current_test=test.unit
-run_test
-current_config=Release
-run_test
+run_test test.unit Debug
+run_test test.unit Release
 
-current_config=Debug
-current_test=test.unit.using_exceptions
-run_test
-current_config=Release
-run_test
-
-
-cd tests_may_fail
-root_dir="../../"
-
-call_this_function_on_failure=failing_may_not_be_an_error
-current_config=Debug
-current_test=tests_may_fail
-run_test
-current_config=Release
-run_test
-
-call_this_function_on_failure=failed
-cd ..
+run_test test.unit.using_exceptions Debug
+run_test test.unit.using_exceptions Release
 
 cd string_is_integral
 root_dir="../../"
+run_test string_is_integral Debug
+run_test string_is_integral Release
+cd ..
 
-current_config=Debug
-current_test=string_is_integral
-run_test
-current_config=Release
-run_test
-
+cd tests_may_fail
+root_dir="../../"
+call_this_function_on_failure=failing_may_not_be_an_error
+run_test tests_may_fail Debug
+run_test tests_may_fail Release
+call_this_function_on_failure=failed
 cd ../..
-
 
 premake4 clean
 cd build_scripts
