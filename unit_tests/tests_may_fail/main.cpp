@@ -22,14 +22,16 @@ int main(int argc, char** argv)
 		//return runner.run() ? 0 : 1;
 		bool result = runner.run();
 		//as they may fail lets not brake a build yet just report the error
-		return 0;
+		//return 0;
+		return !result;
 #	else
 		CppUnit::TextUi::TestRunner runner;
 		CppUnit::TestFactoryRegistry &registry = CppUnit::TestFactoryRegistry::getRegistry();
 		runner.addTest( registry.makeTest() );
 		runner.run( "", false );
 		//as they may fail lets not brake a build yet just report the error
-		return 0;
+		//return 0;
+		return !runner.run( "", false );
 #	endif
 
 

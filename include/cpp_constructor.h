@@ -182,7 +182,7 @@ struct Constructor5
 		Member_func_helper<Param4WithTraits,Param4WithTraits::owner>::pull2cpp(l,p4);
 		Converter<typename Param4WithTraits::pull_type,typename Param4WithTraits::type> p4_(p4);
 		typename Param3WithTraits::pull_type p3;
-		OOLUA::Member_func_helper<Param3WithTraits,Param3WithTraits::owner>::pull2cpp(l,p3);
+		Member_func_helper<Param3WithTraits,Param3WithTraits::owner>::pull2cpp(l,p3);
 		Converter<typename Param3WithTraits::pull_type,typename Param3WithTraits::type> p3_(p3);
 		typename Param2WithTraits::pull_type p2;
 		Member_func_helper<Param2WithTraits,Param2WithTraits::owner>::pull2cpp(l,p2);
