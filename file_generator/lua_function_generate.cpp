@@ -67,7 +67,8 @@ void lua_function_header(std::string & save_directory,int maxParams)
 ///  use a Lua reference which is stored in a Lua_func.\n\
 ///////////////////////////////////////////////////////////////////////////////\n";
 	f<<"struct Lua_function\n"
-	<<"{\n";
+	<<"{\n"
+	<<"\tLua_function();\n";
 
 	for(int i = 0; i<=maxParams; ++i)
 	{

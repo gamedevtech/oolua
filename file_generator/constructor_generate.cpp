@@ -48,10 +48,10 @@ void write_constructor_with_parameters(std::ofstream& f, int param)
 	for (int i = param; i >= 1; --i)
 	{
 		f<<tab<<tab<<"typename " <<ParamStart <<i <<ParamEnd <<"::pull_type p"<<i <<";\n";
-		f<<tab<<tab<<"OOLUA::Member_func_helper<"
+		f<<tab<<tab<<"OOLUA::INTERNAL::Member_func_helper<"
 						<<ParamStart <<i <<ParamEnd <<","
 						<<ParamStart <<i <<ParamEnd <<"::owner>::pull2cpp(l,p"<<i<<");\n";
-		f<<tab<<tab<<"OOLUA::Converter<typename "
+		f<<tab<<tab<<"OOLUA::INTERNAL::Converter<typename "
 					<<ParamStart <<i <<ParamEnd <<"::pull_type,typename "
 					<<ParamStart <<i <<ParamEnd <<"::type> p" <<i <<"_(p"<<i<<");\n";
 	}
@@ -78,7 +78,7 @@ void write_macros(std::ofstream& f, int paramCount)
 	<<tab<<"int stack_count = lua_gettop(l); "<<macro_new_line
 	<<tab<<"if(stack_count == 0 ) "<<macro_new_line
 	<<tab<<"{ "<<macro_new_line
-	<<tab<<tab<<"return OOLUA::INTERNAL::Constructor<class_,has_typedef<this_type, No_default_constructor>::Result>::construct(l); "<<macro_new_line
+	<<tab<<tab<<"return OOLUA::INTERNAL::Constructor<class_,OOLUA::INTERNAL::has_typedef<this_type, No_default_constructor>::Result>::construct(l); "<<macro_new_line
 	<<tab<<"}\n\n";
 	
 	for (int i = 1; i <= paramCount; ++i)
@@ -98,7 +98,7 @@ void write_macros(std::ofstream& f, int paramCount)
 		f<<tab<<tab<<"if(OOLUA::INTERNAL::Constructor"<<i<<"<class_,";
 		for (int j =1; j <= i; ++j) 
 		{
-			f<<"param_type<param"<<j<<"Type >";
+			f<<"OOLUA::INTERNAL::param_type<param"<<j<<"Type >";
 			if(j<i)f<<",";
 		}
 		f<<" >::construct(l) ) return 1; "<<macro_new_line
@@ -108,7 +108,7 @@ void write_macros(std::ofstream& f, int paramCount)
 	
 	f<<"#define OOLUA_CONSTRUCTORS_END "<<macro_new_line
 	<<tab<<"luaL_error(l,\"%s %d %s %s\",\"Could not match\",stack_count,\"parameter constructor for type\",class_name); "<<macro_new_line
-	<<tab<<"return 0; "<<macro_new_line
+	<<tab<<"return 0;/*required by function sig yet luaL_error never returns*/  "<<macro_new_line
 	<<"}\n\n";
 	
 	f<<"#define OOLUA_ONLY_DEFAULT_CONSTRUCTOR "<<macro_new_line
@@ -137,7 +137,7 @@ void write_default_constructor(std::ofstream &f )
 	<<tab<<tab<<"luaL_error(l,\"%s %s %s\",\"No parameters passed to the constructor of the type\"\n"
 	<<tab<<tab<<tab<<",OOLUA::Proxy_class<Type>::class_name\n"
 	<<tab<<tab<<tab<<",\"which does not have a default constructor.\");\n"
-	<<tab<<tab<<"return 0;\n"
+	<<tab<<tab<<"return 0;//required by function sig yet luaL_error never returns\n"
 	<<tab<<"}\n"
 	<<"};\n";
 }
@@ -155,7 +155,7 @@ void constructor_header(std::string & save_directory,int paramCount)
 	include_header(f,"oolua_userdata.h");
 	include_header(f,"member_func_helper.h");
 	include_header(f,"oolua_parameter_helper.h");
-	
+	include_header(f,"oolua_converters.h");
 	
 	f<<"namespace OOLUA\n{\nnamespace INTERNAL\n{\n";
 	

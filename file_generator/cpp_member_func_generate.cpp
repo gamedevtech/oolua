@@ -17,7 +17,7 @@ void print_back_helper_macros(std::ofstream& f,int num)
 	f<<"#define OOLUA_BACK_INTERNAL_(NUM)\\\n";
 	f<<"MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT_OOLUA \\\n";
 	f<<tab<<"if( P ## NUM ## _::out )\\\n";
-	f<<tab<<tab<<"OOLUA::Member_func_helper<P ## NUM ##_,P ## NUM ##_::owner>::push2lua(l,p ## NUM);\\\n";
+	f<<tab<<tab<<"OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_,P ## NUM ##_::owner>::push2lua(l,p ## NUM);\\\n";
 	f<<"MSC_POP_COMPILER_WARNING_OOLUA\n\n";
 
 	for(int i = 1; i <=num; ++i)
@@ -32,7 +32,7 @@ void print_param_macros(std::ofstream& f,int num)
 {
 	f<<"\n//param macros\n"
 		<<"#define OOLUA_INTERNAL_PARAM(NUM,PARAM)\\\n"
-		<<tab<<"typedef OOLUA::param_type<PARAM > P ## NUM ##_;\\\n";
+		<<tab<<"typedef OOLUA::INTERNAL::param_type<PARAM > P ## NUM ##_;\\\n";
 	//there is no need for initialising pull parameters
 	//yet w-effc++ complains. When string is intregal it is an error to init to 0 which is seen as
 	//a null pointer which it is an error to be constructed from
@@ -40,7 +40,7 @@ void print_param_macros(std::ofstream& f,int num)
 	f<<tab<<"P ## NUM ##_::pull_type p ## NUM;\\\n"
 		<<tab<<"MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT_OOLUA\\\n"
 		<<tab<<"if( P ## NUM ##_::in )\\\n"
-		<<tab<<tab<<"OOLUA::Member_func_helper<P ## NUM ##_,P ## NUM ##_::owner>::pull2cpp(l,p ## NUM);\\\n"
+		<<tab<<tab<<"OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_,P ## NUM ##_::owner>::pull2cpp(l,p ## NUM);\\\n"
 		<<tab<<"MSC_POP_COMPILER_WARNING_OOLUA\n\n";
 
 	std::string params("OOLUA_PARAMS_INTERNAL_");
@@ -125,7 +125,7 @@ void print_proxy_imps(std::ofstream&f,int num_params)
 			<<"{"<<macro_endl
 			<<tab<<"assert(m_this);"<<macro_endl;
 		if(i!=0)f<<tab<<"OOLUA_PARAMS_INTERNAL_"<<i<<"("<<params.str().c_str()<<")"<<macro_endl;
-		f<<tab<<"typedef return_type_traits<return_value > R;"<<macro_endl;
+		f<<tab<<"typedef INTERNAL::return_type_traits<return_value > R;"<<macro_endl;
 		std::stringstream types;
 		std::stringstream template_types;
 		std::stringstream param_types;
@@ -142,7 +142,7 @@ void print_proxy_imps(std::ofstream&f,int num_params)
 		}
 		f<<tab<<"typedef R::type (class_::*funcType )("<<types.str().c_str()<<")mod ;"<<macro_endl
 	//	f<<tab<<"static R::type (class_::*f )("<<types.str().c_str()<<")mod  = &class_::func;"<<macro_endl
-			<<tab<<"OOLUA::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call";
+			<<tab<<"OOLUA::INTERNAL::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call";
 		if(i>0)
 		{
 			f<<"<"<<template_types.str().c_str()<<",funcType>";
@@ -153,7 +153,7 @@ void print_proxy_imps(std::ofstream&f,int num_params)
 		}
 		f<<"(l,m_this,&class_::func"<<param_types.str().c_str()<<");"<<macro_endl;
 		if(i>0)f<<tab<<"OOLUA_BACK_INTERNAL_"<<i<<macro_endl;
-		f<<tab<<"return total_out_params< Type_list<out_p<return_value >";
+		f<<tab<<"return INTERNAL::lua_return_count< Type_list<R ";
 		if(i>0)f<<","<<template_types.str().c_str();
 		f<<" >::type> ::out;"<<macro_endl;
 		f<<"}\n";
@@ -184,7 +184,7 @@ void print_c_proxy_imps(std::ofstream&f,int num_params)
 		if(i>0)f<<","<<params.str().c_str();
 		f<<") "<<macro_endl;
 		if(i!=0)f<<tab<<"OOLUA_PARAMS_INTERNAL_"<<i<<"("<<params.str().c_str()<<")"<<macro_endl;
-		f<<tab<<"typedef OOLUA::param_type<return_value > R;"<<macro_endl;
+		f<<tab<<"typedef OOLUA::INTERNAL::return_type_traits<return_value > R;"<<macro_endl;
 		std::stringstream types;
 		std::stringstream template_types;
 		std::stringstream param_types;
@@ -200,7 +200,7 @@ void print_c_proxy_imps(std::ofstream&f,int num_params)
 			param_types<<",p"<<ii;
 		}
 		f<<tab<<"typedef R::type (funcType)("<<types.str().c_str()<<") ;"<<macro_endl
-			<<tab<<"OOLUA::Proxy_none_member_caller<R,LVD::is_void< R::type >::value >::call";
+			<<tab<<"OOLUA::INTERNAL::Proxy_none_member_caller<R,LVD::is_void< R::type >::value >::call";
 		if(i>0)
 		{
 			f<<"<"<<template_types.str().c_str()<<",funcType>";
@@ -211,7 +211,7 @@ void print_c_proxy_imps(std::ofstream&f,int num_params)
 		}
 		f<<"(l,&func"<<param_types.str().c_str()<<");"<<macro_endl;
 		if(i>0)f<<tab<<"OOLUA_BACK_INTERNAL_"<<i<<macro_endl;
-		f<<tab<<"return OOLUA::total_out_params< Type_list<OOLUA::out_p<return_value >";
+		f<<tab<<"return OOLUA::INTERNAL::lua_return_count< Type_list<R ";
 		if(i>0)f<<","<<template_types.str().c_str();
 		f<<" >::type> ::out;"<<macro_endl;
 		f<<"\n";
@@ -255,7 +255,7 @@ void c_function_header(std::string & save_directory,int noOfParams)
 
 	include_header(f,"param_traits.h");
 	include_header(f,"oolua_paramater_macros.h");
-
+	include_header(f, "proxy_caller.h");
 
 	print_c_proxy_imps(f,noOfParams);
 	include_guard_bottom(f);
@@ -270,6 +270,9 @@ void cpp_member_func_header(std::string & save_directory,int noOfParams)
 
 	include_header(f,"param_traits.h");
 	include_header(f,"oolua_paramater_macros.h");
+	include_header(f,"proxy_caller.h");
+	f<<"#\tinclude <cassert>\n";
+	
 	/*
 	f<<"#ifdef _MSC_VER \n"
 		<<"#"<<tab<<"define MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT \\\n"

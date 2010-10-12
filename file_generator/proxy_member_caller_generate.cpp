@@ -18,7 +18,7 @@ std::string proxy_member_caller_convertors(std::ofstream & f,int paramCount)
 {
 	std::string name("OOLUA_CONVERTER");
 	f<<"\n#define "<<name<<"(NUM)\\\n"
-		<<tab<<"Converter<typename P##NUM::pull_type, typename P##NUM::type> p##NUM##_(p##NUM);\n\n";
+		<<tab<<"OOLUA::INTERNAL::Converter<typename P##NUM::pull_type, typename P##NUM::type> p##NUM##_(p##NUM);\n\n";
 
 	f<<"#define "<<name<<"1\\\n"
 		<<tab<<name<<"(1)\n\n";
@@ -92,7 +92,7 @@ void member_functions_with_return(std::ofstream &f,int paramCount,std::string& c
 		<<tab<<"static void call(lua_State*  const l,C* m_this, FuncType ptr2mem )\n"
 		<<tab<<"{\n"
 		<<tab<<tab<<"typename R::type r( (m_this->*ptr2mem)() );\n"
-		<<tab<<"\tOOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);\n"
+		<<tab<<"\tMember_func_helper<R,R::owner>::push2lua(l,r);\n"
 		<<tab<<"}\n";
 
 	for(int j =1; j<=paramCount ; ++j)
@@ -129,7 +129,7 @@ void member_functions_with_return(std::ofstream &f,int paramCount,std::string& c
 			f<<") );\n";
 		}
 		//return value
-		f<<tab<<tab<<"OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);\n";
+		f<<tab<<tab<<"Member_func_helper<R,R::owner>::push2lua(l,r);\n";
 		//end function
 		f<<tab<<"}\n";
 	}
@@ -205,7 +205,7 @@ void c_functions_with_return(std::ofstream &f,int paramCount,std::string& conver
 	<<tab<<"static void call(lua_State*  const l,FuncType ptr2func ) \n"
 	<<tab<<"{\n"
 	<<tab<<tab<<"typename R::type r( (*ptr2func)() );\n"
-	<<tab<<tab<<"OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);\n"
+	<<tab<<tab<<"Member_func_helper<R,R::owner>::push2lua(l,r);\n"
 	<<tab<<"}\n";
 
 	for(int j =1; j<=paramCount ; ++j)
@@ -242,7 +242,7 @@ void c_functions_with_return(std::ofstream &f,int paramCount,std::string& conver
 			f<<") );\n";
 		}
 		//return value
-		f<<tab<<tab<<"OOLUA::Member_func_helper<R,R::owner>::push2lua(l,r);\n";
+		f<<tab<<tab<<"Member_func_helper<R,R::owner>::push2lua(l,r);\n";
 		//end function
 		f<<tab<<"}\n";
 	}
@@ -259,15 +259,15 @@ void proxy_member_caller_header(std::string & save_directory,int paramCount)
 	include_guard_top(f,"PROXY_CALLER_H_");
 	add_file_header(f,fileName);
 
-
-	//include_header(f,"fwd_push_pull.h");
 	include_header(f,"member_func_helper.h");
 	include_header(f,"param_traits.h");
-	//include_header(f,"oolua_exception.h");
+	include_header(f,"oolua_converters.h");
 
 	std::string convertor_name = proxy_member_caller_convertors(f,paramCount);
 
-	f<<"namespace OOLUA\n{\n";
+	f<<"namespace OOLUA\n{\n"
+	<<"\tnamespace INTERNAL\n\t{\n"; 
+
 	f<<"template <typename Return, typename Class, int ReturnIsVoid>struct Proxy_caller;\n"; 	
 
 	member_functions_with_return(f,paramCount,convertor_name);
@@ -275,8 +275,9 @@ void proxy_member_caller_header(std::string & save_directory,int paramCount)
 
 	c_functions_with_return(f,paramCount,convertor_name);
 	c_functions_no_return(f,paramCount,convertor_name);
-
-	f<<"\n}\n";//end namespace
+	
+	f<<"\t}//end INTERNAL namespace\n";
+	f<<"\n}//end OOLUA namespace\n";
 
 	undef_defines(f,paramCount,convertor_name);
 
