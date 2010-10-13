@@ -97,6 +97,7 @@ class Table : public CPPUNIT_NS::TestFixture
 
 	CPPUNIT_TEST(bindScript_tableReferenceIsAlreadyValid_validReturnsFalse);
 	
+	CPPUNIT_TEST(bindScript_tableReferenceIsAlreadyBoundWithThisState_validReturnsTrue);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -409,6 +410,13 @@ public:
 		OOLUA::Script another_lua_instance;
 		table_.bind_script(another_lua_instance);
 		CPPUNIT_ASSERT_EQUAL(false,table_.valid());
+	}
+	void bindScript_tableReferenceIsAlreadyBoundWithThisState_validReturnsTrue()
+	{
+		OOLUA::Lua_table table_;
+		OOLUA::new_table(*m_lua,table_);
+		table_.bind_script(*m_lua);
+		CPPUNIT_ASSERT_EQUAL(true,table_.valid());
 	}
 
 };

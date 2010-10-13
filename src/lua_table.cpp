@@ -20,6 +20,7 @@ namespace OOLUA
 	{}
 	void Lua_table::bind_script(lua_State*  const lua)
 	{
+		if(m_table_ref.m_lua == lua)return;
 		if(m_table_ref.valid() )
 		{
 			Lua_table_ref tempRef(lua);

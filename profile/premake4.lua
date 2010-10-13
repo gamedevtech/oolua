@@ -6,9 +6,10 @@ configuration {}
 
 files 
 { 
-	"**.h",
-	"**.hpp",
-	"**.cpp"
+	"*.h",
+	"*.cpp",
+	--"luabind/**.hpp",
+	--"src/**.cpp"
 }
 
 includedirs 
@@ -17,17 +18,17 @@ includedirs
 	,root .. "include/"
 	,"./"
 	,"include/lua"
-	,"include/boost"
+	--,"include/boost"
 } 
 
 
 defines 
 {
-	"OOLUA_STORE_ERROR",
-	"OOLUA_SWIG_COMPARE",
-	"OOLUA_LUABIND_COMPARE",
-	"LUABIND_NO_ERROR_CHECKING",
-	"LUABIND_DONT_COPY_STRINGS"
+--	"OOLUA_STORE_ERROR",
+--	"OOLUA_SWIG_COMPARE",
+--	"OOLUA_LUABIND_COMPARE",
+--	"LUABIND_NO_ERROR_CHECKING",
+--	"LUABIND_DONT_COPY_STRINGS"
 }
 
 links

@@ -3,10 +3,8 @@
 #	include "common_cppunit_headers.h"
 #	include "expose_stub_classes.h"
 #	include "expose_pulls_stub_param.h"
-
-
-
-#       include <csetjmp>
+#	include "expose_member_function_calls.h"
+#	include <csetjmp>
 
 namespace  
 {
@@ -62,6 +60,13 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_afterCallIndexMinusTwoIsUserdata);	
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_resultIsFalse);
 		CPPUNIT_TEST(userDataCheck_lightUserDataWithNoMetaTable_resultIsFalse);
+	
+#	if OOLUA_USE_EXCEPTIONS == 1
+		CPPUNIT_TEST(memberFunctionCall_luaCallsLikeStaticFunctionWithNoParameters_throwsOoluaRunTimeError);
+#	elif OOLUA_STORE_LAST_ERROR == 1
+		CPPUNIT_TEST(memberFunctionCall_luaCallsLikeStaticFunctionWithNoParameters_callRetunsFalse);
+#	endif
+	
 #endif
 
 	
@@ -127,6 +132,8 @@ class Error_test : public CPPUNIT_NS::TestFixture
 #if OOLUA_DEBUG_CHECKS == 1
 		CPPUNIT_TEST(push_unregisteredClass_callsLuaPanic);
 #endif
+	
+
 
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
@@ -216,6 +223,25 @@ public:
 	
 #if OOLUA_RUNTIME_CHECKS_ENABLED ==1
 
+#	if OOLUA_USE_EXCEPTIONS == 1
+	void memberFunctionCall_luaCallsLikeStaticFunctionWithNoParameters_throwsOoluaRunTimeError()
+	{
+		::testing::NiceMock<FunctionCallsMock> mock;
+		m_lua->register_class<Function_calls>();
+		m_lua->run_chunk("foo = function() Function_calls:func() end"); 
+		CPPUNIT_ASSERT_THROW((m_lua->call("foo")),OOLUA::Runtime_error);
+	}
+#	elif OOLUA_STORE_LAST_ERROR == 1
+	void memberFunctionCall_luaCallsLikeStaticFunctionWithNoParameters_callRetunsFalse()
+	{
+		::testing::NiceMock<FunctionCallsMock> mock;
+		m_lua->register_class<Function_calls>();
+		m_lua->run_chunk("foo = function() Function_calls:func() end"); 
+		bool result = m_lua->call("foo");
+		CPPUNIT_ASSERT_EQUAL(false,result);
+	}
+#	endif
+	
 	void userDataCheck_lightUserDataWithNoMetaTable_resultIsFalse()
 	{
 		lua_pushlightuserdata(*m_lua,this);
