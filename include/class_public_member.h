@@ -17,24 +17,13 @@
 #	define CLASS_PUBLIC_MEMBER_H_
 
 
+#include "param_traits.h"
+#include "fwd_push_pull.h"
+
 namespace OOLUA 
 {
 	namespace INTERNAL
 	{
-		
-		template<typename Type>
-		struct has_a_proxy_type
-		{
-			typedef OOLUA::Proxy_class<Type> proxy_type;
-			template <typename U> 
-			static char (& has_none_proxy_typedef(typename U::OoluaNoneProxy*))[1]; 
-		
-			template <typename U> 
-			static char (& has_none_proxy_typedef(...))[2]; 
-		
-			enum {value = sizeof( has_none_proxy_typedef<proxy_type>(0) ) == 1 ? 0 : 1} ;
-		};
-	
 		template<typename T,int shouldBeByRef>
 		struct shouldPushValueByReference 
 		{

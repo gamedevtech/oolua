@@ -79,19 +79,6 @@ namespace OOLUA
 	
 	namespace INTERNAL
 	{
-		
-		typedef char (&one)[1];
-		typedef char (&two)[2];
-
-		template <typename T,typename From>
-		class can_convert
-		{
-			static one test(T );
-			template <typename U>
-			static two test(...);
-		public:
-			enum { value = sizeof( test( From() ) )  == 1 ? 1 : 0 };
-		};
 
 		template<typename T,int is_intergal>
 		struct push_basic_type;
@@ -109,7 +96,7 @@ namespace OOLUA
 			{
 				//enumeration type so a static cast must be allowed.
 				//enums will be stronger in C++0x so this will need revisiting then
-				typedef char dummy_can_convert [ can_convert<int,T>::value ? 1 : -1];
+				typedef char dummy_can_convert [ can_convert_to_int<T>::value ? 1 : -1];
 				lua_pushinteger(s, static_cast<lua_Integer>(value) );
 				return true;
 
@@ -253,7 +240,7 @@ namespace OOLUA
 			{
 				//enumeration type so a static cast should be allowed else this
 				//is being called with the wrong type
-				typedef char dummy_can_convert [ can_convert<int,T>::value ? 1 : -1];
+				typedef char dummy_can_convert [ can_convert_to_int<T>::value ? 1 : -1];
 				//value = static_cast<T>( lua_tonumber( s, -1) );
 				if( !cpp_runtime_type_check_of_top(s,lua_isnumber,"enum type"))
 					return false;
@@ -434,7 +421,7 @@ MSC_POP_COMPILER_WARNING_OOLUA
 				{
 					//enumeration type so a static cast should be allowed else this
 					//is being called with the wrong type
-					typedef char dummy_can_convert [ can_convert<int,T>::value ? 1 : -1];
+					typedef char dummy_can_convert [ can_convert_to_int<T>::value ? 1 : -1];
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 					if(! lua_isnumber(s,-1) )pull_error(s,"enum type");
 #endif
