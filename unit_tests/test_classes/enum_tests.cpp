@@ -13,7 +13,7 @@ class Enum_tests : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Enum_tests);
 		CPPUNIT_TEST(memberFunction_returnsEnum_defaultValueIsInvalid);
-		CPPUNIT_TEST(registeredAsPublicMemberGet_passedObjectSetToGreen_comparesTheEnumValueWithTheConstant_ReturnsTrue);
+		CPPUNIT_TEST(registeredAsPublicMemberFunction_passedObjectSetToGreen_comparesTheEnumValueWithTheConstant_ReturnsTrue);
 		CPPUNIT_TEST(memberFunctionSetsEnum_passedGreen_resultIsGreen);
 		CPPUNIT_TEST(constructWithEnum_passedValueGreen_functionReturnsGreen);
 
@@ -69,14 +69,14 @@ public:
 		
 	}
 
-	void registeredAsPublicMemberGet_passedObjectSetToGreen_comparesTheEnumValueWithTheConstant_ReturnsTrue()
+	void registeredAsPublicMemberFunction_passedObjectSetToGreen_comparesTheEnumValueWithTheConstant_ReturnsTrue()
 	{
 		m_lua->register_class<Enums>();
-		//no need to register the enum key and value but it gets a get_ prefix
+		//no need to register the enum key and value as it is a member function
 		Enums e;
 		e.m_enum = Enums::GREEN;
 		m_lua->run_chunk("foo = function(obj) "
-							"return obj:get_enum() == obj:get_GREEN() "
+							"return obj:get_enum() == obj:GREEN() "
 						 "end");
 		m_lua->call("foo",&e);
 		bool result(false);
