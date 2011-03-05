@@ -29,6 +29,7 @@ OOLUA_PROXY_CLASS(OutParamsUserData)
 	OOLUA_MEM_FUNC(void, ref,out_p<Stub1&>)
 	OOLUA_MEM_FUNC(void,ptr,out_p<Stub1*>)
 	OOLUA_MEM_FUNC(void,ref_param,out_p<MockParamWithStringMember&>)
+	OOLUA_MEM_FUNC_0(lua_acquire_ptr<Stub1*>,return_new_instance)
 	/*when enabled should give a compile time error*/
 	//OOLUA_MEM_FUNC(void,by_value,out_p<Stub1>)
 OOLUA_CLASS_END

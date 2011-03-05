@@ -26,7 +26,7 @@ Unit tests for lua_acquire_ptr, lua_out_p and out_p to check pull types are corr
 Unit tests for traits which change ownership
 Compile time tests to traits for valid parameters
 Fix Issue 25 Reported by Harley Laue. Enums being classed as a class type for member functions.
- 
+Fixed incorrect and confusing comment for lua_acquire_ptr and added a unit test to ensure it does the correct thing for function return values.
 
 1.3.1
 Work around for Visual Studio as reported by Tom on the mailing list added

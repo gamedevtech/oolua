@@ -80,8 +80,8 @@ namespace OOLUA
 	///////////////////////////////////////////////////////////////////////////////
 	///  @struct lua_acquire_ptr
 	///  Informs the binding that Lua will take control of the pointer being used
-	///  and call delete on it when appropriate. This is only valid for 
-	///  OOLUA::push2lua calls.
+	///  and call delete on it when appropriate. This is the type to use for
+	///  function return values which pass ownership to Lua.
 	///////////////////////////////////////////////////////////////////////////////
 	template<typename T>struct lua_acquire_ptr;
 	

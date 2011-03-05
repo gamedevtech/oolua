@@ -41,6 +41,7 @@ class OutParams : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(OutTrait_luaPassesNoParamFunctionWantsPtrToUserData_topOfStackIsOwnedByLua);
 	
 	CPPUNIT_TEST(OutTrait_luaPassesNoParamFunctionWantsRefToUserData_stringMemberIsSetToHelloWorld);
+	CPPUNIT_TEST(returnTrait_functionReturnsPointerWhichLuaWillOwn_topOfStackIsOwnedByLua);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -326,6 +327,22 @@ public:
 		MockParamWithStringMember* ptr;
 		OOLUA::pull2cpp(*m_lua,ptr);
 		CPPUNIT_ASSERT_EQUAL(hello_world_str,ptr->str);
+	}
+	void returnTrait_functionReturnsPointerWhichLuaWillOwn_topOfStackIsOwnedByLua()
+	{
+		m_lua->register_class<OutParamsUserData>();
+		m_lua->register_class<Stub1>();
+		m_lua->run_chunk("foo = function(obj) return obj:return_new_instance() end");
+		MockOutParamsUserData stub;
+		Stub1 return_instance;
+		EXPECT_CALL(stub,return_new_instance())
+			.Times(1)
+			.WillOnce(::testing::Return(&return_instance) );
+		
+		m_lua->call("foo",(OutParamsUserData*)&stub);
+		OOLUA::INTERNAL::Lua_ud * ud = static_cast<OOLUA::INTERNAL::Lua_ud *>(lua_touserdata(*m_lua,-1) );
+		CPPUNIT_ASSERT_EQUAL(true,ud->gc);
+		ud->gc = false;//step the stack instance being deleted
 	}
 };
 

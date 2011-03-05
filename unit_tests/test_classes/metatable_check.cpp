@@ -16,6 +16,7 @@ class MetatableEqual : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST_SUITE(MetatableEqual);
 	CPPUNIT_TEST(equal_luaTablesWithDifferentMetatables_assertsTrue);
 	CPPUNIT_TEST(equal_userdataWithDifferentMetatables_returnsTrue);
+	//CPPUNIT_TEST(equal_userdataWithDifferentMetatables_lua52_returnsTrue);
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -104,6 +105,49 @@ public:
 		lua_pcall(s,2,LUA_MULTRET,0);
 		bool result = lua_toboolean(s,-1) == 1? true : false;
 		CPPUNIT_ASSERT_EQUAL(true,result);
+		lua_close(s);
+	}
+	void equal_userdataWithDifferentMetatables_lua52_returnsTrue()
+	{
+		lua_State* s = luaL_newstate();
+		std::string chunk("equal = function (lhs, rhs) \
+							return lhs == rhs \
+						  end");
+		luaL_loadbuffer(s,chunk.c_str(),chunk.size(),"userChunk");
+		lua_pcall(s,0,LUA_MULTRET,0);
+		//lua_getfield(s, LUA_GLOBALSINDEX, "equal");
+		lua_getglobal(s,"equal");
+	
+		luaL_newmetatable(s, "mt1");
+		int mt1 = lua_gettop(s);
+		luaL_newmetatable(s, "mt2");
+		int mt2 = lua_gettop(s);
+	
+		lua_pushliteral(s, "__eq");
+		lua_pushcfunction(s, &equal);
+		lua_settable(s, mt1);
+	
+		lua_pushliteral(s, "__eq");
+		lua_pushcfunction(s, &equal);
+		lua_settable(s, mt2);
+	
+		Int_wrapper* wrapper1 = static_cast<Int_wrapper*>(lua_newuserdata(s, sizeof(Int_wrapper)));
+		int w1 = lua_gettop(s);
+		lua_pushvalue(s,mt1);
+		lua_setmetatable(s,w1);
+	
+		Int_wrapper* wrapper2 = static_cast<Int_wrapper*>(lua_newuserdata(s, sizeof(Int_wrapper)));
+		int w2 = lua_gettop(s);
+		lua_pushvalue(s,mt2);
+		lua_setmetatable(s,w2);
+	
+		wrapper1->i = wrapper2->i = 1;
+		lua_remove(s,mt1);
+		lua_remove(s,mt1);
+	
+		lua_pcall(s,2,LUA_MULTRET,0);
+		int result = lua_toboolean(s,-1);
+		CPPUNIT_ASSERT_EQUAL(1,result);
 		lua_close(s);
 	}
 };

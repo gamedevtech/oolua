@@ -18,6 +18,7 @@ EXPORT_OOLUA_FUNCTIONS_NON_CONST(OutParamsUserData
 								   ,ref
 									,ptr
 									,ref_param
+									,return_new_instance
 									)
 
 EXPORT_OOLUA_FUNCTIONS_CONST(OutParamsUserData)
