@@ -178,7 +178,8 @@ namespace OOLUA
 {
 	template<typename NoneProxyType>
 	class Proxy_class
-	{ 
+	{
+	public:
 		typedef NoneProxyType OoluaNoneProxy;
 	};
 }

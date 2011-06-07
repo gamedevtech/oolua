@@ -15,13 +15,13 @@ namespace OOLUA
 		template<typename TypeWithTraits,int Is_intergral>
 		struct index_can_convert_to_type
 		{
-			static int valid(lua_State* /*l*/,int const& /*index*/){return 0;}//noop
+			static int valid(lua_State* /*l*/,int const /*index*/){return 0;}//noop
 		};
 		
 		template<typename TypeWithTraits>
 		struct index_can_convert_to_type<TypeWithTraits,0>
 		{
-			static int valid(lua_State* l,int index)
+			static int valid(lua_State* l,int const index)
 			{
 MSC_PUSH_DISABLE_CONDTIONAL_CONSTANT_OOLUA
 				if( !TypeWithTraits::is_constant
@@ -35,10 +35,9 @@ MSC_POP_COMPILER_WARNING_OOLUA
 
 		};	
 		template<typename ParamWithTraits>
-		int param_is_of_type(lua_State* l,int const& index)
+		int param_is_of_type(lua_State* l,int const index)
 		{
-			int lua_stack_type = lua_type(l,index);
-			switch (lua_stack_type) 
+			switch (lua_type(l,index))
 			{
 				case LUA_TBOOLEAN:
 					return lua_type_is_cpp_type<typename ParamWithTraits::raw_type,LUA_TBOOLEAN>::value;
