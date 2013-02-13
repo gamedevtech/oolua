@@ -24,33 +24,14 @@
 #endif
 
 /*
- The following two macros tell the library to use internal knowledge of
- the Lua implementation being used when checking a userdata type on the 
- stack is an OOLua userdata.This uses an optimisation only when
- OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 1
- */
+Userdata optimisation which checks for a magic cookie to try and ensure it was created by OOLua, 
+by default this is on when userdata checking is on. Turning this off by setting it to zero will
+use a slower yet fully correct method.
+*/
 #if OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 1
-
-	///def OOLUA_LUA_USES_DEFAULT_CONFIG_FOR_LUA_514
-	//if 1 then you are using Lua 5.1.4 and the default config
-//#	ifndef OOLUA_LUA_USES_DEFAULT_CONFIG_FOR_LUA_514
-//#		define OOLUA_LUA_USES_DEFAULT_CONFIG_FOR_LUA_514 1/*0*/
-//#	endif
-
-	///def OOLUA_USING_DEFAULT_CONFIG_FOR_LUAJIT_20
-	//if 1 then you are using LuaJit 2.0 and it's default config
-//#	ifndef OOLUA_USING_DEFAULT_CONFIG_FOR_LUAJIT_20
-//#		define OOLUA_USING_DEFAULT_CONFIG_FOR_LUAJIT_20 0
-//#	endif
-
-//#	if OOLUA_LUA_USES_DEFAULT_CONFIG_FOR_LUA_514 == 1 && OOLUA_USING_DEFAULT_CONFIG_FOR_LUAJIT_20 == 1
-//#		error Only one of these settings can be on
-//#	endif
-
 #	ifndef OOLUA_USERDATA_OPTIMISATION
 #		define OOLUA_USERDATA_OPTIMISATION 1
 #	endif
-
 #endif
 
 
