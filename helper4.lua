@@ -35,6 +35,12 @@ function configure_for_os()
 		
 	configuration("xcode3 or xcode4 or gmake")
 		buildoptions { "-W -Wall -ansi -pedantic -std=c++98" }
+--[[		
+	if os.getenv('LUAJIT_32BIT') then
+		configuration('*')
+			platforms{"x32"}
+	end
+--]]
 
 end
 
@@ -92,10 +98,20 @@ unit_test_config = function()
 		links{ "gmock","gtest","cppunit", "lua" }
 		postbuildcommands {"$TARGET_BUILD_DIR/$TARGET_NAME"}
 
---[[
-	--64bit luaJIT rebasing
-	configuration{'xcode*'}
-		linkoptions{'-pagezero_size 10000 -image_base 100000000'}
+	--64bit LuaJIT rebasing
+	if os.getenv('LUAJIT_REBASE') then
+		configuration{'xcode*'}
+			linkoptions{'-pagezero_size 10000 -image_base 100000000'}
+			--this is required to stop a test which should call lua_atpanic and instead
+			--makes it a nop, as LuaJIT will throw an exception on OSX x86_64
+			defines{"LUAJIT_VERSION_NUM=20000"}
+	end
+	
+--[[	
+	if os.getenv('LUAJIT_32BIT') then
+		configuration{'xcode*'}
+			platforms{"x32"}
+	end
 --]]
 
 	configuration {"windows","codeblocks","Debug" }
