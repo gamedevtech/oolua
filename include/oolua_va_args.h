@@ -282,7 +282,7 @@ The token preceding the special `##' must be a comma, and there must be white sp
 #	define EXPORT_OOLUA_FUNCTIONS_NON_CONST(ClassType,...)\
 		OOLUA_VA_CONCAT(OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG(__VA_ARGS__)),_NON_CONST)(ClassType,__VA_ARGS__)
 
-#	define TEXPORT_OOLUA_FUNCTIONS_CONST(ClassType,...)\
+#	define EXPORT_OOLUA_FUNCTIONS_CONST(ClassType,...)\
 		OOLUA_VA_CONCAT(OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG(__VA_ARGS__)),_CONST)(ClassType,__VA_ARGS__)
 
 #	define OOLUA_C_FUNCTION(return_type,func,...)\
