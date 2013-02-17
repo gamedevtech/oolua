@@ -280,15 +280,15 @@ public:
 #define OOLUA_TYPEDEFS\
 	typedef Type_list<
 
-///	\def  OOLUA_END_TYPES
+///	\def  OOLUA_TYPEDEFS_END
 ///	Closes the typedef list
 ///	\see oolua_typedefs.h
-#define OOLUA_END_TYPES\
+#define OOLUA_TYPEDEFS_END\
 	>::type Typedef;
 ///  @}
 
-//alias for OOLUA_END_TYPES to match the naming of other macros
-#define OOLUA_TYPEDEFS_END OOLUA_END_TYPES
+//alias for OOLUA_TYPEDEFS_END to be backward compatible (deprecated)
+#define OOLUA_END_TYPES OOLUA_TYPEDEFS_END
 
 #define OOLUA_ENUMS \
 static void oolua_enums(lua_State * l)\
