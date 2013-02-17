@@ -287,6 +287,8 @@ public:
 	>::type Typedef;
 ///  @}
 
+//alias for OOLUA_END_TYPES to match the naming of other macros
+#define OOLUA_TYPEDEFS_END OOLUA_END_TYPES
 
 #define OOLUA_ENUMS \
 static void oolua_enums(lua_State * l)\
