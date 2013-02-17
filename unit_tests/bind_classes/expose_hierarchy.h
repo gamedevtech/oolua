@@ -26,7 +26,7 @@
 	OOLUA_PROXY_CLASS(Abstract2)
 		OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
 		OOLUA_MEM_FUNC(void,func2_1)
-		OOLUA_MEM_FUNC_CONST(void,constVirtualFunction)
+		OOLUA_DEDUCE_FUNC_CONST(constVirtualFunction)
 	OOLUA_CLASS_END
 #else
 	OOLUA_CLASS_NO_BASES(Abstract2)
@@ -84,7 +84,6 @@
 #endif
 
 #if OOLUA_TEST_VA_ARGS == 1
-//OOLUA_CLASS_WITH_BASES(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
 	OOLUA_PROXY_CLASS(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
 		OOLUA_NO_TYPEDEFS
 		OOLUA_ONLY_DEFAULT_CONSTRUCTOR

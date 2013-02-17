@@ -209,4 +209,152 @@ int func_name(lua_State* const l)mod\
 }
 
 
+//member functions using default traits
+#define OOLUA_USES_PARAMS_0
+#define OOLUA_USES_PARAMS_1 typename P1,
+#define OOLUA_USES_PARAMS_2 OOLUA_USES_PARAMS_1 typename P2,
+#define OOLUA_USES_PARAMS_3 OOLUA_USES_PARAMS_2 typename P3,
+#define OOLUA_USES_PARAMS_4 OOLUA_USES_PARAMS_3 typename P4,
+#define OOLUA_USES_PARAMS_5 OOLUA_USES_PARAMS_4 typename P5,
+#define OOLUA_USES_PARAMS_6 OOLUA_USES_PARAMS_5 typename P6,
+#define OOLUA_USES_PARAMS_7 OOLUA_USES_PARAMS_6 typename P7,
+#define OOLUA_USES_PARAMS_8 OOLUA_USES_PARAMS_7 typename P8,
+
+
+#define OOLUA_FUNCTION_PARAMS_0
+#define OOLUA_FUNCTION_PARAMS_1 P1
+#define OOLUA_FUNCTION_PARAMS_2 OOLUA_FUNCTION_PARAMS_1 , P2
+#define OOLUA_FUNCTION_PARAMS_3 OOLUA_FUNCTION_PARAMS_2 , P3
+#define OOLUA_FUNCTION_PARAMS_4 OOLUA_FUNCTION_PARAMS_3 , P4
+#define OOLUA_FUNCTION_PARAMS_5 OOLUA_FUNCTION_PARAMS_4 , P5
+#define OOLUA_FUNCTION_PARAMS_6 OOLUA_FUNCTION_PARAMS_5 , P6
+#define OOLUA_FUNCTION_PARAMS_7 OOLUA_FUNCTION_PARAMS_6 , P7
+#define OOLUA_FUNCTION_PARAMS_8 OOLUA_FUNCTION_PARAMS_7 , P8
+
+
+#define OOLUA_TPARAMS_0
+#define OOLUA_TPARAMS_1 P1_,
+#define OOLUA_TPARAMS_2 OOLUA_TPARAMS_1 P2_,
+#define OOLUA_TPARAMS_3 OOLUA_TPARAMS_2 P3_,
+#define OOLUA_TPARAMS_4 OOLUA_TPARAMS_3 P4_,
+#define OOLUA_TPARAMS_5 OOLUA_TPARAMS_4 P5_,
+#define OOLUA_TPARAMS_6 OOLUA_TPARAMS_5 P6_,
+#define OOLUA_TPARAMS_7 OOLUA_TPARAMS_6 P7_,
+#define OOLUA_TPARAMS_8 OOLUA_TPARAMS_7 P8_,
+
+
+#define OOLUA_RETURNS_0
+#define OOLUA_RETURNS_1 ,P1_
+#define OOLUA_RETURNS_2 OOLUA_RETURNS_1 ,P2_
+#define OOLUA_RETURNS_3 OOLUA_RETURNS_2 ,P3_
+#define OOLUA_RETURNS_4 OOLUA_RETURNS_3 ,P4_
+#define OOLUA_RETURNS_5 OOLUA_RETURNS_4 ,P5_
+#define OOLUA_RETURNS_6 OOLUA_RETURNS_5 ,P6_
+#define OOLUA_RETURNS_7 OOLUA_RETURNS_6 ,P7_
+#define OOLUA_RETURNS_8 OOLUA_RETURNS_7 ,P8_
+
+
+#define OOLUA_PPARAMS_0
+#define OOLUA_PPARAMS_1 ,p1
+#define OOLUA_PPARAMS_2 OOLUA_PPARAMS_1 ,p2
+#define OOLUA_PPARAMS_3 OOLUA_PPARAMS_2 ,p3
+#define OOLUA_PPARAMS_4 OOLUA_PPARAMS_3 ,p4
+#define OOLUA_PPARAMS_5 OOLUA_PPARAMS_4 ,p5
+#define OOLUA_PPARAMS_6 OOLUA_PPARAMS_5 ,p6
+#define OOLUA_PPARAMS_7 OOLUA_PPARAMS_6 ,p7
+#define OOLUA_PPARAMS_8 OOLUA_PPARAMS_7 ,p8
+
+
+namespace OOLUA
+{
+	namespace INTERNAL
+	{
+		/*Two structures are used here instead of one and specialising so that compile 
+		errors are forced instead of a runtime error when an incorrect macro is used */
+		template<typename func_type, typename type = func_type>
+		struct default_traits_caller;
+		template<typename func_type, typename type = func_type>
+		struct default_traits_const_caller;
+	}
+}
+
+
+
+
+#define OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(num) \
+namespace OOLUA \
+{ \
+	namespace INTERNAL \
+	{ \
+		template <class class_type, typename return_type, OOLUA_USES_PARAMS_##num typename func_type> \
+		struct default_traits_caller<return_type (class_type::*) (OOLUA_FUNCTION_PARAMS_##num),func_type> \
+		{ \
+			typedef OOLUA::INTERNAL::return_type_traits<return_type > R; \
+			static int call (lua_State* l, class_type* this_, func_type mfptr) \
+			{ \
+				assert(this_); \
+				OOLUA_PARAMS_T_INTERNAL_##num \
+				OOLUA::INTERNAL::Proxy_caller< R, class_type, LVD::is_void<return_type >::value >:: template call<OOLUA_TPARAMS_##num func_type>(l,this_,mfptr OOLUA_PPARAMS_##num); \
+				OOLUA_BACK_INTERNAL_ ##num \
+				return OOLUA::INTERNAL::lua_return_count<typename Type_list<R OOLUA_RETURNS_##num >::type> ::out; \
+			} \
+		}; \
+		template <class class_type, typename return_type, OOLUA_USES_PARAMS_##num typename func_type> \
+		struct default_traits_const_caller<return_type (class_type::*) (OOLUA_FUNCTION_PARAMS_##num)const,func_type> \
+		{ \
+			typedef OOLUA::INTERNAL::return_type_traits<return_type > R; \
+			static int call (lua_State* l, class_type* this_, func_type mfptr) \
+			{ \
+				assert(this_); \
+				OOLUA_PARAMS_T_INTERNAL_##num \
+				OOLUA::INTERNAL::Proxy_caller< R, class_type, LVD::is_void<return_type >::value >:: template call<OOLUA_TPARAMS_##num func_type>(l,this_,mfptr OOLUA_PPARAMS_##num); \
+				OOLUA_BACK_INTERNAL_ ##num \
+				return OOLUA::INTERNAL::lua_return_count<typename Type_list<R OOLUA_RETURNS_##num >::type> ::out; \
+			} \
+		}; \
+	} \
+}
+
+
+OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(0)
+OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(1)
+OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(2)
+OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(3)
+OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(4)
+OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(5)
+OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(6)
+OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(7)
+OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(8)
+
+
+namespace OOLUA
+{
+	namespace INTERNAL
+	{
+		template<typename this_type,typename func_type>
+		int proxy_member_function_with_default_traits(lua_State* l,this_type* this_,func_type mfptr)
+		{
+			return default_traits_caller<func_type>::call(l,this_,mfptr);
+		}
+		template<typename this_type,typename func_type>
+		int proxy_const_member_function_with_default_traits(lua_State* l,this_type* this_,func_type mfptr)
+		{
+			return default_traits_const_caller<func_type>::call(l,this_,mfptr);
+		}
+	}
+}
+
+#define OOLUA_DEDUCE_FUNC(Name) \
+int Name(lua_State* l) \
+{ \
+	return OOLUA::INTERNAL::proxy_member_function_with_default_traits(l, m_this, &class_::Name); \
+}
+
+#define OOLUA_DEDUCE_FUNC_CONST(Name) \
+int Name(lua_State* l)const \
+{ \
+	return OOLUA::INTERNAL::proxy_const_member_function_with_default_traits(l, m_this, &class_::Name); \
+}
+
+
 #endif 

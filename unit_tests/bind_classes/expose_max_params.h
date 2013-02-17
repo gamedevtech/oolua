@@ -17,7 +17,8 @@ OOLUA_CLASS_NO_BASES(VoidReturnIntParam)
 	OOLUA_MEM_FUNC_6(void, six,int, int, int ,int ,int ,int )
 	OOLUA_MEM_FUNC_7(void, seven,int, int ,int ,int ,int ,int ,int )
 //sTEST_OOLUA_MEM_FUNC(void, eight,int, int ,int ,int ,int ,int ,int ,int)
-	OOLUA_MEM_FUNC_8(void, eight,int, int ,int ,int ,int ,int ,int ,int)
+//	OOLUA_MEM_FUNC_8(void, eight,int, int ,int ,int ,int ,int ,int ,int)
+	OOLUA_DEDUCE_FUNC(eight)
 OOLUA_CLASS_END
 
 #endif
