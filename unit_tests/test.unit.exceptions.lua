@@ -49,8 +49,12 @@ defines
 
 configuration{"gmake"}
 	pchheader("unit_tests/test_classes/oolua_tests_pch.h")
-configuration{"not gmake"}
+configuration{"not gmake","not vs*"}
 	pchheader(root .. "unit_tests/test_classes/oolua_tests_pch.h")
+configuration{"vs*"}
+	pchheader(root .. "unit_tests/test_classes/oolua_tests_pch.h")
+	pchsource(root .. "unit_tests/test_classes/oolua_tests_pch.cpp")
+	buildoptions {"/FI oolua_tests_pch.h"}
 
 unit_test_config(root,name)
 
