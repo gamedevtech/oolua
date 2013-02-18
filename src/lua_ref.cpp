@@ -28,8 +28,8 @@ namespace OOLUA
 #else
 			(void)from;
 			(void)to;
-#endif
 			return true;
+#endif
 		}
 		
 		
