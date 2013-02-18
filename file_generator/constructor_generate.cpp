@@ -91,7 +91,7 @@ void write_macros(std::ofstream& f, int paramCount)
 		f<<"#define OOLUA_CONSTRUCTOR_"<<i<<"(";
         param_type_string(f,i);
 		f<<") "<<macro_new_line;
-        
+        f<<tab<<"MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA "<<macro_new_line;
         f<<tab<<"if( (stack_count == "<<i<<" && TYPELIST::IndexOf<Type_list<";
                                                         param_type_string(f,i); 
                                                     f<<">::type, calling_lua_state>::value == -1) " <<macro_new_line
@@ -107,7 +107,8 @@ void write_macros(std::ofstream& f, int paramCount)
 			if(j<i)f<<",";
 		}
 		f<<" >::construct(l) ) return 1; "<<macro_new_line
-		<<tab<<"}\n\n";
+		<<tab<<"} "<<macro_new_line
+		<<tab<<"MSC_POP_COMPILER_WARNING_OOLUA\n\n";
 	}
 
 	

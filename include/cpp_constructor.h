@@ -209,39 +209,49 @@ static int oolua_factory_function(lua_State* l) \
 	lua_remove(l, 1);/*remove class type*/ \
 	int const stack_count = lua_gettop(l);
 #define OOLUA_CONSTRUCTOR_1(param1Type) \
+	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( (stack_count == 1 && TYPELIST::IndexOf<Type_list<param1Type>::type, calling_lua_state>::value == -1) \
 		|| (stack_count == 0 && TYPELIST::IndexOf<Type_list<param1Type>::type, calling_lua_state>::value != -1) ) \
 	{ \
 		if(INTERNAL::Constructor1<class_,INTERNAL::param_type<param1Type > >::construct(l) ) return 1; \
-	}
+	} \
+	MSC_POP_COMPILER_WARNING_OOLUA
 
 #define OOLUA_CONSTRUCTOR_2(param1Type,param2Type) \
+	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( (stack_count == 2 && TYPELIST::IndexOf<Type_list<param1Type,param2Type>::type, calling_lua_state>::value == -1) \
 		|| (stack_count == 1 && TYPELIST::IndexOf<Type_list<param1Type,param2Type>::type, calling_lua_state>::value != -1) ) \
 	{ \
 		if(INTERNAL::Constructor2<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type > >::construct(l) ) return 1; \
-	}
+	} \
+	MSC_POP_COMPILER_WARNING_OOLUA
 
 #define OOLUA_CONSTRUCTOR_3(param1Type,param2Type,param3Type) \
+	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( (stack_count == 3 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type>::type, calling_lua_state>::value == -1) \
 		|| (stack_count == 2 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type>::type, calling_lua_state>::value != -1) ) \
 	{ \
 		if(INTERNAL::Constructor3<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type >,INTERNAL::param_type<param3Type > >::construct(l) ) return 1; \
-	}
+	} \
+	MSC_POP_COMPILER_WARNING_OOLUA
 
 #define OOLUA_CONSTRUCTOR_4(param1Type,param2Type,param3Type,param4Type) \
+	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( (stack_count == 4 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type,param4Type>::type, calling_lua_state>::value == -1) \
 		|| (stack_count == 3 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type,param4Type>::type, calling_lua_state>::value != -1) ) \
 	{ \
 		if(INTERNAL::Constructor4<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type >,INTERNAL::param_type<param3Type >,INTERNAL::param_type<param4Type > >::construct(l) ) return 1; \
-	}
+	} \
+	MSC_POP_COMPILER_WARNING_OOLUA
 
 #define OOLUA_CONSTRUCTOR_5(param1Type,param2Type,param3Type,param4Type,param5Type) \
+	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( (stack_count == 5 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type,param4Type,param5Type>::type, calling_lua_state>::value == -1) \
 		|| (stack_count == 4 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type,param4Type,param5Type>::type, calling_lua_state>::value != -1) ) \
 	{ \
 		if(INTERNAL::Constructor5<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type >,INTERNAL::param_type<param3Type >,INTERNAL::param_type<param4Type >,INTERNAL::param_type<param5Type > >::construct(l) ) return 1; \
-	}
+	} \
+	MSC_POP_COMPILER_WARNING_OOLUA
 
 #define OOLUA_CONSTRUCTORS_END \
 	if(stack_count == 0 ) \
