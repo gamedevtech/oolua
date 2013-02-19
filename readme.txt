@@ -11,12 +11,11 @@ Basic usage can be seen : http://code.google.com/p/oolua/wiki/CheatSheet
 Mailing List : http://groups.google.com/group/oolua-user
 Twitter Account : http://twitter.com/OOLua
 
-This file is a text duplicated of http://code.google.com/p/oolua/wiki/Building
 
 Requirements
 ------------
 Makefiles, IDE Projects and use of Build Scripts
-(version 4.2) http://industriousone.com/premake 
+(version 4.4) http://industriousone.com/premake 
 
 Additionaly for Unit Tests or use of Test Unit Scripts
 http://sourceforge.net/apps/mediawiki/cppunit/
@@ -48,8 +47,8 @@ are deleted.
 
 Building Makefiles or IDE projects.
 -----------------------------------
-OOLUA's source and header files can added to your project or be compiled as a static library.
-To compile as a static library or to run the UnitTests, Premake version 4 is the recommended 
+OOLua's source and header files can added to your project or be compiled as a static library.
+To compile as a static library or to run the UnitTests, Premake version 4.4 is the recommended 
 method to generate make files/IDE projects. This can either be accomplish using the following 
 details or using the pre-existing bash or bat files( see Compile Scripts). 
 
@@ -80,22 +79,8 @@ windows is required
 
     * 2005
     * 2008
+    * 2010
 
-Visual Studio 2010
-
-Visual Studio 2010 (vs10) is not currently supported by premake yet if you have vs10 installed 
-you can run the following command, it will generate vs9 projects and update them using the vs10 
-command line tool.
-
-premake4 vs2010
-
-As vs10 adds files which have not been created directly by premake, a specific clean operation has 
-been added to the premake script.
-
-premake4 cleanVS10
-
-Scripts to build a local install, build and run unit test etc. have been added for vs10 in the 
-script director
 
 ==CodeBlocks==
 
@@ -118,8 +103,16 @@ OOLUA_RUNTIME_CHECKS_ENABLED 	1 	Checks that a type being pulled off the stack i
                                     created by OOLua
 OOLUA_STD_STRING_IS_INTEGRAL	1	If 1 Allows std::string to be a parameter or a return type for a function.
                                     NOTE: This is always by value.
-OOLUA_SAFE_ID_COMPARE           1	If 1 then checks id lengths and if the same compares with a memcmp.
-                                    If 0 compares the address' of the id strings
+
+OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA
+                                1   When set to one, everytime a userdata is encountered and it is expected to
+                                    have been created by OOLua it is checked and an error occurs if it was not.
+                                    
+OOLUA_USERDATA_OPTIMISATION     1   Userdata optimisation which checks for a magic cookie to try and ensure it 
+                                    was created by OOLua, by default this is on when userdata checking is on. 
+                                    Turning this off by setting it to zero will use a slower yet fully correct
+                                    method.
+
 OOLUA_USE_EXCEPTIONS	        0	If 1 Throws exceptions from C++ code. This could be the return 
                                     of a pcall when pulling an incorrect type of the stack if.
                                     See [Error_Note]
