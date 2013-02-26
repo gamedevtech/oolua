@@ -58,14 +58,13 @@ namespace OOLUA
 		template<typename T>struct garbage_collect;
 		template<typename T>int set_methods(lua_State*  l);
 		template<typename T>int set_const_methods(lua_State*   l,int none_const_methods,int none_const_mt);
-        template<typename T, bool IsAbstract>struct set_create_function;
+
         template<typename T,typename B>struct Add_base;
         template<typename T,typename TL, int index,typename B>struct Register_base;
 		template<typename T>int set_type_top_to_none_const(lua_State *  l);
 		
 		template<typename T,int HasNoPublicDestructor>struct set_delete_function;
 		template<typename T,bool HasNoPublicDestructor>struct set_owner_function;
-		
 		template<typename T, bool IsAbstractOrNoConstructors>struct set_create_function;
 		
 		void set_function_in_table_with_upvalue(lua_State* l, char const * func_name, lua_CFunction func
