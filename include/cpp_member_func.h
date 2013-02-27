@@ -275,6 +275,8 @@ namespace OOLUA
 		struct default_traits_caller;
 		template<typename func_type, typename type = func_type>
 		struct default_traits_const_caller;
+		template<typename func_type,typename type = func_type>
+		struct default_c_traits_caller;
 	}
 }
 
@@ -312,6 +314,18 @@ namespace OOLUA \
 				return OOLUA::INTERNAL::lua_return_count<typename Type_list<R OOLUA_RETURNS_##num >::type> ::out; \
 			} \
 		}; \
+		template <typename return_type, OOLUA_USES_PARAMS_##num typename func_type> \
+		struct default_c_traits_caller<return_type (*) (OOLUA_FUNCTION_PARAMS_##num),func_type> \
+		{ \
+			typedef OOLUA::INTERNAL::return_type_traits<return_type > R; \
+			static int call (lua_State* l, func_type fptr) \
+			{ \
+				OOLUA_PARAMS_T_INTERNAL_##num \
+				OOLUA::INTERNAL::Proxy_none_member_caller< R, LVD::is_void<return_type >::value >:: template call<OOLUA_TPARAMS_##num func_type>(l,fptr OOLUA_PPARAMS_##num); \
+				OOLUA_BACK_INTERNAL_ ##num \
+				return OOLUA::INTERNAL::lua_return_count<typename Type_list<R >::type> ::out; \
+			} \
+		};\
 	} \
 }
 
@@ -325,6 +339,9 @@ OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(5)
 OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(6)
 OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(7)
 OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(8)
+
+
+
 
 
 namespace OOLUA
@@ -341,6 +358,12 @@ namespace OOLUA
 		{
 			return default_traits_const_caller<func_type>::call(l,this_,mfptr);
 		}
+		
+		template<typename func_type>
+		int proxy_c_function_with_default_traits(lua_State* l,func_type fptr)
+		{
+			return default_c_traits_caller<func_type>::call(l,fptr);
+		}
 	}
 }
 
@@ -356,5 +379,7 @@ int Name(lua_State* l)const \
 	return OOLUA::INTERNAL::proxy_const_member_function_with_default_traits(l, m_this, &class_::Name); \
 }
 
+#define OOLUA_DEDUCE_C_FUNC(Name) \
+	return OOLUA::INTERNAL::proxy_c_function_with_default_traits(l,Name);
 
 #endif 
