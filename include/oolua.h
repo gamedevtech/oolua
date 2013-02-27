@@ -58,7 +58,7 @@
 #	include "cpp_constructor.h"
 #	include "oolua_va_args.h"
 
-//#	define OOLUA_WORK_DSL
+#	define OOLUA_WORK_DSL
 #	include "work_dsl.h"
 
 namespace OOLUA

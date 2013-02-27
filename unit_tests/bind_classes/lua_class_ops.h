@@ -4,6 +4,7 @@
 #include "cpp_class_ops.h"
 #include "oolua.h"
 
+#ifndef OOLUA_WORK_DSL
 
 OOLUA_CLASS_NO_BASES(Class_ops)
 	OOLUA_TYPEDEFS
@@ -19,5 +20,22 @@ OOLUA_CLASS_NO_BASES(Class_ops)
 	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 OOLUA_CLASS_END
 
+#else
+OOLUA_PROXY(Class_ops)
+	OOLUA_TAGS(
+		Equal_op,
+		Less_op,
+		Less_equal_op,
+		Add_op,
+		Sub_op,
+		Mul_op,
+		Div_op
+	)
+	OOLUA_CTORS()
+	OOLUA_MFUNC_CONST(geti)
+OOLUA_PROXY_END
+
+
+#endif
 
 #endif

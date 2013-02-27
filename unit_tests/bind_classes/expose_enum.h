@@ -4,6 +4,8 @@
 #include "oolua.h"
 #include "cpp_enum.h"
 
+#ifndef OOLUA_WORK_DSL
+
 OOLUA_PROXY_CLASS(Enums)
 	OOLUA_TYPEDEFS Register_class_enums OOLUA_END_TYPES
 	OOLUA_CONSTRUCTORS_BEGIN
@@ -16,5 +18,24 @@ OOLUA_PROXY_CLASS(Enums)
 	OOLUA_MEM_FUNC(void,set_enum,Enums::COLOUR)
 	OOLUA_MEM_FUNC(Enums::COLOUR,get_enum)
 OOLUA_CLASS_END
+
+#else
+
+OOLUA_PROXY(Enums)
+	OOLUA_TAGS(
+		Register_class_enums
+	)
+	OOLUA_CTORS(
+		OOLUA_CTOR(Enums::COLOUR)
+	)
+	OOLUA_ENUMS(
+		OOLUA_ENUM(GREEN)
+		OOLUA_ENUM(INVALID)
+	)
+	OOLUA_MFUNC(set_enum)
+	OOLUA_MFUNC(get_enum)
+OOLUA_PROXY_END
+
+#endif
 
 #endif

@@ -8,6 +8,7 @@
 //This is required as a vector has more than one template type
 //and the commas in the template confuse a macro.
 typedef std::vector<int> vector_int;
+#ifndef OOLUA_WORK_DSL
 
 OOLUA_CLASS_NO_BASES(vector_int)
 	OOLUA_NO_TYPEDEFS
@@ -17,5 +18,16 @@ OOLUA_CLASS_NO_BASES(vector_int)
 	OOLUA_MEM_FUNC_0_CONST(vector_int::size_type, size)
 OOLUA_CLASS_END
 
+#else
+
+OOLUA_PROXY(vector_int)
+	OOLUA_TAGS()
+	OOLUA_CTORS()
+	OOLUA_MFUNC(push_back)
+	OOLUA_MFUNC(pop_back)
+	OOLUA_MFUNC_CONST(size)
+OOLUA_PROXY_END
+
+#endif
 
 #endif

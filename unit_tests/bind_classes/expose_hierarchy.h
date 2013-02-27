@@ -5,6 +5,7 @@
 #include "cpp_hierarchy.h"
 
 #define OOLUA_TEST_VA_ARGS 1
+#ifndef OOLUA_WORK_DSL
 
 #if OOLUA_TEST_VA_ARGS == 1
 	OOLUA_PROXY_CLASS(Abstract1)
@@ -20,8 +21,16 @@
 	OOLUA_CLASS_END
 #endif
 
+#else
+	OOLUA_PROXY(Abstract1)
+		OOLUA_TAGS( Abstract )
+		OOLUA_MFUNC(virtualVoidParam3Int)
+		OOLUA_MFUNC(func1)
+	OOLUA_PROXY_END
+#endif
 
 
+#ifndef OOLUA_WORK_DSL
 #if OOLUA_TEST_VA_ARGS == 1
 	OOLUA_PROXY_CLASS(Abstract2)
 		OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
@@ -36,8 +45,15 @@
 	OOLUA_CLASS_END
 #endif
 
+#else
+	OOLUA_PROXY(Abstract2)
+		OOLUA_TAGS( Abstract )
+		OOLUA_MFUNC(func2_1)
+		OOLUA_MFUNC_CONST(constVirtualFunction)
+	OOLUA_PROXY_END
+#endif
 
-
+#ifndef OOLUA_WORK_DSL
 #if OOLUA_TEST_VA_ARGS == 1
 	OOLUA_PROXY_CLASS(Abstract3)
 		OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
@@ -49,8 +65,14 @@
 		OOLUA_MEM_FUNC_0(void,func3_1)
 	OOLUA_CLASS_END
 #endif
+#else
+	OOLUA_PROXY(Abstract3)
+		OOLUA_TAGS( Abstract )
+		OOLUA_MFUNC(func3_1)
+	OOLUA_PROXY_END
+#endif
 
-
+#ifndef OOLUA_WORK_DSL
 #if OOLUA_TEST_VA_ARGS == 1
 	OOLUA_PROXY_CLASS(Derived1Abstract1,Abstract1)
 		OOLUA_NO_TYPEDEFS
@@ -67,6 +89,14 @@
 	OOLUA_CLASS_END
 #endif
 
+#else
+	OOLUA_PROXY(Derived1Abstract1,Abstract1)
+		OOLUA_TAGS()
+		OOLUA_CTORS()
+	OOLUA_PROXY_END
+#endif
+
+#ifndef OOLUA_WORK_DSL
 #if OOLUA_TEST_VA_ARGS == 1
 	OOLUA_CLASS_WITH_BASES(TwoAbstractBases,Abstract1,Abstract2)
 		OOLUA_NO_TYPEDEFS
@@ -83,6 +113,15 @@
 	OOLUA_CLASS_END
 #endif
 
+#else
+	OOLUA_PROXY(TwoAbstractBases,Abstract1,Abstract2)
+		OOLUA_TAGS()
+		OOLUA_CTORS()
+		OOLUA_MFUNC_CONST(constVirtualFunction)
+	OOLUA_PROXY_END
+#endif
+
+#ifndef OOLUA_WORK_DSL
 #if OOLUA_TEST_VA_ARGS == 1
 	OOLUA_PROXY_CLASS(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
 		OOLUA_NO_TYPEDEFS
@@ -97,6 +136,14 @@
 		OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 	OOLUA_CLASS_END
 #endif
+
+#else
+	OOLUA_PROXY(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
+		OOLUA_TAGS()
+		OOLUA_CTORS()
+	OOLUA_PROXY_END
+#endif
+
 
 namespace BASE_HELPERS
 {

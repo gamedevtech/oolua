@@ -4,6 +4,8 @@
 #include "oolua.h"
 #include "cpp_integral_function_params.h"
 
+#ifndef OOLUA_WORK_DSL
+
 OOLUA_CLASS_NO_BASES(Int_params)
 	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
 	OOLUA_MEM_FUNC_1(void, int_,int)
@@ -16,5 +18,20 @@ OOLUA_CLASS_NO_BASES(Int_params)
 	OOLUA_MEM_FUNC_1(void, bool_,bool)
 OOLUA_CLASS_END
 
+#else
+
+OOLUA_PROXY(Int_params)
+	OOLUA_TAGS( Abstract )
+	OOLUA_MFUNC(int_)
+	OOLUA_MFUNC(int_ref)
+	OOLUA_MFUNC(int_ptr)
+	OOLUA_MFUNC(int_const)
+	OOLUA_MFUNC(int_const_ref)
+	OOLUA_MFUNC(int_const_ptr)
+	OOLUA_MFUNC(int_const_ptr_const)
+	OOLUA_MFUNC(bool_)
+OOLUA_PROXY_END
+
+#endif
 
 #endif

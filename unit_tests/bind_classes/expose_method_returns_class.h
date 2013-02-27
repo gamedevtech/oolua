@@ -5,6 +5,7 @@
 #	include "cpp_method_returns_class.h"
 #	include "expose_stub_classes.h"
 
+#ifndef OOLUA_WORK_DSL
 OOLUA_CLASS_NO_BASES(Method_returns_class)
 	OOLUA_NO_TYPEDEFS
 	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
@@ -18,6 +19,21 @@ OOLUA_CLASS_NO_BASES(Method_returns_class)
 	OOLUA_MEM_FUNC_0(Return_double*,returns_null)
 OOLUA_CLASS_END
 
+#else
+OOLUA_PROXY(Method_returns_class)
+	OOLUA_TAGS()
+	OOLUA_CTORS()
+	OOLUA_MFUNC(ref)
+	OOLUA_MFUNC(ref_const)
+	OOLUA_MFUNC(ptr)
+	OOLUA_MFUNC(ptr_const)
+	OOLUA_MFUNC(ref_ptr_const)
+	OOLUA_MFUNC(ref_const_ptr_const)
+	OOLUA_MFUNC(return_stack_instance) 
+	OOLUA_MFUNC(returns_null)
+OOLUA_PROXY_END
+
+#endif
 
 
 #endif
