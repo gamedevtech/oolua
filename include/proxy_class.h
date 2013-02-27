@@ -290,7 +290,7 @@ public:
 //alias for OOLUA_TYPEDEFS_END to be backward compatible (deprecated)
 #define OOLUA_END_TYPES OOLUA_TYPEDEFS_END
 
-#define OOLUA_ENUMS \
+#define OOLUA_ENUMS_START \
 static void oolua_enums(lua_State * l)\
 {\
 	Lua_table meth(l,Proxy_class<class_>::class_name);\

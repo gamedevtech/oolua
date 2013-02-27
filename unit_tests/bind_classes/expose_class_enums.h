@@ -11,7 +11,7 @@ the class type is registered
 */
 OOLUA_PROXY_CLASS(ClassWithEnums)
 	OOLUA_TYPEDEFS No_public_constructors, Register_class_enums OOLUA_END_TYPES
-	OOLUA_ENUMS
+	OOLUA_ENUMS_START
 		OOLUA_ENUM_ENTRY(UNNAMED_ENUM_0)
 		OOLUA_ENUM_ENTRY(UNNAMED_ENUM_1)
 		OOLUA_ENUM_ENTRY(ENUM_0)
