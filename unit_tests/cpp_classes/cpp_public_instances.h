@@ -3,7 +3,7 @@
 
 #include "cpp_stub_classes.h"
 
-
+/*[CppPublicMembers]*/
 class Public_variables
 {
 public:
@@ -24,6 +24,7 @@ public:
 	Public_variables& operator = (Public_variables const& );
 	
 };
+/*[CppPublicMembers]*/
 
 
 

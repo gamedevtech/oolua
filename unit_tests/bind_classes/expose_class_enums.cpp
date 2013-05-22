@@ -1,3 +1,3 @@
 #include "expose_class_enums.h"
 
-EXPORT_OOLUA_NO_FUNCTIONS(ClassWithEnums)
+OOLUA_EXPORT_NO_FUNCTIONS(ClassWithEnums)

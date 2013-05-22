@@ -34,7 +34,7 @@ namespace
 		std::string func_name = functionReturnsInputs(lua,1);
 		INPUT result(0);
 		lua->call(func_name,input);
-		OOLUA::pull2cpp(*lua,result);
+		OOLUA::pull(*lua,result);
 		return result;
 	}
 }
@@ -59,6 +59,7 @@ class Exchange_lua2cpp : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(pullTable_nilOnStack_tableIsInValid);
 	CPPUNIT_TEST(pullTable_luaTableOnStack_pullReturnsTrue);
 	CPPUNIT_TEST(pullTableRef_nilOnStack_tableIsInValid);
+	CPPUNIT_TEST(pullTableRef_validTableOnStack_tableIsValid);
 	CPPUNIT_TEST(pullLuaFunction_nilOnStack_functionIsInValid);
 	CPPUNIT_TEST_SUITE_END();
 
@@ -138,7 +139,7 @@ public:
 		Stub1 input;
 		Stub1* result(0);
 		m_lua->call(func_name,&input);
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(&input, result);
 	}
 	void pullClasses_functionReturnsTheTwoDifferentInputtedClasses_pointersComparesEqualToInputs()
@@ -153,8 +154,8 @@ public:
 
 		m_lua->call(func_name,&input1,&input2);
 
-		OOLUA::pull2cpp(*m_lua,result2);
-		OOLUA::pull2cpp(*m_lua,result1);
+		OOLUA::pull(*m_lua,result2);
+		OOLUA::pull(*m_lua,result1);
 		CPPUNIT_ASSERT_EQUAL(&input2, result2);
 		CPPUNIT_ASSERT_EQUAL(&input1, result1);
 
@@ -168,9 +169,9 @@ public:
 		int result2(0);
 
 		m_lua->call(func_name,input1,input2);
-		OOLUA::pull2cpp(*m_lua,result2);
+		OOLUA::pull(*m_lua,result2);
 		CPPUNIT_ASSERT_EQUAL_MESSAGE("input2 is incorrect",input2, result2);
-		OOLUA::pull2cpp(*m_lua,result1);
+		OOLUA::pull(*m_lua,result1);
 		CPPUNIT_ASSERT_EQUAL_MESSAGE("input1 is incorrect",input1, result1);
 	}
 
@@ -191,6 +192,7 @@ public:
 			"end");
 		m_lua->call("func");
 	}
+	/**[FunctionReferencePullSetup]*/
 	void callFunctionThatReturnsFunction()
 	{
 		m_lua->run_chunk(
@@ -200,36 +202,39 @@ public:
 			"end");
 		m_lua->call("func");
 	}	
+	/**[FunctionReferencePullSetup]*/
 	
 	void pullTable_luaTableOnStack_tableIsValid()
 	{
-		OOLUA::Lua_table table;
+		OOLUA::Table table;
 		callFunctionThatReturnsTable();
-		OOLUA::pull2cpp(*m_lua,table);
+		OOLUA::pull(*m_lua,table);
 		CPPUNIT_ASSERT_EQUAL(true, table.valid() );
 	}
 	void pullTable_luaTableOnStack_pullReturnsTrue()
 	{
-		OOLUA::Lua_table table;
+		OOLUA::Table table;
 		callFunctionThatReturnsTable();
-		bool result = OOLUA::pull2cpp(*m_lua,table);
+		bool result = OOLUA::pull(*m_lua,table);
 		CPPUNIT_ASSERT_EQUAL(true, result );
 	}
+	/**[FunctionReferencePull]*/
 	void pullLuaFunction_luaFunctionOnStack_functionIsValid()
 	{
 		OOLUA::Lua_func_ref lua_func;
 		callFunctionThatReturnsFunction();
-		OOLUA::pull2cpp(*m_lua,lua_func);
+		OOLUA::pull(*m_lua,lua_func);
 		CPPUNIT_ASSERT_EQUAL(true, lua_func.valid() );
 	}
+	/**[FunctionReferencePull]*/
 
 	
 	void pullTable_nilOnStack_tableIsInValid()
 	{
 		//start with a valid table
-		OOLUA::Lua_table table( OOLUA::new_table(*m_lua) );
+		OOLUA::Table table( OOLUA::new_table(*m_lua) );
 		callFunctionThatReturnsNil();
-		OOLUA::pull2cpp(*m_lua,table);
+		OOLUA::pull(*m_lua,table);
 		CPPUNIT_ASSERT_EQUAL(false, table.valid() );
 	}
 	void pullTableRef_nilOnStack_tableIsInValid()
@@ -238,22 +243,32 @@ public:
 		//start with a valid table
 		{
 			callFunctionThatReturnsTable();
-			OOLUA::pull2cpp(*m_lua,table);
+			OOLUA::pull(*m_lua,table);
 		}
 		callFunctionThatReturnsNil();
-		OOLUA::pull2cpp(*m_lua,table);
+		OOLUA::pull(*m_lua,table);
 		CPPUNIT_ASSERT_EQUAL(false, table.valid() );
 	}
+	/**[PullingTableRefOffTheStack]*/
+	void pullTableRef_validTableOnStack_tableIsValid()
+	{
+		OOLUA::Lua_table_ref table;
+		lua_createtable(*m_lua,0,0);
+		OOLUA::pull(*m_lua,table);
+		CPPUNIT_ASSERT_EQUAL(true, table.valid() );
+	}
+	/**[PullingTableRefOffTheStack]*/
+	
 	void pullLuaFunction_nilOnStack_functionIsInValid()
 	{
 		OOLUA::Lua_func_ref lua_func;
 		//start with a valid function
 		{
 			callFunctionThatReturnsFunction();
-			OOLUA::pull2cpp(*m_lua,lua_func);
+			OOLUA::pull(*m_lua,lua_func);
 		}
 		callFunctionThatReturnsNil();
-		OOLUA::pull2cpp(*m_lua,lua_func);
+		OOLUA::pull(*m_lua,lua_func);
 		CPPUNIT_ASSERT_EQUAL(false, lua_func.valid() );
 	}
 };

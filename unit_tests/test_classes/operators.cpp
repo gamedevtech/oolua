@@ -10,14 +10,14 @@ namespace
 	bool get_result(OOLUA::Script* lua)
 	{
 		bool result;
-		OOLUA::pull2cpp(*lua,result);
+		OOLUA::pull(*lua,result);
 		return result;
 	}
 	template<typename T>
 	std::auto_ptr<T> get_class(OOLUA::Script* lua)
 	{
 		OOLUA::cpp_acquire_ptr<T*>  result;
-		OOLUA::pull2cpp(*lua,result);
+		OOLUA::pull(*lua,result);
 		return std::auto_ptr<T>(result.m_ptr);
 	}
 	template<typename T,typename T1>
@@ -120,9 +120,9 @@ public:
 	{
 		Class_ops left(60001);
 		Class_ops right(left);
-		OOLUA::push2lua(*m_lua,&left);
+		OOLUA::push(*m_lua,&left);
 		Class_ops * l;
-		OOLUA::pull2cpp(*m_lua,l);
+		OOLUA::pull(*m_lua,l);
 		operator_script(m_lua,left,right,">=");
 		bool result = get_result(m_lua);
 		CPPUNIT_ASSERT_EQUAL(true, result );
@@ -131,9 +131,9 @@ public:
 	{
 		Class_ops left(60001);
 		Class_ops right(left);
-		OOLUA::push2lua(*m_lua,&right);
+		OOLUA::push(*m_lua,&right);
 		Class_ops * l;
-		OOLUA::pull2cpp(*m_lua,l);
+		OOLUA::pull(*m_lua,l);
 		operator_script(m_lua,left,right,">=");
 		bool result = get_result(m_lua);
 		CPPUNIT_ASSERT_EQUAL(true, result );
@@ -143,12 +143,12 @@ public:
 	{
 		Class_ops left(60001);
 		Class_ops right(left);
-		OOLUA::push2lua(*m_lua,&left);
+		OOLUA::push(*m_lua,&left);
 		Class_ops * l;
-		OOLUA::pull2cpp(*m_lua,l);
+		OOLUA::pull(*m_lua,l);
 
-		OOLUA::push2lua(*m_lua,&right);
-		OOLUA::pull2cpp(*m_lua,l);
+		OOLUA::push(*m_lua,&right);
+		OOLUA::pull(*m_lua,l);
 		operator_script(m_lua,left,right,">=");
 		bool result = get_result(m_lua);
 		CPPUNIT_ASSERT_EQUAL(true, result );
@@ -174,11 +174,11 @@ public:
 	{
 		Class_ops left(466666);
 		Class_ops right(left);
-		OOLUA::push2lua(*m_lua,&left);
+		OOLUA::push(*m_lua,&left);
 		Class_ops * l;
-		OOLUA::pull2cpp(*m_lua,l);
-		OOLUA::push2lua(*m_lua,&right);
-		OOLUA::pull2cpp(*m_lua,l);
+		OOLUA::pull(*m_lua,l);
+		OOLUA::push(*m_lua,&right);
+		OOLUA::pull(*m_lua,l);
 
 		operator_script(m_lua,left,right,"==");
 		bool result = get_result(m_lua);
@@ -188,9 +188,9 @@ public:
 	{
 		Class_ops left(466666);
 		Class_ops right(left);
-		OOLUA::push2lua(*m_lua,&left);
+		OOLUA::push(*m_lua,&left);
 		Class_ops * l;
-		OOLUA::pull2cpp(*m_lua,l);
+		OOLUA::pull(*m_lua,l);
 
 		operator_script(m_lua,left,right,"==");
 		bool result = get_result(m_lua);
@@ -205,9 +205,9 @@ public:
 						" return 0 "
 						"end "
 						);*/
-		OOLUA::push2lua(*m_lua,&right);
+		OOLUA::push(*m_lua,&right);
 		Class_ops * l;
-		OOLUA::pull2cpp(*m_lua,l);
+		OOLUA::pull(*m_lua,l);
 
 		operator_script(m_lua,left,right,"==");
 		bool result = get_result(m_lua);
@@ -357,7 +357,7 @@ public:
 		int rhs(1);
 		int result(0);
 		operator_script(m_lua,lhs,rhs,"-");
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL( lhs-rhs,  result );
 	}
 

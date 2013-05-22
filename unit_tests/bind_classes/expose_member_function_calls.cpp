@@ -1,6 +1,6 @@
 #include "expose_member_function_calls.h"
-
-EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Function_calls
+/*[ProxyFunctionCallsExport]*/
+OOLUA_EXPORT_FUNCTIONS(Function_calls
 								   ,func
 								   ,abstract_func_0
 								   ,abstract_func_1
@@ -10,4 +10,5 @@ EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Function_calls
 								   ,returns_char_ptr
 								   ,returns_const_char_ptr)
 
-EXPORT_OOLUA_FUNCTIONS_1_CONST(Function_calls,lua_state)
+OOLUA_EXPORT_FUNCTIONS_CONST(Function_calls,lua_state)
+/*[ProxyFunctionCallsExport]*/

@@ -10,7 +10,7 @@ struct lua_State;
 
 namespace OOLUA
 {
-
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 		template<typename Raw,typename TypeMaybeConst>
@@ -30,6 +30,7 @@ namespace OOLUA
 		}
 		
 	}
+	/**\endcond*/
 }
 
 #endif

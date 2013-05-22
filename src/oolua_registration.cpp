@@ -2,6 +2,7 @@
 
 namespace OOLUA
 {
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 		int get_oolua_module(lua_State* L)
@@ -80,5 +81,6 @@ namespace OOLUA
 		}
 		
 	}
+	/**\endcond*/
 }
 

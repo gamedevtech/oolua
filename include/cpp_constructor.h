@@ -6,9 +6,7 @@
 ///  @remarks Warning this file was generated, edits to it will not persist if 
 ///  the file is regenerated.
 ///  @author Liam Devine
-///  @email
-///  See http://www.liamdevine.co.uk for contact details.
-///  @licence 
+///  \copyright 
 ///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 #	include "lua_includes.h"

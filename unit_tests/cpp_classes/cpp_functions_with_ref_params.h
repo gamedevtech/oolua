@@ -29,11 +29,11 @@ public:
 
 struct TableMemberFunction
 {
-	void function_which_takes_a_table(OOLUA::Lua_table t)
+	void function_which_takes_a_table(OOLUA::Table t)
 	{
 		t.set_value(1,2);
 	}
-	bool function_takes_table_returns_result_of_valid(OOLUA::Lua_table t)
+	bool function_takes_table_returns_result_of_valid(OOLUA::Table t)
 	{
 		return t.valid();
 	}

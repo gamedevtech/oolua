@@ -16,7 +16,7 @@ namespace
 		return ss.str();
 	}
 	template<typename T>
-	void table_containing_key_value_pair(OOLUA::Script * lvm,OOLUA::Lua_table* t,std::string const& key,T& value)
+	void table_containing_key_value_pair(OOLUA::Script * lvm,OOLUA::Table* t,std::string const& key,T& value)
 	{
 		lvm->run_chunk(
 			std::string("func = function() ")
@@ -26,13 +26,13 @@ namespace
 			+std::string("end") );
 
 		lvm->call("func");
-		OOLUA::pull2cpp(*lvm,*t);
+		OOLUA::pull(*lvm,*t);
 	}
-	void assign_valid_table(OOLUA::Script* s,OOLUA::Lua_table& t)
+	void assign_valid_table(OOLUA::Script* s,OOLUA::Table& t)
 	{
 		s->register_class<Stub1>();
 		lua_getfield(*s, LUA_REGISTRYINDEX,OOLUA::Proxy_class<Stub1>::class_name);
-		OOLUA::pull2cpp(*s,t);
+		OOLUA::pull(*s,t);
 	}
 	
 	int stackNotEmptyCalled = 0;
@@ -127,7 +127,7 @@ class Table : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
-	OOLUA::Lua_table* table;
+	OOLUA::Table* table;
 public:
     Table():m_lua(0),table(0){}
     Table(Table const&);
@@ -135,7 +135,7 @@ public:
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
-		table = new OOLUA::Lua_table;
+		table = new OOLUA::Table;
 	}
 	void tearDown()
 	{
@@ -158,7 +158,7 @@ public:
 				"return t "
 			"end");
 		m_lua->call("func");
-		OOLUA::pull2cpp(*m_lua,*table);
+		OOLUA::pull(*m_lua,*table);
 		int value(0);
 		CPPUNIT_ASSERT_EQUAL(false, table->safe_at("key",value));
 	}
@@ -166,7 +166,7 @@ public:
 	{
 		OOLUA::new_table(*m_lua,*table);
 		OOLUA::Script s;
-		OOLUA::Lua_table t;
+		OOLUA::Table t;
 		OOLUA::new_table(s,t);
 		int value(0);
 		CPPUNIT_ASSERT_EQUAL(false, table->safe_at(t,value));
@@ -225,7 +225,7 @@ public:
 	void valid_constructedWithValidLuaPointAndValidGlobalName_resultIsTrue()
 	{
 		m_lua->register_class<Stub1>();
-		OOLUA::Lua_table t(*m_lua,OOLUA::Proxy_class<Stub1>::class_name);
+		OOLUA::Table t(*m_lua,OOLUA::Proxy_class<Stub1>::class_name);
 		CPPUNIT_ASSERT_EQUAL(true, t.valid() );
 	}
 	void valid_assignedNullLuaPointer_resultIsFalse()
@@ -278,40 +278,40 @@ public:
 	}
 	void newTable_fromCplusplus_validReturnsTrue()
 	{
-		OOLUA::Lua_table t;
+		OOLUA::Table t;
 		OOLUA::new_table(*m_lua,t);
 		CPPUNIT_ASSERT_EQUAL(true,t.valid() );
 	}
 	void newTable_constructAndCheckStack_afterCallStackIsEmpty()
 	{
-		OOLUA::Lua_table t;
+		OOLUA::Table t;
 		OOLUA::new_table(*m_lua,t);
 		int stackSize = lua_gettop(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(0, stackSize );
 	}
 	void copyConstruct_usingNewTable_orginalIsValid()
 	{
-		OOLUA::Lua_table orignal;
+		OOLUA::Table orignal;
 		OOLUA::new_table(*m_lua,orignal);
-		OOLUA::Lua_table copy(orignal);
+		OOLUA::Table copy(orignal);
 
 		CPPUNIT_ASSERT_EQUAL(true, orignal.valid() );
 	}
 	
 	void copyConstruct_usingNewTable_copyIsValid()
 	{
-		OOLUA::Lua_table copy(OOLUA::new_table(*m_lua));
+		OOLUA::Table copy(OOLUA::new_table(*m_lua));
 		CPPUNIT_ASSERT_EQUAL(true, copy.valid() );
 	}
 	void copyConstruct_usingInvalidTable_copyIsNotValid()
 	{
-		OOLUA::Lua_table invalid;
-		OOLUA::Lua_table copy(invalid);
+		OOLUA::Table invalid;
+		OOLUA::Table copy(invalid);
 		CPPUNIT_ASSERT_EQUAL(false, copy.valid() );
 	}
 	void tableSetValue_tableIsOnTop_storedValueIsCorrect()
 	{
-		OOLUA::Lua_table t;
+		OOLUA::Table t;
 		OOLUA::new_table(*m_lua,t);
 		t.push_on_stack(*m_lua);
 		OOLUA::table_set_value(*m_lua,-1,"a",0);
@@ -323,16 +323,17 @@ public:
 
 	void tableSetValue_tableIsOnTop_afterCallStackHasOneEntry()
 	{
-		OOLUA::Lua_table t;
+		OOLUA::Table t;
 		OOLUA::new_table(*m_lua,t);
 		t.push_on_stack(*m_lua);
 		OOLUA::table_set_value(*m_lua,-1,"a",1);
 		int stackSize = lua_gettop(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(1, stackSize );
 	}
+	/**[OOLuaTableAtExample]*/
 	void setValue_valueSetInLua_cppSideRepresentationHasChange()
 	{
-		OOLUA::Lua_table t;
+		OOLUA::Table t;
 		OOLUA::new_table(*m_lua,t);
 		
 		m_lua->run_chunk("func = function(t) t[\"a\"]=1; end");
@@ -342,6 +343,7 @@ public:
 		t.at("a",storedValue);
 		CPPUNIT_ASSERT_EQUAL(1, storedValue );
 	}
+	/**[OOLuaTableAtExample]*/
 	
 	void table_reference_is_unquie_for_the_instance()
 	{		
@@ -362,7 +364,7 @@ public:
 	{
 		m_lua->register_class<TableMemberFunction>();
 		
-		OOLUA::Lua_table table_;
+		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
 		TableMemberFunction obj;
 		
@@ -377,8 +379,8 @@ public:
 		m_lua->run_chunk("func = function() local t={} return t end");
 		m_lua->call("func");
 		OOLUA::Lua_table_ref ref;
-		OOLUA::pull2cpp(*m_lua,ref);
-		OOLUA::Lua_table t(ref);
+		OOLUA::pull(*m_lua,ref);
+		OOLUA::Table t(ref);
 		
 	}
 	void callFunction_memberFunctiontakesTableYetPassedNilReturnsValidityOfTable_returnsFalse()
@@ -393,7 +395,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(true, res );
 		m_lua->call("func",&obj);
 		bool tableIsValid(true);
-		OOLUA::pull2cpp(*m_lua,tableIsValid);
+		OOLUA::pull(*m_lua,tableIsValid);
 		CPPUNIT_ASSERT_EQUAL(false, tableIsValid);
 	}
 	
@@ -431,7 +433,7 @@ public:
 	 */
 	void bindScript_tableReferenceIsAlreadyValid_validReturnsFalse()
 	{
-		OOLUA::Lua_table table_;
+		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
 		OOLUA::Script another_lua_instance;
 		table_.bind_script(another_lua_instance);
@@ -439,7 +441,7 @@ public:
 	}
 	void bindScript_tableReferenceIsAlreadyBoundWithThisState_validReturnsTrue()
 	{
-		OOLUA::Lua_table table_;
+		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
 		table_.bind_script(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(true,table_.valid());
@@ -447,9 +449,9 @@ public:
 	
 	void traverse_stackIsNotEmpty_callBackIsCalled()
 	{
-		OOLUA::push2lua(*m_lua,1);
+		OOLUA::push(*m_lua,1);
 		
-		OOLUA::Lua_table table_;
+		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
 		table_.set_value(1, 1);
 		stackNotEmptyCalled = 0;
@@ -459,8 +461,8 @@ public:
 	
 	void forEachKeyValue_stackIsNotEmpty_callBackIsCalled()
 	{
-		OOLUA::push2lua(*m_lua,1);
-		OOLUA::Lua_table table_;
+		OOLUA::push(*m_lua,1);
+		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
 		table_.set_value(1, 1);
 		
@@ -471,8 +473,8 @@ public:
 	
 	void ipairs_stackIsNotEmptyTableHasOneEntry_IterationCountIsOne()
 	{
-		OOLUA::push2lua(*m_lua,1);
-		OOLUA::Lua_table table_;
+		OOLUA::push(*m_lua,1);
+		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
 		table_.set_value(1, 1);
 		
@@ -487,8 +489,8 @@ public:
 	
 	void ipairs_stackIsNotEmptyTableHasFiveEntry_IterationCountIsFive()
 	{
-		OOLUA::push2lua(*m_lua,1);
-		OOLUA::Lua_table table_;
+		OOLUA::push(*m_lua,1);
+		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
 		
 		for(int i=1;i<6;++i) table_.set_value(i, i);
@@ -504,8 +506,8 @@ public:
 	
 	void ipairs_stackHasOneEntryTableHasFiveEntry_afterIterationsStackCountIsOne()
 	{
-		OOLUA::push2lua(*m_lua,1);
-		OOLUA::Lua_table table_;
+		OOLUA::push(*m_lua,1);
+		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
 		
 		for(int i=1;i<6;++i) table_.set_value(i, i);

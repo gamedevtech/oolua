@@ -95,7 +95,7 @@ public:
 		OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud *>( lua_touserdata(*m_lua, -1) );
 		CPPUNIT_ASSERT_EQUAL(true,OOLUA::INTERNAL::userdata_is_to_be_gced(ud));
 		OOLUA::cpp_acquire_ptr<Return_double*> ret;
-		OOLUA::pull2cpp(*m_lua,ret);
+		OOLUA::pull(*m_lua,ret);
 		delete ret.m_ptr;
 		
 		
@@ -104,7 +104,7 @@ public:
 	{
 		generate_and_call_class_method("returns_null");
 		Return_double* returnPtr(0);
-		OOLUA::pull2cpp(*m_lua,returnPtr);
+		OOLUA::pull(*m_lua,returnPtr);
 		CPPUNIT_ASSERT_EQUAL((Return_double*)0,returnPtr);
 	}
 

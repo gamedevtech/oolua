@@ -4,23 +4,12 @@
 #	include "cpp_const_funcs.h"
 #	include "oolua.h"
 
-#ifndef OOLUA_WORK_DSL
-OOLUA_CLASS_NO_BASES(Constant)
-	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
-	OOLUA_MEM_FUNC_0_CONST(int,cpp_func_const)
-	OOLUA_MEM_FUNC_0(void,cpp_func)
-	OOLUA_MEM_FUNC_CONST_RENAME(renamedUsingVaArgs,int,function_to_test_rename_using_varags,int)
-OOLUA_CLASS_END
-
-#else
-
 OOLUA_PROXY(Constant)
 	OOLUA_TAGS(Abstract)
 	OOLUA_MFUNC_CONST(cpp_func_const)
 	OOLUA_MFUNC(cpp_func)
-	OOLUA_MFUNC_CONST_RENAME(renamedUsingVaArgs,function_to_test_rename_using_varags)
+//	OOLUA_MFUNC_CONST_RENAME(renamedUsingVaArgs,function_to_test_rename_using_varags)
+OOLUA_MFUNC_CONST(function_to_test_rename_using_varags,renamedUsingVaArgs)
 OOLUA_PROXY_END
-
-#endif
 
 #endif

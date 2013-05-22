@@ -16,6 +16,7 @@
 
 namespace OOLUA
 {
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 		typedef bool (*is_const_func_sig)(Lua_ud const* ud);
@@ -109,7 +110,7 @@ namespace OOLUA
 			T* p = class_from_index<T>(l,1);
 			lua_remove(l,1);
 			Owner own(No_change);
-			pull2cpp(l,own);
+			pull(l,own);
 			set_owner(l,p,own);
 			return 0;
 		}
@@ -292,6 +293,7 @@ namespace OOLUA
 
 
 	}
+	/**\endcond*/
 
 
 }

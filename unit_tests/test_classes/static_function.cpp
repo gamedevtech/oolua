@@ -8,14 +8,14 @@
 int returns_stack_count(lua_State* l)
 {
 	int top = lua_gettop(l);
-	OOLUA::push2lua(l,top);
+	OOLUA::push(l,top);
 	return 1;
 }
 
 int stack_top_type(lua_State* l)
 {
 	int top = lua_type(l, -1);
-	OOLUA::push2lua(l,top);
+	OOLUA::push(l,top);
 	return 1;
 }
 namespace 
@@ -25,12 +25,12 @@ namespace
 }
 int staticFunction_pushes0(lua_State* l)
 {
-	OOLUA::push2lua(l,static_func_base_return);
+	OOLUA::push(l,static_func_base_return);
 	return 1;
 }
 int staticFunction_pushes1(lua_State* l)
 {
-	OOLUA::push2lua(l,static_func_derived_return);
+	OOLUA::push(l,static_func_derived_return);
 	return 1;
 }
 
@@ -38,12 +38,12 @@ struct DerivedClassHasStaticFunction : public ClassHasStaticFunction
 {
 };
 
-OOLUA_PROXY_CLASS(DerivedClassHasStaticFunction,ClassHasStaticFunction)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
+OOLUA_PROXY(DerivedClassHasStaticFunction,ClassHasStaticFunction)
+	OOLUA_TAGS()
+	OOLUA_CTORS()
+OOLUA_PROXY_END
 
-EXPORT_OOLUA_NO_FUNCTIONS(DerivedClassHasStaticFunction)
+OOLUA_EXPORT_NO_FUNCTIONS(DerivedClassHasStaticFunction)
 
 class StaticFunction : public CppUnit::TestFixture 
 {
@@ -144,7 +144,7 @@ public:
 		ClassHasStaticFunction* obj = &stack;
 		m_lua->call("foo",obj);
 		int result(-1);
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(int(1),result); 
 	}
 	void cFunctionAddedToClassTable_calledAsStaticFunctionAndReturnsStackCountOnEntry_returnEqualsOne()
@@ -159,7 +159,7 @@ public:
 		
 		m_lua->call("foo");
 		int result(-1);
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(int(1),result); 
 	}
 	
@@ -177,7 +177,7 @@ public:
 		ClassHasStaticFunction* obj = &stack;
 		m_lua->call("foo",obj);
 		int result(-1);
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(int(LUA_TUSERDATA),result); 
 	}
 	void cFunctionAddedToClassTable_calledAsStaticFunctionAndReturnsStackTypeOfTop_returnEqualsTable()
@@ -193,7 +193,7 @@ public:
 		
 		m_lua->call("foo");
 		int result(-1);
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(int(LUA_TTABLE),result); 
 	}
 	
@@ -211,7 +211,7 @@ public:
 		ClassHasStaticFunction* obj = &stack;
 		m_lua->call("foo",obj);
 		int result(-1);
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(int(LUA_TNUMBER),result); 
 	}
 	void cFunctionAddedToClassTable_calledAsStaticFunctionWithFloatParamReturnsStackTypeOfTop_returnEqualsNumber()
@@ -226,7 +226,7 @@ public:
 		
 		m_lua->call("foo");
 		int result(-1);
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(int(LUA_TNUMBER),result); 
 	}
 	
@@ -266,7 +266,7 @@ public:
 		int input = 1;
 		m_lua->call("foo",obj,input);
 		int result(-1);
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(input,result); 
 	}
 	void staticFunction_registeredInBaseCalledInDerived_resultReturnsTrue()
@@ -311,7 +311,7 @@ public:
 		DerivedFromTwoAbstractBasesAndAbstract3 derived;
 		m_lua->call("foo",&derived);
 		int result;
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(static_func_derived_return, result);
 	}
 	void staticFunction_addedToBaseInLuaAndCalledFromDerivedClassName_callReturnsTrue()
@@ -349,7 +349,7 @@ public:
 						 "end ");
 		m_lua->call("foo");
 		int result;
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(int(1),result);
 	}
 
@@ -383,9 +383,6 @@ public:
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(StaticFunction);
-
-
-
 
 
 

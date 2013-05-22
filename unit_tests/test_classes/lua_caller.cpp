@@ -66,7 +66,7 @@ public:
 		lua_State* child = lua_newthread(*m_lua);
 		load_chunk(child,"return ");
 		Lua_func_ref func;
-		pull2cpp(child,func);
+		pull(child,func);
 		return func;
 	}
 	
@@ -75,7 +75,7 @@ public:
 		using namespace OOLUA;
 		Lua_func_ref invalid_for_caller_state;
 		load_chunk(differnt_state,"return");
-		pull2cpp(differnt_state,invalid_for_caller_state);
+		pull(differnt_state,invalid_for_caller_state);
 		return invalid_for_caller_state;
 	}
 	
@@ -127,7 +127,7 @@ public:
 		using namespace OOLUA;
 		load_chunk(*m_lua,"error'foo'");
 		Lua_func_ref func;
-		pull2cpp(*m_lua,func);
+		pull(*m_lua,func);
 		Lua_function caller(*m_lua);
 		CPPUNIT_ASSERT_THROW( caller(func), OOLUA::Runtime_error);
 	}
@@ -136,7 +136,7 @@ public:
 		using namespace OOLUA;
 		load_chunk(*m_lua,"error'foo'");
 		Lua_func_ref func;
-		pull2cpp(*m_lua,func);
+		pull(*m_lua,func);
 		Lua_function caller(*m_lua);
 		try { caller(func); }
 		catch(...) { CPPUNIT_ASSERT_EQUAL(0,lua_gettop(*m_lua)); }
@@ -148,7 +148,7 @@ public:
 		
 		load_chunk(*m_lua,"error'foo'");
 		Lua_func_ref func;
-		pull2cpp(*m_lua,func);
+		pull(*m_lua,func);
 		Lua_function caller(*m_lua);
 
 		lua_pushnil(*m_lua);
@@ -240,7 +240,7 @@ public:
 		using namespace OOLUA;
 		load_chunk(*m_lua,"error'foo'");
 		Lua_func_ref func;
-		pull2cpp(*m_lua,func);
+		pull(*m_lua,func);
 		Lua_function caller(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(false,caller(func));
 	}
@@ -249,7 +249,7 @@ public:
 		using namespace OOLUA;
 		load_chunk(*m_lua,"error'foo'");
 		Lua_func_ref func;
-		pull2cpp(*m_lua,func);
+		pull(*m_lua,func);
 		Lua_function caller(*m_lua);
 		caller(func);
 		CPPUNIT_ASSERT_EQUAL(0,lua_gettop(*m_lua));
@@ -260,7 +260,7 @@ public:
 		
 		load_chunk(*m_lua,"error'foo'");
 		Lua_func_ref func;
-		pull2cpp(*m_lua,func);
+		pull(*m_lua,func);
 		Lua_function caller(*m_lua);
 		
 		lua_pushnil(*m_lua);
@@ -288,7 +288,7 @@ public:
 	}
 	
 #endif	
-	
+	/**[CallingFunctionByFuncRef]*/
 	void functionRef_functionRefIsFromAChildState_returnsTrue()
 	{
 		using namespace OOLUA;
@@ -296,20 +296,26 @@ public:
 		Lua_function caller(*m_lua);
 		CPPUNIT_ASSERT_EQUAL( true, caller(func_from_child) );
 	}
-
+	/**[CallingFunctionByFuncRef]*/
+	
+	/**[CallingFunctionByGlobalName]*/
 	void stringFunc_callsFunctionInGlobalScope_returnsTrue()
 	{
 		m_lua->run_chunk("_G['global_name'] = function() end");
 		OOLUA::Lua_function caller(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(true , caller("global_name"));
 	}
+	/**[CallingFunctionByGlobalName]*/
 	
+	/**[CallingFunctionByValidStackIndex]*/
 	void indexFunc_passedFunctionIndex_returnsTrue()
 	{
 		OOLUA::Lua_function caller(*m_lua);
 		m_lua->load_chunk("return");
 		CPPUNIT_ASSERT_EQUAL(true, caller(1));
 	}
+	/**[CallingFunctionByValidStackIndex]*/
+	
 	void indexFunc_passedFunctionIndex_StackSizeIsOneAfterCall()
 	{
 		OOLUA::Lua_function caller(*m_lua);

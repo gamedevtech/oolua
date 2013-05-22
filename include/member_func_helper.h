@@ -1,9 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file member_func_helper.h
 ///  @author Liam Devine
-///  @email
-///  See http://www.liamdevine.co.uk for contact details.
-///  @licence
+///  \copyright
 ///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef MEMBER_FUNC_HELPER_H_
@@ -50,7 +48,7 @@ namespace OOLUA
 			}
 			static void push(lua_State* const s, T& value)
 			{
-				OOLUA::push2lua(s,value);
+				OOLUA::push(s,value);
 			}
 		};
 
@@ -100,13 +98,13 @@ namespace OOLUA
 		template<typename T>
 		static void push2lua(lua_State* const s, T*& value)
 		{
-			OOLUA::push2lua(s,value,No_change);
+			OOLUA::push(s,value,No_change);
 		}
 		///special case "T* const" and "T const * const"
 		template<typename T>
 		static void push2lua(lua_State* const s, T*const& value)
 		{
-			OOLUA::push2lua(s,value,No_change);
+			OOLUA::push(s,value,No_change);
 		}
 		static void pull2cpp(lua_State* const s, lua_State *& l)
 		{
@@ -145,7 +143,7 @@ namespace OOLUA
 		static void push2lua(lua_State* const s, T*& value)
 		{
 			OOLUA::lua_acquire_ptr<typename TypeWithTraits::type> p(value);
-			OOLUA::push2lua(s,p);
+			OOLUA::push(s,p);
 		}
 		template<typename T>
 		static void push2lua(lua_State* const s, T& value)

@@ -1,6 +1,7 @@
 #ifndef CPP_ENUM_PARAM_H_
 #	define CPP_ENUM_PARAM_H_
 
+/*[CppClassEnum]*/
 class Enums
 {
 public:
@@ -21,6 +22,7 @@ public:
 		return m_enum;
 	}
 };
+/*[CppClassEnum]*/
 
 #endif
 

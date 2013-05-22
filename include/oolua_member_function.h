@@ -7,6 +7,8 @@
 #include "oolua_config.h"
 
 
+/** \cond INTERNAL */
+
 #if	OOLUA_USE_EXCEPTIONS ==1
 #	include "oolua_error.h"
 
@@ -127,6 +129,9 @@ namespace OOLUA
 #	undef OOLUA_GET_NONE_CONST_SELF
 #	undef OOLUA_GET_CONST_SELF
 #	undef OOLUA_SELF_CHECK
+
+
+/** \endcond */
 
 #endif
 

@@ -5,7 +5,7 @@
 int dummy_c_function_returns_stack_count(lua_State* l)
 {
 	int top = lua_gettop(l);
-	OOLUA::push2lua(l,top);
+	OOLUA::push(l,top);
 	return 1;
 }
 
@@ -60,7 +60,7 @@ public:
 		m_lua->run_chunk("foo = function() return i end");
 		m_lua->call("foo");
 		int result;
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(input,result);
 	}
 	

@@ -59,7 +59,7 @@ public:
 						 "end");
 		Enums::COLOUR result(Enums::GREEN);
 		m_lua->call("foo");
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(Enums::INVALID,result);
 		
 	}
@@ -74,10 +74,11 @@ public:
 						 "end");
 		Enums::COLOUR result(Enums::INVALID);
 		m_lua->call("foo");
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(Enums::GREEN,result);
 	}
 	
+	/*[ClassEnumUsage]*/
 	void constructWithEnum_passedValueGreen_functionReturnsGreen()
 	{
 		m_lua->register_class<Enums>();
@@ -87,9 +88,10 @@ public:
 						 "end");
 		Enums::COLOUR result(Enums::INVALID);
 		m_lua->call("foo");
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(Enums::GREEN,result);
 	}
+	/*[ClassEnumUsage]*/
 	
 	
 #	if OOLUA_USE_EXCEPTIONS == 1

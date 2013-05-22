@@ -1,6 +1,6 @@
 #include "expose_integral_function_params.h"
 
-EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Int_params
+OOLUA_EXPORT_FUNCTIONS(Int_params
 								   ,int_
 								   ,int_ref
 								   ,int_ptr
@@ -10,4 +10,4 @@ EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Int_params
 								   ,int_const_ptr_const
 								   ,bool_)
 
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Int_params)
+OOLUA_EXPORT_FUNCTIONS_CONST(Int_params)

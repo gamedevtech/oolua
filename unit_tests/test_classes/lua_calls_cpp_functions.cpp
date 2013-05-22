@@ -184,7 +184,7 @@ public:
 		m_lua->call("foo",helper.abs_class);
 
 		std::string result;
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(std::string(OOLUA_UT::hello_world_cstring),result);
 	}
 	void cppMethodCall_callsFunctionWhichReturnsConstHelloWorldCstring_returnCompareEqualToHelloWorldCstring()
@@ -202,7 +202,7 @@ public:
 		m_lua->call("foo",helper.abs_class);
 
 		std::string result;
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(std::string(OOLUA_UT::hello_world_cstring),result);
 	}
 	

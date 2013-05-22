@@ -10,6 +10,7 @@ namespace OOLUA_UT
 	static char const* hello_world_cstring = "hello world";
 }
 
+/*[FunctionCalls]*/
 class Function_calls
 {	
 public:
@@ -25,6 +26,7 @@ public:
 	char const* returns(){return OOLUA_UT::hello_world_cstring;}
 	virtual void lua_state(lua_State* ) const=0;
 };
+/*[FunctionCalls]*/
 
 	
 class FunctionCallsMock : public Function_calls

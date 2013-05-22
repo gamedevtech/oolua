@@ -128,7 +128,7 @@ public:
 	,m_stub_passed_by_value(ParamValues::bool_not_set)
 	,m_func_ref(ref){}
 	
-	ParamConstructor(OOLUA::Lua_table ref)
+	ParamConstructor(OOLUA::Table ref)
 	:m_int(ParamValues::int_not_set)
 	,m_bool(ParamValues::bool_not_set)
 	,m_int_ptr(ParamValues::int_not_set)
@@ -149,7 +149,7 @@ public:
 	bool m_const_stub3;
 	bool m_stub3;
 	OOLUA::Lua_func_ref m_func_ref;
-	OOLUA::Lua_table m_table;
+	OOLUA::Table m_table;
 };
 
 class WithOutConstructors

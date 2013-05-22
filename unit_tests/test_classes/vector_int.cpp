@@ -58,7 +58,7 @@ public:
 				"end");
 		m_lua->call("func",&v);
 		int res;
-		OOLUA::pull2cpp(*m_lua,res);
+		OOLUA::pull(*m_lua,res);
 		CPPUNIT_ASSERT_EQUAL(int(0), res );
 	}
 };

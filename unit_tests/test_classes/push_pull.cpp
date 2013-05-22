@@ -10,8 +10,8 @@ namespace
 	template<typename T>
 	void push_then_pull(OOLUA::Script * lua,T input, T& output)
 	{
-		OOLUA::push2lua(*lua,input);
-		OOLUA::pull2cpp(*lua,output);
+		OOLUA::push(*lua,input);
+		OOLUA::pull(*lua,output);
 	}
 	template<typename T>
 	void assert_result_equals_numeric_limits_max(OOLUA::Script * lua)
@@ -220,9 +220,9 @@ public:
 	{
 		/*cast stops the warning that char is not const,this is the type I want*/
 		char * const  constPtrToChar =(char * const )"hello world";
-		OOLUA::push2lua(*m_lua,constPtrToChar);
+		OOLUA::push(*m_lua,constPtrToChar);
 		std::string result;
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(std::string(constPtrToChar),result);
 	}
 

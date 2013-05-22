@@ -6,11 +6,11 @@
 ///  @remarks Warning this file was generated, edits to it will not persist if 
 ///  the file is regenerated.
 ///  @author Liam Devine
-///  @email
-///  See http://www.liamdevine.co.uk for contact details.
-///  @licence 
+///  \copyright
 ///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
+
+/** \cond INTERNAL */
 #define LUA_MEMBER_FUNC_1(class,func1) {#func1, &class::func1},
 #define LUA_MEMBER_FUNC_2(class,func1,func2) LUA_MEMBER_FUNC_1(class,func1)LUA_MEMBER_FUNC_1(class,func2)
 #define LUA_MEMBER_FUNC_3(class,func1,func2,func3) LUA_MEMBER_FUNC_2(class,func1,func2)LUA_MEMBER_FUNC_1(class,func3)
@@ -42,10 +42,6 @@ OOLUA::Proxy_class< Class >::Reg_type OOLUA::Proxy_class< Class >::class_methods
 namespace OOLUA { \
 char const OOLUA::Proxy_class< Class >::class_name_const[] = #Class "_const";\
 OOLUA::Proxy_class< Class >::Reg_type_const OOLUA::Proxy_class< Class >::class_methods_const[]={
-
-///  \addtogroup EXPORT_OOLUA_FUNCTIONS_X
-///  @{
-///  Makes functions available to Lua, where X is the number of functions to register
 
 
 #define EXPORT_OOLUA_FUNCTIONS_0_(mod,Class)\
@@ -223,10 +219,20 @@ EXPORT_OOLUA_FUNCTIONS_15_(OOLUA_CONST,Class,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,
 #define EXPORT_OOLUA_FUNCTIONS_15_NON_CONST(Class,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15)\
 EXPORT_OOLUA_FUNCTIONS_15_(OOLUA_NON_CONST,Class,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15)
 
-#define EXPORT_OOLUA_NO_FUNCTIONS(Class)\
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Class)\
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Class)
-///  @}
+/** \endcond */
+
+/** \addtogroup OOLuaExporting  
+@{
+	\def OOLUA_EXPORT_NO_FUNCTIONS
+	\hideinitializer
+	\brief Inform that there are no functions of interest
+	\param Class 
+*/
+#define OOLUA_EXPORT_NO_FUNCTIONS(Class)\
+	EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Class)\
+	EXPORT_OOLUA_FUNCTIONS_0_CONST(Class)
+
+/**@}*/
 
 
 

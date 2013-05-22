@@ -9,6 +9,7 @@
 namespace OOLUA
 {
 
+	/** \cond INTERNAL*/
 	template<typename T>
 	void register_class(lua_State* l);
 	
@@ -110,5 +111,7 @@ namespace OOLUA
 			return ud->type_check ==  static_cast<oolua_type_check_function>(&OOLUA::register_class<T>);
 		}
 	}
+	
+	/** \endcond */
 }
 #endif

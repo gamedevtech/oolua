@@ -18,7 +18,7 @@ struct lua_State;
 namespace OOLUA
 {
 
-
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 
@@ -128,6 +128,7 @@ namespace OOLUA
 		}
 		
 	}
+	/** \endcond */
 
 }
 #endif

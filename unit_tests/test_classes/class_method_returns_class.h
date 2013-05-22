@@ -12,7 +12,7 @@ template<typename Return_type,typename Input_type>
 void assert_return_equals_input(lua_State* l, Input_type input)
 {
 	Return_type result;
-	OOLUA::pull2cpp(l,result);
+	OOLUA::pull(l,result);
 	CPPUNIT_ASSERT_EQUAL((Return_type)input,result);
 }
 

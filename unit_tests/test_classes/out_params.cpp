@@ -84,7 +84,7 @@ class OutParams : public CPPUNIT_NS::TestFixture
 	void assert_top_of_stack_is_exspected_value(InputAndResultType const& exspected)
 	{
 		InputAndResultType top_of_stack(0);
-		OOLUA::pull2cpp(*m_lua,top_of_stack);
+		OOLUA::pull(*m_lua,top_of_stack);
 		CPPUNIT_ASSERT_EQUAL(exspected,top_of_stack);
 	}
 
@@ -180,8 +180,8 @@ public:
 		m_lua->call("func",(OutParamsTest*)&stub);
 		int ignore_int(0);
 		int second(0);
-		OOLUA::pull2cpp(*m_lua,ignore_int);
-		OOLUA::pull2cpp(*m_lua,second);
+		OOLUA::pull(*m_lua,ignore_int);
+		OOLUA::pull(*m_lua,second);
 		CPPUNIT_ASSERT_EQUAL(value1,second);
 	}
 
@@ -264,9 +264,9 @@ public:
 		int r1,r2,r3;
 		m_lua->call("func",i1,i2,i3);
 
-		OOLUA::pull2cpp(*m_lua,r1);//top of stack
-		OOLUA::pull2cpp(*m_lua,r2);
-		OOLUA::pull2cpp(*m_lua,r3);//bottom of stack
+		OOLUA::pull(*m_lua,r1);//top of stack
+		OOLUA::pull(*m_lua,r2);
+		OOLUA::pull(*m_lua,r3);//bottom of stack
 
 		CPPUNIT_ASSERT_EQUAL(i3,r1);
 		CPPUNIT_ASSERT_EQUAL(i2,r2);
@@ -282,9 +282,9 @@ public:
 		m_lua->call("func",(OutParamsTest*)&stub);
 
 		int r1,r2,r3;
-		OOLUA::pull2cpp(*m_lua,r1);//top of stack
-		OOLUA::pull2cpp(*m_lua,r2);
-		OOLUA::pull2cpp(*m_lua,r3);
+		OOLUA::pull(*m_lua,r1);//top of stack
+		OOLUA::pull(*m_lua,r2);
+		OOLUA::pull(*m_lua,r3);
 		CPPUNIT_ASSERT_EQUAL((int)OutParamsTest::Param2,r1);
 		CPPUNIT_ASSERT_EQUAL((int)OutParamsTest::Param1,r2);
 		CPPUNIT_ASSERT_EQUAL((int)OutParamsTest::Return,r3);
@@ -325,7 +325,7 @@ public:
 					 
 		m_lua->call("foo",(OutParamsUserData*)&stub);
 		MockParamWithStringMember* ptr;
-		OOLUA::pull2cpp(*m_lua,ptr);
+		OOLUA::pull(*m_lua,ptr);
 		CPPUNIT_ASSERT_EQUAL(hello_world_str,ptr->str);
 	}
 };

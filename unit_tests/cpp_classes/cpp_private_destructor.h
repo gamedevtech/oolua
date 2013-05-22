@@ -21,11 +21,11 @@ private:
 };
 
 
-OOLUA_CLASS_NO_BASES(PrivateDestructor)
-	OOLUA_TYPEDEFS
+OOLUA_PROXY(PrivateDestructor)
+	OOLUA_TAGS(
 		No_public_constructors
 		,No_public_destructor 
-	OOLUA_END_TYPES
-OOLUA_CLASS_END
+	)
+OOLUA_PROXY_END
 
 #endif

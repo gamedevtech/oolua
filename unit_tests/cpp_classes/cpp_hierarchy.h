@@ -14,7 +14,7 @@ BASE_HELPERS::rootBasesOfDerivedFromTwoAbstractBasesAndAbstract3
 Both of which can be found in the file: expose_hierarhcy.h
 */
 
-
+/*[CppAbstract1]*/
 class Abstract1
 {
 public:
@@ -22,6 +22,7 @@ public:
 	virtual void func1()=0;
 	virtual void virtualVoidParam3Int(int,int,int) = 0;
 };
+/*[CppAbstract1]*/
 
 class Abstract2
 {
@@ -37,6 +38,7 @@ public:
 	virtual void func3_1()=0;
 };
 
+/*[CppDerived1Abstract1]*/
 class Derived1Abstract1 : public Abstract1
 {
 public:
@@ -44,6 +46,7 @@ public:
 	MOCK_METHOD0(func1,void ());
 	MOCK_METHOD3(virtualVoidParam3Int,void (int,int,int));
 };
+/*[CppDerived1Abstract1]*/
 class TwoAbstractBases : public Abstract1, public Abstract2
 {
 public:

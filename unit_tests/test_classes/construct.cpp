@@ -112,17 +112,19 @@ class Construct : public CPPUNIT_NS::TestFixture
 	};
 	void pull_ParamWrapper(ParamConstructorWrapper& wrap)
 	{
-		OOLUA::pull2cpp(*m_lua,wrap.instance);
+		OOLUA::pull(*m_lua,wrap.instance);
 		wrap.set_ptr_to_auto_delete();
 	}
 public:
     Construct():m_lua(0){}
     LVD_NOCOPY(Construct)
+	/*[MinimalProxyClassRegister]*/
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
 		m_lua->register_class<Stub1>();
 	}
+	/*[MinimalProxyClassRegister]*/
 	void tearDown()
 	{
 		delete m_lua;
@@ -132,16 +134,17 @@ public:
 	{
 		createAndReturnStub(m_lua);
 		OOLUA::cpp_acquire_ptr<Stub1*> res;
-		OOLUA::pull2cpp(*m_lua,res);
+		OOLUA::pull(*m_lua,res);
 		CPPUNIT_ASSERT_EQUAL(true, res.m_ptr != 0);
 		delete res.m_ptr;
 	}
+	/*[MinimalProxyClassUsage]*/
 	void new_luaCreatesInstance_noException()
 	{
-		std::string foo("Stub1:new()");
-		CPPUNIT_ASSERT_NO_THROW( m_lua->run_chunk(foo) );
+		CPPUNIT_ASSERT_NO_THROW( m_lua->run_chunk("Stub1:new()") );
 	}
-
+	/**[MinimalProxyClassUsage]*/
+	
 	void createAndReturnStub(OOLUA::Script *lua)
 	{
 		std::string foo(\
@@ -498,7 +501,7 @@ public:
 						 "end");
 		OOLUA::cpp_acquire_ptr<LuaStateConstructors*> stateCtor;
 		m_lua->call("foo");
-		OOLUA::pull2cpp(*m_lua,stateCtor);
+		OOLUA::pull(*m_lua,stateCtor);
 		CPPUNIT_ASSERT_EQUAL(m_lua->get_ptr() ,stateCtor.m_ptr->lua);
 		delete stateCtor.m_ptr;
 	}
@@ -511,7 +514,7 @@ public:
 						 "end");
 		OOLUA::cpp_acquire_ptr<LuaStateConstructors*> stateCtor;
 		m_lua->call("foo");
-		OOLUA::pull2cpp(*m_lua,stateCtor);
+		OOLUA::pull(*m_lua,stateCtor);
 		CPPUNIT_ASSERT_EQUAL(m_lua->get_ptr(),stateCtor.m_ptr->lua);
 		delete stateCtor.m_ptr;
 	}
@@ -524,7 +527,7 @@ public:
 						 "end");
 		OOLUA::cpp_acquire_ptr<LuaStateConstructors*> stateCtor;
 		m_lua->call("foo",ParamValues::int_set);
-		OOLUA::pull2cpp(*m_lua,stateCtor);
+		OOLUA::pull(*m_lua,stateCtor);
 		CPPUNIT_ASSERT_EQUAL(ParamValues::int_set,stateCtor.m_ptr->m_int);
 		delete stateCtor.m_ptr;
 	}

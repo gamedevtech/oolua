@@ -26,7 +26,7 @@ public:
 	void enumIsRegistered_safeAtReturnsTrue()
 	{
 		m_lua->register_class<ClassWithEnums>();
-		OOLUA::Lua_table t(*m_lua,OOLUA::Proxy_class<ClassWithEnums>::class_name);
+		OOLUA::Table t(*m_lua,OOLUA::Proxy_class<ClassWithEnums>::class_name);
 		int value=-1;
 		bool result = t.safe_at("ENUM_0",value);
 		CPPUNIT_ASSERT_EQUAL(true , result);
@@ -36,7 +36,7 @@ public:
 	void queriesKnownValue_enum0AsInt_safeAtreturnsEnum0()
 	{
 		m_lua->register_class<ClassWithEnums>();
-		OOLUA::Lua_table t(*m_lua,OOLUA::Proxy_class<ClassWithEnums>::class_name);
+		OOLUA::Table t(*m_lua,OOLUA::Proxy_class<ClassWithEnums>::class_name);
 		int value=-1;
 		t.safe_at("ENUM_0",value);
 		CPPUNIT_ASSERT_EQUAL((int)ClassWithEnums::ENUM_0 , value);
@@ -45,7 +45,7 @@ public:
 	void queriesKnownValue_enum0Enum_safeAtreturnsEnum0()
 	{
 		m_lua->register_class<ClassWithEnums>();
-		OOLUA::Lua_table t(*m_lua,OOLUA::Proxy_class<ClassWithEnums>::class_name);
+		OOLUA::Table t(*m_lua,OOLUA::Proxy_class<ClassWithEnums>::class_name);
 		ClassWithEnums::ClassEnum return_value = ClassWithEnums::ENUM_1;
 		t.safe_at("ENUM_0",return_value);
 		CPPUNIT_ASSERT_EQUAL(ClassWithEnums::ENUM_0 , return_value);
@@ -56,7 +56,7 @@ public:
 		m_lua->register_class<ClassWithEnums>();
 		m_lua->run_chunk("return ClassWithEnums.ENUM_0");
 		ClassWithEnums::ClassEnum return_value = ClassWithEnums::ENUM_1;
-		OOLUA::pull2cpp(*m_lua,return_value);
+		OOLUA::pull(*m_lua,return_value);
 		CPPUNIT_ASSERT_EQUAL(ClassWithEnums::ENUM_0 , return_value);
 	}
 

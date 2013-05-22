@@ -62,7 +62,7 @@ public:
 	void pull_CFunctionFromStackTopIsNotFunc_throwsRunTimeError()
 	{
 		OOLUA::Lua_func_ref func;
-		CPPUNIT_ASSERT_THROW( OOLUA::pull2cpp(*m_lua,func),OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW( OOLUA::pull(*m_lua,func),OOLUA::Runtime_error);
 	}
 #endif
 	
@@ -70,13 +70,13 @@ public:
 	void pull_CFunctionFromStackTopIsNotFunc_callReturnsFalse()
 	{	
 		OOLUA::Lua_func_ref func;
-		bool result = OOLUA::pull2cpp(*m_lua,func);
+		bool result = OOLUA::pull(*m_lua,func);
 		CPPUNIT_ASSERT_EQUAL(false,result);
 	}
 	void pull_CFunctionFromStackTopIsNotFunc_errorStringIsNotEmpty()
 	{	
 		OOLUA::Lua_func_ref func;
-		OOLUA::pull2cpp(*m_lua,func);
+		OOLUA::pull(*m_lua,func);
 		std::string error_str = OOLUA::get_last_error(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(false,error_str.empty() );
 	}

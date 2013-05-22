@@ -88,8 +88,8 @@ struct HierarchyPushPull
 {
 	HierarchyPushPull(lua_State* l):mock(),basemock(&mock),baseFromLua(0)
 	{
-		OOLUA::push2lua(l,&mock);
-		OOLUA::pull2cpp(l,baseFromLua);
+		OOLUA::push(l,&mock);
+		OOLUA::pull(l,baseFromLua);
 	}
 	Derived mock;
 	Base* basemock;
@@ -196,7 +196,7 @@ public:
 				"end");
 		m_lua->call("func");
 		OOLUA::cpp_acquire_ptr<Abstract1*> base;
-		OOLUA::pull2cpp(*m_lua,base);
+		OOLUA::pull(*m_lua,base);
 		std::auto_ptr<Abstract1> deletePtr(base.m_ptr);
 		CPPUNIT_ASSERT_EQUAL(false,base.m_ptr == static_cast<Abstract1*>(0));
 	}

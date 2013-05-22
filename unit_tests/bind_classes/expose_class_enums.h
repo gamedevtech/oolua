@@ -9,18 +9,7 @@
 Register_class_enums : tag for hey there are enums in this class that need registering when 
 the class type is registered
 */
-#ifndef OOLUA_WORK_DSL
-OOLUA_PROXY_CLASS(ClassWithEnums)
-	OOLUA_TYPEDEFS No_public_constructors, Register_class_enums OOLUA_END_TYPES
-	OOLUA_ENUMS_START
-		OOLUA_ENUM_ENTRY(UNNAMED_ENUM_0)
-		OOLUA_ENUM_ENTRY(UNNAMED_ENUM_1)
-		OOLUA_ENUM_ENTRY(ENUM_0)
-		OOLUA_ENUM_ENTRY(ENUM_1)
-	OOLUA_ENUMS_END
-OOLUA_CLASS_END
 
-#else
 OOLUA_PROXY(ClassWithEnums)
 	OOLUA_TAGS (
 		No_public_constructors
@@ -33,6 +22,5 @@ OOLUA_PROXY(ClassWithEnums)
 		OOLUA_ENUM(ENUM_1)
 	)
 OOLUA_PROXY_END
-#endif
 
 #endif

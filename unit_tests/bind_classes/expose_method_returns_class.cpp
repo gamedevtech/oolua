@@ -1,7 +1,7 @@
 #include "expose_method_returns_class.h"
 
 
-EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Method_returns_class
+OOLUA_EXPORT_FUNCTIONS(Method_returns_class
 								   ,ref
 								   ,ref_const
 								   ,ptr
@@ -11,4 +11,4 @@ EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Method_returns_class
 								   ,return_stack_instance
 								   ,returns_null)
 
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Method_returns_class)
+OOLUA_EXPORT_FUNCTIONS_CONST(Method_returns_class)

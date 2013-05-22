@@ -6,8 +6,8 @@
 #include "oolua.h"
 
 
-OOLUA_PROXY_CLASS(OwnershipParamsAndReturns)
-	OOLUA_TYPEDEFS Abstract OOLUA_END_TYPES
+OOLUA_PROXY(OwnershipParamsAndReturns)
+	OOLUA_TAGS(Abstract)
 
 	OOLUA_MEM_FUNC_RENAME(lua_takes_ownership_of_ref_2_ptr,
 						  void, ref_2_ptr,			lua_out_p<Stub1*&>)
@@ -37,7 +37,7 @@ OOLUA_PROXY_CLASS(OwnershipParamsAndReturns)
 	OOLUA_MEM_FUNC_RENAME(cpp_takes_ownership_of_ref_to_const_ptr_to_const_param,
 						  void, ref_2_const_2_ptr_2_const,	cpp_in_p<Stub1 const * const&> )
 
-OOLUA_CLASS_END
+OOLUA_PROXY_END
 
 
 #endif

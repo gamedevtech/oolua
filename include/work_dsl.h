@@ -1,7 +1,10 @@
 #ifndef OOLUA_WORK_DSL_H_
 #	define OOLUA_WORK_DSL_H_
 
-#	ifdef OOLUA_WORK_DSL
+/** \file work_dsl.h
+*/
+
+//#	ifdef OOLUA_WORK_DSL
 
 #		ifdef __GNUC__
 			/*shut the fuck up about va args and c99*/
@@ -9,20 +12,82 @@
 #		endif
 
 
-#		define OOLUA_PROXY OOLUA_PROXY_CLASS
+//#		define OOLUA_PROXY OOLUA_PROXY_CLASS
+//#		define OOLUA_PROXY_END OOLUA_CLASS_END
+
+		/** \addtogroup OOLuaDSL
+		@{*/
+
+		/**	\def OOLUA_PROXY_END
+			\hideinitializer
+			\brief Ends the generation of the proxy class
+		*/		 
 #		define OOLUA_PROXY_END OOLUA_CLASS_END
 
+		/**	\def OOLUA_TAGS
+		 	\hideinitializer
+			\brief Allows more information to be specified about the proxy class
+			\details OOLUA_TAGS(Optional)
+			\param Optional Comma seperated list of \ref OOLuaTags
+			<p>
+			Tags specifiy more information about the class which should be exposed, 
+			such as:
+			\li Does the class support any operators?
+			\li Is it abstract ?
+			\li Does the class have enumerations?
+			\see OOLuaTags
+		*/
 #		define OOLUA_TAGS(...) OOLUA_TYPEDEFS __VA_ARGS__ OOLUA_END_TYPES
 
 		/*OOLUA_ENUMS incompatible with versions <= 1.4*/
+
+		/**	\def OOLUA_ENUMS
+			\hideinitializer
+			\brief Creates a block into which enumerators can be defined with \ref OOLUA_ENUM
+			\details OOLUA_ENUMS(Optional)
+			\param Optional List of \ref OOLUA_ENUM
+		*/
 #		define OOLUA_ENUMS(FOO) OOLUA_ENUMS_START FOO OOLUA_ENUMS_END
+
+		/**	\def OOLUA_ENUM
+			\hideinitializer
+			\brief Creates a entry into a \ref OOLUA_ENUMS block
+			\details OOLUA_ENUM(EnumName)
+			\param EnumName The class enumeration name
+		*/
 #		define OOLUA_ENUM OOLUA_ENUM_ENTRY
 
-
+		/**	\def OOLUA_CTORS
+			\hideinitializer
+			\brief Creates a block into which constructors can be defined with \ref OOLUA_CTOR
+			\details OOLUA_CTORS(Optional)
+			\param Optional List of \ref OOLUA_CTOR
+			<p>
+			To enable the construction of an instance which is a specific type there must be 
+			constructors for that type registered with OOLua. \ref OOLUA_CTORS is the block into 
+			which you can define constructor entries using OOLUA_CTOR. An OOLUA_CTORS block 
+			with no \ref OOLUA_CTOR entries informs OOLua that the type has a default constructor
+			in the public interface, unless otherwise enformed OOLuaTags.
+			<p>
+			Constructors are the only real type of overloading which is permitted by OOLua 
+			and there is an important point which should be noted. OOLua will try and match
+			the number of parameters on the stack with the amount required by each OOLUA_CTOR
+			entry and will look in the order they were defined. When interacting with the Lua
+			stack certain types can not be differentiated between, these include some integral
+			types such as float, int, double etc and types which are of a proxy class type or
+			derived from that type. OOLua implicitly converts between classes in a hierarchy
+			even if a reference is required. This means for example that if there are constructors
+			such as Foo::Foo(int) and Foo::Foo(float) it will depend on which was defined first
+			in the OOLUA_CTORS block as to which will be invoked for a call such as Foo:new(1).
+		*/
 #		define OOLUA_CTORS(FOO) OOLUA_CONSTRUCTORS_BEGIN FOO OOLUA_CONSTRUCTORS_END
-#		define OOLUA_CTOR OOLUA_CONSTRUCTOR
+		/**@}*/
 
 
+
+//#		define OOLUA_CTOR OOLUA_CONSTRUCTOR
+
+#if 0
 #		define OOLUA_MFUNC_RENAME(NewName,Name) \
 		int NewName(lua_State* l) \
 		{ \
@@ -35,11 +100,13 @@
 		}
 #		define OOLUA_MFUNC(Name)		OOLUA_MFUNC_RENAME(Name,Name)
 #		define OOLUA_MFUNC_CONST(Name) OOLUA_MFUNC_CONST_RENAME(Name,Name)
+#endif
 
 //#		define OOLUA_MFUNC OOLUA_DEDUCE_FUNC
 //#		define OOLUA_MFUNC_CONST OOLUA_DEDUCE_FUNC_CONST
 
 
+#if 0
 #		define OOLUA_MEM_SETN(set_name,id)\
 		int set_name(lua_State* l) \
 		{\
@@ -60,8 +127,10 @@
 			OOLUA_MGET(id) \
 			OOLUA_MSET(id)
 
-#		define OOLUA_CFUNC(Name) OOLUA_DEDUCE_C_FUNC(Name)
+#endif
 
-#	endif// OOLUA_WORK_DSL
+//#		define OOLUA_CFUNC(Name) OOLUA_DEDUCE_C_FUNC(Name)
+
+//#	endif// OOLUA_WORK_DSL
 
 #endif

@@ -2,7 +2,7 @@
 #ifndef CPP_CLASS_OPS_TEST_H_
 #	define CPP_CLASS_OPS_TEST_H_
 
-
+/*[CppClassOps]*/
 class Class_ops
 {
 public:
@@ -47,5 +47,6 @@ public:
 private:
 	int m_i;
 };
+/*[CppClassOps]*/
 
 #endif

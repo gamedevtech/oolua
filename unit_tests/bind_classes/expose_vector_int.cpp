@@ -1,9 +1,10 @@
 #include "expose_vector_int.h"
 
-
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(vector_int,
+/*[StdVectorProxyExport]*/
+OOLUA_EXPORT_FUNCTIONS(vector_int,
 								   push_back,
 								   pop_back)
 
-EXPORT_OOLUA_FUNCTIONS_1_CONST(vector_int,size)
+OOLUA_EXPORT_FUNCTIONS_CONST(vector_int,size)
+/*[StdVectorProxyExport]*/
 

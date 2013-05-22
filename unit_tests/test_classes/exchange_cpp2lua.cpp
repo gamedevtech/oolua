@@ -100,7 +100,7 @@ public:
 	template<typename T>
 	void assert_top_of_stack_is_type_after_push(int type,T toBePushed)
 	{
-		OOLUA::push2lua(*m_lua,toBePushed);
+		OOLUA::push(*m_lua,toBePushed);
 		CPPUNIT_ASSERT_EQUAL(type ,lua_type(*m_lua,-1));
 	}
 	void push_intPushed_topOfStackTypeIsNumber()
@@ -190,50 +190,50 @@ public:
 	void pullFunctionReference(OOLUA::Lua_func_ref& f)
 	{
 		m_lua->run_chunk("return function() end");
-		OOLUA::pull2cpp(*m_lua,f);
+		OOLUA::pull(*m_lua,f);
 	}
 
 	void push_invalidFunctionReference_pushReturnsTrue()
 	{
 		OOLUA::Lua_func_ref f;
-		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push2lua(*m_lua,f));
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push(*m_lua,f));
 	}
 
 	void push_invalidFunctionReference_stackTopisNil()
 	{
 		OOLUA::Lua_func_ref f;
-		OOLUA::push2lua(*m_lua,f);
+		OOLUA::push(*m_lua,f);
 		CPPUNIT_ASSERT_EQUAL(LUA_TNIL,lua_type(*m_lua, -1) );
 	}
 	
 	void push_invalidFunctionReference_stackSizeIncreasesByOne()
 	{
 		OOLUA::Lua_func_ref f;
-		OOLUA::push2lua(*m_lua,f);
+		OOLUA::push(*m_lua,f);
 		//we can not just check for nil on the stack as an empty stack 
 		//will return a false positive
 		CPPUNIT_ASSERT_EQUAL(1,m_lua->stack_count() );
 	}
-	void pullValidTable(OOLUA::Lua_table& t)
+	void pullValidTable(OOLUA::Table& t)
 	{
 		m_lua->run_chunk("return {}");
-		OOLUA::pull2cpp(*m_lua,t);
+		OOLUA::pull(*m_lua,t);
 	}
 	void push_invalidTable_pushReturnsTrue()
 	{
-		OOLUA::Lua_table t;
-		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push2lua(*m_lua, t) );
+		OOLUA::Table t;
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push(*m_lua, t) );
 	}
 	void push_invalidTable_stackSizeIncreasesByOne()
 	{
-		OOLUA::Lua_table t;
-		push2lua(*m_lua, t);
+		OOLUA::Table t;
+		push(*m_lua, t);
 		CPPUNIT_ASSERT_EQUAL(1,m_lua->stack_count() );
 	}
 	void push_invalidTable_stackTopIsNil()
 	{
-		OOLUA::Lua_table t;
-		push2lua(*m_lua, t);
+		OOLUA::Table t;
+		push(*m_lua, t);
 		CPPUNIT_ASSERT_EQUAL(LUA_TNIL,lua_type(*m_lua, -1) );
 	}
 	
@@ -247,19 +247,19 @@ public:
 	
 	void push_tableFromDifferentState_pushReturnsFalse()
 	{
-		OOLUA::Lua_table t;
+		OOLUA::Table t;
 		pullValidTable(t);
 		
 		OOLUA::Script s;
-		CPPUNIT_ASSERT_EQUAL(false,OOLUA::push2lua(s,t) );
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::push(s,t) );
 	}
 	void push_tableFromDifferentState_getLastErrorHasAnEntry()
 	{
-		OOLUA::Lua_table t;
+		OOLUA::Table t;
 		pullValidTable(t);
 		
 		OOLUA::Script s;
-		OOLUA::push2lua(s,t);
+		OOLUA::push(s,t);
 		CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(s).empty() );
 		
 	}
@@ -269,7 +269,7 @@ public:
 		pullFunctionReference(f);
 		
 		OOLUA::Script s;
-		CPPUNIT_ASSERT_EQUAL(false, OOLUA::push2lua(s,f) );
+		CPPUNIT_ASSERT_EQUAL(false, OOLUA::push(s,f) );
 	}
 	
 	
@@ -279,7 +279,7 @@ public:
 		pullFunctionReference(f);
 		
 		OOLUA::Script s;
-		OOLUA::push2lua(s,f);
+		OOLUA::push(s,f);
 		CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(s).empty() );
 		
 	}
@@ -293,20 +293,20 @@ public:
 	
 	void push_tableFromDifferentState_throwRuntimeError()
 	{
-		OOLUA::Lua_table t;
+		OOLUA::Table t;
 		pullValidTable(t);
 	
 		OOLUA::Script s;
-		CPPUNIT_ASSERT_THROW(OOLUA::push2lua(s,t),OOLUA::Runtime_error );
+		CPPUNIT_ASSERT_THROW(OOLUA::push(s,t),OOLUA::Runtime_error );
 
 	}
 	void push_tableFromDifferentYetRelatedLuaState_returnsTrue()
 	{
 		lua_State* child = lua_newthread(*m_lua);
-		OOLUA::Lua_table t;
+		OOLUA::Table t;
 		pullValidTable(t);
 
-		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push2lua(child,t) );
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push(child,t) );
 	}
 	void push_FunctionReferenceFromDifferentLuaState_throwRuntimeError()
 	{
@@ -314,7 +314,7 @@ public:
 		pullFunctionReference(f);
 		
 		OOLUA::Script s;
-		CPPUNIT_ASSERT_THROW(OOLUA::push2lua(s,f),OOLUA::Runtime_error );
+		CPPUNIT_ASSERT_THROW(OOLUA::push(s,f),OOLUA::Runtime_error );
 	}
 	
 	void push_FunctionReferenceFromDifferentYetRelatedLuaState_returnsTrue()
@@ -324,7 +324,7 @@ public:
 		OOLUA::Lua_func_ref f;
 		pullFunctionReference(f);
 		
-		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push2lua(child,f));
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push(child,f));
 	}
 	
 #endif

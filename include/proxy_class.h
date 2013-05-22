@@ -5,9 +5,7 @@
 ///  C++ special member functions
 ///
 ///  @author Liam Devine
-///  @email
-///  See http://www.liamdevine.co.uk for contact details.
-///  @licence
+///  \copyright
 ///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -16,16 +14,18 @@
 
 #include "type_list.h"
 
+
 namespace OOLUA
 {
-	///////////////////////////////////////////////////////////////////////////////
-	///  @class OOLUA::Proxy_class
-	///  A template wrapper for class objects of type T used by the script binding.
-	///  @remarks \see Proxy_class_macros for the macros which are used to define
-	///  a proxy class.
-	///////////////////////////////////////////////////////////////////////////////
+	/** \class OOLUA::Proxy_class
+		\brief A template wrapper for class objects of type T used by the script binding.
+		\tparam T Type that is being proxied
+		\see OOLuaDSL for the macros which are used to define a proxy class.
+	 */
 	template<typename T>class Proxy_class;
 
+	/** \cond INTERNAL*/
+	
 	namespace INTERNAL
 	{
 		template<typename TL,typename T>
@@ -293,7 +293,7 @@ public:
 #define OOLUA_ENUMS_START \
 static void oolua_enums(lua_State * l)\
 {\
-	Lua_table meth(l,Proxy_class<class_>::class_name);\
+	Table meth(l,Proxy_class<class_>::class_name);\
 	meth.push_on_stack(l);\
 	int const top = lua_gettop(l);\
 
@@ -306,5 +306,6 @@ static void oolua_enums(lua_State * l)\
 	lua_pop(l,1);\
 }
 
+/**\endcond*/
 
 #endif //CPP_PROXY_CLASS_H_

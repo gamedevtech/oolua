@@ -40,7 +40,7 @@ public:
 		m_lua->register_class<Stub1>();
 		m_lua->run_chunk("return require('OOLua').Stub1:new()");
 		Stub1* c;
-		OOLUA::pull2cpp(*m_lua,c);
+		OOLUA::pull(*m_lua,c);
 	}
 #elif	OOLUA_STORE_LAST_ERROR == 1
 	void require_requireFindsTheModule_runChunkReturnsTrue()

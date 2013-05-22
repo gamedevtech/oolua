@@ -1,6 +1,6 @@
 #include "expose_out_params.h"
 
-EXPORT_OOLUA_FUNCTIONS_9_NON_CONST(OutParamsTest
+OOLUA_EXPORT_FUNCTIONS(OutParamsTest
 								   ,int_ref
 								   ,two_int_refs
 								   ,int_ptr_in_out
@@ -11,15 +11,14 @@ EXPORT_OOLUA_FUNCTIONS_9_NON_CONST(OutParamsTest
 								   ,int_ptr_change_pointee
 								   ,return_int_and_2_int_refs
 								   )
-EXPORT_OOLUA_FUNCTIONS_0_CONST(OutParamsTest)
+OOLUA_EXPORT_FUNCTIONS_CONST(OutParamsTest)
 
 
-EXPORT_OOLUA_FUNCTIONS_NON_CONST(OutParamsUserData
+OOLUA_EXPORT_FUNCTIONS(OutParamsUserData
 								   ,ref
 									,ptr
 									,ref_param
 									)
+OOLUA_EXPORT_FUNCTIONS_CONST(OutParamsUserData)
 
-EXPORT_OOLUA_FUNCTIONS_CONST(OutParamsUserData)
-
-EXPORT_OOLUA_NO_FUNCTIONS(MockParamWithStringMember)
+OOLUA_EXPORT_NO_FUNCTIONS(MockParamWithStringMember)

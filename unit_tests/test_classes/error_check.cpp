@@ -38,16 +38,16 @@ struct ExceptionMock
 
 
 
-OOLUA_CLASS_NO_BASES(ExceptionMock)
-	OOLUA_TYPEDEFS 
+OOLUA_PROXY(ExceptionMock)
+	OOLUA_TAGS( 
 		No_public_constructors 
 		, No_public_destructor 
-	OOLUA_END_TYPES
-	OOLUA_MEM_FUNC_0(void, throwsStdRuntimeError)
+	)
+	OOLUA_MEM_FUNC(void, throwsStdRuntimeError)
 OOLUA_CLASS_END
 
-EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(ExceptionMock,throwsStdRuntimeError)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(ExceptionMock)
+OOLUA_EXPORT_FUNCTIONS(ExceptionMock,throwsStdRuntimeError)
+OOLUA_EXPORT_FUNCTIONS_CONST(ExceptionMock)
 #endif
 
 
@@ -292,7 +292,7 @@ public:
 	{
 		lua_newuserdata(*m_lua,sizeof(int));
 		Stub1 const*  cpp_type =  0;
-		bool result = OOLUA::pull2cpp(*m_lua,cpp_type);
+		bool result = OOLUA::pull(*m_lua,cpp_type);
 		CPPUNIT_ASSERT_EQUAL( false,result);	
 	}
 	
@@ -302,7 +302,7 @@ public:
 		m_lua->call("foo");
 		
 		SomeEnum enum_value;
-		bool result = OOLUA::pull2cpp(*m_lua,enum_value);
+		bool result = OOLUA::pull(*m_lua,enum_value);
 		CPPUNIT_ASSERT_EQUAL( false ,result);
 	}
 	
@@ -360,7 +360,7 @@ public:
 						 "end");
 		m_lua->call("foo");
 		InvalidStub* ptr;
-		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull2cpp(*m_lua,ptr) );
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull(*m_lua,ptr) );
 	}
 	
 	void pull_UnrelatedClassType_ptrIsNull()
@@ -372,7 +372,7 @@ public:
 						 "end");
 		m_lua->call("foo");
 		InvalidStub* ptr;
-		OOLUA::pull2cpp(*m_lua,ptr);
+		OOLUA::pull(*m_lua,ptr);
 		CPPUNIT_ASSERT_EQUAL((InvalidStub*)0,ptr );
 	}
 	void pull_UnrelatedClassType_lastErrorStringIsNotEmpty()
@@ -384,7 +384,7 @@ public:
 						 "end");
 		m_lua->call("foo");
 		InvalidStub* ptr;
-		OOLUA::pull2cpp(*m_lua,ptr);
+		OOLUA::pull(*m_lua,ptr);
 		CPPUNIT_ASSERT_EQUAL(false, OOLUA::get_last_error(*m_lua).empty() );
 	}
 	
@@ -396,7 +396,7 @@ public:
 						 "end");
 		m_lua->call("foo");
 		Stub1* result;
-		OOLUA::pull2cpp(*m_lua,result);
+		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(false, OOLUA::get_last_error(*m_lua).empty() );
 
 	}
@@ -408,7 +408,7 @@ public:
 						 "end");
 		m_lua->call("foo");
 		Stub1* result;
-		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull2cpp(*m_lua,result));
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull(*m_lua,result));
 	}
 
 	void pull_intWhenClassIsOnStack_pullReturnsFalse()
@@ -419,7 +419,7 @@ public:
 						 "end");
 		m_lua->call("foo");
 		int result;
-		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull2cpp(*m_lua,result));
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull(*m_lua,result));
 	 }
 				 
 	void loadFile_fileDoesNotExist_returnsFalse()
@@ -439,14 +439,14 @@ public:
 	{
 		lua_newuserdata(*m_lua,sizeof(int));
 		Stub1 const*  cpp_type =  0;
-		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,cpp_type)),OOLUA::Type_error);	
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull(*m_lua,cpp_type)),OOLUA::Type_error);	
 	}
 	void pull_cppAcquirePtrWhenIntOnStack_throwsTypeError()
 	{
 		m_lua->run_chunk("foo = function() return 1 end");
 		m_lua->call("foo");
 		OOLUA::cpp_acquire_ptr<Stub1*> cpp_type;
-		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,cpp_type) ),OOLUA::Type_error);
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull(*m_lua,cpp_type) ),OOLUA::Type_error);
 		
 	}
 	void pull_enumWhenStringIsOnStack_throwTypeError()
@@ -455,7 +455,7 @@ public:
 		m_lua->call("foo");
 
 		SomeEnum enum_value;
-		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,enum_value)) ,OOLUA::Type_error);
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull(*m_lua,enum_value)) ,OOLUA::Type_error);
 	}
 	void pull_memberFunctionPullsClassWhenintIsOnStack_throwsOoluaRuntimeError()
 	{
@@ -477,7 +477,7 @@ public:
 						 "end");
 		m_lua->call("foo");
 		InvalidStub* ptr;
-		CPPUNIT_ASSERT_THROW((OOLUA::pull2cpp(*m_lua,ptr)),OOLUA::Type_error);
+		CPPUNIT_ASSERT_THROW((OOLUA::pull(*m_lua,ptr)),OOLUA::Type_error);
 	}
 	
 	void pull_classWhenintIsOnStack_throwsTypeError()
@@ -488,7 +488,7 @@ public:
 						 "end");
 		m_lua->call("foo");
 		Stub1* result;
-		CPPUNIT_ASSERT_THROW((OOLUA::pull2cpp(*m_lua,result)),OOLUA::Type_error);
+		CPPUNIT_ASSERT_THROW((OOLUA::pull(*m_lua,result)),OOLUA::Type_error);
 	}
 	
 	void pull_intWhenClassIsOnStack_throwsTypeError()
@@ -499,7 +499,7 @@ public:
 						 "end");
 		m_lua->call("foo");
 		int result;
-		CPPUNIT_ASSERT_THROW(( OOLUA::pull2cpp(*m_lua,result) ),OOLUA::Type_error);
+		CPPUNIT_ASSERT_THROW(( OOLUA::pull(*m_lua,result) ),OOLUA::Type_error);
 	}
 	
 	void callUnknownFunction_fromCpp_throwsOoluaRuntimeError()
@@ -513,35 +513,35 @@ public:
 	void pullUnregisteredClass_fromEmptyStackInCpp_throwTypeError()
 	{
 		Stub1* fp(0);
-		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,fp))  ,OOLUA::Type_error);
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull(*m_lua,fp))  ,OOLUA::Type_error);
 	}
 	void pullUnregisteredClass_fromStackContainingAnIntInCpp_throwTypeError()
 	{
 		Stub1* fp(0);
 		int i =1;
-		OOLUA::push2lua(*m_lua,i);
-		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,fp))  ,OOLUA::Type_error);
+		OOLUA::push(*m_lua,i);
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull(*m_lua,fp))  ,OOLUA::Type_error);
 	}
 	
 	void pull_boolFromEmptyStack_throwTypeError()
 	{
 		bool stub;
-		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,stub)) ,OOLUA::Type_error);
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull(*m_lua,stub)) ,OOLUA::Type_error);
 	}
 	void pull_pushIntThenPullFloat_noException()
 	{
 		int dontCare(0);
 		float pullInto(0.f);
-		OOLUA::push2lua(*m_lua,dontCare);
-		OOLUA::pull2cpp(*m_lua,pullInto);
+		OOLUA::push(*m_lua,dontCare);
+		OOLUA::pull(*m_lua,pullInto);
 	}
 	
 	void pull_pushAnIntThenPullBool_throwTypeError()
 	{
 		int dontCare(0);
-		OOLUA::push2lua(*m_lua,dontCare);
+		OOLUA::push(*m_lua,dontCare);
 		bool pullInto;
-		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,pullInto)), OOLUA::Type_error);
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull(*m_lua,pullInto)), OOLUA::Type_error);
 	}
 	
 	void pull_pushBoolThenPullInt_throwTypeError()
@@ -549,8 +549,8 @@ public:
 		//bool is a distinct type from int and float
 		bool dontCare(false);
 		int pullInto(0);
-		OOLUA::push2lua(*m_lua,dontCare);
-		CPPUNIT_ASSERT_THROW( (OOLUA::pull2cpp(*m_lua,pullInto)), OOLUA::Type_error);
+		OOLUA::push(*m_lua,dontCare);
+		CPPUNIT_ASSERT_THROW( (OOLUA::pull(*m_lua,pullInto)), OOLUA::Type_error);
 	}
 	void registerExceptionMockAndRunChunkCalledFoo()
 	{
@@ -601,7 +601,7 @@ public:
 		
 			if (setjmp(mark) == 0)
 			{
-				OOLUA::push2lua(*m_lua,stubptr);
+				OOLUA::push(*m_lua,stubptr);
 				CPPUNIT_ASSERT_EQUAL(false,true );//never jumped back
 			}
 			else

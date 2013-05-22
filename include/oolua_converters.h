@@ -1,6 +1,8 @@
 #ifndef OOLUA_CONVERTORS_H_
 #	define OOLUA_CONVERTORS_H_
 
+/** \cond INTERNAL*/
+
 #	include <string> //used for C style strings
 
 namespace OOLUA
@@ -336,5 +338,7 @@ namespace OOLUA
 	}
 
 }
+
+/** \endcond */
 
 #endif
