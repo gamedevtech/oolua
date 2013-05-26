@@ -65,12 +65,12 @@ a class which is to be proxied.
  
 	\struct OOLUA::No_default_constructor
 	\brief
-	There is not a default constructor in the public interfaceyet there are other
+	There is not a default constructor in the public interface yet there are other
 	constructors.
 	\details 
 	There is not a public default constructor or you do not wish to expose such a
-	constructor, yet there are other constructors which will be specified in by
-	OOLUA_CTOR entries inside a OOLUA_CTOR block.
+	constructor, yet there are other constructors which will be specified by
+	\ref OOLUA_CTOR entries inside a \ref OOLUA_CTOR block.
 
 	\struct OOLUA::No_public_constructors
 	\brief There are no constructors in the public interface.

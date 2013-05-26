@@ -8,7 +8,6 @@
 /*[PublicMembersExpose]*/
 OOLUA_PROXY(Public_variables)
 	OOLUA_TAGS()
-	OOLUA_CTORS()
 	OOLUA_MGET_MSET(an_int)
 	OOLUA_MGET_MSET(int_ptr)
 	OOLUA_MGET_MSET(dummy_instance)

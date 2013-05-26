@@ -50,7 +50,6 @@ struct Say
 
 OOLUA_PROXY(Say)
 	OOLUA_TAGS()
-	OOLUA_CTORS()
 	OOLUA_MFUNC(message)
 	OOLUA_SFUNC(static_message)
 OOLUA_PROXY_END

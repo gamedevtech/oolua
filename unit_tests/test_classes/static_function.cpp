@@ -40,7 +40,6 @@ struct DerivedClassHasStaticFunction : public ClassHasStaticFunction
 
 OOLUA_PROXY(DerivedClassHasStaticFunction,ClassHasStaticFunction)
 	OOLUA_TAGS()
-	OOLUA_CTORS()
 OOLUA_PROXY_END
 
 OOLUA_EXPORT_NO_FUNCTIONS(DerivedClassHasStaticFunction)

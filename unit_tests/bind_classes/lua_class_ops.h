@@ -15,7 +15,6 @@ OOLUA_PROXY(Class_ops)
 		Mul_op,
 		Div_op
 	)
-	OOLUA_CTORS()
 	OOLUA_MFUNC_CONST(geti)
 OOLUA_PROXY_END
 /*[ClassOpsExpose]*/

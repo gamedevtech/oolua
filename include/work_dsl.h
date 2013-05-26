@@ -36,18 +36,20 @@
 			\li Is it abstract ?
 			\li Does the class have enumerations?
 			\see OOLuaTags
+			\todo \error \fixme Come back and fix this, it is not optional and needs ... something
 		*/
 #		define OOLUA_TAGS(...) OOLUA_TYPEDEFS __VA_ARGS__ OOLUA_END_TYPES
-
-		/*OOLUA_ENUMS incompatible with versions <= 1.4*/
 
 		/**	\def OOLUA_ENUMS
 			\hideinitializer
 			\brief Creates a block into which enumerators can be defined with \ref OOLUA_ENUM
-			\details OOLUA_ENUMS(Optional)
-			\param Optional List of \ref OOLUA_ENUM
+			\details OOLUA_ENUMS(EnumEntriesList)
+			\param EnumEntriesList List of \ref OOLUA_ENUM
+			<p>
+			\note 
+			An OOLUA_ENUMS block without any \ref OOLUA_ENUM entries is invalid.
 		*/
-#		define OOLUA_ENUMS(FOO) OOLUA_ENUMS_START FOO OOLUA_ENUMS_END
+#		define OOLUA_ENUMS(EnumEntriesList) OOLUA_ENUMS_START EnumEntriesList OOLUA_ENUMS_END
 
 		/**	\def OOLUA_ENUM
 			\hideinitializer
@@ -59,15 +61,13 @@
 
 		/**	\def OOLUA_CTORS
 			\hideinitializer
-			\brief Creates a block into which constructors can be defined with \ref OOLUA_CTOR
-			\details OOLUA_CTORS(Optional)
-			\param Optional List of \ref OOLUA_CTOR
+			\brief Creates a block into which none default constructors can be defined with \ref OOLUA_CTOR
+			\details OOLUA_CTORS(ConstructorEntriesList)
+			\param ConstructorEntriesList List of \ref OOLUA_CTOR
 			<p>
-			To enable the construction of an instance which is a specific type there must be 
-			constructors for that type registered with OOLua. \ref OOLUA_CTORS is the block into 
-			which you can define constructor entries using OOLUA_CTOR. An OOLUA_CTORS block 
-			with no \ref OOLUA_CTOR entries informs OOLua that the type has a default constructor
-			in the public interface, unless otherwise enformed OOLuaTags.
+			To enable the construction of an instance which is a specific type, there must be 
+			constructor(s) for that type registered with OOLua. \ref OOLUA_CTORS is the block into 
+			which you can define none default constructor entries using \ref OOLUA_CTOR.
 			<p>
 			Constructors are the only real type of overloading which is permitted by OOLua 
 			and there is an important point which should be noted. OOLua will try and match
@@ -79,8 +79,11 @@
 			even if a reference is required. This means for example that if there are constructors
 			such as Foo::Foo(int) and Foo::Foo(float) it will depend on which was defined first
 			in the OOLUA_CTORS block as to which will be invoked for a call such as Foo:new(1).
+
+			\see \ref OOLUA::No_default_constructor "No_default_constructor"
+			\note An OOLUA_CTORS block without any \ref OOLUA_CTOR entries is invalid.
 		*/
-#		define OOLUA_CTORS(FOO) OOLUA_CONSTRUCTORS_BEGIN FOO OOLUA_CONSTRUCTORS_END
+#		define OOLUA_CTORS(ConstructorEntriesList) OOLUA_CONSTRUCTORS_BEGIN ConstructorEntriesList OOLUA_CONSTRUCTORS_END
 		/**@}*/
 
 

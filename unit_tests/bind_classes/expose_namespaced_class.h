@@ -11,7 +11,6 @@ namespace OOLUA
 
 OOLUA_PROXY(Namespaced)
 	OOLUA_TAGS()
-	OOLUA_CTORS()
 OOLUA_PROXY_END
 
 #endif

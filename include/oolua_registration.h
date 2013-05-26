@@ -359,18 +359,71 @@ namespace OOLUA
 			void operator()(lua_State * const  /*l*/,int const& /*methods*/,int const& /*const_methods*/){}///no-op
 		};
 
+		template<typename T>
+		struct class_or_base_has_ctor_block
+		{
+			template <typename U> 
+			static char (& check_for_ctor_block(typename OOLUA::Proxy_class<U>::ctor_block_check*))[1] ;
+			template <typename U> 
+			static char (& check_for_ctor_block(...))[2];
+			enum {value = sizeof( check_for_ctor_block<T >(0) ) == 1 ? 1 : 0} ;
+		};
+
+		template< typename T, int CtorBlockMaybeInClass_or_MaybeInABase>
+		struct ctor_block_is_same
+		{
+			enum {value = LVD::is_same< Proxy_class<T>::ctor_block_check,T >::value };
+		};
+
+		template< typename T>
+		struct ctor_block_is_same<T,0>
+		{
+			enum {value = 0};
+		};
+
+		template< typename T>
+		struct proxy_class_has_correct_ctor_block
+		{
+			enum { value = ctor_block_is_same<T,class_or_base_has_ctor_block<T>::value >::value  };
+		};
+
+		template<typename T>
+		int oolua_generic_default_constructor(lua_State* l)
+		{
+			lua_remove(l, 1);/*remove class type*/
+			int const stack_count = lua_gettop(l);
+			if(stack_count == 0 )
+			{
+				return INTERNAL::Constructor<T,INTERNAL::has_typedef<OOLUA::Proxy_class<T>, No_default_constructor>::Result>::construct(l);
+			} 
+			luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",OOLUA::Proxy_class<T>::class_name);
+			return 0;/*required by function sig yet luaL_error never returns*/
+		}
+
+
 		template<typename T, bool IsAbstractOrNoConstructors>
 		struct set_create_function
 		{
-			static void set(lua_State*  const l, int methods)
+			static void do_set(lua_State* const l,int methods, LVD::Int2type<1> /*use factory function*/)
 			{
 				set_function_in_table(l
 									  ,new_str
 									  ,&OOLUA::Proxy_class<T>::oolua_factory_function
 									  ,methods);
-				// methods["new"] = create_type
 			}
-			
+			static void do_set(lua_State* const l,int methods, LVD::Int2type<0> /*needs generic function*/)
+			{
+				set_function_in_table(l
+									  ,new_str
+									  ,&oolua_generic_default_constructor<T>
+									  ,methods);
+
+			}
+			static void set(lua_State*  const l, int methods)
+			{
+				do_set(l,methods,LVD::Int2type<proxy_class_has_correct_ctor_block<T>::value>() );
+				// methods["new"] = some_method
+			}
 		};
 
 		template<typename T>

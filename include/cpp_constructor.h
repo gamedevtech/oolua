@@ -258,7 +258,8 @@ static int oolua_factory_function(lua_State* l) \
 	} \
 	luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",class_name); \
 	return 0;/*required by function sig yet luaL_error never returns*/  \
-}
+} \
+	typedef class_ ctor_block_check;
 
 #define OOLUA_ONLY_DEFAULT_CONSTRUCTOR \
 OOLUA_CONSTRUCTORS_BEGIN \

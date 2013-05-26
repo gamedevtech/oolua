@@ -12,8 +12,10 @@ typedef std::vector<int> vector_int;
 
 OOLUA_PROXY(vector_int)
 	OOLUA_TAGS()
-	OOLUA_CTORS()
-	OOLUA_MFUNC(push_back)
+	//C++11 adds an overload
+	//OOLUA_MFUNC(push_back)
+	OOLUA_MEM_FUNC(void,push_back, const class_::value_type &)
+
 	OOLUA_MFUNC(pop_back)
 	OOLUA_MFUNC_CONST(size)
 OOLUA_PROXY_END

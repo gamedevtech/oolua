@@ -7,7 +7,6 @@
 
 OOLUA_PROXY(Method_returns_class)
 	OOLUA_TAGS()
-	OOLUA_CTORS()
 	OOLUA_MFUNC(ref)
 	OOLUA_MFUNC(ref_const)
 	OOLUA_MFUNC(ptr)
