@@ -15,10 +15,8 @@
 
 //* \cond INTERNAL*/
 
-#if GCC_VA_ARGS_SYSTEM_HEADER_OOLUA == 1
+#if defined __GNUC__
 #	pragma GCC system_header
-#else
-	GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA
 #endif
 
 //proxy implementations
@@ -46,7 +44,5 @@
 #define OOLUA_STATIC_FUNC_INTERNAL_1(FunctionName)			OOLUA_STATIC_FUNC_INTERNAL_2(FunctionName,FunctionName) 
 
 /** \endcond*/
-
-GCC_POP_VA_WARNINGS_OOLUA
 
 #endif 

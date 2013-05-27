@@ -16,10 +16,8 @@
 #	include "oolua_config.h"
 
 /** \cond INTERNAL*/
-#if GCC_VA_ARGS_SYSTEM_HEADER_OOLUA == 1
+#if defined __GNUC__
 #	pragma GCC system_header
-#else
-	GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA
 #endif
 
 
@@ -82,8 +80,6 @@ int ProxyName(lua_State* l) mod \
 #define OOLUA_MFUNC_CONST_INTERNAL_2(FunctionName,ProxyName)OOLUA_MFUNC_GENERIC(const,ProxyName,FunctionName)
 #define OOLUA_MFUNC_CONST_INTERNAL_1(FunctionName)			OOLUA_MFUNC_CONST_INTERNAL_2(FunctionName,FunctionName) 
 
-
-GCC_POP_VA_WARNINGS_OOLUA
 
 /** \endcond*/
 

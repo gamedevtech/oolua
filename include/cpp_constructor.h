@@ -266,5 +266,23 @@ OOLUA_CONSTRUCTORS_BEGIN \
 OOLUA_CONSTRUCTORS_END
 
 
+namespace OOLUA
+{
+	namespace INTERNAL
+	{
+		template<typename T>
+		inline int oolua_generic_default_constructor(lua_State* l)
+		{
+			lua_remove(l, 1);/*remove class type*/
+			int const stack_count = lua_gettop(l);
+			if(stack_count == 0 )
+			{
+				return Constructor<T,has_typedef<OOLUA::Proxy_class<T>, OOLUA::No_default_constructor>::Result>::construct(l);
+			} 
+			luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",OOLUA::Proxy_class<T>::class_name);
+			return 0;/*required by function sig yet luaL_error never returns*/
+		}
+	}
+}
 
 #endif 

@@ -85,7 +85,12 @@ namespace OOLUA
 		template<typename T,int HasNoPublicDestructor>struct set_delete_function;
 		template<typename T,bool HasNoPublicDestructor>struct set_owner_function;
 		template<typename T, bool IsAbstractOrNoConstructors>struct set_create_function;
-		
+
+		//fwd declare, not defined here
+		template<typename T>
+		int oolua_generic_default_constructor(lua_State* l);
+
+			
 		void set_function_in_table_with_upvalue(lua_State* l, char const * func_name, lua_CFunction func
 														, int tableIndex, void* upvalue);
 		void set_function_in_table(lua_State* l, char const* func_name,lua_CFunction func,int tableIndex);
@@ -372,7 +377,7 @@ namespace OOLUA
 		template< typename T, int CtorBlockMaybeInClass_or_MaybeInABase>
 		struct ctor_block_is_same
 		{
-			enum {value = LVD::is_same< Proxy_class<T>::ctor_block_check,T >::value };
+			enum {value = LVD::is_same< typename Proxy_class<T>::ctor_block_check,T >::value };
 		};
 
 		template< typename T>
@@ -386,20 +391,6 @@ namespace OOLUA
 		{
 			enum { value = ctor_block_is_same<T,class_or_base_has_ctor_block<T>::value >::value  };
 		};
-
-		template<typename T>
-		int oolua_generic_default_constructor(lua_State* l)
-		{
-			lua_remove(l, 1);/*remove class type*/
-			int const stack_count = lua_gettop(l);
-			if(stack_count == 0 )
-			{
-				return INTERNAL::Constructor<T,INTERNAL::has_typedef<OOLUA::Proxy_class<T>, No_default_constructor>::Result>::construct(l);
-			} 
-			luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",OOLUA::Proxy_class<T>::class_name);
-			return 0;/*required by function sig yet luaL_error never returns*/
-		}
-
 
 		template<typename T, bool IsAbstractOrNoConstructors>
 		struct set_create_function

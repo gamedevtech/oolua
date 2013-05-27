@@ -87,8 +87,12 @@ unit_test_config = function()
 	configuration {"codeblocks" }
 		postbuildcommands { "$(TARGET_OUTPUT_FILE)"}
 				
+	configuration {"gmake or codeblocks","linux" }
+		libdirs {"usr/local/lib","usr/lib"}
+		links{ "gmock", "pthread", --[["gtest",--]]"cppunit", "lua" }
 
-	configuration {"gmake or codeblocks","linux or macosx" }
+
+	configuration {"gmake or codeblocks","macosx"}--linux or macosx" }
 		libdirs {"usr/local/lib","usr/lib"}
 		links{ "cppunit", "lua" }
 		linkoptions{"`gmock-config --cxxflags --ldflags --libs`"}

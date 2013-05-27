@@ -1,10 +1,8 @@
 #ifndef OOLUA_VA_ARGS_H_
 #	define OOLUA_VA_ARGS_H_
 
-#if defined __GNUC__ && (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__) < 40600
+#if defined __GNUC__
 #	pragma GCC system_header
-#else
-	GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA
 #endif
 
 /** \file oolua_va_args.h */
@@ -499,8 +497,6 @@ Visual Studio it fails unless we go through a further macro to expand it.*/
 			OOLUA_CLASS(ClassType) : OOLUA_PUBLIC_INHERIT (__VA_ARGS__) \
 			OOLUA_BASIC \
 			OOLUA_BASES_START __VA_ARGS__ OOLUA_BASES_END
-
-GCC_POP_VA_WARNINGS_OOLUA
 
 /** \endcond */
 

@@ -1,4 +1,5 @@
 #include "oolua_registration.h"
+#include "cpp_constructor.h"
 
 namespace OOLUA
 {
