@@ -8,8 +8,8 @@ namespace
 	template<typename T>
 	void push_then_pull(OOLUA::Script * lua,T input, T& output)
 	{
-		OOLUA::push2lua(*lua,input);
-		OOLUA::pull2cpp(*lua,output);
+		OOLUA::push(*lua,input);
+		OOLUA::pull(*lua,output);
 	}
 	std::string ILP64_and_LP64_fail_message(bool large_number)
 	{

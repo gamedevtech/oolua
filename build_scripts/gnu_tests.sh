@@ -35,18 +35,18 @@ timeDiffLocal=$(( $timeEndLocal - $timeStartLocal ))
 
 timeStart=$(date +%s)
 
-#run_test test.unit debug
-#run_test test.unit release
+run_test test.unit debug
+run_test test.unit release
 
 run_test test.unit.using_exceptions debug
 run_test test.unit.using_exceptions release
 
-#run_test string_is_integral debug
-#run_test string_is_integral release
+run_test string_is_integral debug
+run_test string_is_integral release
 
-#function_to_call_on_error=failing_may_not_be_an_error
-#run_test tests_may_fail debug
-#run_test tests_may_fail release
+function_to_call_on_error=failing_may_not_be_an_error
+run_test tests_may_fail debug
+run_test tests_may_fail release
 
 timeEnd=$(date +%s)
 timeDiff=$(( $timeEnd - $timeStart ))
