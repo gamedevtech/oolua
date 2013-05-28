@@ -89,7 +89,7 @@ unit_test_config = function()
 				
 	configuration {"gmake or codeblocks","linux" }
 		libdirs {"usr/local/lib","usr/lib"}
-		links{ "gmock", "pthread", --[["gtest",--]]"cppunit", "lua" }
+		links{ "gmock", "pthread", "cppunit", "lua" }
 
 
 	configuration {"gmake or codeblocks","macosx"}--linux or macosx" }

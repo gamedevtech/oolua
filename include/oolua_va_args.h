@@ -1,14 +1,17 @@
 #ifndef OOLUA_VA_ARGS_H_
 #	define OOLUA_VA_ARGS_H_
 
-#if defined __GNUC__
-#	pragma GCC system_header
-#endif
+#	if defined __GNUC__
+#		pragma GCC system_header
+	#endif
 
 /** \file oolua_va_args.h */
 
-/** \cond INTERNAL*/
-/*Abstract all usage of OOLUA_NARG or variants on __VA_ARGS__ */
+/** \cond INTERNAL
+	The only difference between the code at the following URL and used below, is
+	that macro names got an OOLUA prefix as per all macros in the library
+	http://groups.google.com/group/comp.std.c/browse_thread/thread/77ee8c8f92e4a3fb/346fc464319b1ee5
+*/
 
 /*No No, No No No No, No No No No, No No there's a limit! */
 #	define OOLUA_INTERNAL_60_N \
@@ -19,10 +22,6 @@
 		N,N,N,N,N,N,N,N,N,N,\
 		N,N,N,N,N,N,N,N,N,N
 
-	//Assume the compiler supports __VA_ARGS__ and uses the standard implementation.
-	//The only difference between the code at the following URL and used below, is
-	//that macro names got an OOLUA prefix as per all macros in the library
-	//http://groups.google.com/group/comp.std.c/browse_thread/thread/77ee8c8f92e4a3fb/346fc464319b1ee5
 
 #	define OOLUA_NARG(...)\
 		OOLUA_NARG_DO(__VA_ARGS__,OOLUA_RSEQ_N)
@@ -46,13 +45,13 @@
 		9,8,7,6,5,4,3,2,1,0
 
  
-/*====================================================
-For macros which require at least a specific amount of arguments.
-Translates to:
-	0 if equal to amount
-	N if more than the amount
-	Compile time error if less than the required amount and greater than zero
-*/
+	/*====================================================
+		For macros which require at least a specific amount of arguments.
+		Translates to:
+			0 if equal to amount
+			N if more than the amount
+		Compile time error if less than the required amount and greater than zero
+	*/
 #	define OOLUA_NARG_GREATER_THAN_ONE(...)\
 		OOLUA_NARG_DO(__VA_ARGS__, OOLUA_INTERNAL_60_N,N,N,0,ERROR_NOT_ENOUGH_PARAMETERS )		
 
@@ -64,157 +63,147 @@ Translates to:
 
 /*====================================================*/
 
+/*	Concatenating normally only requires two macros to correctly expand yet 
+	when using OOLUA_NARG with Visual Studio it fails unless we go through 
+	a further macro to expand it.
+*/
+#	define DO_VA_CONCAT2(A,B)A##B
+#	define DO_VA_CONCAT(A,B) DO_VA_CONCAT2(A,B)
+#	define OOLUA_VA_CONCAT(A,B) DO_VA_CONCAT(A,B)
+
+
+#	define OOLUA_PUBLIC_INHERIT_1(ClassType) \
+			public Proxy_class<ClassType> 
+
+#	define OOLUA_PUBLIC_INHERIT_2(ClassType1,ClassType2) \
+			OOLUA_PUBLIC_INHERIT_1(ClassType1)\
+			,OOLUA_PUBLIC_INHERIT_1(ClassType2)
+
+#	define OOLUA_PUBLIC_INHERIT_3(ClassType1,ClassType2,ClassType3) \
+			OOLUA_PUBLIC_INHERIT_2(ClassType1,ClassType2)\
+			,OOLUA_PUBLIC_INHERIT_1(ClassType3)
+
+#	define OOLUA_PUBLIC_INHERIT_4(ClassType1,ClassType2,ClassType3,ClassType4) \
+			OOLUA_PUBLIC_INHERIT_3(ClassType1,ClassType2,ClassType3)\
+			,OOLUA_PUBLIC_INHERIT_1(ClassType4)
+
+#	define OOLUA_PUBLIC_INHERIT_5(ClassType1,ClassType2,ClassType3,ClassType4,ClassType5) \
+			OOLUA_PUBLIC_INHERIT_4(ClassType1,ClassType2,ClassType3,ClassType4)\
+			,OOLUA_PUBLIC_INHERIT_1(ClassType4)
+
+#	define OOLUA_PUBLIC_INHERIT_6(ClassType1,ClassType2,ClassType3,ClassType4,ClassType5,ClassType6) \
+			OOLUA_PUBLIC_INHERIT_5(ClassType1,ClassType2,ClassType3,ClassType4,ClassType5)\
+			,OOLUA_PUBLIC_INHERIT_1(ClassType6)
+
+
+#	define OOLUA_PROXY_WITH_BASES_0(ClassType)\
+			OOLUA_CLASS(ClassType) \
+			OOLUA_BASIC \
+			OOLUA_NO_BASES
+
+#	define OOLUA_PROXY_WITH_BASES_N(ClassType,...)\
+			OOLUA_CLASS(ClassType) : OOLUA_PUBLIC_INHERIT (__VA_ARGS__) \
+			OOLUA_BASIC \
+			OOLUA_BASES_START __VA_ARGS__ OOLUA_BASES_END
+
 /** \endcond */
 
 
 
-
-
-
-
-
 //#if defined BROKEN_PREPROCESSOR 
-#if defined _MSC_VER && _MSC_VER >= 1400 && _MSC_VER <= 1700 && !defined __INTEL_COMPILER
-/** \cond INTERNAL*/
-
-/*		vs8(2005), vs9(2008), vs10(2010) and vs11(2012) should all be fine with the work around of the __VA_ARGS__ bug
+#	if defined _MSC_VER && _MSC_VER >= 1400 && _MSC_VER <= 1700 && !defined __INTEL_COMPILER
+	/** \cond INTERNAL
+		vs8(2005), vs9(2008), vs10(2010) and vs11(2012) should all be fine with the work around of the __VA_ARGS__ bug
 		which the compiler team will never admit to it being wrong. The fix was previously documented at the following 
 		URL yet the page is no longer reachable.
 		https://connect.microsoft.com/VisualStudio/feedback/details/521844/variadic-macro-treating-va-args-as-a-single-parameter-for-other-macros#details
 		Taken from the above bug report url and the proposed workaround
 
-		See normal docs below
-*/
+		For inline documentation see none MSC version below
+	*/
 
 #		define OOLUA_LEFT_PAREN (
 #		define OOLUA_RIGHT_PAREN )
 #		define OOLUA_NARG_DO(...)\
 			OOLUA_ARG_N OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-/*Function generation helper macros*/ 
-#	define OOLUA_PARAMS_CONCAT(...)			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_PARAMS_INTERNAL_, OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
-#	define OOLUA_PARAM_TYPE_CONCAT(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_FUNCTION_PARAMS_TYPES_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN
-#	define OOLUA_TPARAMS_CONCAT(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_TPARAMS_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN
-#	define OOLUA_PPARAMS_CONCAT(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_PPARAMS_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN
-#	define OOLUA_BACK_CONCAT(...)			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_BACK_INTERNAL_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN
-#	define OOLUA_RETURNS_CONCAT(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_RETURNS_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN
-/*=================================*/
+		/*Function generation helper macros*/ 
+#		define OOLUA_PARAMS_CONCAT(...)			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_PARAMS_INTERNAL_, OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_PARAM_TYPE_CONCAT(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_FUNCTION_PARAMS_TYPES_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN
+#		define OOLUA_TPARAMS_CONCAT(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_TPARAMS_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN
+#		define OOLUA_PPARAMS_CONCAT(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_PPARAMS_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN
+#		define OOLUA_BACK_CONCAT(...)			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_BACK_INTERNAL_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN
+#		define OOLUA_RETURNS_CONCAT(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_RETURNS_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN
 
+		/*Public API*/
+#		define OOLUA_PROXY(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_PROXY_WITH_BASES_,OOLUA_NARG_GREATER_THAN_ONE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_PROXY(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_PROXY_WITH_BASES_,OOLUA_NARG_GREATER_THAN_ONE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_CTOR(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_CONSTRUCTOR_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_CTOR(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_CONSTRUCTOR_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_MEM_FUNC(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_,OOLUA_NARG_GREATER_THAN_TWO OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN  OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_MEM_FUNC(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_,OOLUA_NARG_GREATER_THAN_TWO OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN  OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_MEM_FUNC_RENAME(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_RENAME_,OOLUA_NARG_GREATER_THAN_THREE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_MEM_FUNC_RENAME(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_RENAME_,OOLUA_NARG_GREATER_THAN_THREE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_MEM_FUNC_CONST(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_CONST_,OOLUA_NARG_GREATER_THAN_TWO OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_MEM_FUNC_CONST(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_CONST_,OOLUA_NARG_GREATER_THAN_TWO OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_MEM_FUNC_CONST_RENAME(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_CONST_RENAME_,OOLUA_NARG_GREATER_THAN_THREE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_MEM_FUNC_CONST_RENAME(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_CONST_RENAME_,OOLUA_NARG_GREATER_THAN_THREE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_C_FUNCTION(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_C_FUNCTION_,OOLUA_NARG_GREATER_THAN_TWO OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_C_FUNCTION(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_C_FUNCTION_,OOLUA_NARG_GREATER_THAN_TWO OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_MFUNC(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MFUNC_INTERNAL_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN  OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_MFUNC(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MFUNC_INTERNAL_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN  OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_MFUNC_CONST(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MFUNC_CONST_INTERNAL_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_MFUNC_CONST(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MFUNC_CONST_INTERNAL_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_CFUNC(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_CFUNC_INTERNAL_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN  OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_CFUNC(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_CFUNC_INTERNAL_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN  OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_SFUNC(...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_STATIC_FUNC_INTERNAL_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN  OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_SFUNC(...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_STATIC_FUNC_INTERNAL_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN  OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_EXPORT_FUNCTIONS(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_GREATER_THAN_ONE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN OOLUA_NON_CONST,__VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_EXPORT_FUNCTIONS(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_GREATER_THAN_ONE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN OOLUA_NON_CONST,__VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_EXPORT_FUNCTIONS_CONST(...)OOLUA_VA_CONCAT OOLUA_LEFT_PAREN EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_GREATER_THAN_ONE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN OOLUA_CONST,__VA_ARGS__ OOLUA_RIGHT_PAREN
+		/*End Public API*/
 
-#	define OOLUA_EXPORT_FUNCTIONS_CONST(...)OOLUA_VA_CONCAT OOLUA_LEFT_PAREN EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_GREATER_THAN_ONE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN OOLUA_CONST,__VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define OOLUA_PUBLIC_INHERIT(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_PUBLIC_INHERIT_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define OOLUA_PUBLIC_INHERIT(...)		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_PUBLIC_INHERIT_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
+#		define EXPORT_OOLUA_FUNCTIONS_0(mod,ClassType)\
+			EXPORT_OOLUA_FUNCTIONS_0_(mod,ClassType)
 
-#	define EXPORT_OOLUA_FUNCTIONS_0(mod,ClassType)\
-		EXPORT_OOLUA_FUNCTIONS_0_(mod,ClassType)
+#		define EXPORT_OOLUA_FUNCTIONS_N(mod,ClassType,...)\
+			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_VA_CONCAT OOLUA_LEFT_PAREN EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN ,_ OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN mod,ClassType,__VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#	define EXPORT_OOLUA_FUNCTIONS_N(mod,ClassType,...)\
-		OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_VA_CONCAT OOLUA_LEFT_PAREN EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN ,_ OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN mod,ClassType,__VA_ARGS__ OOLUA_RIGHT_PAREN
+	/** \endcond */
 
-/*=======================================*/
+#	else //Generic __VA_ARGS__
 
-/** \endcond */
-
-#else //Generic __VA_ARGS__
-
-	/** \cond INTERNAL*/
-	//Assume the compiler supports __VA_ARGS__ and uses the standard implementation.
-	//The only difference between the code at the following URL and used below, is
-	//that macro names got an OOLUA prefix as per all macros in the library
-	//http://groups.google.com/group/comp.std.c/browse_thread/thread/77ee8c8f92e4a3fb/346fc464319b1ee5
-
-#	define OOLUA_NARG(...)\
-	OOLUA_NARG_DO(__VA_ARGS__,OOLUA_RSEQ_N)
-
-#	define OOLUA_NARG_DO(...)\
-	OOLUA_ARG_N(__VA_ARGS__)
-
-#	define OOLUA_ARG_N(\
-		_1, _2, _3, _4, _5, _6, _7, _8, _9,_10,\
-		_11,_12,_13,_14,_15,_16,_17,_18,_19,_20,\
-		_21,_22,_23,_24,_25,_26,_27,_28,_29,_30,\
-		_31,_32,_33,_34,_35,_36,_37,_38,_39,_40,\
-		_41,_42,_43,_44,_45,_46,_47,_48,_49,_50,\
-		_51,_52,_53,_54,_55,_56,_57,_58,_59,_60,\
-		_61,_62,_63,N,...) N
-
-#	define OOLUA_RSEQ_N\
-		63,62,61,60,\
-		59,58,57,56,55,54,53,52,51,50,\
-		49,48,47,46,45,44,43,42,41,40,\
-		39,38,37,36,35,34,33,32,31,30,\
-		29,28,27,26,25,24,23,22,21,20,\
-		19,18,17,16,15,14,13,12,11,10,\
-		9,8,7,6,5,4,3,2,1,0
-
-/*
+	/** \cond INTERNAL
+		Assume the compiler supports __VA_ARGS__ and uses the standard implementation.
+		The only difference between the code at the following URL and used below, is
+		that macro names got an OOLUA prefix as per all macros in the library
+		http://groups.google.com/group/comp.std.c/browse_thread/thread/77ee8c8f92e4a3fb/346fc464319b1ee5
+	*/
+#		define OOLUA_NARG_DO(...)\
+			OOLUA_ARG_N(__VA_ARGS__)
  
-/*====================================================
-For macros which require at least a specific amount of arguments.
-Translates to:
-	0 if equal to amount
-	N if more than the amount
-	Compile time error if less than the required amount and greater than zero
-*/
-#	define OOLUA_NARG_GREATER_THAN_ONE(...)\
-		OOLUA_NARG_DO(__VA_ARGS__, OOLUA_INTERNAL_60_N,N,N,0,ERROR_NOT_ENOUGH_PARAMETERS )		
+		/*Function generation helper macros*/ 
+#		define OOLUA_PARAMS_CONCAT(...)			OOLUA_VA_CONCAT(OOLUA_PARAMS_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) ( __VA_ARGS__  )
+#		define OOLUA_PARAM_TYPE_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_FUNCTION_PARAMS_TYPES_,OOLUA_NARG(__VA_ARGS__))
+#		define OOLUA_TPARAMS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_TPARAMS_,OOLUA_NARG(__VA_ARGS__))
+#		define OOLUA_PPARAMS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_PPARAMS_,OOLUA_NARG(__VA_ARGS__))
+#		define OOLUA_BACK_CONCAT(...)			OOLUA_VA_CONCAT(OOLUA_BACK_INTERNAL_,OOLUA_NARG(__VA_ARGS__))
+#		define OOLUA_RETURNS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_RETURNS_,OOLUA_NARG(__VA_ARGS__))
 
-#	define OOLUA_NARG_GREATER_THAN_TWO(...)\
-		OOLUA_NARG_DO(__VA_ARGS__, OOLUA_INTERNAL_60_N,N,0,ERROR_NOT_ENOUGH_PARAMETERS, ERROR_NOT_ENOUGH_PARAMETERS )
-
-#	define OOLUA_NARG_GREATER_THAN_THREE(...)\
-		OOLUA_NARG_DO(__VA_ARGS__, OOLUA_INTERNAL_60_N,0,ERROR_NOT_ENOUGH_PARAMETERS, ERROR_NOT_ENOUGH_PARAMETERS, ERROR_NOT_ENOUGH_PARAMETERS )
-
-/*====================================================*/
-
-/*Function generation helper macros*/ 
-#	define OOLUA_PARAMS_CONCAT(...)			OOLUA_VA_CONCAT(OOLUA_PARAMS_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) ( __VA_ARGS__  )
-#	define OOLUA_PARAM_TYPE_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_FUNCTION_PARAMS_TYPES_,OOLUA_NARG(__VA_ARGS__))
-#	define OOLUA_TPARAMS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_TPARAMS_,OOLUA_NARG(__VA_ARGS__))
-#	define OOLUA_PPARAMS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_PPARAMS_,OOLUA_NARG(__VA_ARGS__))
-#	define OOLUA_BACK_CONCAT(...)			OOLUA_VA_CONCAT(OOLUA_BACK_INTERNAL_,OOLUA_NARG(__VA_ARGS__))
-#	define OOLUA_RETURNS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_RETURNS_,OOLUA_NARG(__VA_ARGS__))
-/*=================================*/
-
-/** \endcond*/
-
-
-
+	/** \endcond*/
 
 /*Public API macros using NARG or variants*/
 
@@ -225,10 +214,9 @@ Translates to:
 	OOLua provides a DSL for defining C++ types which are to be made available to a 
 	Lua script. The intention of this DSL is to hide the details whilst providing a 
 	simple and rememberable interface for performing the actions required.
- */
-/*\note
-"Optional" here means tha extra macro parameters are optional, up to the configuration max 
-for a specific operation.
+\note
+	"Optional" here means tha extra macro parameters are optional, up to the 
+	configuration max for a specific operation.
 */
 
 	/** \def OOLUA_PROXY
@@ -240,8 +228,8 @@ for a specific operation.
 		\param Optional Comma seperated list of real base classes
 		\pre Each class specified in Optional must be a real base class of ClassName
 	*/
-#	define OOLUA_PROXY(...)\
-		OOLUA_VA_CONCAT(OOLUA_PROXY_WITH_BASES_,OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(__VA_ARGS__)
+#		define OOLUA_PROXY(...)\
+			OOLUA_VA_CONCAT(OOLUA_PROXY_WITH_BASES_,OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(__VA_ARGS__)
 
 	/** \def OOLUA_CTOR
 		\hideinitializer
@@ -251,8 +239,8 @@ for a specific operation.
 		\param ConstructorParameterList Comma seperated list of parameters
 		\pre Size of ConstructorParameterList >0 and <= configuration max
 	*/
-#	define OOLUA_CTOR(...)\
-		OOLUA_VA_CONCAT(OOLUA_CONSTRUCTOR_,OOLUA_NARG(__VA_ARGS__))(__VA_ARGS__)	
+#		define OOLUA_CTOR(...)\
+			OOLUA_VA_CONCAT(OOLUA_CONSTRUCTOR_,OOLUA_NARG(__VA_ARGS__))(__VA_ARGS__)	
 
 
 	/** \addtogroup OOLuaExpressive Expressive
@@ -272,8 +260,8 @@ for a specific operation.
 		\param FunctionName
 		\param Optional : Function parameter types
 	*/
-#	define OOLUA_MEM_FUNC(...)\
-		OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG_GREATER_THAN_TWO(__VA_ARGS__)) (__VA_ARGS__)
+#		define OOLUA_MEM_FUNC(...)\
+			OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG_GREATER_THAN_TWO(__VA_ARGS__)) (__VA_ARGS__)
 
 	/** \def OOLUA_MEM_FUNC_RENAME
 		\hideinitializer
@@ -285,8 +273,8 @@ for a specific operation.
 		\param FunctionName
 		\param Optional : Function parameter types
 	*/
-#	define OOLUA_MEM_FUNC_RENAME(...)\
-		OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_RENAME_,OOLUA_NARG_GREATER_THAN_THREE(__VA_ARGS__))(__VA_ARGS__)
+#		define OOLUA_MEM_FUNC_RENAME(...)\
+			OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_RENAME_,OOLUA_NARG_GREATER_THAN_THREE(__VA_ARGS__))(__VA_ARGS__)
 
 	/** \def OOLUA_MEM_FUNC_CONST
 		\hideinitializer
@@ -297,8 +285,8 @@ for a specific operation.
 		\param FunctionName
 		\param Optional Comma seperated list of function parameter types
 	*/
-#	define OOLUA_MEM_FUNC_CONST(...)\
-		OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_CONST_,OOLUA_NARG_GREATER_THAN_TWO(__VA_ARGS__))(__VA_ARGS__)
+#		define OOLUA_MEM_FUNC_CONST(...)\
+			OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_CONST_,OOLUA_NARG_GREATER_THAN_TWO(__VA_ARGS__))(__VA_ARGS__)
 
 	/** \def OOLUA_MEM_FUNC_CONST_RENAME
 		\hideinitializer
@@ -310,8 +298,8 @@ for a specific operation.
 		\param FunctionName
 		\param Optional Comma seperated list of function parameter types
 	*/
-#	define OOLUA_MEM_FUNC_CONST_RENAME(...)\
-		OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_CONST_RENAME_,OOLUA_NARG_GREATER_THAN_THREE(__VA_ARGS__))(__VA_ARGS__)
+#		define OOLUA_MEM_FUNC_CONST_RENAME(...)\
+			OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_CONST_RENAME_,OOLUA_NARG_GREATER_THAN_THREE(__VA_ARGS__))(__VA_ARGS__)
 
 	/** \def OOLUA_C_FUNCTION
 		\hideinitializer
@@ -334,8 +322,8 @@ for a specific operation.
 		This macro should ideally be used as the last operation of a function body as
 		control will return to the caller. Notice there is no return statement in l_foo
 	*/
-#	define OOLUA_C_FUNCTION(...)\
-		OOLUA_VA_CONCAT(OOLUA_C_FUNCTION_,OOLUA_NARG_GREATER_THAN_TWO(__VA_ARGS__))(__VA_ARGS__)
+#		define OOLUA_C_FUNCTION(...)\
+			OOLUA_VA_CONCAT(OOLUA_C_FUNCTION_,OOLUA_NARG_GREATER_THAN_TWO(__VA_ARGS__))(__VA_ARGS__)
 	/**	@}*/
 
  
@@ -363,8 +351,8 @@ for a specific operation.
 		\param FunctionName Name of the member function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
 	*/
-#	define OOLUA_MFUNC(...)\
-		OOLUA_VA_CONCAT(OOLUA_MFUNC_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
+#		define OOLUA_MFUNC(...)\
+			OOLUA_VA_CONCAT(OOLUA_MFUNC_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
 
 	/** \def OOLUA_MFUNC_CONST
 		\hideinitializer
@@ -374,8 +362,8 @@ for a specific operation.
 		\param FunctionName Name of the constant function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
 	*/
-#	define OOLUA_MFUNC_CONST(...)\
-		OOLUA_VA_CONCAT(OOLUA_MFUNC_CONST_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
+#		define OOLUA_MFUNC_CONST(...)\
+			OOLUA_VA_CONCAT(OOLUA_MFUNC_CONST_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
 
 	/** \def OOLUA_CFUNC
 		\hideinitializer
@@ -385,8 +373,8 @@ for a specific operation.
 		\param FunctionName Name of the C function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
 	*/
-#	define OOLUA_CFUNC(...)\
-		OOLUA_VA_CONCAT(OOLUA_CFUNC_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
+#		define OOLUA_CFUNC(...)\
+			OOLUA_VA_CONCAT(OOLUA_CFUNC_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
 
 	/** \def OOLUA_SFUNC
 		\hideinitializer
@@ -398,8 +386,8 @@ for a specific operation.
 		\note This function will not exported and needs to be registered
 		with OOLua see OOLUA::register_class_static
 	 */
-#	define OOLUA_SFUNC(...)\
-		OOLUA_VA_CONCAT(OOLUA_STATIC_FUNC_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
+#		define OOLUA_SFUNC(...)\
+			OOLUA_VA_CONCAT(OOLUA_STATIC_FUNC_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
 	/**	@}*/
 
 
@@ -423,7 +411,7 @@ for a specific operation.
 		\param ClassName Name of class to which the function belong to 
 		\param Optional Comma seperated list of member function names
 	*/
-#	define OOLUA_EXPORT_FUNCTIONS(...)		OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(OOLUA_NON_CONST,__VA_ARGS__)
+#		define OOLUA_EXPORT_FUNCTIONS(...)		OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(OOLUA_NON_CONST,__VA_ARGS__)
 
 	/** \def OOLUA_EXPORT_FUNCTIONS_CONST
 		\hideinitializer
@@ -433,7 +421,7 @@ for a specific operation.
 		\param ClassName Name of class to which the function belong to 
 		\param Optional Comma seperated list of constant member function names
 	*/
-#	define OOLUA_EXPORT_FUNCTIONS_CONST(...)OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(OOLUA_CONST,__VA_ARGS__)
+#		define OOLUA_EXPORT_FUNCTIONS_CONST(...)OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(OOLUA_CONST,__VA_ARGS__)
 	/**	@}*/
 
 /**@}*/
@@ -441,63 +429,18 @@ for a specific operation.
 /*End public API*/
 
 
+	/** \cond INTERNAL*/
+#		define OOLUA_PUBLIC_INHERIT(...)		OOLUA_VA_CONCAT(OOLUA_PUBLIC_INHERIT_,OOLUA_NARG(__VA_ARGS__))(__VA_ARGS__)
 
-/** \cond INTERNAL*/
+	/*This is here because EXPORT_OOLUA_FUNCTIONS_N uses OOLUA_NARG*/
+#		define EXPORT_OOLUA_FUNCTIONS_0(mod,ClassType)\
+			EXPORT_OOLUA_FUNCTIONS_0_(mod,ClassType)
 
-#	define OOLUA_PUBLIC_INHERIT(...)		OOLUA_VA_CONCAT(OOLUA_PUBLIC_INHERIT_,OOLUA_NARG(__VA_ARGS__))(__VA_ARGS__)
+#		define EXPORT_OOLUA_FUNCTIONS_N(mod,ClassType,...)\
+			OOLUA_VA_CONCAT(OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG(__VA_ARGS__)),_)(mod,ClassType,__VA_ARGS__)
+	/** \endcond*/
 
-/*This is here because EXPORT_OOLUA_FUNCTIONS_N uses OOLUA_NARG*/
-#	define EXPORT_OOLUA_FUNCTIONS_0(mod,ClassType)\
-		EXPORT_OOLUA_FUNCTIONS_0_(mod,ClassType)
+#	endif
 
-#	define EXPORT_OOLUA_FUNCTIONS_N(mod,ClassType,...)\
-		OOLUA_VA_CONCAT(OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG(__VA_ARGS__)),_)(mod,ClassType,__VA_ARGS__)
-/*=======================================*/
-
-#endif
-
-
-/*Concatenating normally only requires two macros to correctly expand yet when using OOLUA_NARG with 
-Visual Studio it fails unless we go through a further macro to expand it.*/
-#define DO_VA_CONCAT2(A,B)A##B
-#define DO_VA_CONCAT(A,B) DO_VA_CONCAT2(A,B)
-#define OOLUA_VA_CONCAT(A,B) DO_VA_CONCAT(A,B)
-
-
-#define OOLUA_PUBLIC_INHERIT_1(ClassType) \
-			public Proxy_class<ClassType> 
-
-#define OOLUA_PUBLIC_INHERIT_2(ClassType1,ClassType2) \
-			OOLUA_PUBLIC_INHERIT_1(ClassType1)\
-			,OOLUA_PUBLIC_INHERIT_1(ClassType2)
-
-#define OOLUA_PUBLIC_INHERIT_3(ClassType1,ClassType2,ClassType3) \
-			OOLUA_PUBLIC_INHERIT_2(ClassType1,ClassType2)\
-			,OOLUA_PUBLIC_INHERIT_1(ClassType3)
-
-#define OOLUA_PUBLIC_INHERIT_4(ClassType1,ClassType2,ClassType3,ClassType4) \
-			OOLUA_PUBLIC_INHERIT_3(ClassType1,ClassType2,ClassType3)\
-			,OOLUA_PUBLIC_INHERIT_1(ClassType4)
-
-#define OOLUA_PUBLIC_INHERIT_5(ClassType1,ClassType2,ClassType3,ClassType4,ClassType5) \
-			OOLUA_PUBLIC_INHERIT_4(ClassType1,ClassType2,ClassType3,ClassType4)\
-			,OOLUA_PUBLIC_INHERIT_1(ClassType4)
-
-#define OOLUA_PUBLIC_INHERIT_6(ClassType1,ClassType2,ClassType3,ClassType4,ClassType5,ClassType6) \
-			OOLUA_PUBLIC_INHERIT_5(ClassType1,ClassType2,ClassType3,ClassType4,ClassType5)\
-			,OOLUA_PUBLIC_INHERIT_1(ClassType6)
-
-
-#	define OOLUA_PROXY_WITH_BASES_0(ClassType)\
-			OOLUA_CLASS(ClassType) \
-			OOLUA_BASIC \
-			OOLUA_NO_BASES
-
-#	define OOLUA_PROXY_WITH_BASES_N(ClassType,...)\
-			OOLUA_CLASS(ClassType) : OOLUA_PUBLIC_INHERIT (__VA_ARGS__) \
-			OOLUA_BASIC \
-			OOLUA_BASES_START __VA_ARGS__ OOLUA_BASES_END
-
-/** \endcond */
 
 #endif
