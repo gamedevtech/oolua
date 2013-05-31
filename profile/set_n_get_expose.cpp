@@ -6,10 +6,8 @@
 #	include "luabind/operator.hpp"
 #endif
 
-EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Set_get,set)
-EXPORT_OOLUA_FUNCTIONS_1_CONST(Set_get,get)
-
-
+OOLUA_EXPORT_FUNCTIONS(Set_get,set)
+OOLUA_EXPORT_FUNCTIONS_CONST(Set_get,get)
 
 void open_Luabind_set_n_get(lua_State *l)
 {
@@ -48,4 +46,15 @@ void open_LuaBridge_set_n_get(lua_State* l)
 	(void)l;
 #endif
 }
+
+
+#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM == 502
+#	include <SLB3/implementation.h>
+	SLB3_IMPLEMENTATION(Set_get, C) 
+	{
+		C.constructor();
+		C.set("set",&Set_get::set);
+		C.set("get",&Set_get::get);
+	}
+#endif
 

@@ -1,6 +1,7 @@
 #ifndef PROFILE_HIERARCHY_H_
 #	define PROFILE_HIERARCHY_H_
 
+/** [ComparisonHierarchyClass] */
 class ProfileBase
 {
 public:
@@ -24,6 +25,7 @@ class ProfileAnotherBase
 public:
 	virtual ~ProfileAnotherBase(){}
 };
+
 class ProfileDerived : public ProfileBase
 {
 public:
@@ -46,5 +48,6 @@ public:
 private:
 	int _i;
 };
+/** [ComparisonHierarchyClass] */
 
 #endif

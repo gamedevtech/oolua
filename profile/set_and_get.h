@@ -1,7 +1,7 @@
 #ifndef SET_AND_GET_H_
 #	define SET_AND_GET_H_
 
-
+/** [ComparisonSetAndGetClass] */
 class Set_get
 {
 public:
@@ -17,5 +17,5 @@ public:
 private:
 	double _i;
 };
-
+/** [ComparisonSetAndGetClass] */
 #endif

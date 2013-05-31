@@ -4,16 +4,20 @@
 #include "set_and_get.h"
 #include "oolua.h"
 
-OOLUA_CLASS_NO_BASES(Set_get)
-	OOLUA_NO_TYPEDEFS
-	OOLUA_MEM_FUNC_1(void,set,double)
-	OOLUA_MEM_FUNC_0_CONST(double,get)
-	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-OOLUA_CLASS_END
+OOLUA_PROXY(Set_get)
+	OOLUA_TAGS()
+	OOLUA_MFUNC(set)
+	OOLUA_MFUNC_CONST(get)
+OOLUA_PROXY_END
 
 void open_Luabind_set_n_get(lua_State* l);
 
 void open_LuaBridge_set_n_get(lua_State* l);
+
+#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM == 502
+#	include <SLB3/declaration.h>
+	SLB3_DECLARATION(Set_get, "Set_get", policy::Default)
+#endif
 
 #endif
 

@@ -1,39 +1,104 @@
 --OOLua compare tests
-local root = "../"
-create_package("profile",root,"ConsoleApp")
+local root = '../'
+create_package('comparison',root,'ConsoleApp')
 
 configuration {}
 
+newoption
+{
+   trigger     = 'SLB3_COMPARE',
+   description = 'Compare with SLB3. Note: this requires Lua 5.2'
+}
+newoption
+{
+   trigger     = 'LUABIND_COMPARE',
+   description = 'Compare with Luabind. Note: this uses an unoffical branch'
+}
+newoption
+{
+   trigger     = 'SWIG_COMPARE',
+   description = 'Compare with Swig.'
+}
+
+newoption
+{
+   trigger     = 'JIT_REBASE',
+   description = 'Rebase the image so that the JIT allocator works'
+}
+
+local jit_rebase = function(config)
+	configuration{config}
+	linkoptions{'-pagezero_size 10000 -image_base 100000000'}
+	configuration{'*'}	
+end
+
+local compare_SLB3 = function(config)
+	configuration{config}
+	defines { 'OOLUA_SLB_COMPARE' }
+	files 
+	{ 	'SLB3/**.h',
+		'src/**.cc'
+	}
+	configuration{'*'}
+end
+
+local compare_Luabind = function(config)
+	configuration{config}
+	defines 
+	{ 
+		'OOLUA_LUABIND_COMPARE'
+		,'LUABIND_NO_ERROR_CHECKING'
+		,'LUABIND_DONT_COPY_STRINGS'
+	}
+	files 
+	{ 	'luabind/**.hpp',
+		'src/**.cpp',
+	}
+	configuration{'*'}
+end
+
+local compare_SWIG = function(config)
+	configuration{config}
+	defines { 'OOLUA_SWIG_COMPARE' }
+	configuration{'*'}
+end
+
+local compare_Luabridge = function(config)
+	configuration{config}
+	defines{'OOLUA_LUABRIDGE_COMPARE'}
+	files 
+	{ 	
+		'LuaBridge.h'
+		,'RefCountedObject.h'
+		,'RefCounterPtr.h'
+		,'./detail/.*h'
+	}
+	includedirs {'./detail/'}
+	configuration{'*'}
+end
+
+
 files 
 { 
-	"*.h",
-	"*.cpp",
---	"luabind/**.hpp",
---	"src/**.cpp"
+	'*.h',
+	'*.cpp',
 }
 
 includedirs 
 {
-	root .. "profile/"
-	,root .. "include/"
-	,"./"
-	,"include/lua"
---	,"include/boost"
+	root .. 'profile/'
+	,root .. 'include/'
+	,'./'
+	,'include/lua'
 } 
 
-
 defines 
-{
---	"OOLUA_STORE_ERROR",
---	"OOLUA_SWIG_COMPARE", [[modified to work with 5.2--]]
---broken 5.1 and 5.2	"OOLUA_LUABRIDGE_COMPARE",
---no official 5.2 support	"OOLUA_LUABIND_COMPARE",
-	"LUABIND_NO_ERROR_CHECKING",
-	"LUABIND_DONT_COPY_STRINGS",
--- 	'OOLUA_RUNTIME_CHECKS_ENABLED=1',
---	'OOLUA_USERDATA_OPTIMISATION=1',
---	'OOLUA_USE_EXCEPTIONS',
---	'OOLUA_STORE_LAST_ERROR',
+{	
+--	'OOLUA_UD_SAVE_BYTES=1',
+--	'OOLUA_WORK_DSL',
+--tests
+	'MFUNC_TEST',
+	'VFUNC_TEST',
 }
 
 links
@@ -47,8 +112,24 @@ links
 	configuration { "gmake or linux or macosx or xcode3 or codeblocks"}
 		links{"lua"}
 
---[[
-	--64bit luaJIT rebasing
-	configuration{'xcode*'}
-		linkoptions{'-pagezero_size 10000 -image_base 100000000'}
---]]
+	jit_rebase( os.getenv('LUAJIT_REBASE') and '*' or 'JIT_REBASE')
+	compare_SLB3( os.getenv('OOLUA_SLB3') and '*' or 'SLB3_COMPARE')
+	compare_Luabind( os.getenv('OOLUA_LUABIND') and '*' or 'LUABIND_COMPARE')
+	compare_SWIG( os.getenv('OOLUA_SWIG') and '*' or 'SWIG_COMPARE')
+	compare_Luabridge( os.getenv('OOLUA_LUABRIDGE') and '*' or 'LUABRIDGE_COMPARE')
+
+
+	configuration{'*'}
+	if os.getenv('NO_USERDATA_CHECKS') then
+		defines
+		{
+			'OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA=0'
+			,'LUABIND_DISABLE_UD_CHECK=1'
+		}
+	else
+		defines
+		{
+			'OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA=1'
+			,'OOLUA_USERDATA_OPTIMISATION=1',
+		}
+	end

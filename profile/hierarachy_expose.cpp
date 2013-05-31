@@ -5,17 +5,15 @@
 #	include "luabind/operator.hpp"
 #endif
 
-EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(ProfileBase
+OOLUA_EXPORT_FUNCTIONS(ProfileBase
 								   ,increment_a_base
 								   ,virtual_func
 								   ,pure_virtual_func)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(ProfileBase)
+OOLUA_EXPORT_FUNCTIONS_CONST(ProfileBase)
 
-EXPORT_OOLUA_NO_FUNCTIONS(ProfileAnotherBase)
-
-EXPORT_OOLUA_NO_FUNCTIONS(ProfileDerived)
-
-EXPORT_OOLUA_NO_FUNCTIONS(ProfileMultiBases)
+OOLUA_EXPORT_NO_FUNCTIONS(ProfileAnotherBase)
+OOLUA_EXPORT_NO_FUNCTIONS(ProfileDerived)
+OOLUA_EXPORT_NO_FUNCTIONS(ProfileMultiBases)
 
 void open_Luabind_hierarchy(lua_State* l)
 {
@@ -68,10 +66,41 @@ void open_LuaBridge_hierarchy(lua_State* l)
 		.deriveClass <ProfileDerived, ProfileBase> ("ProfileDerived")
 			.addConstructor<void(*)(void)>()
 		.endClass()
-	//		.beginClass<ProfileAnotherBase>("ProfileMultiBases")
-	//luabind::class_<ProfileMultiBases,luabind::bases<ProfileAnotherBase,ProfileBase> >("ProfileMultiBases")
-	//			.addConstructor<void(*)(void)>()
-	//		.endClass()
+	//	.beginClass<ProfileAnotherBase>("ProfileMultiBases")
+		.deriveClass<ProfileMultiBases,ProfileDerived> ("ProfileMultiBases")
+	//	luabind::class_<ProfileMultiBases,luabind::bases<ProfileAnotherBase,ProfileBase> >("ProfileMultiBases")
+			.addConstructor<void(*)(void)>()
+		.endClass()
 	;
+#else
+	(void)l;
 #endif
 }
+
+
+#if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM == 502
+#	include <SLB3/implementation.h>
+SLB3_IMPLEMENTATION(ProfileBase, C) 
+{
+	C.set("increment_a_base",&ProfileBase::increment_a_base);
+	C.set("virtual_func", &ProfileBase::virtual_func);
+	C.set("pure_virtual_func", &ProfileBase::pure_virtual_func);
+}
+SLB3_IMPLEMENTATION(ProfileAnotherBase, C) 
+{
+	C.constructor();
+}
+SLB3_IMPLEMENTATION(ProfileDerived, C) 
+{
+	C.constructor();
+	C.inherits<ProfileBase>();
+}
+SLB3_IMPLEMENTATION(ProfileMultiBases, C) 
+{
+	C.constructor();
+	C.inherits<ProfileBase>();
+	C.inherits<ProfileDerived>();
+	C.inherits<ProfileAnotherBase>();
+}
+
+#endif
