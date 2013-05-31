@@ -35,8 +35,8 @@
 			\li Does the class support any operators?
 			\li Is it abstract ?
 			\li Does the class have enumerations?
-			\see OOLuaTags
-			\note An empty OOLUA_TAGS block is invalid
+			<p>
+			\note An OOLUA_TAGS list without any \ref OOLuaTags entries is invalid.
 		*/
 #		define OOLUA_TAGS(...) OOLUA_TYPEDEFS __VA_ARGS__ OOLUA_END_TYPES
 
