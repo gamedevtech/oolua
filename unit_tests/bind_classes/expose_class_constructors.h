@@ -5,7 +5,7 @@
 #include "expose_stub_classes.h"
 #include "cpp_constructor_mock.h"
 
-
+/**[ExposeConstructors]*/
 OOLUA_PROXY(ParamConstructor)
 	OOLUA_TAGS(
 		No_default_constructor
@@ -24,7 +24,7 @@ OOLUA_PROXY(ParamConstructor)
 		OOLUA_CTOR(OOLUA::Table)
 	)
 OOLUA_PROXY_END
-
+/**[ExposeConstructors]*/
 
 OOLUA_PROXY(TableRefConstructor)
 	OOLUA_TAGS(

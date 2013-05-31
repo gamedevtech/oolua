@@ -42,7 +42,7 @@ end
 
 local compare_SLB3 = function(config)
 	configuration{config}
-	defines { 'OOLUA_SLB_COMPARE' }
+	defines { 'OOLUA_SLB_COMPARE','SLB3_CACHE_BASE_CLASS_METHODS=1' }
 	files 
 	{ 	'SLB3/**.h',
 		'src/**.cc'

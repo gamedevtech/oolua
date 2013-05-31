@@ -27,8 +27,8 @@
 		/**	\def OOLUA_TAGS
 		 	\hideinitializer
 			\brief Allows more information to be specified about the proxy class
-			\details OOLUA_TAGS(Optional)
-			\param Optional Comma seperated list of \ref OOLuaTags
+			\details OOLUA_TAGS(TagList)
+			\param TagList Comma seperated list of \ref OOLuaTags
 			<p>
 			Tags specifiy more information about the class which should be exposed, 
 			such as:
@@ -36,7 +36,7 @@
 			\li Is it abstract ?
 			\li Does the class have enumerations?
 			\see OOLuaTags
-			\todo \error \fixme Come back and fix this, it is not optional and needs ... something
+			\note An empty OOLUA_TAGS block is invalid
 		*/
 #		define OOLUA_TAGS(...) OOLUA_TYPEDEFS __VA_ARGS__ OOLUA_END_TYPES
 

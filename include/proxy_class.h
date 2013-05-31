@@ -284,7 +284,7 @@ public:
 ///	Closes the typedef list
 ///	\see oolua_typedefs.h
 #define OOLUA_TYPEDEFS_END\
-	>::type Typedef;
+	>::type Typedef; typedef class_ tag_block_check;
 ///  @}
 
 //alias for OOLUA_TYPEDEFS_END to be backward compatible (deprecated)

@@ -20,7 +20,6 @@ OOLUA_PROXY(OutParamsTest)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(MockParamWithStringMember)
-	OOLUA_TAGS()
 OOLUA_PROXY_END
 
 OOLUA_PROXY(OutParamsUserData)

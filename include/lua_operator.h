@@ -147,10 +147,50 @@ DEFINE_OOLUA_OPERATOR_FUNCTION_(div,"__div")
 
 #undef DEFINE_OOLUA_OPERATOR_FUNCTION_
 
-		template<typename T,typename TyDef>
+		template<typename ClassType>
+		struct class_or_base_has_tag_block
+		{
+			template <typename U> 
+			static char (& check_for_tag_block(typename OOLUA::Proxy_class<U>::tag_block_check*))[1] ;
+			template <typename U> 
+			static char (& check_for_tag_block(...))[2];
+			enum {value = sizeof( check_for_tag_block<ClassType >(0) ) == 1 ? 1 : 0} ;
+		};
+		
+		template< typename ClassType, int TagBlockMaybeInClass_or_MaybeInABase>
+		struct tag_block_is_same
+		{
+			enum {value = LVD::is_same< typename Proxy_class<ClassType>::tag_block_check,ClassType >::value };
+		};
+		template< typename ClassType>
+		struct tag_block_is_same<ClassType,0>
+		{
+			enum {value = 0};
+		};
+		
+		template<typename ClassType,int has_proxy_tags>
+		struct proxy_tag_type
+		{
+			typedef typename Proxy_class<ClassType>::Typedef type;
+		};
+		template<typename ClassType>
+		struct proxy_tag_type<ClassType,0>
+		{
+			typedef TYPE::Null_type type;
+		};
+		
+		template< typename ClassType>
+		struct tag_type
+		{
+			enum { has_proxy_tags = tag_block_is_same<ClassType,class_or_base_has_tag_block<ClassType>::value >::value };
+			typedef typename proxy_tag_type<ClassType,has_proxy_tags>::type type;
+		
+		};
+		
+		template<typename ProxyType,typename Tag>
 		struct has_typedef
 		{
-			enum {Result = TYPELIST::IndexOf<typename T::Typedef,TyDef>::value == -1 ? 0 : 1};
+			enum {Result = TYPELIST::IndexOf<typename tag_type<typename ProxyType::class_>::type,Tag>::value == -1 ? 0 : 1};
 		};
 	}
 	

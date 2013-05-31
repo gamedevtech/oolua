@@ -25,18 +25,15 @@ OOLUA_PROXY_END
 
 /*[ExposeDerived1Abstract1]*/
 OOLUA_PROXY(Derived1Abstract1,Abstract1)
-	OOLUA_TAGS()
 OOLUA_PROXY_END
 /*[ExposeDerived1Abstract1]*/
 
 OOLUA_PROXY(TwoAbstractBases,Abstract1,Abstract2)
-	OOLUA_TAGS()
 	OOLUA_MFUNC_CONST(constVirtualFunction)
 OOLUA_PROXY_END
 
 
 OOLUA_PROXY(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
-	OOLUA_TAGS()
 OOLUA_PROXY_END
 
 
