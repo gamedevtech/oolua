@@ -39,19 +39,14 @@ local do_vfunc = function(name)
 		,SWIG = function() return swig_profile.ProfileMultiBases() end
 		,LuaBind = function() return ProfileMultiBases() end
 		,SLB3 = function() return  ProfileMultiBases() end
-		--[[
-		,LuaBridge = function() return ProfileMultiBases() end
-		LuaBridge does not support multiple inheritance
-		]]
 	}
+	local self, cached = 'unavailable','unavailable'
 
 	local creator = factory[name]
-	if not creator then 
-		print("| " .. name .. " vfunc | unavailable | unavailable |")
-		return {name,'vfunc','unavailable','unavailable'}
+	if creator then 
+		cached = compare.vfunc_cached( creator() )
+		self = compare.vfunc_self( creator() )
 	end
-	local cached = compare.vfunc_cached( creator() )
-	local self = compare.vfunc_self( creator() )
 	print("| " .. name .. " vfunc | " .. cached .. " | " .. self .. " |")
 	return {name,'vfunc',cached,self}
 end
@@ -61,11 +56,25 @@ vfunc = function(name)
 end
 
 mfunc = function(name) 
-	--print(name, 'mfunc_mem_size',compare.memsize(_factory[name]) )
 	do_mfunc(name) 
 end
 
-test_ud_check = function(name)
-	local obj = _factory[name]()
-	obj.get(ProfileMultiBases:new())
+
+class_param = function(name)
+	local factory =
+	{
+		OOLua = function() return ProfileDerived:new() end
+		,SWIG = function() return swig_profile.ProfileDerived() end
+		,LuaBind = function() return ProfileDerived() end
+		,SLB3 = function() return  ProfileDerived() end
+		,LuaBridge = function() return ProfileDerived() end
+	}
+	local self, cached = 'unavailable','unavailable'
+	local creator = factory[name]
+	if creator then
+		cached = compare.increment_a_base_cached(creator(),creator())
+		self = compare.increment_a_base_self(creator(),creator())
+	end
+	print("| " .. name .. " class param | ".. cached .." | " .. self .. " |")
+	return {name,'class param',cached,self}
 end

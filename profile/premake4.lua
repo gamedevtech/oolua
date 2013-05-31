@@ -3,7 +3,9 @@ local root = '../'
 create_package('comparison',root,'ConsoleApp')
 
 configuration {}
-
+if os.getenv('LUAJIT_1') then
+	platforms { 'x32' }
+end
 newoption
 {
    trigger     = 'SLB3_COMPARE',
@@ -19,6 +21,12 @@ newoption
    trigger     = 'SWIG_COMPARE',
    description = 'Compare with Swig.'
 }
+newoption
+{
+   trigger     = 'LUABRIDGE_COMPARE',
+   description = 'Compare with LuaBridge.'
+}
+
 
 newoption
 {
@@ -99,6 +107,7 @@ defines
 --tests
 	'MFUNC_TEST',
 	'VFUNC_TEST',
+	'CLASS_PARAM_IMPLICIT_CAST_TEST',
 }
 
 links
@@ -130,6 +139,6 @@ links
 		defines
 		{
 			'OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA=1'
-			,'OOLUA_USERDATA_OPTIMISATION=1',
+			,'OOLUA_USERDATA_OPTIMISATION=1'
 		}
 	end

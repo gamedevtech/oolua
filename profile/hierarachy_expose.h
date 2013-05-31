@@ -8,6 +8,7 @@ OOLUA_PROXY(ProfileBase)
 	OOLUA_TAGS( Abstract )
 	OOLUA_MFUNC(increment_a_base)
 	OOLUA_MFUNC(virtual_func)
+//	OOLUA_MEM_FUNC(void,virtual_func)
 	OOLUA_MFUNC(pure_virtual_func)
 OOLUA_PROXY_END
 

@@ -8,6 +8,8 @@ OOLUA_PROXY(Set_get)
 	OOLUA_TAGS()
 	OOLUA_MFUNC(set)
 	OOLUA_MFUNC_CONST(get)
+//	OOLUA_MEM_FUNC(void,set,double)
+//	OOLUA_MEM_FUNC_CONST(double,get)
 OOLUA_PROXY_END
 
 void open_Luabind_set_n_get(lua_State* l);

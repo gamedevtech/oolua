@@ -52,6 +52,14 @@ int main()
 	}
 #endif
 
+#ifdef CLASS_PARAM_IMPLICIT_CAST_TEST
+	{
+		OOLUA::Script L;
+		OOLUA::register_class_and_bases<ProfileMultiBases>(L);
+		run_compare(L,"class_param","OOLua");
+	}
+#endif
+
 
 #ifdef OOLUA_SWIG_COMPARE
 #	ifdef MFUNC_TEST
@@ -66,6 +74,13 @@ int main()
 		OOLUA::Script L;
 		luaopen_swig_profile(L);
 		run_compare(L,"vfunc","SWIG");
+	}
+#	endif
+#	ifdef CLASS_PARAM_IMPLICIT_CAST_TEST
+	{
+		OOLUA::Script L;
+		luaopen_swig_profile(L);
+		run_compare(L,"class_param","SWIG");
 	}
 #	endif
 #endif
@@ -83,6 +98,13 @@ int main()
 		OOLUA::Script L;
 		open_Luabind_hierarchy(L);
 		run_compare(L,"vfunc","LuaBind");
+	}
+#	endif
+#	ifdef CLASS_PARAM_IMPLICIT_CAST_TEST
+	{
+		OOLUA::Script L;
+		open_Luabind_hierarchy(L);
+		run_compare(L,"class_param","LuaBind");
 	}
 #	endif
 #endif
@@ -103,6 +125,13 @@ int main()
 		OOLUA::Script L;
 		open_LuaBridge_hierarchy(L);
 		run_compare(L,"vfunc","LuaBridge");
+	}
+#	endif
+#	ifdef CLASS_PARAM_IMPLICIT_CAST_TEST
+	{
+		OOLUA::Script L;
+		open_LuaBridge_hierarchy(L);
+		run_compare(L,"class_param","LuaBridge");
 	}
 #	endif
 #endif
@@ -127,6 +156,17 @@ int main()
 		SLB3::Register<ProfileDerived>(L);
 		SLB3::Register<ProfileMultiBases>(L);
 		run_compare(L,"vfunc","SLB3");
+	}
+#	endif
+#	ifdef CLASS_PARAM_IMPLICIT_CAST_TEST
+	{
+		SLB3::extra::Script L;
+		L.init();
+		SLB3::Register<ProfileBase>(L);
+		SLB3::Register<ProfileAnotherBase>(L);
+		SLB3::Register<ProfileDerived>(L);
+		SLB3::Register<ProfileMultiBases>(L);
+		run_compare(L,"class_param","SLB3");
 	}
 #	endif
 #endif

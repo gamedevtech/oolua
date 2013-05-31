@@ -72,22 +72,36 @@ return
 		return (ave/N)/times
 	end
 	--/**[mfuncCachedExample]*/
-	,memsize = function(creator)
---		local results = {}
-		local gc = collectgarbage
---		for i = 1,10 do
-			local kb_before, kb_after
-			gc('collect')
-			kb_before = gc('count')
-				local obj = creator()
-			gc('collect')	
-			kb_after = gc('count')
-			
---			results[i] = (kb_after-kb_before)*1024
---			print(results[i],kb_before,kb_after,type(obj))
---		end
---		return results[2]
-		return (kb_after-kb_before)*1024
+	
+	,increment_a_base_self = function(object,param)
+		local ave = 0
+		for i = 0, N do
+			local t0 = clock()
+			for i=1,times do
+				object:increment_a_base(param)
+			end
+			local dt = clock()-t0
+			if i~=0 then
+			 ave = ave + dt
+			end
+		end
+		return (ave/N)/times
+	end
+
+	,increment_a_base_cached = function(object,param)
+		local ave = 0
+		local func = object.increment_a_base
+		for i = 0, N do
+			local t0 = clock()
+			for i=1,times do
+				func(object,param)
+			end
+			local dt = clock()-t0
+			if i~=0 then
+		 	ave = ave + dt
+			end
+		end
+		return (ave/N)/times
 	end
 }
 
