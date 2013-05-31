@@ -45,8 +45,10 @@
 namespace OOLUA
 {
 	/**
-		\brief Registers the class type \arg T which has a Proxy_class with the lua_State
+		\brief Registers the class type T with an instance of lua_State
 		\tparam T Class type to register with OOLua
+		\details Registers a class type T with OOLua if there is a Proxy for the type
+		and the type has not already been registered with the instance.
 		\todo this should also register base classes is this not happending?
 	*/
     template<typename T>void register_class(lua_State *  l);

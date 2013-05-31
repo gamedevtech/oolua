@@ -295,7 +295,7 @@ static void oolua_enums(lua_State * l)\
 {\
 	Table meth(l,Proxy_class<class_>::class_name);\
 	meth.push_on_stack(l);\
-	int const top = lua_gettop(l);\
+	int const top = lua_gettop(l);
 
 #define OOLUA_ENUM_ENTRY(Name) \
 	lua_pushliteral(l, #Name );\

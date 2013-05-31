@@ -210,8 +210,7 @@
 /** \addtogroup OOLuaDSL DSL
 @{
 \brief The Domain specific language used for generating C++ bindings for Lua
-\details 
-	OOLua provides a DSL for defining C++ types which are to be made available to a 
+\details OOLua provides a DSL for defining C++ types which are to be made available to a 
 	Lua script. The intention of this DSL is to hide the details whilst providing a 
 	simple and rememberable interface for performing the actions required.
 \note
