@@ -34,7 +34,6 @@ void open_LuaBridge_set_n_get(lua_State* l)
 {
 #ifdef OOLUA_LUABRIDGE_COMPARE
 	typedef void (*default_constructor) (void);
-	//.addConstructor<default_constructor>()
 	using namespace luabridge;
 	getGlobalNamespace(l)
 		.beginClass <Set_get>("Set_get")
