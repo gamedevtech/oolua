@@ -133,6 +133,7 @@ namespace OOLUA
 		bool push_on_stack(lua_State* l)const;
 		bool pull_from_stack(lua_State* l);
 		void lua_pull_from_stack(lua_State* l);
+		void lua_get(lua_State* l,int idx);
 		lua_State* state() const { return m_table_ref.m_lua; }
 		/** \endcond*/
 		

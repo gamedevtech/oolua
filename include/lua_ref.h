@@ -132,6 +132,7 @@ namespace OOLUA
 		bool pull(lua_State* const lua) OOLUA_DEFAULT ;
 		bool lua_push(lua_State* const lua)const;
 		bool lua_pull(lua_State* const lua);
+		bool lua_get(lua_State* const lua, int idx);
 		
 		/**
 			\brief
@@ -289,6 +290,34 @@ namespace OOLUA
 			return false;
 		}
 		return true;
+	}
+	template<int ID>
+	bool Lua_ref<ID>::lua_get(lua_State* const vm, int idx) 
+	{
+#define oolua_err_get() \
+luaL_error(vm, \
+"pulling incorrect type from stack. This is a ref to id %d, stack contains %s" \
+,ID \
+,lua_typename(vm,lua_type(vm, idx)) \
+); \
+return false/*never gets here*/ 
+		
+		
+		if (lua_gettop(vm) < idx) { oolua_err_get(); }
+		const int type = lua_type(vm,idx);
+		if( type == ID )
+		{
+			lua_pushvalue(vm, idx);
+			set_ref( vm, luaL_ref(vm, LUA_REGISTRYINDEX) );
+			return true;
+		}
+		else if( type == LUA_TNIL )
+		{
+			release();
+			return true;
+		}
+		oolua_err_get();
+#undef oolua_err_get
 	}
 	/** \endcond*/
 	
