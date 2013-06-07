@@ -1,4 +1,4 @@
-#include "hierarachy_expose.h"
+#include "hierarchy_expose.h"
 
 #ifdef OOLUA_LUABIND_COMPARE
 #	include "luabind/luabind.hpp"

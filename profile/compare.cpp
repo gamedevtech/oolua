@@ -1,7 +1,7 @@
 
 #include "oolua.h"
 #include "set_n_get_expose.h"
-#include "hierarachy_expose.h"
+#include "hierarchy_expose.h"
 #include <iostream>
 
 
