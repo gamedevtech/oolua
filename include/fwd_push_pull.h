@@ -93,6 +93,27 @@ namespace OOLUA
 			
 			template<typename T>
 			void pull2cpp(lua_State* const s, OOLUA::cpp_acquire_ptr<T>&  value);
+			
+			
+			
+			void get(lua_State* const s, int idx, bool& value);
+			void get(lua_State* const s, int idx, std::string& value);
+			void get(lua_State* const s, int idx, double& value);
+			void get(lua_State* const s, int idx, float& value);
+			void get(lua_State* const s, int idx, lua_CFunction& value);
+			void get(lua_State* const s, int idx, Lua_ref<OOLUA::INTERNAL::FUNCTION>& value);
+			void get(lua_State* const s, int idx, Table&  value);
+			void get(lua_State* const s, int idx, Lua_ref<OOLUA::INTERNAL::TABLE>& value);
+			
+			template<typename T> 
+			void get(lua_State* const s, int idx, T& value);
+			
+			template<typename T>
+			void get(lua_State* const s, int idx, T *&  value);
+			
+			template<typename T>
+			void get(lua_State* const s, int idx, OOLUA::cpp_acquire_ptr<T>&  value);
+			
 		}
 	}
 }

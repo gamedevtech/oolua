@@ -285,6 +285,71 @@ namespace OOLUA
 			{
 				value.lua_pull(s);
 			}
+			
+			
+			
+			
+			void pull_error(lua_State* l, int idx, char const* when_pulling_this_type)
+			{
+				luaL_error(l,"trying to pull %s when %s is on stack"
+						   ,when_pulling_this_type
+						   , lua_typename(l, lua_type(l,idx)) );
+			}
+			
+			void get(lua_State* const s, int idx, bool& value)
+			{
+				
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if(! lua_isboolean(s,idx) )pull_error(s,"bool");
+#endif	
+				value =  lua_toboolean( s, idx) ? true : false;
+			}
+			void get(lua_State* const s, int idx, std::string& value)
+			{
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if(! lua_isstring(s,idx) )pull_error(s,idx,"std::string");
+#endif
+				//value = lua_tolstring(s,-1,0);
+				size_t len(0);
+				char const* str = lua_tolstring(s,idx,&len);
+				value = std::string(str, len);
+			}
+			
+			void get(lua_State* const s, int idx, double& value)
+			{
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if(! lua_isnumber(s,idx) )pull_error(s,idx,"double");
+#endif
+				value = static_cast<double>( lua_tonumber( s, idx) );
+			}
+			void get(lua_State* const s, int idx, float& value)
+			{
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if(! lua_isnumber(s,idx) )pull_error(s,idx,"float");
+#endif
+				value = static_cast<float>( lua_tonumber( s, idx) );
+			}
+			void get(lua_State* const s, int idx, lua_CFunction& value)
+			{
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if(! lua_iscfunction(s,idx) )pull_error(s,idx,"lua_CFunction");
+#endif
+				value = lua_tocfunction( s, idx);
+			}
+			void get(lua_State* const s, int idx, Lua_func_ref& value)
+			{
+				value.lua_get(s,idx);
+			}
+			
+			void get(lua_State* const s, int idx, Table&  value)
+			{
+				value.lua_get(s,idx);
+			}
+			
+			void get(lua_State* const s, int idx, Lua_table_ref& value)
+			{
+				value.lua_get(s,idx);
+			}
 		
 		}
 	}
