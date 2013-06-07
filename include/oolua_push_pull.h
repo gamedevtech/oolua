@@ -72,6 +72,26 @@ namespace OOLUA
 			
 			template<typename T>
 			void pull2cpp(lua_State* const s, OOLUA::cpp_acquire_ptr<T>&  value);
+			
+			void pull_error(lua_State* l, int idx, char const* when_pulling_this_type);
+			
+			void get(lua_State* const s, int idx, bool& value);
+			void get(lua_State* const s, int idx, std::string& value);
+			void get(lua_State* const s, int idx, double& value);
+			void get(lua_State* const s, int idx, float& value);
+			void get(lua_State* const s, int idx, lua_CFunction& value);
+			void get(lua_State* const s, int idx, Lua_func_ref& value);
+			void get(lua_State* const s, int idx, Table&  value);
+			void get(lua_State* const s, int idx, Lua_table_ref& value);
+			
+			template<typename T> 
+			void get(lua_State* const s, int idx, T& value);
+			
+			template<typename T>
+			void get(lua_State* const s, int idx, T *&  value);
+			
+			template<typename T>
+			void get(lua_State* const s, int idx, OOLUA::cpp_acquire_ptr<T>&  value);
 
 		}
 	}
@@ -288,6 +308,23 @@ MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
 			else class_type = INTERNAL::none_const_class_from_stack_top<Raw_type>(s);
 MSC_POP_COMPILER_WARNING_OOLUA
 		}
+		
+		template<typename Raw_type,int is_const>
+		struct stack_class_type
+		{	
+			static void get(lua_State* const s, int idx, Raw_type*& class_type)
+			{
+				class_type = check_index<Raw_type>(s,idx);
+			}
+		};
+		template<typename Raw_type>
+		struct stack_class_type<Raw_type,0>
+		{	
+			static void get(lua_State* const s, int idx, Raw_type*& class_type)
+			{
+				class_type = check_index_no_const<Raw_type>(s,idx);
+			}
+		};
 
 
 		template<typename T>
@@ -502,6 +539,148 @@ MSC_POP_COMPILER_WARNING_OOLUA
 				INTERNAL::local_function_to_set_owner(s,value.m_ptr,OOLUA::Cpp);
 				lua_pop( s, 1);
 			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			template<typename T,int is_integral>
+			struct get_basic_type;
+			
+			template<typename T>
+			struct get_basic_type<T,0>//enum
+			{
+				static void get(lua_State* const  s, int idx, T &  value)
+				{
+					//enumeration type so a static cast should be allowed else this
+					//is being called with the wrong type
+					typedef char dummy_can_convert [ can_convert_to_int<T>::value ? 1 : -1];
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+					if(! lua_isnumber(s,idx) )pull_error(s,"enum type");
+#endif
+					value = static_cast<T>( lua_tointeger( s, idx) );
+					lua_pop( s, 1);
+				}
+			};
+			
+			template<typename T>
+			struct get_basic_type<T,1>
+			{
+				static void get(lua_State* const  s, int idx, T &  value)
+				{
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+					if(! lua_isnumber(s,idx) )pull_error(s,"interger compatabile type");
+#endif
+					value = static_cast<T>( lua_tointeger( s, idx) );
+				}
+			};
+			
+			
+			
+			template<typename T,int is_integral>
+			struct get_ptr;
+			
+			template<typename T>
+			struct get_ptr<T,false>
+			{
+				static void get(lua_State* const s, int idx, T *&  value)
+				{
+					typename OOLUA::INTERNAL::param_type<T>::raw_type* class_ptr;
+					INTERNAL::stack_class_type<typename OOLUA::INTERNAL::param_type<T>::raw_type
+													,OOLUA::INTERNAL::param_type<T*>::is_constant
+												>::get(s,idx,class_ptr);
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+					if(!class_ptr )
+					{
+						pull_class_type_error(s,OOLUA::INTERNAL::param_type<T*>::is_constant 
+											  ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name_const 
+											  : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name);
+					}
+#endif
+					value = class_ptr;
+				}
+			};
+			template<typename T>
+			struct get_ptr<T,true>
+			{
+				static void get(lua_State* const s, int idx, T *&  value)
+				{
+#if OOLUA_DEBUG_CHECKS == 1
+					if(!value)
+					{
+						pull_error(s,idx,"pulling pointer to intergral type and was passed NULL. OOLua can not dereference it");
+					}
+#endif				
+					LUA_CALLED::get(s,idx,*value);
+				}
+			};
+			
+			
+			
+			template<typename T> 
+			inline void get(lua_State* const s, int idx, T& value)
+			{
+				get_basic_type<T,LVD::is_integral_type<T>::value>::get(s,idx,value);
+			}
+			
+			
+			template<typename T>
+			inline void get(lua_State* const s, int idx, T *&  value)
+			{
+				get_ptr<T,LVD::is_integral_type<T>::value>::get(s,idx,value);
+			}
+			
+			
+			//pulls a pointer from the stack which Cpp will then own and call delete on
+			template<typename T>
+			inline void get(lua_State* const s, int idx, OOLUA::cpp_acquire_ptr<T>&  value)
+			{
+				typedef cpp_acquire_ptr<T> Type;
+				typedef typename Type::raw raw;
+				//INTERNAL::pull_class_type<raw>(s,Type::is_constant,value.m_ptr);
+				
+				INTERNAL::stack_class_type<raw,Type::is_constant>::get(s,idx,value.m_ptr);
+				
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if(! value.m_ptr )
+				{
+					pull_class_type_error(s,Type::is_constant 
+										  ? Proxy_class<raw>::class_name_const 
+										  : Proxy_class<raw>::class_name);
+				}
+#endif
+				INTERNAL::local_function_to_set_owner(s,value.m_ptr,OOLUA::Cpp);
+			}
+			
+			
+			
+			
+			
 		}
 		
 		
