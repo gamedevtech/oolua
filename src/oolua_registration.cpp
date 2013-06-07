@@ -11,10 +11,10 @@ namespace OOLUA
 			lua_getfield(L, LUA_REGISTRYINDEX,OOLUA::INTERNAL::oolua_str);
 			return 1;
 		}
-		void register_oolua_type(lua_State* L, char const* name,size_t const name_sz, int const stack_index)
+		void register_oolua_type(lua_State* L, char const* name, int const stack_index)
 		{
 			get_oolua_module(L);
-			lua_pushlstring(L,name,name_sz);
+			lua_pushstring(L,name);
 			lua_pushvalue(L, stack_index);
 			lua_rawset(L, -3);
 			lua_pop(L,1);

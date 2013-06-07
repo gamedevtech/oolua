@@ -210,7 +210,6 @@ public:\
 	struct Reg_type_const{ const char *name; mfp_const mfunc; }; \
 	static char const class_name[]; \
 	static char const class_name_const[]; \
-	static int const name_size; \
 	static Reg_type class_methods[]; \
 	static Reg_type_const class_methods_const[]; \
 	class_ * m_this;\

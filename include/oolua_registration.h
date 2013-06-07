@@ -106,7 +106,7 @@ namespace OOLUA
 		template<typename T,int HasRegisterEnumsTag>struct set_class_enums;
 	
 		int get_oolua_module(lua_State* L);
-		void register_oolua_type(lua_State* L, char const* name,size_t const name_sz, int const stack_index);	
+		void register_oolua_type(lua_State* L, char const* name, int const stack_index);	
 	}
 
     namespace INTERNAL
@@ -224,7 +224,7 @@ namespace OOLUA
 			lua_setglobal(l,Proxy_class<T>::class_name);
 			//global[name]=methods
 
-			register_oolua_type(l, Proxy_class<T>::class_name, Proxy_class<T>::name_size,methods);
+			register_oolua_type(l, Proxy_class<T>::class_name,methods);
 			//OOLua[name] = methods
 			
 			set_oolua_userdata_creation_key_value_in_table(l,mt);
@@ -269,7 +269,7 @@ namespace OOLUA
 			lua_setglobal(l,Proxy_class<T>::class_name_const);
 			//global[name#_const]=const_methods
 			
-			register_oolua_type(l, Proxy_class<T>::class_name_const, Proxy_class<T>::name_size + sizeof("_const") -1,const_methods);
+			register_oolua_type(l, Proxy_class<T>::class_name_const, const_methods);
 			//OOLua[name#const] = const_methods		
 
 			set_oolua_userdata_creation_key_value_in_table(l,const_mt);
