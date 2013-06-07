@@ -69,7 +69,7 @@ namespace OOLUA
 
 		//pushes the weak top and returns its index
 		int push_weak_table(lua_State* l);
-		template<typename T>Lua_ud* add_ptr(lua_State*  l,T* const ptr,bool is_const);
+		template<typename T>Lua_ud* add_ptr(lua_State*  l,T* const ptr,bool is_const,Owner owner);
 
 		template<typename T>Lua_ud* find_ud(lua_State*  l,T* ptr,bool is_const);
 
@@ -210,10 +210,10 @@ namespace OOLUA
 		}
 		
 		template<typename T>
-		inline Lua_ud* add_ptr(lua_State* const l,T* const ptr,bool is_const)
+		inline Lua_ud* add_ptr(lua_State* const l,T* const ptr,bool is_const,Owner owner)
 		{		
 			Lua_ud* ud = new_userdata(l, ptr, is_const,&stack_top_type_is_base<T>,&OOLUA::register_class<T>);
-
+			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
 			lua_getfield(l, LUA_REGISTRYINDEX
 						 ,  (char*) (is_const ? OOLUA::Proxy_class<T>::class_name_const 
 									 : OOLUA::Proxy_class<T>::class_name)

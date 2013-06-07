@@ -66,8 +66,7 @@ namespace OOLUA
 			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
 			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
 			T* result ( new T( *lhs + *rhs ) );
-			OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
-			userdata_gc_value(ud,true);
+			INTERNAL::add_ptr<T>(l,result,false,OOLUA::Lua);
 			return 1;
 		}
 
@@ -80,8 +79,7 @@ namespace OOLUA
 			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
 			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
 			T* result ( new T( *lhs - *rhs ) );
-			OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
-			userdata_gc_value(ud,true);
+			INTERNAL::add_ptr<T>(l,result,false,OOLUA::Lua);
 			return 1;
 		}
 
@@ -93,8 +91,7 @@ namespace OOLUA
 			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
 			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
 			T* result ( new T( *lhs * *rhs ) );
-			OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
-			userdata_gc_value(ud,true);
+			INTERNAL::add_ptr<T>(l,result,false,OOLUA::Lua);
 			return 1;
 		}
 
@@ -106,8 +103,7 @@ namespace OOLUA
 			INTERNAL::LUA_CALLED::pull2cpp(l,rhs);
 			INTERNAL::LUA_CALLED::pull2cpp(l,lhs);
 			T* result ( new T( *lhs / *rhs ) );
-			OOLUA::INTERNAL::Lua_ud* ud = INTERNAL::add_ptr<T>(l,result,false);
-			userdata_gc_value(ud,true);
+			INTERNAL::add_ptr<T>(l,result,false,OOLUA::Lua);
 			return 1;
 		}
 
