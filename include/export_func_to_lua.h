@@ -35,7 +35,6 @@
 #define CLASS_LIST_MEMBERS_START_OOLUA_NON_CONST(Class)\
 namespace OOLUA { \
 char const OOLUA::Proxy_class< Class >::class_name[] = #Class;\
-int const OOLUA::Proxy_class< Class >::name_size = sizeof(#Class)-1; \
 OOLUA::Proxy_class< Class >::Reg_type OOLUA::Proxy_class< Class >::class_methods[]={
 
 #define CLASS_LIST_MEMBERS_START_OOLUA_CONST(Class)\
