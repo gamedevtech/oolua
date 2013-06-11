@@ -3,8 +3,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file cpp_constructor.h
-///  @remarks Warning this file was generated, edits to it will not persist if 
-///  the file is regenerated.
 ///  @author Liam Devine
 ///  \copyright 
 ///  See licence.txt for more details. \n 
