@@ -22,7 +22,7 @@
 		defaults or for the files to be regenerated using the default values.\n
 		You do not need a version of Lua to run this module, premake the project file
 		generator used in OOLua already contains a copy of Lua 5.1 with some modifications
-		to the core. For premake information see and the OOLua specific options added 
+		to the core. For premake information and the OOLua specific options added you cam
 		run the following in the OOLua root directory:\code{.lua}premake4 --help\endcode
 		
 		The most common change to these options is the number of functions which can be 
