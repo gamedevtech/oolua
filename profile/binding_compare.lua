@@ -2,7 +2,7 @@ local compare = require'compare'
 
 	local _factory =
 	{
-		OOLua = function() return Set_get:new() end
+		OOLua = function() return Set_get.new() end
 		,SWIG = function() return swig_profile.Set_get() end
 		,LuaBind = function() return Set_get() end
 		,SLB3 = function() return  Set_get() end
@@ -11,7 +11,7 @@ local compare = require'compare'
 local do_mfunc = function(name)
 	local factory =
 	{
-		OOLua = function() return Set_get:new() end
+		OOLua = function() return Set_get.new() end
 		,SWIG = function() return swig_profile.Set_get() end
 		,LuaBind = function() return Set_get() end
 		,SLB3 = function() return  Set_get() end
@@ -35,7 +35,7 @@ end
 local do_vfunc = function(name)
 	local factory =
 	{
-		OOLua = function() return ProfileMultiBases:new() end
+		OOLua = function() return ProfileMultiBases.new() end
 		,SWIG = function() return swig_profile.ProfileMultiBases() end
 		,LuaBind = function() return ProfileMultiBases() end
 		,SLB3 = function() return  ProfileMultiBases() end
@@ -63,7 +63,7 @@ end
 class_param = function(name)
 	local factory =
 	{
-		OOLua = function() return ProfileDerived:new() end
+		OOLua = function() return ProfileDerived.new() end
 		,SWIG = function() return swig_profile.ProfileDerived() end
 		,LuaBind = function() return ProfileDerived() end
 		,SLB3 = function() return  ProfileDerived() end
