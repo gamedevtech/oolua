@@ -8,23 +8,23 @@
 #	define OOLUA_C_FUNC_H_
 
 #	include "param_traits.h"
-#	include "oolua_paramater_macros.h"
+#	include "oolua_boilerplate.h"
 #	include "proxy_caller.h"
 #	include "default_trait_caller.h"
 #	include "oolua_config.h"
 
 //* \cond INTERNAL*/
 
-#if defined __GNUC__
+#if defined __GNUC__ && defined __STRICT_ANSI__ 
 #	pragma GCC system_header
 #endif
 
 //proxy implementations
 #define OOLUA_C_FUNCTION_N(return_value,func, ...) \
-	OOLUA_PARAMS_CONCAT(__VA_ARGS__) \
+	OOLUA_PARAMS_CONCAT(1,__VA_ARGS__) \
 	typedef OOLUA::INTERNAL::return_type_traits<return_value > R;\
 	typedef R::type (funcType)( OOLUA_PARAM_TYPE_CONCAT(__VA_ARGS__) ) ;\
-	OOLUA::INTERNAL::Proxy_none_member_caller<R,LVD::is_void< R::type >::value >::call<OOLUA_TPARAMS_CONCAT(__VA_ARGS__) funcType>(l,&func OOLUA_PPARAMS_CONCAT(__VA_ARGS__));\
+	OOLUA::INTERNAL::Proxy_none_member_caller<R,LVD::is_void< R::type >::value >::call<funcType OOLUA_TPARAMS_CONCAT(__VA_ARGS__) >(l,&func OOLUA_PPARAMS_CONCAT(__VA_ARGS__));\
 	OOLUA_BACK_CONCAT(__VA_ARGS__) \
 	return OOLUA::INTERNAL::lua_return_count< Type_list<R OOLUA_RETURNS_CONCAT(__VA_ARGS__) >::type> ::out;
 
@@ -32,7 +32,7 @@
 	typedef OOLUA::INTERNAL::return_type_traits<return_value > R;\
 	typedef R::type (funcType)() ;\
 	OOLUA::INTERNAL::Proxy_none_member_caller<R,LVD::is_void< R::type >::value >::call<funcType>(l,&func);\
-	return OOLUA::INTERNAL::lua_return_count< Type_list<R >::type> ::out;
+	return R::out;
 
 
 #define OOLUA_CFUNC_RETURN(Name)							return OOLUA::INTERNAL::proxy_c_function_with_default_traits(l,Name);

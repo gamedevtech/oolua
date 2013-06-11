@@ -51,11 +51,11 @@ class StaticFunction : public CppUnit::TestFixture
 	CPPUNIT_TEST(staticFunc_functionIsRegisteredUsingOOLua_callReturnsTrue);
 	CPPUNIT_TEST(staticFunc_generatedProxy_callReturnsTrue);
 	
-	CPPUNIT_TEST(cFunctionAddedToClassTable_calledWithObjectInstaceAndReturnsStackCountOnEntry_returnEqualsOne);
-	CPPUNIT_TEST(cFunctionAddedToClassTable_calledAsStaticFunctionAndReturnsStackCountOnEntry_returnEqualsOne);
+	CPPUNIT_TEST(cFunctionAddedToClassTable_calledWithObjectInstaceAndReturnsStackCountOnEntry_returnEqualsZero);
+	CPPUNIT_TEST(cFunctionAddedToClassTable_calledAsStaticFunctionAndReturnsStackCountOnEntry_returnEqualsZero);
 	
-	CPPUNIT_TEST(cFunctionAddedToClassTable_calledWithObjectInstaceAndReturnsStackTypeOfTop_returnEqualsUserData);
-	CPPUNIT_TEST(cFunctionAddedToClassTable_calledAsStaticFunctionAndReturnsStackTypeOfTop_returnEqualsTable);
+	//CPPUNIT_TEST(cFunctionAddedToClassTable_calledWithObjectInstaceAndReturnsStackTypeOfTop_returnEqualsUserData);
+	//CPPUNIT_TEST(cFunctionAddedToClassTable_calledAsStaticFunctionAndReturnsStackTypeOfTop_returnEqualsTable);
 				 
 	
 	CPPUNIT_TEST(cFunctionAddedToClassTable_calledOnObjectInstaceWithFloatParamReturnsStackTypeOfTop_returnEqualsNumber);
@@ -99,7 +99,7 @@ public:
 															  ,&oolua_ClassHasStaticFunction_static_function);
 
 		m_lua->run_chunk("foo = function() "
-						 "ClassHasStaticFunction:static_function() "
+						 "ClassHasStaticFunction.static_function() "
 						 "end ");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result); 
@@ -110,7 +110,7 @@ public:
 															  ,"static_function"
 															  ,&oolua_ClassHasStaticFunction_static_function);
 		m_lua->run_chunk("foo = function() "
-						 "ClassHasStaticFunction:static_function() "
+						 "ClassHasStaticFunction.static_function() "
 						 "end ");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result); 
@@ -122,79 +122,44 @@ public:
 															 ,&oolua_ClassHasStaticFunction_static_function);
 		
 		m_lua->run_chunk("foo = function() "
-						 "ClassHasStaticFunction:static_function() "
+						 "ClassHasStaticFunction.static_function() "
 						 "end ");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result); 
 	}
 
 
-	void cFunctionAddedToClassTable_calledWithObjectInstaceAndReturnsStackCountOnEntry_returnEqualsOne()
+	void cFunctionAddedToClassTable_calledWithObjectInstaceAndReturnsStackCountOnEntry_returnEqualsZero()
 	{
 		OOLUA::register_class_static<ClassHasStaticFunction>(*m_lua
 															 ,"stack_count"
 															 ,&returns_stack_count);
 		
 		m_lua->run_chunk("foo = function(obj) "
-						 "return obj:stack_count() "
+						 "return obj.stack_count() "
 						 "end ");
 		ClassHasStaticFunction stack;
 		ClassHasStaticFunction* obj = &stack;
 		m_lua->call("foo",obj);
 		int result(-1);
 		OOLUA::pull(*m_lua,result);
-		CPPUNIT_ASSERT_EQUAL(int(1),result); 
+		CPPUNIT_ASSERT_EQUAL(int(0),result); 
 	}
-	void cFunctionAddedToClassTable_calledAsStaticFunctionAndReturnsStackCountOnEntry_returnEqualsOne()
+	void cFunctionAddedToClassTable_calledAsStaticFunctionAndReturnsStackCountOnEntry_returnEqualsZero()
 	{
 		OOLUA::register_class_static<ClassHasStaticFunction>(*m_lua
 															 ,"stack_count"
 															 ,&returns_stack_count);
 		
 		m_lua->run_chunk("foo = function() "
-						 "return ClassHasStaticFunction:stack_count() "
+						 "return ClassHasStaticFunction.stack_count() "
 						 "end ");
 		
 		m_lua->call("foo");
 		int result(-1);
 		OOLUA::pull(*m_lua,result);
-		CPPUNIT_ASSERT_EQUAL(int(1),result); 
+		CPPUNIT_ASSERT_EQUAL(int(0),result); 
 	}
-	
-	void cFunctionAddedToClassTable_calledWithObjectInstaceAndReturnsStackTypeOfTop_returnEqualsUserData()
-	{
-		//userdata type on stack
-		OOLUA::register_class_static<ClassHasStaticFunction>(*m_lua
-															 ,"stack_top_type"
-															 ,&stack_top_type);
-		
-		m_lua->run_chunk("foo = function(obj) "
-						 "return obj:stack_top_type() "
-						 "end ");
-		ClassHasStaticFunction stack;
-		ClassHasStaticFunction* obj = &stack;
-		m_lua->call("foo",obj);
-		int result(-1);
-		OOLUA::pull(*m_lua,result);
-		CPPUNIT_ASSERT_EQUAL(int(LUA_TUSERDATA),result); 
-	}
-	void cFunctionAddedToClassTable_calledAsStaticFunctionAndReturnsStackTypeOfTop_returnEqualsTable()
-	{
-		//table of type on top
-		OOLUA::register_class_static<ClassHasStaticFunction>(*m_lua
-															 ,"stack_top_type"
-															 ,&stack_top_type);
-		
-		m_lua->run_chunk("foo = function() "
-						 "return ClassHasStaticFunction:stack_top_type() "
-						 "end ");
-		
-		m_lua->call("foo");
-		int result(-1);
-		OOLUA::pull(*m_lua,result);
-		CPPUNIT_ASSERT_EQUAL(int(LUA_TTABLE),result); 
-	}
-	
 	
 	void cFunctionAddedToClassTable_calledOnObjectInstaceWithFloatParamReturnsStackTypeOfTop_returnEqualsNumber()
 	{
@@ -203,7 +168,7 @@ public:
 															 ,&stack_top_type);
 		
 		m_lua->run_chunk("foo = function(obj) "
-						 "return obj:stack_top_type(1.0) "
+						 "return obj.stack_top_type(1.0) "
 						 "end ");
 		ClassHasStaticFunction stack;
 		ClassHasStaticFunction* obj = &stack;
@@ -219,7 +184,7 @@ public:
 															 ,&stack_top_type);
 		
 		m_lua->run_chunk("foo = function() "
-						 "return ClassHasStaticFunction:stack_top_type(1.0) "
+						 "return ClassHasStaticFunction.stack_top_type(1.0) "
 						 "end ");
 		
 		m_lua->call("foo");
@@ -236,7 +201,7 @@ public:
 															 ,&stack_top_type);
 		
 		m_lua->run_chunk("foo = function(obj) "
-						 "a,b  =obj:stack_top_type(1.0) "
+						 "a,b  =obj.stack_top_type(1.0) "
 						 "assert(b == nil) "
 						 "end ");
 		ClassHasStaticFunction stack;
@@ -257,7 +222,7 @@ public:
 		
 		
 		m_lua->run_chunk("foo = function(obj,input) "
-						 "return obj:returns_input(input) "
+						 "return obj.returns_input(input) "
 						 "end ");
 		ClassHasStaticFunction stack;
 		ClassHasStaticFunction* obj = &stack;
@@ -274,7 +239,7 @@ public:
 															 ,&returns_stack_count);
 		
 		m_lua->run_chunk("foo = function(obj) "
-						 "return obj:stack_count() "
+						 "return obj.stack_count() "
 						 "end ");
 		DerivedClassHasStaticFunction derived;
 		DerivedClassHasStaticFunction* dp = &derived;
@@ -290,7 +255,7 @@ public:
 		m_lua->register_class_static<Abstract3>("stack_count",&returns_stack_count);
 		
 		m_lua->run_chunk("foo = function(obj) "
-						 "return obj:stack_count() "
+						 "return obj.stack_count() "
 						 "end ");
 		DerivedFromTwoAbstractBasesAndAbstract3 derived;
 		bool result = m_lua->call("foo",&derived);
@@ -304,7 +269,7 @@ public:
 		m_lua->register_class_static<DerivedFromTwoAbstractBasesAndAbstract3>("static_func",&staticFunction_pushes1);
 		
 		m_lua->run_chunk("foo = function(obj) "
-						 "return obj:static_func() "
+						 "return obj.static_func() "
 						 "end ");
 		DerivedFromTwoAbstractBasesAndAbstract3 derived;
 		m_lua->call("foo",&derived);
@@ -320,7 +285,7 @@ public:
 		//m_lua->run_chunk("Abstract3[\"static_data\"]=3 ");
 
 		m_lua->run_chunk("foo = function() "
-						 "return DerivedFromTwoAbstractBasesAndAbstract3:lua_func() "
+						 "return DerivedFromTwoAbstractBasesAndAbstract3.lua_func() "
 						 "end ");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(result, true);
@@ -360,7 +325,7 @@ public:
 	void staticFunc_functionIsUnregistered_callReturnsFalse()
 	{
 		m_lua->run_chunk("foo = function() "
-						 "ClassHasStaticFunction:static_function() "
+						 "ClassHasStaticFunction.static_function() "
 						 "end ");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(false,result); 
@@ -371,7 +336,7 @@ public:
 	void staticFunc_functionIsUnregistered_throwsRuntimeError()
 	{
 		m_lua->run_chunk("foo = function() "
-						 "ClassHasStaticFunction:static_function() "
+						 "ClassHasStaticFunction.static_function() "
 						 "end ");
 		CPPUNIT_ASSERT_THROW( (m_lua->call("foo")),OOLUA::Runtime_error);
 	}

@@ -196,12 +196,12 @@
 			OOLUA_ARG_N(__VA_ARGS__)
  
 		/*Function generation helper macros*/ 
-#		define OOLUA_PARAMS_CONCAT(...)			OOLUA_VA_CONCAT(OOLUA_PARAMS_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) ( __VA_ARGS__  )
+#		define OOLUA_PARAMS_CONCAT(StackIndex,...)			OOLUA_VA_CONCAT(OOLUA_PARAMS_INTERNAL_, OOLUA_NARG(__VA_ARGS__)) (StackIndex, __VA_ARGS__  )
 #		define OOLUA_PARAM_TYPE_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_FUNCTION_PARAMS_TYPES_,OOLUA_NARG(__VA_ARGS__))
-#		define OOLUA_TPARAMS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_TPARAMS_,OOLUA_NARG(__VA_ARGS__))
-#		define OOLUA_PPARAMS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_PPARAMS_,OOLUA_NARG(__VA_ARGS__))
+#		define OOLUA_TPARAMS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_COMMA_PREFIXED_PARAM_TYPES_,OOLUA_NARG(__VA_ARGS__))
+#		define OOLUA_PPARAMS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_CALL_PARAMS_,OOLUA_NARG(__VA_ARGS__))
 #		define OOLUA_BACK_CONCAT(...)			OOLUA_VA_CONCAT(OOLUA_BACK_INTERNAL_,OOLUA_NARG(__VA_ARGS__))
-#		define OOLUA_RETURNS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_RETURNS_,OOLUA_NARG(__VA_ARGS__))
+#		define OOLUA_RETURNS_CONCAT(...)		OOLUA_VA_CONCAT(OOLUA_COMMA_PREFIXED_PARAM_TYPES_,OOLUA_NARG(__VA_ARGS__))
 
 	/** \endcond*/
 
@@ -214,8 +214,8 @@
 	Lua script. The intention of this DSL is to hide the details whilst providing a 
 	simple and rememberable interface for performing the actions required.
 \note
-	"Optional" here means tha extra macro parameters are optional, up to the 
-	configuration max for a specific operation.
+	"Optional" here means that extra macro parameters are optional, up to the 
+	configuration \ref OOLuaConfigCppParams "max" for a specific operation.
 */
 
 	/** \def OOLUA_PROXY
@@ -236,10 +236,11 @@
 		\details
 		OOLUA_CTOR( ConstructorParameterList)
 		\param ConstructorParameterList Comma seperated list of parameters
-		\pre Size of ConstructorParameterList >0 and <= configuration max
+		\pre Size of ConstructorParameterList >0 and <= \ref OOLuaConfigConstructorParams "\"constructor_params\""
+		\see \ref OOLuaConfigConstructorParams "constructor_params"
 	*/
 #		define OOLUA_CTOR(...)\
-			OOLUA_VA_CONCAT(OOLUA_CONSTRUCTOR_,OOLUA_NARG(__VA_ARGS__))(__VA_ARGS__)	
+			OOLUA_CONSTRUCTOR_IMP(__VA_ARGS__)
 
 
 	/** \addtogroup OOLuaExpressive Expressive
@@ -258,6 +259,7 @@
 		\param FunctionReturnType
 		\param FunctionName
 		\param Optional : Function parameter types
+		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MEM_FUNC(...)\
 			OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_,OOLUA_NARG_GREATER_THAN_TWO(__VA_ARGS__)) (__VA_ARGS__)
@@ -271,6 +273,7 @@
 		\param FunctionReturnType
 		\param FunctionName
 		\param Optional : Function parameter types
+		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MEM_FUNC_RENAME(...)\
 			OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_RENAME_,OOLUA_NARG_GREATER_THAN_THREE(__VA_ARGS__))(__VA_ARGS__)
@@ -283,6 +286,7 @@
 		\param FunctionReturnType
 		\param FunctionName
 		\param Optional Comma seperated list of function parameter types
+		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MEM_FUNC_CONST(...)\
 			OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_CONST_,OOLUA_NARG_GREATER_THAN_TWO(__VA_ARGS__))(__VA_ARGS__)
@@ -296,6 +300,7 @@
 		\param FunctionReturnType
 		\param FunctionName
 		\param Optional Comma seperated list of function parameter types
+		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MEM_FUNC_CONST_RENAME(...)\
 			OOLUA_VA_CONCAT(OOLUA_MEM_FUNC_CONST_RENAME_,OOLUA_NARG_GREATER_THAN_THREE(__VA_ARGS__))(__VA_ARGS__)
@@ -308,6 +313,7 @@
 		\param FunctionReturnType
 		\param FunctionName
 		\param Optional Comma seperated list of function parameter types
+		\see \ref OOLuaConfigCppParams "cpp_params"
 		\pre The function in which this macro is contained must declare a lua_State pointer 
 		which can be identified by the name "l" (small L)
 		\code{.cpp}
@@ -349,6 +355,7 @@
 		OOLUA_MFUNC( FunctionName, Optional)
 		\param FunctionName Name of the member function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
+		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MFUNC(...)\
 			OOLUA_VA_CONCAT(OOLUA_MFUNC_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
@@ -360,6 +367,7 @@
 		OOLUA_MFUNC_CONST(FunctionName,Optional)
 		\param FunctionName Name of the constant function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
+		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_MFUNC_CONST(...)\
 			OOLUA_VA_CONCAT(OOLUA_MFUNC_CONST_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
@@ -371,6 +379,7 @@
 		OOLUA_CFUNC(FunctionName,Optional)
 		\param FunctionName Name of the C function to be proxied
 		\param Optional ProxyFunctionName. Defaults to FunctionName
+		\see \ref OOLuaConfigCppParams "cpp_params"
 	*/
 #		define OOLUA_CFUNC(...)\
 			OOLUA_VA_CONCAT(OOLUA_CFUNC_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
@@ -384,6 +393,7 @@
 		\param Optional ProxyFunctionName. Defaults to FunctionName
 		\note This function will not exported and needs to be registered
 		with OOLua see OOLUA::register_class_static
+		\see \ref OOLuaConfigCppParams "cpp_params"
 	 */
 #		define OOLUA_SFUNC(...)\
 			OOLUA_VA_CONCAT(OOLUA_STATIC_FUNC_INTERNAL_,OOLUA_NARG(__VA_ARGS__)) (__VA_ARGS__)
@@ -409,6 +419,7 @@
 		OOLUA_EXPORT_FUNCTIONS(ClassName,Optional)
 		\param ClassName Name of class to which the function belong to 
 		\param Optional Comma seperated list of member function names
+		\see \ref OOLuaConfigClassFunctions "class_functions"
 	*/
 #		define OOLUA_EXPORT_FUNCTIONS(...)		OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(OOLUA_NON_CONST,__VA_ARGS__)
 
@@ -419,6 +430,7 @@
 		OOLUA_EXPORT_FUNCTIONS_CONST(ClassName,Optional)
 		\param ClassName Name of class to which the function belong to 
 		\param Optional Comma seperated list of constant member function names
+		\see \ref OOLuaConfigClassFunctions "class_functions"
 	*/
 #		define OOLUA_EXPORT_FUNCTIONS_CONST(...)OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(OOLUA_CONST,__VA_ARGS__)
 	/**	@}*/
@@ -437,7 +449,14 @@
 
 #		define EXPORT_OOLUA_FUNCTIONS_N(mod,ClassType,...)\
 			OOLUA_VA_CONCAT(OOLUA_VA_CONCAT(EXPORT_OOLUA_FUNCTIONS_,OOLUA_NARG(__VA_ARGS__)),_)(mod,ClassType,__VA_ARGS__)
-	/** \endcond*/
+
+#		define OOLUA_VA_CONSTRUCTOR(...)\
+			OOLUA_VA_CONCAT(INTERNAL::Constructor,OOLUA_NARG(__VA_ARGS__))
+
+#		define VA_PARAM_TYPES(...) \
+			OOLUA_VA_CONCAT(VA_,OOLUA_NARG(__VA_ARGS__))(__VA_ARGS__)
+
+/** \endcond*/
 
 #	endif
 

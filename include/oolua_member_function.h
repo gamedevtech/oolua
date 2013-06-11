@@ -85,7 +85,6 @@ namespace OOLUA
 #endif
 				typename Proxy_type::class_ *obj = INTERNAL::check_index_no_const<typename Proxy_type::class_>(l, 1);
 				OOLUA_SELF_CHECK(obj," ",Reg_type,class_name)
-				lua_remove(l, 1);
 				///get member function from upvalue
 				typename Proxy_class<Base_type >::Reg_type* r =
 						static_cast<typename Proxy_class<Base_type >::Reg_type*>(lua_touserdata(l, lua_upvalueindex(1)));
@@ -103,7 +102,6 @@ namespace OOLUA
 #endif
 				typename Proxy_type::class_ *obj = INTERNAL::check_index<typename Proxy_type::class_>(l, 1);
 				OOLUA_SELF_CHECK(obj,"const", Reg_type_const ,class_name_const)
-				lua_remove(l, 1);
 				///get member function from upvalue
 				typename Proxy_class<Base_type >::Reg_type_const* r =
 						static_cast<typename Proxy_class<Base_type >::Reg_type_const*>(lua_touserdata(l, lua_upvalueindex(1)));

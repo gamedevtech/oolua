@@ -16,238 +16,101 @@
 #	include "member_func_helper.h"
 #	include "oolua_parameter_helper.h"
 #	include "oolua_converters.h"
+
+#include "oolua_boilerplate.h"
+
+#if defined __GNUC__ && defined __STRICT_ANSI__ 
+/*shhhhh about va args and c99*/
+#	pragma GCC system_header
+#endif
+
 namespace OOLUA
 {
-namespace INTERNAL
-{
-template<typename ObjType>
-void add_and_set_gc(lua_State* l,ObjType obj)
-{
-	Lua_ud* ud = add_ptr(l,obj,false);
-	userdata_gc_value(ud,true);
+	namespace INTERNAL
+	{
+		template<typename Type,int HasNoDefaultTypedef>
+		struct Constructor
+		{
+			static int construct(lua_State * l)
+			{
+				Type* obj = new Type;
+				add_ptr(l,obj,false,Lua);
+				return 1;
+			}
+		};
+		
+		template<typename Type>
+		struct Constructor<Type,1>
+		{
+			static int construct(lua_State * l)
+			{
+				luaL_error(l,"%s %s %s","No parameters passed to the constructor of the type"
+						   ,OOLUA::Proxy_class<Type>::class_name
+						   ,"which does not have a default constructor.");
+				return 0;//required by function sig yet luaL_error never returns
+			}
+		};
+		
+		template<typename T>
+		inline int oolua_generic_default_constructor(lua_State* l)
+		{
+			lua_remove(l, 1);/*remove class type*/
+			int const stack_count = lua_gettop(l);
+			if(stack_count == 0 )
+			{
+				return Constructor<T,has_typedef<OOLUA::Proxy_class<T>, OOLUA::No_default_constructor>::Result>::construct(l);
+			} 
+			luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",OOLUA::Proxy_class<T>::class_name);
+			return 0;/*required by function sig yet luaL_error never returns*/
+		}
+	}
 }
 
-template<typename Type,int HasNoDefaultTypedef>
-struct Constructor
-{
-	static int construct(lua_State * l)
-	{
-		Type* obj = new Type;
-		add_and_set_gc(l,obj);
-		return 1;
-	}
-};
-template<typename Type>
-struct Constructor<Type,1>
-{
-	static int construct(lua_State * l)
-	{
-		luaL_error(l,"%s %s %s","No parameters passed to the constructor of the type"
-			,OOLUA::Proxy_class<Type>::class_name
-			,"which does not have a default constructor.");
-		return 0;//required by function sig yet luaL_error never returns
-	}
-};
-template<typename Class,typename Param1WithTraits >
-struct Constructor1
-{
-	static int construct(lua_State* l) 
-	{
-		int index(1);
-		if(Param_helper<Param1WithTraits >::param_is_of_type(l,index))
-		{
-			valid_construct(l);
-			return 1;
-		}
-		return 0;
-	}
-	static void valid_construct(lua_State* l)
-	{
-		typename Param1WithTraits::pull_type p1;
-		Member_func_helper<Param1WithTraits,Param1WithTraits::owner>::pull2cpp(l,p1);
-		Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
-		Class* obj = new Class( p1_);
-		add_and_set_gc(l,obj);
-	}
-};
-template<typename Class,typename Param1WithTraits, typename Param2WithTraits >
-struct Constructor2
-{
-	static int construct(lua_State* l) 
-	{
-		int index(1);
-		if(Param_helper<Param1WithTraits >::param_is_of_type(l,index)
-			&& Param_helper<Param2WithTraits >::param_is_of_type(l,index))
-		{
-			valid_construct(l);
-			return 1;
-		}
-		return 0;
-	}
-	static void valid_construct(lua_State* l)
-	{
-		typename Param2WithTraits::pull_type p2;
-		Member_func_helper<Param2WithTraits,Param2WithTraits::owner>::pull2cpp(l,p2);
-		Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
-		typename Param1WithTraits::pull_type p1;
-		Member_func_helper<Param1WithTraits,Param1WithTraits::owner>::pull2cpp(l,p1);
-		Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
-		Class* obj = new Class( p1_,p2_);
-		add_and_set_gc(l,obj);
-	}
-};
-template<typename Class,typename Param1WithTraits, typename Param2WithTraits, typename Param3WithTraits >
-struct Constructor3
-{
-	static int construct(lua_State* l) 
-	{
-		int index(1);
-		if(Param_helper<Param1WithTraits >::param_is_of_type(l,index)
-			&& Param_helper<Param2WithTraits >::param_is_of_type(l,index)
-			&& Param_helper<Param3WithTraits >::param_is_of_type(l,index))
-		{
-			valid_construct(l);
-			return 1;
-		}
-		return 0;
-	}
-	static void valid_construct(lua_State* l)
-	{
-		typename Param3WithTraits::pull_type p3;
-		Member_func_helper<Param3WithTraits,Param3WithTraits::owner>::pull2cpp(l,p3);
-		Converter<typename Param3WithTraits::pull_type,typename Param3WithTraits::type> p3_(p3);
-		typename Param2WithTraits::pull_type p2;
-		Member_func_helper<Param2WithTraits,Param2WithTraits::owner>::pull2cpp(l,p2);
-		Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
-		typename Param1WithTraits::pull_type p1;
-		Member_func_helper<Param1WithTraits,Param1WithTraits::owner>::pull2cpp(l,p1);
-		Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
-		Class* obj = new Class( p1_,p2_,p3_);
-		add_and_set_gc(l,obj);
-	}
-};
-template<typename Class,typename Param1WithTraits, typename Param2WithTraits, typename Param3WithTraits, typename Param4WithTraits >
-struct Constructor4
-{
-	static int construct(lua_State* l) 
-	{
-		int index(1);
-		if(Param_helper<Param1WithTraits >::param_is_of_type(l,index)
-			&& Param_helper<Param2WithTraits >::param_is_of_type(l,index)
-			&& Param_helper<Param3WithTraits >::param_is_of_type(l,index)
-			&& Param_helper<Param4WithTraits >::param_is_of_type(l,index))
-		{
-			valid_construct(l);
-			return 1;
-		}
-		return 0;
-	}
-	static void valid_construct(lua_State* l)
-	{
-		typename Param4WithTraits::pull_type p4;
-		Member_func_helper<Param4WithTraits,Param4WithTraits::owner>::pull2cpp(l,p4);
-		Converter<typename Param4WithTraits::pull_type,typename Param4WithTraits::type> p4_(p4);
-		typename Param3WithTraits::pull_type p3;
-		Member_func_helper<Param3WithTraits,Param3WithTraits::owner>::pull2cpp(l,p3);
-		Converter<typename Param3WithTraits::pull_type,typename Param3WithTraits::type> p3_(p3);
-		typename Param2WithTraits::pull_type p2;
-		Member_func_helper<Param2WithTraits,Param2WithTraits::owner>::pull2cpp(l,p2);
-		Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
-		typename Param1WithTraits::pull_type p1;
-		Member_func_helper<Param1WithTraits,Param1WithTraits::owner>::pull2cpp(l,p1);
-		Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
-		Class* obj = new Class( p1_,p2_,p3_,p4_);
-		add_and_set_gc(l,obj);
-	}
-};
-template<typename Class,typename Param1WithTraits, typename Param2WithTraits, typename Param3WithTraits, typename Param4WithTraits, typename Param5WithTraits >
-struct Constructor5
-{
-	static int construct(lua_State* l) 
-	{
-		int index(1);
-		if(Param_helper<Param1WithTraits >::param_is_of_type(l,index)
-			&& Param_helper<Param2WithTraits >::param_is_of_type(l,index)
-			&& Param_helper<Param3WithTraits >::param_is_of_type(l,index)
-			&& Param_helper<Param4WithTraits >::param_is_of_type(l,index)
-			&& Param_helper<Param5WithTraits >::param_is_of_type(l,index))
-		{
-			valid_construct(l);
-			return 1;
-		}
-		return 0;
-	}
-	static void valid_construct(lua_State* l)
-	{
-		typename Param5WithTraits::pull_type p5;
-		Member_func_helper<Param5WithTraits,Param5WithTraits::owner>::pull2cpp(l,p5);
-		Converter<typename Param5WithTraits::pull_type,typename Param5WithTraits::type> p5_(p5);
-		typename Param4WithTraits::pull_type p4;
-		Member_func_helper<Param4WithTraits,Param4WithTraits::owner>::pull2cpp(l,p4);
-		Converter<typename Param4WithTraits::pull_type,typename Param4WithTraits::type> p4_(p4);
-		typename Param3WithTraits::pull_type p3;
-		Member_func_helper<Param3WithTraits,Param3WithTraits::owner>::pull2cpp(l,p3);
-		Converter<typename Param3WithTraits::pull_type,typename Param3WithTraits::type> p3_(p3);
-		typename Param2WithTraits::pull_type p2;
-		Member_func_helper<Param2WithTraits,Param2WithTraits::owner>::pull2cpp(l,p2);
-		Converter<typename Param2WithTraits::pull_type,typename Param2WithTraits::type> p2_(p2);
-		typename Param1WithTraits::pull_type p1;
-		Member_func_helper<Param1WithTraits,Param1WithTraits::owner>::pull2cpp(l,p1);
-		Converter<typename Param1WithTraits::pull_type,typename Param1WithTraits::type> p1_(p1);
-		Class* obj = new Class( p1_,p2_,p3_,p4_,p5_);
-		add_and_set_gc(l,obj);
-	}
-};
+#define OOLUA_CONSTRUCTOR_GENERATE_NUM(NUM) \
+namespace OOLUA \
+{ \
+	namespace INTERNAL \
+	{ \
+		template<typename Class OOLUA_COMMA_PREFIXED_TYPENAMES_##NUM > \
+		struct Constructor##NUM \
+		{ \
+			static int construct(lua_State* l) \
+			{ \
+				int index(1); \
+				if( OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_##NUM ) \
+				{ \
+					valid_construct(l); \
+					return 1; \
+				} \
+				return 0; \
+			} \
+			static void valid_construct(lua_State* l) \
+			{ \
+				int index(1); \
+				OOLUA_CONSTRUCTOR_PARAM_##NUM \
+				Class* obj = new Class( OOLUA_CONVERTER_PARAMS_##NUM ); \
+				add_ptr(l,obj,false,Lua); \
+			} \
+		}; \
+	} \
+}
 
-}
-}
+
+OOLUA_INTERNAL_CONSTRUCTORS_GEN
+
+
 #define OOLUA_CONSTRUCTORS_BEGIN \
 static int oolua_factory_function(lua_State* l) \
 { \
 	lua_remove(l, 1);/*remove class type*/ \
 	int const stack_count = lua_gettop(l);
-#define OOLUA_CONSTRUCTOR_1(param1Type) \
-	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
-	if( (stack_count == 1 && TYPELIST::IndexOf<Type_list<param1Type>::type, calling_lua_state>::value == -1) \
-		|| (stack_count == 0 && TYPELIST::IndexOf<Type_list<param1Type>::type, calling_lua_state>::value != -1) ) \
-	{ \
-		if(INTERNAL::Constructor1<class_,INTERNAL::param_type<param1Type > >::construct(l) ) return 1; \
-	} \
-	MSC_POP_COMPILER_WARNING_OOLUA
 
-#define OOLUA_CONSTRUCTOR_2(param1Type,param2Type) \
+#define OOLUA_CONSTRUCTOR_IMP(...) \
 	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
-	if( (stack_count == 2 && TYPELIST::IndexOf<Type_list<param1Type,param2Type>::type, calling_lua_state>::value == -1) \
-		|| (stack_count == 1 && TYPELIST::IndexOf<Type_list<param1Type,param2Type>::type, calling_lua_state>::value != -1) ) \
+	if( (stack_count == OOLUA_NARG(__VA_ARGS__) && TYPELIST::IndexOf<Type_list< __VA_ARGS__ >::type, calling_lua_state>::value == -1) \
+	|| (stack_count == OOLUA_NARG(__VA_ARGS__)-1 && TYPELIST::IndexOf<Type_list< __VA_ARGS__ >::type, calling_lua_state>::value != -1) ) \
 	{ \
-		if(INTERNAL::Constructor2<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type > >::construct(l) ) return 1; \
-	} \
-	MSC_POP_COMPILER_WARNING_OOLUA
-
-#define OOLUA_CONSTRUCTOR_3(param1Type,param2Type,param3Type) \
-	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
-	if( (stack_count == 3 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type>::type, calling_lua_state>::value == -1) \
-		|| (stack_count == 2 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type>::type, calling_lua_state>::value != -1) ) \
-	{ \
-		if(INTERNAL::Constructor3<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type >,INTERNAL::param_type<param3Type > >::construct(l) ) return 1; \
-	} \
-	MSC_POP_COMPILER_WARNING_OOLUA
-
-#define OOLUA_CONSTRUCTOR_4(param1Type,param2Type,param3Type,param4Type) \
-	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
-	if( (stack_count == 4 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type,param4Type>::type, calling_lua_state>::value == -1) \
-		|| (stack_count == 3 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type,param4Type>::type, calling_lua_state>::value != -1) ) \
-	{ \
-		if(INTERNAL::Constructor4<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type >,INTERNAL::param_type<param3Type >,INTERNAL::param_type<param4Type > >::construct(l) ) return 1; \
-	} \
-	MSC_POP_COMPILER_WARNING_OOLUA
-
-#define OOLUA_CONSTRUCTOR_5(param1Type,param2Type,param3Type,param4Type,param5Type) \
-	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
-	if( (stack_count == 5 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type,param4Type,param5Type>::type, calling_lua_state>::value == -1) \
-		|| (stack_count == 4 && TYPELIST::IndexOf<Type_list<param1Type,param2Type,param3Type,param4Type,param5Type>::type, calling_lua_state>::value != -1) ) \
-	{ \
-		if(INTERNAL::Constructor5<class_,INTERNAL::param_type<param1Type >,INTERNAL::param_type<param2Type >,INTERNAL::param_type<param3Type >,INTERNAL::param_type<param4Type >,INTERNAL::param_type<param5Type > >::construct(l) ) return 1; \
+		if( OOLUA_VA_CONSTRUCTOR(__VA_ARGS__)<class_ VA_PARAM_TYPES(__VA_ARGS__) >::construct(l) ) return 1; \
 	} \
 	MSC_POP_COMPILER_WARNING_OOLUA
 
@@ -264,25 +127,5 @@ static int oolua_factory_function(lua_State* l) \
 #define OOLUA_ONLY_DEFAULT_CONSTRUCTOR \
 OOLUA_CONSTRUCTORS_BEGIN \
 OOLUA_CONSTRUCTORS_END
-
-
-namespace OOLUA
-{
-	namespace INTERNAL
-	{
-		template<typename T>
-		inline int oolua_generic_default_constructor(lua_State* l)
-		{
-			lua_remove(l, 1);/*remove class type*/
-			int const stack_count = lua_gettop(l);
-			if(stack_count == 0 )
-			{
-				return Constructor<T,has_typedef<OOLUA::Proxy_class<T>, OOLUA::No_default_constructor>::Result>::construct(l);
-			} 
-			luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",OOLUA::Proxy_class<T>::class_name);
-			return 0;/*required by function sig yet luaL_error never returns*/
-		}
-	}
-}
 
 #endif 

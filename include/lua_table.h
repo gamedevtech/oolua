@@ -23,7 +23,7 @@ namespace OOLUA
 		\details
 		Any value can be retrieved or set from the table via the use of the template
 		member function. If the value asked for is not the correct type located
-		in the position an error can be reported, the type of which depends on \ref OOLuaConfig \n
+		in the position an error can be reported, the type of which depends on \ref OOLuaErrorReporting \n
 		at: 
 		 runs no checks on the table. Undefined if Lua instance is null or 
 		(table or key is invalid) or value is not correct type.

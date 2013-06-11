@@ -112,7 +112,7 @@ public:
 		Script vm;
 		vm.register_class<Say>();
 		vm.register_class_static<Say>("static_message",Proxy_class<Say>::static_message);
-		vm.run_chunk("Say:static_message('Hello Lua')");
+		vm.run_chunk("Say.static_message('Hello Lua')");
 	}
 	
 };

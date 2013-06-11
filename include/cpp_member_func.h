@@ -8,7 +8,7 @@
 #	define CPP_MEMBER_FUNC_H_
 
 #	include "param_traits.h"
-#	include "oolua_paramater_macros.h"
+#	include "oolua_boilerplate.h"
 #	include "proxy_caller.h"
 #	include "default_trait_caller.h"
 
@@ -16,7 +16,7 @@
 #	include "oolua_config.h"
 
 /** \cond INTERNAL*/
-#if defined __GNUC__
+#if defined __GNUC__ && defined __STRICT_ANSI__ 
 #	pragma GCC system_header
 #endif
 
@@ -26,10 +26,10 @@
 int func_name(lua_State* const l) mod \
 { \
 	assert(m_this); \
-	OOLUA_PARAMS_CONCAT(__VA_ARGS__) \
+	OOLUA_PARAMS_CONCAT(2,__VA_ARGS__) \
 	typedef INTERNAL::return_type_traits<return_value > R; \
 	typedef R::type (class_::*funcType )( OOLUA_PARAM_TYPE_CONCAT(__VA_ARGS__) ) mod ; \
-	OOLUA::INTERNAL::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<OOLUA_TPARAMS_CONCAT(__VA_ARGS__) funcType>(l,m_this,&class_::func OOLUA_PPARAMS_CONCAT(__VA_ARGS__)); \
+	OOLUA::INTERNAL::Proxy_caller<R,class_,LVD::is_void< R::type >::value >::call<funcType OOLUA_TPARAMS_CONCAT(__VA_ARGS__) >(l,m_this,&class_::func OOLUA_PPARAMS_CONCAT(__VA_ARGS__)); \
 	OOLUA_BACK_CONCAT(__VA_ARGS__) \
 	return INTERNAL::lua_return_count< Type_list<R OOLUA_RETURNS_CONCAT(__VA_ARGS__) >::type> ::out; \
 }

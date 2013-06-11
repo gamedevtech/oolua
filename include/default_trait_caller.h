@@ -1,7 +1,7 @@
 #ifndef DEFAULT_TRAIT_CALLER_H_
 #	define DEFAULT_TRAIT_CALLER_H_
 
-
+//* \cond INTERNAL*/
 
 struct lua_State;
 
@@ -50,57 +50,45 @@ namespace OOLUA \
 { \
 	namespace INTERNAL \
 	{ \
-		template <class class_type, typename return_type, OOLUA_USES_PARAMS_##num typename func_type> \
-		struct default_traits_caller<return_type (class_type::*) (OOLUA_FUNCTION_PARAMS_##num),func_type> \
+		template <class class_type, typename return_type OOLUA_COMMA_PREFIXED_TYPENAMES_##num ,typename func_type> \
+		struct default_traits_caller<return_type (class_type::*) (OOLUA_COMMA_SEPERATED_TYPES_##num),func_type> \
 		{ \
 			typedef OOLUA::INTERNAL::return_type_traits<return_type > R; \
 			static int call (lua_State* l, class_type* this_, func_type mfptr) \
 			{ \
-				assert(this_); \
-				OOLUA_PARAMS_T_INTERNAL_##num \
-				OOLUA::INTERNAL::Proxy_caller< R, class_type, LVD::is_void<return_type >::value >:: template call<OOLUA_TPARAMS_##num func_type>(l,this_,mfptr OOLUA_PPARAMS_##num); \
-				OOLUA_BACK_INTERNAL_ ##num \
-				return OOLUA::INTERNAL::lua_return_count<typename Type_list<R OOLUA_RETURNS_##num >::type> ::out; \
+				OOLUA_PARAMS_DEFAULT_INTERNAL_##num(1) \
+				OOLUA::INTERNAL::Proxy_caller< R, class_type, LVD::is_void<return_type >::value >:: template call<func_type OOLUA_COMMA_PREFIXED_PARAM_TYPES_##num >(l,this_,mfptr OOLUA_CALL_PARAMS_##num); \
+				return R::out; \
 			} \
 		}; \
-		template <class class_type, typename return_type, OOLUA_USES_PARAMS_##num typename func_type> \
-		struct default_traits_const_caller<return_type (class_type::*) (OOLUA_FUNCTION_PARAMS_##num)const,func_type> \
+		template <class class_type, typename return_type OOLUA_COMMA_PREFIXED_TYPENAMES_##num , typename func_type> \
+		struct default_traits_const_caller<return_type (class_type::*) (OOLUA_COMMA_SEPERATED_TYPES_##num)const,func_type> \
 		{ \
 			typedef OOLUA::INTERNAL::return_type_traits<return_type > R; \
 			static int call (lua_State* l, class_type* this_, func_type mfptr) \
 			{ \
-				assert(this_); \
-				OOLUA_PARAMS_T_INTERNAL_##num \
-				OOLUA::INTERNAL::Proxy_caller< R, class_type, LVD::is_void<return_type >::value >:: template call<OOLUA_TPARAMS_##num func_type>(l,this_,mfptr OOLUA_PPARAMS_##num); \
-				OOLUA_BACK_INTERNAL_ ##num \
-				return OOLUA::INTERNAL::lua_return_count<typename Type_list<R OOLUA_RETURNS_##num >::type> ::out; \
+				OOLUA_PARAMS_DEFAULT_INTERNAL_##num(1) \
+				OOLUA::INTERNAL::Proxy_caller< R, class_type, LVD::is_void<return_type >::value >:: template call<func_type OOLUA_COMMA_PREFIXED_PARAM_TYPES_##num >(l,this_,mfptr OOLUA_CALL_PARAMS_##num); \
+				return R::out; \
 			} \
 		}; \
-		template <typename return_type, OOLUA_USES_PARAMS_##num typename func_type> \
-		struct default_c_traits_caller<return_type (*) (OOLUA_FUNCTION_PARAMS_##num),func_type> \
+		template <typename return_type OOLUA_COMMA_PREFIXED_TYPENAMES_##num ,typename func_type> \
+		struct default_c_traits_caller<return_type (*) (OOLUA_COMMA_SEPERATED_TYPES_##num),func_type> \
 		{ \
 			typedef OOLUA::INTERNAL::return_type_traits<return_type > R; \
 			static int call (lua_State* l, func_type fptr) \
 			{ \
-				OOLUA_PARAMS_T_INTERNAL_##num \
-				OOLUA::INTERNAL::Proxy_none_member_caller< R, LVD::is_void<return_type >::value >:: template call<OOLUA_TPARAMS_##num func_type>(l,fptr OOLUA_PPARAMS_##num); \
-				OOLUA_BACK_INTERNAL_ ##num \
-				return OOLUA::INTERNAL::lua_return_count<typename Type_list<R >::type> ::out; \
+				OOLUA_PARAMS_DEFAULT_INTERNAL_##num(0) \
+				OOLUA::INTERNAL::Proxy_none_member_caller< R, LVD::is_void<return_type >::value >:: template call<func_type OOLUA_COMMA_PREFIXED_PARAM_TYPES_##num >(l,fptr OOLUA_CALL_PARAMS_##num); \
+				return R::out; \
 			} \
 		};\
 	} \
 }
 
 
-OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(0)
-OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(1)
-OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(2)
-OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(3)
-OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(4)
-OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(5)
-OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(6)
-OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(7)
-OOLUA_GENERATE_DEFAULT_TRAIT_CALLER(8)
+OOLUA_GENERATE_DEFAULT_TRAIT_CALLERS
 
+/** \endcond*/
 
 #endif
