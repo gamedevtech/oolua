@@ -1,8 +1,7 @@
 #ifndef OOLUA_CONFIG_H_
 #	define OOLUA_CONFIG_H_
 
-
-/** \addtogroup OOLuaConfig Library Configuration
+/** \addtogroup OOLuaConfig
 @{ */
 	
 	/** \addtogroup OOLuaErrorReporting Error Reporting
