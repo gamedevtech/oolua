@@ -10,10 +10,6 @@
 //		warning C4511:  copy constructor could not be generated (in cppunit)vs2003
 #		pragma warning( disable : 4511 )
 #	endif
-///  \addtogroup cppunit_tests
-///  @{
-///  \see tests.xml
-///  @}
 
 #		include "cppunit/TestCase.h"
 #		include "cppunit/extensions/HelperMacros.h"
