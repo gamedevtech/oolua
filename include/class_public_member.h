@@ -1,10 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file class_public_member.h
-///  Getter and setter functions for the internal classes public member
-///  variables.
-///  @remarks
-///  A getter for a public member(M) of a class(C) creates a function C::get_M
-///  A setter similary creates a function C::set_M similary
 ///  @author Liam Devine
 ///  \copyright 
 ///  See licence.txt for more details. \n 

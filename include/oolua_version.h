@@ -6,7 +6,6 @@
 #define OOLUA_DO_STRINGISE(a)   #a
 #define OOLUA_STRINGISE(a)   OOLUA_DO_STRINGISE(a)
 
-//#ifndef OOLUA_VERSION
 /** \def OOLUA_VERSION_MAJ
  \brief OOLua version string*/
 #       define OOLUA_VERSION_MAJ 2
@@ -22,7 +21,7 @@
 #       define OOLUA_VERSION \
 					OOLUA_STRINGISE(OOLUA_VERSION_MAJ) "." \
 					OOLUA_STRINGISE(OOLUA_VERSION_MIN) "." \
-					OOLUA_STRINGISE(OOLUA_VERSION_PATCH) " Alpha"
+					OOLUA_STRINGISE(OOLUA_VERSION_PATCH) " Beta"
 //#endif
 
 
@@ -39,9 +38,5 @@ namespace OOLUA
 
 #undef OOLUA_DO_STRINGISE
 #undef OOLUA_STRINGISE
-//#undef OOLUA_VERSION_MAJ
-//#undef OOLUA_VERSION_MIN
-//#undef OOLUA_VERSION_PATCH
-//#undef OOLUA_VERSION
 
 #endif

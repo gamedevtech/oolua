@@ -7,6 +7,7 @@
 * Added Html docs and improved inline documentation for DSL, makes online wiki invalid
 * Improved preformance
 * Added a new Lua module for comparisons and updated C++ code, now compares with LuaBind,LuaBridge,SLB3 and SWIG
+* Added OOLua version macros OOLUA_VERSION_MAJ OOLUA_VERSION_MIN OOLUA_VERSION_PATCH
 
 1.4.0
 * Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function
