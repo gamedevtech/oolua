@@ -38,7 +38,7 @@ public:
 	void registersStub1_luaCodeReturnsResultOfStub1New_pullPointerDoesntThrow()
 	{
 		m_lua->register_class<Stub1>();
-		m_lua->run_chunk("return require('OOLua').Stub1:new()");
+		m_lua->run_chunk("return require('OOLua').Stub1.new()");
 		Stub1* c;
 		OOLUA::pull(*m_lua,c);
 	}

@@ -192,7 +192,7 @@ public:
 	{
 		m_lua->run_chunk(
 				"func = function() \n"
-					"return Derived1Abstract1:new() \n"
+					"return Derived1Abstract1.new() \n"
 				"end");
 		m_lua->call("func");
 		OOLUA::cpp_acquire_ptr<Abstract1*> base;

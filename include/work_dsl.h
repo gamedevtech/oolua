@@ -78,7 +78,7 @@
 			derived from that type. OOLua implicitly converts between classes in a hierarchy
 			even if a reference is required. This means for example that if there are constructors
 			such as Foo::Foo(int) and Foo::Foo(float) it will depend on which was defined first
-			in the OOLUA_CTORS block as to which will be invoked for a call such as Foo:new(1).
+			in the OOLUA_CTORS block as to which will be invoked for a call such as Foo.new(1).
 
 			\see \ref OOLUA::No_default_constructor "No_default_constructor"
 			\note An OOLUA_CTORS block without any \ref OOLUA_CTOR entries is invalid.

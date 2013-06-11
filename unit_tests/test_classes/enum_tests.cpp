@@ -54,7 +54,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-							"local obj = Enums:new() "
+							"local obj = Enums.new() "
 							"return obj:get_enum() "
 						 "end");
 		Enums::COLOUR result(Enums::GREEN);
@@ -68,7 +68,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-							"local obj = Enums:new() "
+							"local obj = Enums.new() "
 							"obj:set_enum(obj.GREEN) "
 							"return obj:get_enum() "
 						 "end");
@@ -83,7 +83,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-							"local obj = Enums:new(Enums.GREEN) "
+							"local obj = Enums.new(Enums.GREEN) "
 							"return obj:get_enum() "
 						 "end");
 		Enums::COLOUR result(Enums::INVALID);
@@ -99,7 +99,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-							"local obj = Enums:new('foo') "
+							"local obj = Enums.new('foo') "
 						 "end");
 		CPPUNIT_ASSERT_THROW(m_lua->call("foo"),OOLUA::Runtime_error);
 	}
@@ -107,7 +107,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-							"local obj = Enums:new(nil) "
+							"local obj = Enums.new(nil) "
 						 "end");
 		CPPUNIT_ASSERT_THROW(m_lua->call("foo"),OOLUA::Runtime_error);
 	}
@@ -115,7 +115,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-							"local obj = Enums:new({}) "
+							"local obj = Enums.new({}) "
 						 "end");
 		CPPUNIT_ASSERT_THROW(m_lua->call("foo"),OOLUA::Runtime_error);
 	}
@@ -123,7 +123,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-							"local obj = Enums:new(true) "
+							"local obj = Enums.new(true) "
 						 "end");
 		CPPUNIT_ASSERT_THROW(m_lua->call("foo"),OOLUA::Runtime_error);
 	}
@@ -131,7 +131,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-							"local obj = Enums:new( function() end) "
+							"local obj = Enums.new( function() end) "
 						 "end");
 		CPPUNIT_ASSERT_THROW(m_lua->call("foo"),OOLUA::Runtime_error);
 	}
@@ -139,7 +139,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-						 "local obj = Enums:new( coroutine.create (foo)) "
+						 "local obj = Enums.new( coroutine.create (foo)) "
 						 "end");
 		CPPUNIT_ASSERT_THROW(m_lua->call("foo"),OOLUA::Runtime_error);
 	}
@@ -150,7 +150,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-						 "local obj = Enums:new('foo') "
+						 "local obj = Enums.new('foo') "
 						 "end");
 		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo"));
 	}
@@ -158,7 +158,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-						 "local obj = Enums:new(nil) "
+						 "local obj = Enums.new(nil) "
 						 "end");
 		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo"));
 	}
@@ -166,7 +166,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-						 "local obj = Enums:new({}) "
+						 "local obj = Enums.new({}) "
 						 "end");
 		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo"));
 	}
@@ -174,7 +174,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-						 "local obj = Enums:new(true) "
+						 "local obj = Enums.new(true) "
 						 "end");
 		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo"));
 	}
@@ -182,7 +182,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-						 "local obj = Enums:new( function() end) "
+						 "local obj = Enums.new( function() end) "
 						 "end");
 		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo"));
 	}
@@ -190,7 +190,7 @@ public:
 	{
 		m_lua->register_class<Enums>();
 		m_lua->run_chunk("foo = function() "
-						 "local obj = Enums:new( coroutine.create (foo)) "
+						 "local obj = Enums.new( coroutine.create (foo)) "
 						 "end");
 		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo"));
 	}

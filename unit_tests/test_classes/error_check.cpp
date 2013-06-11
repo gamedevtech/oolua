@@ -168,7 +168,7 @@ public:
 	void userDataCheck_runFunction()
 	{
 		m_lua->run_chunk("foo = function() "
-						 "return Stub1:new() "
+						 "return Stub1.new() "
 						 "end");
 		m_lua->register_class<Stub1>();
 		m_lua->call("foo");
@@ -178,7 +178,7 @@ public:
 	void userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue()
 	{
 		m_lua->run_chunk("foo = function() "
-						 "return Stub1:new() "
+						 "return Stub1.new() "
 						 "end");
 		m_lua->register_class<Stub1>();
 		m_lua->call("foo");
@@ -189,7 +189,7 @@ public:
 	void userDataCheck_userdataOnTopOfStackWhichARelatedThreadCreated_resultIsTrue()
 	{
 		m_lua->run_chunk("foo = function() "
-						 "local c = coroutine.create(function() return Stub1:new() end) "
+						 "local c = coroutine.create(function() return Stub1.new() end) "
 						 "local err, result = coroutine.resume(c) "
 						 "if err == false then error(result) end "
 						 "return result "
@@ -356,7 +356,7 @@ public:
 		m_lua->register_class<Stub1>();
 		m_lua->register_class<InvalidStub>();
 		m_lua->run_chunk("foo = function() "
-						 "return Stub1:new() "
+						 "return Stub1.new() "
 						 "end");
 		m_lua->call("foo");
 		InvalidStub* ptr;
@@ -368,7 +368,7 @@ public:
 		m_lua->register_class<Stub1>();
 		m_lua->register_class<InvalidStub>();
 		m_lua->run_chunk("foo = function() "
-						 "return Stub1:new() "
+						 "return Stub1.new() "
 						 "end");
 		m_lua->call("foo");
 		InvalidStub* ptr;
@@ -380,7 +380,7 @@ public:
 		m_lua->register_class<Stub1>();
 		m_lua->register_class<InvalidStub>();
 		m_lua->run_chunk("foo = function() "
-						 "return Stub1:new() "
+						 "return Stub1.new() "
 						 "end");
 		m_lua->call("foo");
 		InvalidStub* ptr;
@@ -415,7 +415,7 @@ public:
 	{
 		m_lua->register_class<Stub1>();
 		m_lua->run_chunk("foo = function() "
-						 "return Stub1:new() "
+						 "return Stub1.new() "
 						 "end");
 		m_lua->call("foo");
 		int result;
@@ -473,7 +473,7 @@ public:
 		m_lua->register_class<Stub1>();
 		m_lua->register_class<InvalidStub>();
 		m_lua->run_chunk("foo = function() "
-						 "return Stub1:new() "
+						 "return Stub1.new() "
 						 "end");
 		m_lua->call("foo");
 		InvalidStub* ptr;
@@ -495,7 +495,7 @@ public:
 	{
 		m_lua->register_class<Stub1>();
 		m_lua->run_chunk("foo = function() "
-						 "return Stub1:new() "
+						 "return Stub1.new() "
 						 "end");
 		m_lua->call("foo");
 		int result;

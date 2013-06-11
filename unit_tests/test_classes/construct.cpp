@@ -92,13 +92,13 @@ class Construct : public CPPUNIT_NS::TestFixture
 	std::string register_and_create_one_param_constructor()
 	{
 		m_lua->register_class<ParamConstructor>();
-		m_lua->run_chunk("foo = function(i) return ParamConstructor:new(i) end");
+		m_lua->run_chunk("foo = function(i) return ParamConstructor.new(i) end");
 		return "foo";
 	}
 	std::string register_and_create_two_param_constructor()
 	{
 		m_lua->register_class<ParamConstructor>();
-		m_lua->run_chunk("foo = function(i1,i2) return ParamConstructor:new(i1,i2) end");
+		m_lua->run_chunk("foo = function(i1,i2) return ParamConstructor.new(i1,i2) end");
 		return "foo";
 	}
 	struct ParamConstructorWrapper 
@@ -141,7 +141,7 @@ public:
 	/*[MinimalProxyClassUsage]*/
 	void new_luaCreatesInstance_noException()
 	{
-		CPPUNIT_ASSERT_NO_THROW( m_lua->run_chunk("Stub1:new()") );
+		CPPUNIT_ASSERT_NO_THROW( m_lua->run_chunk("Stub1.new()") );
 	}
 	/**[MinimalProxyClassUsage]*/
 	
@@ -149,7 +149,7 @@ public:
 	{
 		std::string foo(\
 			"createAndReturn = function() \n"
-				"return Stub1:new() \n"
+				"return Stub1.new() \n"
 			"end");
 		lua->run_chunk(foo);
 		CPPUNIT_ASSERT_NO_THROW( lua->call("createAndReturn") );
@@ -162,7 +162,7 @@ public:
 	void new_CallingIntParamConstructor_runChunkReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
-		bool result = m_lua->run_chunk("ParamConstructor:new(1)");
+		bool result = m_lua->run_chunk("ParamConstructor.new(1)");
 		CPPUNIT_ASSERT_EQUAL(true,result);
 
 	}
@@ -176,7 +176,7 @@ public:
 	void new_CallingBoolParamConstructor_runChunkReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
-		bool result = m_lua->run_chunk("ParamConstructor:new(true)");
+		bool result = m_lua->run_chunk("ParamConstructor.new(true)");
 		CPPUNIT_ASSERT_EQUAL(true,result);
 		
 	}
@@ -192,7 +192,7 @@ public:
 	void new_CallingIntPtrParamConstructor_runChunkReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
-		bool result = m_lua->run_chunk("ParamConstructor:new(1)");
+		bool result = m_lua->run_chunk("ParamConstructor.new(1)");
 		CPPUNIT_ASSERT_EQUAL(true,result);
 		
 	}
@@ -210,7 +210,7 @@ public:
 	void new_CallingCharConstPtrParamConstructor_runChunkReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
-		bool result = m_lua->run_chunk("ParamConstructor:new(\"do not care\")");
+		bool result = m_lua->run_chunk("ParamConstructor.new(\"do not care\")");
 		CPPUNIT_ASSERT_EQUAL(true,result);
 	}
 	void new_CallingCharConstPtrParamConstructorPassingInitialisedValue_InstanceHasStringSetToInitialisedValue()
@@ -223,7 +223,7 @@ public:
 	void new_twoParamConstructorIntAndBool_runChunkReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
-		bool result = m_lua->run_chunk("ParamConstructor:new(1,true)");
+		bool result = m_lua->run_chunk("ParamConstructor.new(1,true)");
 		CPPUNIT_ASSERT_EQUAL(true,result);
 	}
 	void new_twoParamConstructorIntAndBool_InstanceHasIntValueSet()
@@ -312,7 +312,7 @@ public:
 		m_lua->register_class<ParamConstructor>();
 		m_lua->run_chunk("foo = function() "
 							"local f = function() end "
-							"ParamConstructor:new(f) "
+							"ParamConstructor.new(f) "
 						 "end");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result);
@@ -322,7 +322,7 @@ public:
 		m_lua->register_class<ParamConstructor>();
 		m_lua->run_chunk("foo = function() "
 						 "local f = function() end "
-						 " return ParamConstructor:new(f) "
+						 " return ParamConstructor.new(f) "
 						 "end");
 		m_lua->call("foo");
 		ParamConstructorWrapper p;
@@ -335,7 +335,7 @@ public:
 		m_lua->register_class<ParamConstructor>();
 		m_lua->run_chunk("foo = function() "
 						 "local t = {} "
-						 "ParamConstructor:new(t) "
+						 "ParamConstructor.new(t) "
 						 "end");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result);
@@ -346,7 +346,7 @@ public:
 		m_lua->register_class<ParamConstructor>();
 		m_lua->run_chunk("foo = function(obj) "
 						 "local t = {} "
-						 "return ParamConstructor:new(t) "
+						 "return ParamConstructor.new(t) "
 						 "end");
 		m_lua->call("foo");
 		ParamConstructorWrapper wrap;
@@ -358,7 +358,7 @@ public:
 		m_lua->register_class<TableRefConstructor>();
 		m_lua->run_chunk("foo = function() "
 						 "local t = {} "
-						 "TableRefConstructor:new(t) "
+						 "TableRefConstructor.new(t) "
 						 "end");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(true,result);
@@ -370,7 +370,7 @@ public:
 	void new_twoParamConstructorIntAndBoolPassedStringAsFirstParam_runChunkReturnsFalse()
 	{
 		m_lua->register_class<ParamConstructor>();
-		bool result = m_lua->run_chunk("ParamConstructor:new(\"dont care\",true)");
+		bool result = m_lua->run_chunk("ParamConstructor.new(\"dont care\",true)");
 		CPPUNIT_ASSERT_EQUAL(false,result);
 	}
 	
@@ -395,14 +395,14 @@ public:
 	void new_callNewOnTypeWithNoPublicConstructors_runChunkReturnsFalse()
 	{
 		m_lua->register_class<WithOutConstructors>();
-		bool result = m_lua->run_chunk("WithOutConstructors::new()");
+		bool result = m_lua->run_chunk("WithOutConstructors.new()");
 		CPPUNIT_ASSERT_EQUAL(false,result);
 	}
 	
 	void new_CallingDefaultConstructorOnTypeWithOutOne_runChunkReturnsFalse()
 	{
 		m_lua->register_class<ParamConstructor>();
-		bool result = m_lua->run_chunk("ParamConstructor:new()");
+		bool result = m_lua->run_chunk("ParamConstructor.new()");
 		CPPUNIT_ASSERT_EQUAL(false,result);
 	}
 	
@@ -412,7 +412,7 @@ public:
 		m_lua->register_class<TableRefConstructor>();
 		m_lua->run_chunk("foo = function() "
 						 "local t = nil "
-						 "TableRefConstructor:new(t) "
+						 "TableRefConstructor.new(t) "
 						 "end");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(false,result);
@@ -423,7 +423,7 @@ public:
 		m_lua->register_class<ParamConstructor>();
 		m_lua->run_chunk("foo = function() "
 						 "local t = nil "
-						 "ParamConstructor:new(t) "
+						 "ParamConstructor.new(t) "
 						 "end");
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(false,result);
@@ -436,7 +436,7 @@ public:
 	void new_twoParamConstructorIntAndBoolPassedStringAsFirstParam_throwsRuntimeError()
 	{
 		m_lua->register_class<ParamConstructor>();
-		CPPUNIT_ASSERT_THROW ( (m_lua->run_chunk("ParamConstructor:new(\"dont care\",true)"))
+		CPPUNIT_ASSERT_THROW ( (m_lua->run_chunk("ParamConstructor.new(\"dont care\",true)"))
 							  ,OOLUA::Runtime_error);
 	}
 	
@@ -461,13 +461,13 @@ public:
 	void new_callNewOnTypeWithNoPublicConstructors_throwsRuntimeError()
 	{
 		m_lua->register_class<WithOutConstructors>();
-		CPPUNIT_ASSERT_THROW( (m_lua->run_chunk("WithOutConstructors:new()")), OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW( (m_lua->run_chunk("WithOutConstructors.new()")), OOLUA::Runtime_error);
 	}
 	
 	void new_CallingDefaultConstructorOnTypeWithOutOne_throwsRuntimeError()
 	{
 		m_lua->register_class<ParamConstructor>();
-		CPPUNIT_ASSERT_THROW( (m_lua->run_chunk("ParamConstructor:new()"))
+		CPPUNIT_ASSERT_THROW( (m_lua->run_chunk("ParamConstructor.new()"))
 							 ,OOLUA::Runtime_error);
 	}
 	
@@ -477,7 +477,7 @@ public:
 		m_lua->register_class<TableRefConstructor>();
 		m_lua->run_chunk("foo = function() "
 						 "local t = nil "
-						 "TableRefConstructor:new(t) "
+						 "TableRefConstructor.new(t) "
 						 "end");
 		CPPUNIT_ASSERT_THROW((m_lua->call("foo")),OOLUA::Runtime_error);
 	}
@@ -486,7 +486,7 @@ public:
 		m_lua->register_class<ParamConstructor>();
 		m_lua->run_chunk("foo = function() "
 						 "local t = nil "
-						 "ParamConstructor:new(t) "
+						 "ParamConstructor.new(t) "
 						 "end");
 		CPPUNIT_ASSERT_THROW((m_lua->call("foo")),OOLUA::Runtime_error);
 	}
@@ -497,7 +497,7 @@ public:
 	{
 		m_lua->register_class<LuaStateConstructors>();
 		m_lua->run_chunk("foo = function() "
-						 "return LuaStateConstructors:new() "
+						 "return LuaStateConstructors.new() "
 						 "end");
 		OOLUA::cpp_acquire_ptr<LuaStateConstructors*> stateCtor;
 		m_lua->call("foo");
@@ -510,7 +510,7 @@ public:
 	{
 		m_lua->register_class<LuaStateConstructors>();
 		m_lua->run_chunk("foo = function() "
-						 "return LuaStateConstructors:new(1) "
+						 "return LuaStateConstructors.new(1) "
 						 "end");
 		OOLUA::cpp_acquire_ptr<LuaStateConstructors*> stateCtor;
 		m_lua->call("foo");
@@ -523,7 +523,7 @@ public:
 	{
 		m_lua->register_class<LuaStateConstructors>();
 		m_lua->run_chunk("foo = function(i) "
-						 "return LuaStateConstructors:new(i) "
+						 "return LuaStateConstructors.new(i) "
 						 "end");
 		OOLUA::cpp_acquire_ptr<LuaStateConstructors*> stateCtor;
 		m_lua->call("foo",ParamValues::int_set);

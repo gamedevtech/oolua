@@ -104,7 +104,7 @@ public:
 		using namespace OOLUA;
 		Script vm;
 		vm.register_class<Say>();
-		run_chunk(vm, "Say:new():message('Hello Lua')");
+		run_chunk(vm, "Say.new():message('Hello Lua')");
 	}
 	void hello_static_class_function()
 	{

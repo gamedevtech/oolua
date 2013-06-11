@@ -86,7 +86,7 @@ public:
 	void push_functionReturnsClassOnStackInstance_instanceIsToBeGarbageCollected()
 	{
 		m_lua->run_chunk("function bugReport() "
-						 "local object = Method_returns_class:new() "
+						 "local object = Method_returns_class.new() "
 						 "local stack = object:return_stack_instance() "
 						 "return stack "
 						 "end");

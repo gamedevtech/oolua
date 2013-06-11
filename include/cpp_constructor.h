@@ -52,7 +52,6 @@ namespace OOLUA
 		template<typename T>
 		inline int oolua_generic_default_constructor(lua_State* l)
 		{
-			lua_remove(l, 1);/*remove class type*/
 			int const stack_count = lua_gettop(l);
 			if(stack_count == 0 )
 			{
@@ -100,7 +99,6 @@ OOLUA_INTERNAL_CONSTRUCTORS_GEN
 #define OOLUA_CONSTRUCTORS_BEGIN \
 static int oolua_factory_function(lua_State* l) \
 { \
-	lua_remove(l, 1);/*remove class type*/ \
 	int const stack_count = lua_gettop(l);
 
 #define OOLUA_CONSTRUCTOR_IMP(...) \
