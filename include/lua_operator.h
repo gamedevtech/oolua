@@ -167,7 +167,7 @@ DEFINE_OOLUA_OPERATOR_FUNCTION_(div,"__div")
 		template<typename ClassType,int has_proxy_tags>
 		struct proxy_tag_type
 		{
-			typedef typename Proxy_class<ClassType>::Typedef type;
+			typedef typename Proxy_class<ClassType>::Tags type;
 		};
 		template<typename ClassType>
 		struct proxy_tag_type<ClassType,0>

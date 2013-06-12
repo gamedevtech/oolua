@@ -22,6 +22,8 @@
 #	pragma GCC system_header
 #endif
 
+/** \cond INTERNAL*/
+ 
 namespace OOLUA
 {
 	namespace INTERNAL
@@ -101,7 +103,20 @@ static int oolua_factory_function(lua_State* l) \
 { \
 	int const stack_count = lua_gettop(l);
 
-#define OOLUA_CONSTRUCTOR_IMP(...) \
+/** \endcond*/
+
+/** \addtogroup OOLuaDSL
+ @{
+	\def OOLUA_CTOR
+	\hideinitializer
+	\brief Generates a constructor in a constructor block \see OOLUA_CTORS
+	\details
+	OOLUA_CTOR( ConstructorParameterList)
+	\param ConstructorParameterList Comma seperated list of parameters
+	\pre Size of ConstructorParameterList >0 and <= \ref OOLuaConfigConstructorParams "\"constructor_params\""
+	\see \ref OOLuaConfigConstructorParams "constructor_params"
+ */
+#define OOLUA_CTOR(...) \
 	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( (stack_count == OOLUA_NARG(__VA_ARGS__) && TYPELIST::IndexOf<Type_list< __VA_ARGS__ >::type, calling_lua_state>::value == -1) \
 	|| (stack_count == OOLUA_NARG(__VA_ARGS__)-1 && TYPELIST::IndexOf<Type_list< __VA_ARGS__ >::type, calling_lua_state>::value != -1) ) \
@@ -109,7 +124,9 @@ static int oolua_factory_function(lua_State* l) \
 		if( OOLUA_VA_CONSTRUCTOR(__VA_ARGS__)<class_ VA_PARAM_TYPES(__VA_ARGS__) >::construct(l) ) return 1; \
 	} \
 	MSC_POP_COMPILER_WARNING_OOLUA
+/**@}*/
 
+/** \cond INTERNAL*/
 #define OOLUA_CONSTRUCTORS_END \
 	if(stack_count == 0 ) \
 	{ \
@@ -120,8 +137,36 @@ static int oolua_factory_function(lua_State* l) \
 } \
 	typedef class_ ctor_block_check;
 
-#define OOLUA_ONLY_DEFAULT_CONSTRUCTOR \
-OOLUA_CONSTRUCTORS_BEGIN \
-OOLUA_CONSTRUCTORS_END
+/** \endcond*/
+
+/** \addtogroup OOLuaDSL
+@{
+	\def OOLUA_CTORS
+	\hideinitializer
+	\brief Creates a block into which none default constructors can be defined with \ref OOLUA_CTOR
+	\details OOLUA_CTORS(ConstructorEntriesList)
+	\param ConstructorEntriesList List of \ref OOLUA_CTOR
+	<p>
+	To enable the construction of an instance which is a specific type, there must be 
+	constructor(s) for that type registered with OOLua. \ref OOLUA_CTORS is the block into 
+	which you can define none default constructor entries using \ref OOLUA_CTOR.
+	<p>
+	Constructors are the only real type of overloading which is permitted by OOLua 
+	and there is an important point which should be noted. OOLua will try and match
+	the number of parameters on the stack with the amount required by each OOLUA_CTOR
+	entry and will look in the order they were defined. When interacting with the Lua
+	stack certain types can not be differentiated between, these include some integral
+	types such as float, int, double etc and types which are of a proxy class type or
+	derived from that type. OOLua implicitly converts between classes in a hierarchy
+	even if a reference is required. This means for example that if there are constructors
+	such as Foo::Foo(int) and Foo::Foo(float) it will depend on which was defined first
+	in the OOLUA_CTORS block as to which will be invoked for a call such as Foo.new(1).
+ 
+	\see \ref OOLUA::No_default_constructor "No_default_constructor"
+	\note An OOLUA_CTORS block without any \ref OOLUA_CTOR entries is invalid.
+*/
+#	define OOLUA_CTORS(ConstructorEntriesList) OOLUA_CONSTRUCTORS_BEGIN ConstructorEntriesList OOLUA_CONSTRUCTORS_END
+/**@}*/
+
 
 #endif 

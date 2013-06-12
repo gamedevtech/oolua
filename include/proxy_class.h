@@ -24,7 +24,7 @@ namespace OOLUA
 	 */
 	template<typename T>class Proxy_class;
 
-	/** \cond INTERNAL*/
+	/** \cond INTERNAL */
 	
 	namespace INTERNAL
 	{
@@ -159,11 +159,11 @@ namespace OOLUA
 			typedef T Type;
 		};
 	}
+	/** \endcond*/
 }
+/*Doxygen does not seem to like crossing namespaces*/
+/** \cond INTERNAL */
 
-
-///  \addtogroup Proxy_class_macros
-///  @{
 ///  \def OOLUA_FORWARD_DECLARE
 ///  forward declare in the OOLUA namespace
 ///	 @note
@@ -183,10 +183,6 @@ namespace OOLUA
 		typedef NoneProxyType OoluaNoneProxy;
 	};
 }
-/// \def OOLUA_CLASS_END
-///end the class and the namespace
-#define OOLUA_CLASS_END };}
-
 
 ///	 \def OOLUA_CLASS
 ///	Class which may have base classes
@@ -234,6 +230,19 @@ private:\
 	}\
 public:
 
+/** \endcond*/
+
+/** \addtogroup OOLuaDSL
+ @{
+		\def OOLUA_PROXY_END
+		\hideinitializer
+		\brief Ends the generation of the proxy class
+	 */		 
+#		define OOLUA_PROXY_END };} /*end the class and namespace*/
+/**@}*/
+
+/** \cond INTERNAL */
+
 #define OOLUA_ALLBASES\
 	typedef INTERNAL::FindAllBases<class_>::Result AllBases;
 
@@ -246,7 +255,7 @@ public:
 ///  \def OOLUA_BASES_START
 ///  define the class to have numerical amount (equal to NUM) of base classes
 #define OOLUA_BASES_START\
-	OOLUA_TYPEDEFS
+	typedef Type_list<
 
 ///  \def OOLUA_BASES_END
 ///  end of base class declaring
@@ -265,29 +274,17 @@ public:
 	OOLUA_BASIC\
 	OOLUA_NO_BASES
 
-
-///	\def  OOLUA_NO_TYPEDEFS
-///	the classes has no typedefs
-///	\see oolua_typedefs.h
-#define OOLUA_NO_TYPEDEFS\
-	typedef TYPE::Null_type Typedef;
-
-
-///	\def  OOLUA_TYPEDEFS
-///	Starts the typedef list which has NUM of types
-///	\see oolua_typedefs.h
-#define OOLUA_TYPEDEFS\
+///	\def  OOLUA_TAGS_START
+///	Starts the tags list
+///	\see oolua_tags.h
+#define OOLUA_TAGS_START\
 	typedef Type_list<
 
-///	\def  OOLUA_TYPEDEFS_END
-///	Closes the typedef list
-///	\see oolua_typedefs.h
-#define OOLUA_TYPEDEFS_END\
-	>::type Typedef; typedef class_ tag_block_check;
-///  @}
-
-//alias for OOLUA_TYPEDEFS_END to be backward compatible (deprecated)
-#define OOLUA_END_TYPES OOLUA_TYPEDEFS_END
+///	\def  OOLUA_TAGS_END
+///	Closes the tags list
+///	\see oolua_tags.h
+#define OOLUA_TAGS_END\
+	>::type Tags; typedef class_ tag_block_check;
 
 #define OOLUA_ENUMS_START \
 static void oolua_enums(lua_State * l)\
@@ -296,15 +293,35 @@ static void oolua_enums(lua_State * l)\
 	meth.push_on_stack(l);\
 	int const top = lua_gettop(l);
 
-#define OOLUA_ENUM_ENTRY(Name) \
-	lua_pushliteral(l, #Name );\
-	lua_pushinteger(l,(lua_Integer)class_::Name);\
-	lua_settable(l,top);
-
 #define OOLUA_ENUMS_END \
 	lua_pop(l,1);\
 }
+/** \endcond*/
+ 
+/** \addtogroup OOLuaDSL
+@{
+		\def OOLUA_ENUM
+		\hideinitializer
+		\brief Creates a entry into a \ref OOLUA_ENUMS block
+		\details OOLUA_ENUM(EnumName)
+		\param EnumName The class enumeration name
+	*/
+#	define OOLUA_ENUM(EnumName) \
+		lua_pushliteral(l, #EnumName );\
+		lua_pushinteger(l,(lua_Integer)class_::EnumName);\
+		lua_settable(l,top);
 
-/**\endcond*/
+	/**	\def OOLUA_ENUMS
+		\hideinitializer
+		\brief Creates a block into which enumerators can be defined with \ref OOLUA_ENUM
+		\details OOLUA_ENUMS(EnumEntriesList)
+		\param EnumEntriesList List of \ref OOLUA_ENUM
+		<p>
+		\note 
+		An OOLUA_ENUMS block without any \ref OOLUA_ENUM entries is invalid.
+	*/
+#	define OOLUA_ENUMS(EnumEntriesList) OOLUA_ENUMS_START EnumEntriesList OOLUA_ENUMS_END
+
+/** @}*/
 
 #endif //CPP_PROXY_CLASS_H_

@@ -140,8 +140,6 @@
 #		define OOLUA_PROXY(...)\
 			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_PROXY_WITH_BASES_,OOLUA_NARG_GREATER_THAN_ONE OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
-#		define OOLUA_CTOR(...)\
-			OOLUA_CONSTRUCTOR_IMP(__VA_ARGS__)
 #		define OOLUA_MEM_FUNC(...)\
 			OOLUA_VA_CONCAT OOLUA_LEFT_PAREN OOLUA_MEM_FUNC_,OOLUA_NARG_GREATER_THAN_TWO OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN OOLUA_RIGHT_PAREN  OOLUA_LEFT_PAREN __VA_ARGS__ OOLUA_RIGHT_PAREN
 
@@ -235,19 +233,6 @@
 	*/
 #		define OOLUA_PROXY(...)\
 			OOLUA_VA_CONCAT(OOLUA_PROXY_WITH_BASES_,OOLUA_NARG_GREATER_THAN_ONE(__VA_ARGS__))(__VA_ARGS__)
-
-	/** \def OOLUA_CTOR
-		\hideinitializer
-		\brief Generates a constructor in a constructor block \see OOLUA_CTORS
-		\details
-		OOLUA_CTOR( ConstructorParameterList)
-		\param ConstructorParameterList Comma seperated list of parameters
-		\pre Size of ConstructorParameterList >0 and <= \ref OOLuaConfigConstructorParams "\"constructor_params\""
-		\see \ref OOLuaConfigConstructorParams "constructor_params"
-	*/
-#		define OOLUA_CTOR(...)\
-			OOLUA_CONSTRUCTOR_IMP(__VA_ARGS__)
-
 
 	/** \addtogroup OOLuaExpressive Expressive
 	@{
@@ -465,6 +450,25 @@
 /** \endcond*/
 
 #	endif
+
+/** \addtogroup OOLuaDSL DSL
+@{
+		\def OOLUA_TAGS(TagList)
+		\hideinitializer
+		\brief Allows more information to be specified about the proxy class
+		\details OOLUA_TAGS(TagList)
+		\param TagList Comma seperated list of \ref OOLuaTags
+		<p>
+		Tags specifiy more information about the class which should be exposed, 
+		such as:
+		\li Does the class support any operators?
+		\li Is it abstract ?
+		\li Does the class have enumerations?
+		<p>
+		\note An OOLUA_TAGS list without any \ref OOLuaTags entries is invalid.
+	 */
+#		define OOLUA_TAGS(...) OOLUA_TAGS_START __VA_ARGS__ OOLUA_TAGS_END
+/*@}*/
 
 
 #endif

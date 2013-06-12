@@ -86,7 +86,7 @@
 #	include "lua_table.h"
 #	include "lua_ref.h"
 #	include "lua_stack_dump.h"
-#	include "oolua_typedefs.h"
+#	include "oolua_tags.h"
 #	include "member_func_helper.h"
 #   include "oolua_registration.h"
 #   include "oolua_error.h"
@@ -94,8 +94,6 @@
 #	include "cpp_constructor.h"
 #	include "oolua_va_args.h"
 
-#	define OOLUA_WORK_DSL
-#	include "work_dsl.h"
 
 /** \namespace OOLUA
 	\brief This is the root namespace of the library

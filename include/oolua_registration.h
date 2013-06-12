@@ -36,7 +36,7 @@
 #include "base_checker.h"
 #include "oolua_char_arrays.h"
 #include "lvd_types.h"
-#include "oolua_typedefs.h"
+#include "oolua_tags.h"
 #include "lua_table.h"
 
 #include "oolua_config.h"
