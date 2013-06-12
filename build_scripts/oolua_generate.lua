@@ -17,45 +17,53 @@
 @{ 
 	\addtogroup OOLuaFileGeneration File Generation
 	@{
-		\brief Lua module for generating required OOLua configurable boilerplate code.
-		\details This module allows for a user to set limits which are different from the 
-		defaults or for the files to be regenerated using the default values.\n
-		You do not need a version of Lua to run this module, premake the project file
-		generator used in OOLua already contains a copy of Lua 5.1 with some modifications
-		to the core. For premake information and the OOLua specific options added you cam
-		run the following in the OOLua root directory:\code{.lua}premake4 --help\endcode
-		
-		The most common change to these options is the number of functions which can be 
-		registered for a proxy class, this limit applies individually to constant and none
-		constant functions, base class methods that are registered in a base class do not
-		decrease the count for a derived class.\n
-		Regenerates the OOLua files and specifies to increase the count whilst using 
-		default values for the remaining options:
-		\code{.lua}premake4 --class_functions=30 oolua-gen\endcode
-		Returns a module with the following functions \n
-		\snippet oolua_generate.lua GenModuleReturn
-		Default Options: \n
+		\brief Lua module for generating configurable OOLua boilerplate code.
+		\details The \ref OOLuaFileGeneration "\"oolua_generate\"" Lua module provides
+		information about the default limits and allows generation of boilerplate code 
+		using user defined limits or regeneration with default values, the details of 
+		these being :
 		\anchor OOLuaConfigLuaParams
 		\anchor OOLuaConfigCppParams
 		\anchor OOLuaConfigConstructorParams 
 		\anchor OOLuaConfigClassFunctions
 		\snippet oolua_generate.lua GenDefaultDetails
+
+		The most common change to these options is the number of functions which can be 
+		registered for a proxy class, this limit applies individually to constant and none
+		constant functions, base class methods that are registered in a base class do not
+		decrease the count for a derived class.\n
+		Using the Lua interpreter to regenerate the OOLua files increasing this option
+		whilst using default values for the remaining options:
+		\code{.lua}lua -e "require'build_scripts.oolua_generate'.gen({class_functions=30},'include/')"\endcode
+		<p>
+		For convenience you do not need a version of Lua installed on a machine to run this 
+		module, Premake the project file generator used in OOLua already contains a copy of 
+		Lua 5.1 (it has some modifications to the core libraries).  To generate the files 
+		with the same options as above :
+		\code{.lua}premake4 --class_functions=30 oolua-gen\endcode
+		<p>
+
+		The module returns a table with the following functions \n
+		\snippet oolua_generate.lua GenModuleReturn
 		
 		\fn function gen(options,path)
 		\param options [optional] Defaults to the library \ref defaults
-		\param path [optional] Defaults to Current working directory
+		\param path [optional] Defaults to the current working directory
 		\brief Generate boilerplate header files
 		\details Generates boilerplate C++ files code required for OOLua using the passed options
-		or if an option is not present then the default is used.
+		or if an option is not present then the default is used. If Path is not nil then it is 
+		required to be a string which is slash postfixed.
 		
 		\fn function default_details()
 		\brief Returns the library defaults and details
 		\details Returns a table detailing the library defaults and descriptions
+		\snippet oolua_generate.lua GenDefaultDetails
 		\returns Table of the format { config_option ={desc='blurb',value=0} }
+
 		
 		\fn function defaults()
 		\brief Gets the default options as key(string) and value(number) entries in a table
-		\details Modifies the table returned by \ref default_details so the it formatted correctly
+		\details Modifies the table returned by \ref default_details so the it is formatted correctly
 		for any functions it will be passed to.
 		\returns Table of the format { config_option = 0 }
 		\see default_details

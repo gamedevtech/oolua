@@ -1,144 +1,146 @@
+/** \page OOLuaChangeLog Change Log
 
-2.0.0
-* Pretty much a new DSL which is not backwards compatible
-* Calling static functions in Lua now requires the dot notation
-* Calling new in Lua now requires the dot notation
-* New Lua module which generates boilerplate OOLua C++ files, removes old console application
-* Added Html docs and improved inline documentation for DSL, makes online wiki invalid
-* Improved preformance
-* Added a new Lua module for comparisons and updated C++ code, now compares with LuaBind,LuaBridge,SLB3 and SWIG
-* Added OOLua version macros OOLUA_VERSION_MAJ OOLUA_VERSION_MIN OOLUA_VERSION_PATCH
+\section OOLuaChanges2-0-0 2.0.0
+- Pretty much a new \ref OOLuaDSL "DSL" which is not backwards compatible
+- Calling static functions in Lua now requires the dot notation
+- Calling new in Lua now requires the dot notation
+- New \ref OOLuaFileGeneration "Lua module" which generates boilerplate OOLua C++ files, removes old console application
+- Added HTML docs and improved inline documentation for DSL, makes online wiki invalid
+- Improved preformance
+- Added a new Lua module for \ref OOLuaComparison "comparisons" and updated C++ code, now compares with LuaBind,LuaBridge,SLB3 and SWIG
+- Added OOLua version macros \ref OOLUA_VERSION_MAJ \ref OOLUA_VERSION_MIN and \ref OOLUA_VERSION_PATCH
 
-1.4.0
-* Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function
-* Added OOLUA_TYPEDEFS_END which is an alias for OOLUA_END_TYPES to match the naming of other macros
-* Type comparison now uses the address of a template typed function
-* Removed OOLUA_SAFE_ID_COMPARE
-* Added config option OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA
-* Added config option OOLUA_USERDATA_OPTIMISATION
-* Moved base checking function from the metatable it is now store in Lua_ud
-* Added new trait calling_lua_state which passes allows passing the calling Lua state as a parameter
-* Added friendlier registering of class enums
-* Added function return traits for a reference to constant std::string
-* Bug fix Issue 28: Proxy checker typedefs in the default scope instead of public. (Sakamoto)
-* Bug fix Issue 29: Lua 5.2 calls __gc method with a table. (Ilia Pavlovets)
-* Prevent invalid Lua stack indexes when pulling a Lua_ref or Proxy_class. Indexes Zero (lua_gettop result)  or -1 with an empty stack. 
-* Bug fix Issue 30: Table traverse function incorrectly assumes the stack is empty (Steve Nichols)
-* Added oolua_ipairs and oolua_ipairs_end macros for iterating over arrays
-* Added oolua_pairs and oolua_pairs_end macros for iterating over tables
-* Removed the lua_State parameter from for_each_key_value function
-* Added bool OOLUA::can_xmove(lua_State*vm0,lua_State*vm1)
-* Lua_ref can safely be moved between related Lua states.
-* Added OOLUA::load_chunk, OOLUA::run_chunk, OOLUA::run_file and OOLUA::load_file
-* Bug fix Issue 25 : Enums being classed as a class type for member functions (Harley Laue)
-* Added the ability to pass a stack index as the function to call with Lua_function
-* Fixed on error Lua_function now resets the stack to the same as before entry.
-* Added OOLua module
-* Updated __VA_ARGS__ macro for VS11
+\section OOLuaChanges1-4-0 1.4.0
+- Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function
+- Added OOLUA_TYPEDEFS_END which is an alias for OOLUA_END_TYPES to match the naming of other macros
+- Type comparison now uses the address of a template typed function
+- Removed OOLUA_SAFE_ID_COMPARE
+- Added config option \ref OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA
+- Added config option \ref OOLUA_USERDATA_OPTIMISATION
+- Moved base checking function from the metatable it is now store in Lua_ud
+- Added new trait OOLUA::calling_lua_state which passes allows passing the calling Lua state as a parameter
+- Added friendlier registering of class enums
+- Added function return traits for a reference to constant std::string
+- Bug fix Issue 28: Proxy checker typedefs in the default scope instead of public. (Sakamoto)
+- Bug fix Issue 29: Lua 5.2 calls __gc method with a table. (Ilia Pavlovets)
+- Prevent invalid Lua stack indexes when pulling a Lua_ref or Proxy_class. Indexes Zero (lua_gettop result)  or -1 with an empty stack. 
+- Bug fix Issue 30: Table traverse function incorrectly assumes the stack is empty (Steve Nichols)
+- Added \ref oolua_ipairs and \ref oolua_ipairs_end macros for iterating over arrays
+- Added \ref oolua_pairs and \ref oolua_pairs_end macros for iterating over tables
+- Removed the lua_State parameter from for_each_key_value function
+- Added bool OOLUA::can_xmove(lua_State*vm0,lua_State*vm1)
+- Lua_ref can safely be moved between related Lua states.
+- Added OOLUA::load_chunk, OOLUA::run_chunk, OOLUA::run_file and OOLUA::load_file
+- Bug fix Issue 25 : Enums being classed as a class type for member functions (Harley Laue)
+- Added the ability to pass a stack index as the function to call with Lua_function
+- Fixed on error Lua_function now resets the stack to the same as before entry.
+- Added OOLua module
+- Updated __VA_ARGS__ macro for VS11
 
-1.3.2
-* Bug fix Issue 19 : Variadic macros which rename a function
-* Added ability to typedef classes inside the OOLUA namespace see: http://groups.google.com/group/oolua-user/browse_thread/thread/688ddac870fb76d5
-* Bug fix Issue 22 : Remove return statements which generate warning with gcc (Tim Mensch)
-* Refactored so that anything which is not meant to be called by a user, is now in the OOLUA::INTERNAL namespace,
-* Added compile time constraints to traits
-* OOLUA::cpp_acquire_ptr and OOLUA::lua_acquire_ptr - Type supplied to template is now the real type <foo*> or <foo const*> 
-* Bug fix : Converter was not taking the parameter by reference when it needed to.
-* Removed the restriction of using classes only in the thread they were created under all conditions
-
-
-1.3.1
-* Work around for Visual Studio as reported by Tom on the mailing list
-
-1.3.0
-* Support for limited constructors
-* Added a file generator to the generator solution for constructor parameters
-* Added the types No_default_constructor,No_public_constructors and No_public_destructor to oolua_typedefs.h
-* Added OOLUA_ONLY_DEFAULT_CONSTRUCTOR
-* Broke ABI removing default constructor being forced
-* Added OOLUA::table_set_value which does not retrieve the table from the registry yet uses a stack index
-* Added convenance function OOLUA::new_table 
-* Added copy constructor to Lua_ref and Lua_table
-* Added param traits for Lua_ref 
-* Added push member to lua_ref
-* Enabled a constructor to take a Lua_func_ref
-* Bug fix Issue 10 : fixed user type return on the stack (Tomm)
-* Enabled a constructor to take a Lua_table
-* Added method to pull a table reference from the stack
-* Enabled a constructor to take a Lua_table_ref
-* Added a conversion constructor to Lua_table from Lua_ref_table, introduced a friend hack!!
-* Moved the Lua_table member function get_table to the private interface
-* Refactored the pulling of a registry type (Lua_ref<T> and Lua_table)
-* Added pulling a registry type when nil is on the stack, frees the registry ref and sets it to invalid
-* Refactored Lua_table removing the lua_State instead using the reference's state member
-* Added a default implementation of Proxy_class which creates a typedef that identifies it as a none proxy type
-* Bug fix : Public members retrieved with get_?, now push by reference if the type has a proxy type and it is by value
-* Visual Studio work around for when taking the address of a function
-* Added quotation marks to TargetPath as a post build event in visual studio. Directories with a space caused a problem.
-* Added check to make sure a user data type was created by OOLUA when pulling a class from the stack
-* Bypassed checking the user data type when calling a member function on that instance
-* Changed the internal registration key of the function which checks a class bases
-* Added support for building and running unit tests with vs2010 and gmock 1.5
-* Updated generator project to include C function wrappers
-* Added C function wrappers
-* Moved build scripts to "build_scripts" directory
-* Added oolua_config.h
-* Added config option OOLUA_RUNTIME_CHECKS_ENABLED
-* Added config option OOLUA_STD_STRING_IS_INTEGRAL
-* How errors are reported now depend on which language called the function and the settings in oolua_config.h
-* OOLUA::push2lua now returns a boolean which is the result of the operation, if exceptions are enabled it throws on error
-* OOLUA::Lua_function now adds a trackback (copied from Lua code) which is enabled with OOLUA_DEBUG_CHECKS
-* Operator functions now use the OOLUA::LUA_CALLED::pull2cpp functions which act differently to OOLUA::pull2cpp on an error
-* OOLUA::Lua_ref has two extra functions to be used via Lua code, lua_pull and lua_push 
-* Bug fix : OOLUA::Lua_table's safe_at now does the correct thing when exceptions are enabled and does not let an exception escape.
-* Added definition of OOLUA::get_last_error even if store last error is not enabled, in this instance it is a no op. 
-* Exceptions now can pop the error of the Lua stack and Runtime_error can be initialsed with a string
-* oolua_member_function.h 's proxy calling functions now wrap code in a try block if exceptions are enabled.
-* Removed LUA_GLOBALSINDEX define from lua_includes when using Lua 5.2 instead lua_getglobal and lua_setglobal are used throughout
-* Added support for std::string to have embedded nulls as suggested by Tomm on the mailing list
-* Moved C++ classes used in tests to cpp_classes directory
-* Moved OOLua proxy classes used in tests to bind_classes directory
-* Moved all unit tests to the unit_tests directory
-* Added string is integral unit test
-* Table::pull_from_stack now returns a bool to indicate the result if called by C++ code and not using exceptions
-* Added unit_test_config(root,name) to premake helper file
-* Added support for __VA_ARGS__ macros with one or more arguments
-* Added support for __VA_ARGS__ macros with zero arguments using compiler extensions
-* Added helper function OOLUA::get_global
-* Added helper function OOLUA::set_global
-* Added helper function OOLUA::set_global_to_nil
-* Bug fix : Calling a static function on a derived instance when the function was registered with a base class
+\section OOLuaChanges1-3-2 1.3.2
+- Bug fix Issue 19 : Variadic macros which rename a function
+- Added ability to typedef classes inside the OOLUA namespace see: http://groups.google.com/group/oolua-user/browse_thread/thread/688ddac870fb76d5
+- Bug fix Issue 22 : Remove return statements which generate warning with gcc (Tim Mensch)
+- Refactored so that anything which is not meant to be called by a user, is now in the OOLUA::INTERNAL namespace,
+- Added compile time constraints to traits
+- OOLUA::cpp_acquire_ptr and OOLUA::lua_acquire_ptr - Type supplied to template is now the real type <foo*> or <foo const*> 
+- Bug fix : Converter was not taking the parameter by reference when it needed to.
+- Removed the restriction of using classes only in the thread they were created under all conditions
 
 
-1.2.2
-* Converted Premake scripts to Premake4 
-* Optimised the checking of a type against a requested type
-* Userdata name now changes when it's constant status in set_type_top_to_none_const
-* Added Xcode support to Premake scripts
-* Added xcode test unit bash build script.
-* Build logs directed to there own directory
-* Added new test project "tests_may_fail" for issue 7
-* Updated bash build scripts to run the tests_may_fail aswell as unit.tests
-* Added a readme.txt with details of library as many download locations are now available
-* Bug fix Issue 8 : Passing a c style string to a member function bug as reported by (airbash)
-* Bug fix Issue 8 : A corresponding bug of a member function which returns a c style string.
-* Added define in lua_includes.h to support Lua 5.2 and 5.1.4 simultaneously 
-* Renamed platform test scripts
-* Added build scripts to create a local install
+\section OOLuaChanges1-3-1 1.3.1
+- Work around for Visual Studio as reported by Tom on the mailing list
 
-1.2.1
-* Was actually 1.2.0 yet due to a packaging error had to be incremented.
+\section OOLuaChanges1-3-0 1.3.0
+- Support for limited constructors
+- Added a file generator to the generator solution for constructor parameters
+- Added the types OOLUA::No_default_constructor,OOLUA::No_public_constructors and OOLUA::No_public_destructor to oolua_typedefs.h
+- Added \ref OOLUA_ONLY_DEFAULT_CONSTRUCTOR
+- Broke ABI removing default constructor being forced
+- Added OOLUA::table_set_value which does not retrieve the table from the registry yet uses a stack index
+- Added convenance function OOLUA::new_table 
+- Added copy constructor to Lua_ref and Lua_table
+- Added param traits for Lua_ref 
+- Added push member to lua_ref
+- Enabled a constructor to take a Lua_func_ref
+- Bug fix Issue 10 : fixed user type return on the stack (Tomm)
+- Enabled a constructor to take a Lua_table
+- Added method to pull a table reference from the stack
+- Enabled a constructor to take a Lua_table_ref
+- Added a conversion constructor to Lua_table from Lua_ref_table, introduced a friend hack!!
+- Moved the Lua_table member function get_table to the private interface
+- Refactored the pulling of a registry type (Lua_ref<T> and Lua_table)
+- Added pulling a registry type when nil is on the stack, frees the registry ref and sets it to invalid
+- Refactored Lua_table removing the lua_State instead using the reference's state member
+- Added a default implementation of Proxy_class which creates a typedef that identifies it as a none proxy type
+- Bug fix : Public members retrieved with get_?, now push by reference if the type has a proxy type and it is by value
+- Visual Studio work around for when taking the address of a function
+- Added quotation marks to TargetPath as a post build event in visual studio. Directories with a space caused a problem.
+- Added check to make sure a user data type was created by OOLUA when pulling a class from the stack
+- Bypassed checking the user data type when calling a member function on that instance
+- Changed the internal registration key of the function which checks a class bases
+- Added support for building and running unit tests with vs2010 and gmock 1.5
+- Updated generator project to include C function wrappers
+- Added C function wrappers
+- Moved build scripts to "build_scripts" directory
+- Added \ref oolua_config.h
+- Added config option \ref OOLUA_RUNTIME_CHECKS_ENABLED
+- Added config option \ref OOLUA_STD_STRING_IS_INTEGRAL
+- How errors are reported now depend on which language called the function and the settings in oolua_config.h
+- OOLUA::push2lua now returns a boolean which is the result of the operation, if exceptions are enabled it throws on error
+- OOLUA::Lua_function now adds a trackback (copied from Lua code) which is enabled with OOLUA_DEBUG_CHECKS
+- Operator functions now use the OOLUA::LUA_CALLED::pull2cpp functions which act differently to OOLUA::pull2cpp on an error
+- OOLUA::Lua_ref has two extra functions to be used via Lua code, lua_pull and lua_push 
+- Bug fix : OOLUA::Lua_table's safe_at now does the correct thing when exceptions are enabled and does not let an exception escape.
+- Added definition of OOLUA::get_last_error even if store last error is not enabled, in this instance it is a no op. 
+- Exceptions now can pop the error of the Lua stack and Runtime_error can be initialsed with a string
+- oolua_member_function.h 's proxy calling functions now wrap code in a try block if exceptions are enabled.
+- Removed LUA_GLOBALSINDEX define from lua_includes when using Lua 5.2 instead lua_getglobal and lua_setglobal are used throughout
+- Added support for std::string to have embedded nulls as suggested by Tomm on the mailing list
+- Moved C++ classes used in tests to cpp_classes directory
+- Moved OOLua proxy classes used in tests to bind_classes directory
+- Moved all unit tests to the unit_tests directory
+- Added string is integral unit test
+- Table::pull_from_stack now returns a bool to indicate the result if called by C++ code and not using exceptions
+- Added unit_test_config(root,name) to premake helper file
+- Added support for __VA_ARGS__ macros with one or more arguments
+- Added support for __VA_ARGS__ macros with zero arguments using compiler extensions
+- Added helper function OOLUA::get_global
+- Added helper function OOLUA::set_global
+- Added helper function OOLUA::set_global_to_nil
+- Bug fix : Calling a static function on a derived instance when the function was registered with a base class
 
-1.2.0
-* Added fields to Lua_ud which are used for comparison removing the metatable raw_equals.
-* Added name_size to proxy classes and updated the generation file to reflect changes.
-* Changed headers that used old licence.
-* Added a function to register a type and all it's bases.
-* Added a couple of profile tests in the directory profile.
 
-1.1.0
-* Removed the dynamic allocation of Proxy classes to use stack versions.
+\section OOLuaChanges1-2-2 1.2.2
+- Converted Premake scripts to Premake4 
+- Optimised the checking of a type against a requested type
+- Userdata name now changes when it's constant status in set_type_top_to_none_const
+- Added Xcode support to Premake scripts
+- Added xcode test unit bash build script.
+- Build logs directed to there own directory
+- Added new test project "tests_may_fail" for issue 7
+- Updated bash build scripts to run the tests_may_fail aswell as unit.tests
+- Added a readme.txt with details of library as many download locations are now available
+- Bug fix Issue 8 : Passing a c style string to a member function bug as reported by (airbash)
+- Bug fix Issue 8 : A corresponding bug of a member function which returns a c style string.
+- Added define in lua_includes.h to support Lua 5.2 and 5.1.4 simultaneously 
+- Renamed platform test scripts
+- Added build scripts to create a local install
 
-1.0.0
-* First public release
+\section OOLuaChanges1-2-1 1.2.1
+- Was actually 1.2.0 yet due to a packaging error had to be incremented.
 
+\section OOLuaChanges1-2-0 1.2.0
+- Added fields to Lua_ud which are used for comparison removing the metatable raw_equals.
+- Added name_size to proxy classes and updated the generation file to reflect changes.
+- Changed headers that used old licence.
+- Added a function to register a type and all it's bases.
+- Added a couple of profile tests in the directory profile.
+
+\section OOLuaChanges1-1-0 1.1.0
+- Removed the dynamic allocation of Proxy classes to use stack versions.
+
+\section OOLuaChanges1-0-0 1.0.0
+- First public release
+
+*/

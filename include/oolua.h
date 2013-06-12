@@ -12,8 +12,10 @@
 	\subsection OOLuaHipster Hipster
 	OOLua is cross platform, test driven, dependancy free Open Source library which uses C++03 
 	template metaprogramming and pre-processor magic to generate non intrusive proxies that 
-	bridge the interaction of C++ classes with Lua; in addition it also provides a thin 
-	abstraction layer for interfacing with the Lua stack.
+	provide a fast bridge for the interaction of C++ classes with Lua; in addition it also 
+	provides a thin abstraction layer for interfacing with the Lua stack. It supports muliple
+	inheritance C++ classes without using C++ RTTI and does not use execeptions by default
+	although they are easliy enabled.
 
 	\subsection OOLuaNormal Normal
 	OOLua is a library which makes it easy to use C++ classes in Lua and also operating

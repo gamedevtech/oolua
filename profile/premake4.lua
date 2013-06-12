@@ -3,35 +3,36 @@ local root = '../'
 create_package('comparison',root,'ConsoleApp')
 
 configuration {}
+
 if os.getenv('LUAJIT_1') then
 	platforms { 'x32' }
 end
-newoption
-{
-   trigger     = 'SLB3_COMPARE',
-   description = 'Compare with SLB3. Note: this requires Lua 5.2'
-}
-newoption
-{
-   trigger     = 'LUABIND_COMPARE',
-   description = 'Compare with Luabind. Note: this uses an unoffical branch'
-}
-newoption
-{
-   trigger     = 'SWIG_COMPARE',
-   description = 'Compare with Swig.'
-}
-newoption
-{
-   trigger     = 'LUABRIDGE_COMPARE',
-   description = 'Compare with LuaBridge.'
-}
-
 
 newoption
 {
-   trigger     = 'JIT_REBASE',
-   description = 'Rebase the image so that the JIT allocator works'
+	trigger     = 'SLB3_COMPARE',
+	description = 'Compare with SLB3. Note: this requires Lua 5.2'
+}
+newoption
+{
+	trigger     = 'LUABIND_COMPARE',
+	description = 'Compare with Luabind. Note: this uses an unoffical branch'
+}
+newoption
+{
+	trigger     = 'SWIG_COMPARE',
+	description = 'Compare with Swig.'
+}
+newoption
+{
+	trigger     = 'LUABRIDGE_COMPARE',
+	description = 'Compare with LuaBridge.'
+}
+
+newoption
+{
+	trigger     = 'JIT_REBASE',
+	description = 'Rebase the image so that the JIT allocator works'
 }
 
 local jit_rebase = function(config)
