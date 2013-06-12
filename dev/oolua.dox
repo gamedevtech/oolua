@@ -1,0 +1,413 @@
+/** \struct lua_State
+	\brief Lua virtual machine
+	\details
+	Taken from Lua manual :
+	An opaque structure that points to a thread and indirectly (through the thread) 
+	to the whole state of a Lua interpreter. The Lua library is fully reentrant: it 
+	has no global variables. All information about a state is accessible through this 
+	structure.
+*/
+
+/**
+	\addtogroup OOLuaKnownLimitations Known limitations
+	@{
+	@}
+*/
+
+/**
+	\addtogroup OOLuaConfig Library Configuration
+	@{
+		\details OOLua is easily configurable in two areas errors( \ref OOLuaErrorReporting , \ref OOLuaErrorChecking )
+		and limits ( \ref OOLuaFileGeneration ).
+	 	\addtogroup OOLuaFileGeneration File Generation
+		@{
+		@}
+	@}
+*/
+
+
+/** 
+\page OOLuaUseage Usage 
+\brief
+
+	Most if not all of the code snippets shown in this document are working pieces of code taken directly from the \ref OOLuaTestFiles "unit test files", as such the code is always correct although it may at times not marry up to the text which surrounds it in this documentation. If you should see such a thing please report it on the \ref OOLuaLinks "issue tracker".
+	<p>
+	\li \subpage OOLuaFirstLook
+	\li \subpage LuaTypesInOOLua
+	\li \subpage OOLuaProxying
+	<p>
+*/
+
+
+/**
+\page OOLuaFirstLook First look
+ 
+	\section HelloMoon Hello Moon
+		\snippet hello_moon.cpp HelloMoonCFuncAndProxy
+		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalist
+		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalistUsage
+
+	\section OOLuaConventions Conventions
+		\li \ref OOLuaDSL macros are upper case and prefixed with OOLUA_
+		\li \ref OOLuaMinimalist DSL macro names are smaller than \ref OOLuaExpressive
+		\li Public API functions and types are directly in the OOLUA namespace
+		\li Public API function names are lower case with words separated by underscores
+ 		<p>
+
+ 	\section OOLuaLuaStateAndScript lua_State and Script
+ 		\copydetails OOLUA::Script
+ 		
+	\section OOLuaAndTheStack OOLua and the Lua stack
+		The Lua C API does not force you to treat the stack as such a data structure
+		with operations on just one end, instead for convenience it uses indices to
+		identify stack slots for a procedure. Given that it is a C API without C++'s name
+		mangling and overloading it also provides a function per type for pushing to the
+		stack. 
+		<p>
+		OOLua tries to enforce a clean stack after operations as such it provides a simple
+		interface to the Lua stack which consists of two functions :
+			\arg \ref OOLUA::push "push" \copybrief OOLUA::push
+			\arg \ref OOLUA::pull "pull" \copybrief OOLUA::pull
+ 		<p>
+ 		Most usage of OOLua will only require these functions to interact with the stack
+ 		yet you are free to mix Lua C API calls if you take into account \ref OOLUA::pull
+ 		"pull" removes top when it is valid.
+ 		
+ */
+ 
+ /**
+ \page LuaTypesInOOLua Lua types in OOLua
+ 	\brief OOLua has three types to help interact with Lua types
+ 	\section OOLuaTypesRef Lua_ref 
+ 		\copydetails OOLUA::Lua_ref
+ 		For your connivence there are two predefined typedefs:
+ 		\li \ref OOLUA::Lua_func_ref
+ 		\snippet exchange_lua2cpp.cpp FunctionReferencePullSetup
+ 		\snippet exchange_lua2cpp.cpp FunctionReferencePull
+ 			
+ 		\li \ref OOLUA::Lua_table_ref
+ 		\snippet exchange_lua2cpp.cpp PullingTableRefOffTheStack
+ 			
+ 	\section OOLuaTypesFunction Lua_function 
+ 		\copydetails OOLUA::Lua_function
+ 			\subsection CallingALuaFunction Calling a Lua function
+			A Lua function can be called using the function object 
+			\ref OOLUA::Lua_function of which there is an instance bound in the 
+			constructor for Script \ref OOLUA::Script::call. Lua_function has 
+			overloaded function call operators which take upto the maximum 
+			defined OOLuaConfigLuaParams "\"lua_params\"".\n
+		
+			Following examples are taken from /unit_tests/test_classes/lua_caller.cpp \n
+			Name:
+			\snippet lua_caller.cpp CallingFunctionByGlobalName
+			Lua_func_ref:
+			\snippet lua_caller.cpp CallingFunctionByFuncRef
+			Valid stack index
+			\snippet lua_caller.cpp CallingFunctionByValidStackIndex
+		
+ 	 \section OOLuaTypesTable Table 
+ 		\copydetails OOLUA::Table
+ 		<p>There are two helper functions for creating a \ref OOLUA::Table both of
+ 		which are named \ref OOLUA::new_table.
+ 		\snippet table.cpp OOLuaTableAtExample
+*/
+
+/*
+			\subsubsection ClassTags Tags
+				\copydetails OOLUA_TAGS
+
+			\subsubsection ClassExporting Exporting
+				\copydetails OOLuaExporting
+
+*/
+
+
+
+/**
+\page OOLuaProxying Proxy
+	\section OOLuaProxyDSL DSL
+			\copybrief OOLuaDSL 
+			\copydetails OOLuaDSL
+			\ref OOLuaMinimalist
+			\copydetails OOLuaMinimalist
+			\ref OOLuaExpressive
+			\copydetails OOLuaExpressive
+		
+
+	\section OOLuaProxyTraits Traits
+		\copydetails OOLuaTraits
+
+	\section ClassProxy Class Proxy
+		Generating a proxy for a class normally takes place between two DSL procedures 
+		\ref OOLUA_PROXY and \ref OOLUA_PROXY_END although alone these do not supply 
+		enough information for a proxy to be generated, the following shows the usage
+		of the DSL to proxy and use a C++ class in Lua.
+
+		\subsection MinimalClassProxy Minimal Class Proxy
+			\snippet cpp_stub_classes.h UsedAsMinimalClass
+			To proxy a class and be able to use it in Lua requires a three part process. 
+			<p>
+				\subsubsection ProxyBlock Proxy block
+				Firstly you create a proxy block which starts with a OOLUA_PROXY call to which 
+				you pass the name of the C++ class to be proxied, this block ends at the next
+				OOLUA_PROXY_END. Soon we will see how to proxy other aspects of a class in this
+				block.
+				\snippet expose_stub_classes.h MinimalProxyClass
+			<p>
+				\subsubsection ClassExporting Exporting
+				Secondly export member functions which are to be available to Lua for the type.
+				\copydetails OOLuaExporting
+				<p>		
+				\snippet expose_stub_classes.cpp MinimalProxyExport
+			<p>
+				\subsubsection ClassRegistering Registering 
+				Lastly we register the type with a lua_State after which the type can be \ref DefaultConstructor "created" 
+				and used in Lua.
+				\snippet construct.cpp MinimalProxyClassRegister
+				<p>
+				\snippet construct.cpp MinimalProxyClassUsage
+			<p>
+
+		\subsection ProxyTags Tags
+			\copydetails OOLUA_TAGS
+
+		\subsection DefaultConstructor Default Constructor
+			The default class constructor is a special member function like C++ and it will 
+			be impliclty defined for a type unless \ref OOLuaTags "otherwise specified". When 
+			available for a type "foo" in can be called in Lua using the following syntax.
+			\code{.lua}
+				foo.new()
+			\endcode
+			\see OOLUA::Abstract OOLUA::No_default_constructor OOLUA::No_public_constructors
+		
+		\subsection ClassConstructors Constructors	
+			<p>
+			\copydetails OOLUA_CTORS
+			<p>
+			\snippet expose_class_constructors.h ExposeConstructors
+ 
+		\subsection ExposingMemberFunctions Exposing member functions
+			\copydetails OOLUA_MFUNC
+			\copydetails OOLUA_MFUNC_CONST
+			\snippet expose_vector_int.h StdVectorProxy
+			\snippet expose_vector_int.cpp StdVectorProxyExport
+
+		\subsection AbstractClass Abstract Class
+			Generating an abstract proxy requires that you specify the \ref OOLUA::Abstract
+			"Abstract" tag in the \ref OOLUA_TAGS block
+			\copydetails OOLUA::Abstract
+			\snippet cpp_hierarchy.h CppAbstract1
+			\snippet expose_hierarchy.h ExposeAbstract1
+			\snippet expose_hierarchy.cpp ExportAbstract1
+
+		\subsection BaseClass Base Classes
+			Using \ref OOLUA_PROXY "OOLUA_PROXY's" optional parameter(s) specifies base 
+			class(es) for the proxy
+			\copydetails OOLUA_PROXY 
+			\snippet cpp_hierarchy.h CppDerived1Abstract1
+			\snippet expose_hierarchy.h ExposeDerived1Abstract1
+			\snippet expose_hierarchy.cpp ExportDerived1Abstract1
+			
+		\subsection ClassOps Operators
+			\copydetails OperatorTags
+			\snippet cpp_class_ops.h CppClassOps
+			\snippet lua_class_ops.h ClassOpsExpose
+			\snippet lua_class_ops.cpp ClassOpsExport
+			
+		\subsection ClassPublicMembers Public members
+			\copydetails OOLUA_MGET
+			\copydetails OOLUA_MSET
+			\copydetails OOLUA_MGET_MSET
+			\snippet cpp_public_instances.h CppPublicMembers
+			\snippet expose_public_instances.h PublicMembersExpose
+			\snippet expose_public_instances.cpp PublicMembersExport
+			<p>
+			<b>Public member access in Lua is via a member function</b>
+			\snippet public_variables.cpp PublicMemberUsage
+
+			
+		\subsection ClassEnumerations Enumerations
+			\copydetails OOLUA_ENUMS
+			\copydetails OOLUA_ENUM
+			\snippet cpp_enum.h CppClassEnum
+			\snippet expose_enum.h ClassEnumExpose
+			\snippet expose_enum.cpp ClassEnumExport
+			\snippet enum_tests.cpp ClassEnumUsage
+			
+		\subsection ClassStaticFunctions Static functions
+			\copydetails OOLUA_SFUNC
+			\snippet cpp_static_and_c_functions.h CppClassStaticFunctions
+			\snippet expose_static_and_c_functions.h ClassStaticFunctionExpose
+			\snippet expose_static_and_c_functions.cpp ClassStaticFunctionExport
+
+		
+	\section CFunctions C Functions
+		\subsection CFunctionMinimalist Minimalist
+		We have already seen the \ref OOLuaMinimalist version in the Hello Moon 
+		example.
+		\copybrief OOLUA_CFUNC \copydetails OOLUA_CFUNC 
+		\snippet hello_moon.cpp HelloMoonCFuncAndProxy
+		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalist
+		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalistUsage
+**/
+
+/*
+			\snippet cpp_member_function_calls.h FunctionCalls
+			\snippet expose_member_function_calls.h ProxyFunctionCalls
+			\snippet expose_member_function_calls.cpp ProxyFunctionCallsExport
+*/
+
+
+/*
+	\section OOLuaCFunctionProxy Proxying a C function
+		\subsection CFunctionMinimalist Minimalist
+			We have already seen the \ref OOLuaMinimalist version in the Hello Moon 
+			example.
+			\copybrief OOLUA_CFUNC \copydetails OOLUA_CFUNC 
+			\snippet hello_moon.cpp HelloMoonCFuncAndProxy
+			\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalist
+			\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalistUsage
+		
+		\subsection CFunctionExpressive Expressive
+			\copybrief OOLUA_C_FUNCTION \copydetails OOLUA_C_FUNCTION 
+			When there are overloaded versions of a function such as
+			\snippet hello_moon.cpp HelloMoonCFuncOverloaded
+			Then it is not enough information for C++ to detect which version is wanted
+			as there is ambiguity 
+			\snippet hello_moon.cpp HelloMoonCFuncProxyExpressive
+			\snippet hello_moon.cpp HelloMoonCFuncAndProxyExpressiveUsage
+	
+
+*/
+
+
+
+
+
+/** 
+\page OOLuaUnitTests Library tests
+\brief
+
+	OOLua is a test driven library which uses two cross platform external libraries for test verification, CppUnit 1.12.1 \ref CppUnitLink "[1]" is used for state based verification and GoogleMock 1.6 \ref GMockLink "[2]" for behaviour verification. For anybody who is not fimilar with these libraries and would like to know more then I would recommed an IBM article \ref CppUnitArticle "[3]" for CppUnit whilst for GoogleMock a recorded presentation by the author \ref GMockYouTube "[4]" additionaly the library cheat sheet \ref GMockCheatSheet "[5]".
+	<p>
+	\section OOLuaTestFiles Directory layout
+	Library test code is situated in a directory named unit_tests in the root of a SVN branch ( including trunk \ref UnitTestTrunk "[6]" ) or the root of a released source package \ref OOLuaDownloadRef "[7]". This directory has three sub directories into which the test code is seperated.
+		\li cpp_classes Classes which will be proxied in tests.
+		\li bind_classes The OOLua bindings for the cpp_classes.
+		\li test_classes Test suites using CppUnit and GoogleMock.
+	<p>
+
+
+	\anchor CppUnitLink
+	[1] CppUnit home page http://sourceforge.net/projects/cppunit/
+	<p>
+	\anchor GMockLink 
+	[2] GoogleMock home page http://code.google.com/p/googlemock/
+	<p>
+	\anchor CppUnitArticle
+	[3] Open source C/C++ unit testing tools, Part 2: Get to know CppUnit http://www.ibm.com/developerworks/aix/library/au-ctools2_cppunit/index.html
+	<p>
+	\anchor GMockYouTube
+	[4] C++ Mocks Made Easy - An Introduction to gMock http://www.youtube.com/watch?v=sYpCyLI47rM
+	<p>
+	\anchor GMockCheatSheet
+	[5] Google C++ Mocking Framework Cheat Sheet http://code.google.com/p/googlemock/wiki/CheatSheet
+	<p>
+	\anchor UnitTestTrunk
+	[6] Trunk unit test directory http://code.google.com/p/oolua/source/browse/#svn%2Ftrunk%2Funit_tests
+	<p>
+	\anchor OOLuaDownloadRef
+	[7] Source package downloads http://code.google.com/p/oolua/downloads/list
+*/
+
+
+
+
+
+
+
+/** 
+\page OOLuaComparison Library Comparisons 
+	\section ComparisonIntroduction Introduction
+	<p>
+	The intention of the comparison is to give both you and I some ball park costs and were orginally based on a Gem \ref GPG6_bib "[1]"; an excellent side effect from the libraries compared, other than SWIG, is that they have seen an optimisation improvement as a result.
+	\n
+	Previous versions of these comparsions were perceived by some difficult to fully understand what a number meant in relation to others, without also understanding some of the differences between libraries; additionly there was a concern that the cost of the method look up should not be part of the comparison.
+
+	\subsection ComparisonUD Userdata verification
+	Although the comparisons ran the same code when being timed, it was not simply a case of a one to one mapping between the different libraries.Most concerning to some was the fact that as a library feature LuaBind verified a userdata was created by itself whilst SWIG and originally OOLua did not perform such a check, thus OOLua and SWIG benefited whilst LuaBind was penalised.
+	<p>
+	Depending on your requirements SWIG, OOLua and LuaBind can all be compiled so that they do not perform these userdata checks, the potential problem this introduces can be shown with the following Lua 5.1 snippets:
+	\code{.lua}
+		--Calling a member function passing a none library userdata
+		local cached_func = obj.func
+		cached_func( newproxy() )
+	\endcode
+	or
+	\code{.lua}
+		--Passing a none library userdata when one is needed
+		obj:func( newproxy() )
+	\endcode
+	<p>
+	When an incorrect userdata is encountered which maybe from an external module or from a Lua script such as in the examples; then best case scenario is the library will detect it, yet in the process could cause undefined behaviour, and worst case maybe a segfault or your toaster runs off with the next door neighbour's.
+	<p>
+	To compile OOLua and LuaBind to use the same behaviour as SWIG
+		\li OOLua: define OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA 0
+		\li LuaBind: define LUABIND_DISABLE_UD_CHECK and add the following macro guard to object_rep.cpp
+	\code{.cpp}
+    LUABIND_API object_rep* get_instance(lua_State* L, int index)
+    {
+        object_rep* result = static_cast<object_rep*>(lua_touserdata(L, index));
+
+#ifndef LUABIND_DISABLE_UD_CHECK
+        if (!result || !lua_getmetatable(L, index))
+            return 0;
+
+        lua_rawgeti(L, -1, 1);
+
+        if (lua_tocfunction(L, -1) != &get_instance_value)
+            result = 0;
+
+        lua_pop(L, 2);
+#endif
+        return result;
+    }
+	\endcode
+
+	For this reason the comparisons are performed for libraries with this feature enabled and disabled where possible, otherwise the category a library falls into by default.
+
+	\note
+	It is my belief that a determined party could possibly craft malicous code that will pass most library userdata checks, as essentially they all boil down to doing a check and if it passes then casting a void pointer to a type, some actually perform an undefined cast before any such check passes.\ref Cpp03CastRef "[2]"
+
+
+	\subsection ComparisonCaching Function caching
+	A Lua self call self:func() is functionally the same as self.func(self), it is also normal and recommeded usage in certain situations to cache values to locals. The comparison code is run in such a formentioned situation with tight loops, so if it were normal user code you would generally cache the member function as shown in the following example. Otherwise it would repeatively pay for the function look up when the object types are the same, whilst that is a valid concern my observed usage of C++ binding libraries is via an object call hence OOLua.
+
+	\snippet compare.lua mfuncCachedExample
+
+	For this reason the comparisons are performed for libraries both with caching function and self calls.
+	\n
+	\li \subpage OOLuaComparisonTestCode
+	\li \subpage OOLuaLibraryComparisonResults
+	\li \subpage LibraryComparisonOverview
+
+	\par 
+	\anchor GPG6_bib
+	[1] GPG6 Celes, W., Figueiredo, L.H. and Ierusalimschy, R., "Binding C/C++ Objects to Lua." Game Programming Gems 6, Charles River Media, 2006.
+	\par 
+	\anchor Cpp03CastRef
+	[2] Programming languages C++, ISO/IEC 14882:2003, "5.2.9 static_cast", American National Standards Institute, 2003
+*/
+
+/** 
+\page OOLuaComparisonTestCode Comparison code
+	\section ComparisonCppCode C++
+		The comparisons are performed using library bindings to the following C++ classes
+		\snippet set_and_get.h ComparisonSetAndGetClass
+		\n
+		\snippet hierarchy.h ComparisonHierarchyClass
+	\par
+	\section ComparisonLuaCode Lua
+	The different types of function calls are ran using the following Lua module.
+	\snippet compare.lua LuaComparisonFile
+*/

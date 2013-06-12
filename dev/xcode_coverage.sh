@@ -47,5 +47,5 @@ genhtml oolua.info -o build_logs/coverage_report
 rm oolua.info lcov_tmp.info
 premake4 clean
 
-cd build_scripts
+cd dev
 
