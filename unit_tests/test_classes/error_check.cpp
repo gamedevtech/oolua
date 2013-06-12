@@ -44,7 +44,7 @@ OOLUA_PROXY(ExceptionMock)
 		, No_public_destructor 
 	)
 	OOLUA_MEM_FUNC(void, throwsStdRuntimeError)
-OOLUA_CLASS_END
+OOLUA_PROXY_END
 
 OOLUA_EXPORT_FUNCTIONS(ExceptionMock,throwsStdRuntimeError)
 OOLUA_EXPORT_FUNCTIONS_CONST(ExceptionMock)
