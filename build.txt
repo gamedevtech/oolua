@@ -1,0 +1,59 @@
+/** 
+\page OOLuaBuilding Building
+\brief
+	
+	OOLua source code can be dropped into the path for a project and used straight away
+	or it can be compiled as a static library.\n
+
+	\section OOLuaPremake Makefiles and IDE projects
+	OOLua does not provide solution files instead it provides Premake4 \ref PremakeDownload "[1]" 
+	scripts. Premake is a simple \ref PremakeQuickStart "[2]" to use IDE project or 
+	makefile generator and can be used to help create a static library or to run \ref OOLuaUnitTests \n
+		\subsection OOLuaPremakeFormat Premake format
+		premake4 [make or IDE] [target operating system]
+			\subsubsection OOLuaPremakeMakefile Makefile
+			\code premake4 gmake [] \endcode
+			\li macosx
+			\li linux
+			\subsubsection OOLuaPremakeXcode Xcode
+			\code premake4 xcode[] macosx \endcode
+			\li 3
+			\li 4
+			\note macosx is required	
+			\subsubsection OOLuaPremakeVisualStudio Visual Studio
+			\code premake4 vs[] windows \endcode
+			\li 2005
+			\li 2008
+			\li 2010
+			\note windows is required
+			\subsubsection OOLuaPremakeCodeBlocks CodeBlocks
+			\code premake4 codeblocks [] \endcode
+			\li windows
+			\li linux
+			\li macosx
+	
+	\section IncreasingLibraryLimits Library limits
+	\copydetails OOLuaFileGeneration
+	
+	\section LibraryConfig Library Config 
+		\see OOLuaConfig
+
+	\section OOLuaBuildScripts Build Scripts
+	\code [make or IDE]_build.[sh or bat]\endcode
+	When these build scripts are run from the build_scripts directory they create a "../local_install"
+	directory which contains compiled debug and release static libraries also the library
+	header in a sub directory "oolua".\n
+
+	\section OOLuaTestScripts Test Unit scripts
+	\code [make or IDE]_tests.[sh or bat]\endcode
+	When run from the test_unit directory these will produce compiler and test unit output saved to 
+	disk located in a directory create named "../build_logs". These scripts clean up any other files 
+	produced during their running.  
+	
+	\anchor PremakeDownload
+	[1] Premake download http://industriousone.com/premake/download
+	<p>
+	\anchor PremakeQuickStart
+	[2] Premake quick start http://industriousone.com/premake-quick-start
+	<p>
+*/
