@@ -55,7 +55,7 @@
 - Support for limited constructors
 - Added a file generator to the generator solution for constructor parameters
 - Added the types OOLUA::No_default_constructor,OOLUA::No_public_constructors and OOLUA::No_public_destructor to oolua_typedefs.h
-- Added \ref OOLUA_ONLY_DEFAULT_CONSTRUCTOR
+- Added OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 - Broke ABI removing default constructor being forced
 - Added OOLUA::table_set_value which does not retrieve the table from the registry yet uses a stack index
 - Added convenance function OOLUA::new_table 
