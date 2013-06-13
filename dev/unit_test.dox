@@ -1,0 +1,37 @@
+/** 
+\page OOLuaUnitTests Library Tests
+\brief
+
+	OOLua is a test driven library which uses two cross platform external libraries for test verification, CppUnit 1.12.1 \ref CppUnitLink "[1]" is used for state based verification and GoogleMock 1.6 \ref GMockLink "[2]" for behaviour verification. For anybody who is not fimilar with these libraries and would like to know more then I would recommed an IBM article \ref CppUnitArticle "[3]" for CppUnit whilst for GoogleMock a recorded presentation by the author \ref GMockYouTube "[4]" additionaly the library cheat sheet \ref GMockCheatSheet "[5]".
+	<p>
+	\section OOLuaTestFiles Directory Layout
+	Library test code is situated in a directory named unit_tests in the root of a SVN branch ( including trunk \ref UnitTestTrunk "[6]" ) or the root of a released source package \ref OOLuaDownloadRef "[7]". This directory has three sub directories into which the test code is seperated.
+		\li cpp_classes Classes which will be proxied in tests.
+		\li bind_classes The OOLua bindings for the cpp_classes.
+		\li test_classes Test suites using CppUnit and GoogleMock.
+	<p>
+	\section OOLuaDupTestScripts Test Scripts
+	\see \ref OOLuaTestScripts
+
+
+	\anchor CppUnitLink
+	[1] CppUnit home page http://sourceforge.net/projects/cppunit/
+	<p>
+	\anchor GMockLink 
+	[2] GoogleMock home page http://code.google.com/p/googlemock/
+	<p>
+	\anchor CppUnitArticle
+	[3] Open source C/C++ unit testing tools, Part 2: Get to know CppUnit http://www.ibm.com/developerworks/aix/library/au-ctools2_cppunit/index.html
+	<p>
+	\anchor GMockYouTube
+	[4] C++ Mocks Made Easy - An Introduction to gMock http://www.youtube.com/watch?v=sYpCyLI47rM
+	<p>
+	\anchor GMockCheatSheet
+	[5] Google C++ Mocking Framework Cheat Sheet http://code.google.com/p/googlemock/wiki/CheatSheet
+	<p>
+	\anchor UnitTestTrunk
+	[6] Trunk unit test directory http://code.google.com/p/oolua/source/browse/#svn%2Ftrunk%2Funit_tests
+	<p>
+	\anchor OOLuaDownloadRef
+	[7] Source package downloads http://code.google.com/p/oolua/downloads/list
+*/

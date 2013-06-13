@@ -1,0 +1,85 @@
+/** 
+\page OOLuaComparison Library Comparisons 
+	\section ComparisonIntroduction Introduction
+	<p>
+	The intention of the comparison is to give both you and I some ball park costs and were orginally based on a Gem \ref GPG6_bib "[1]"; an excellent side effect from the libraries compared, other than SWIG, is that they have seen an optimisation improvement as a result.
+	\n
+	Previous versions of these comparsions were perceived by some difficult to fully understand what a number meant in relation to others, without also understanding some of the differences between libraries; additionly there was a concern that the cost of the method look up should not be part of the comparison.
+
+	\subsection ComparisonUD Userdata verification
+	Although the comparisons ran the same code when being timed, it was not simply a case of a one to one mapping between the different libraries.Most concerning to some was the fact that as a library feature LuaBind verified a userdata was created by itself whilst SWIG and originally OOLua did not perform such a check, thus OOLua and SWIG benefited whilst LuaBind was penalised.
+	<p>
+	Depending on your requirements SWIG, OOLua and LuaBind can all be compiled so that they do not perform these userdata checks, the potential problem this introduces can be shown with the following Lua 5.1 snippets:
+	\code{.lua}
+		--Calling a member function passing a none library userdata
+		local cached_func = obj.func
+		cached_func( newproxy() )
+	\endcode
+	or
+	\code{.lua}
+		--Passing a none library userdata when one is needed
+		obj:func( newproxy() )
+	\endcode
+	<p>
+	When an incorrect userdata is encountered which maybe from an external module or from a Lua script such as in the examples; then best case scenario is the library will detect it, yet in the process could cause undefined behaviour, and worst case maybe a segfault or your toaster runs off with the next door neighbour's.
+	<p>
+	To compile OOLua and LuaBind to use the same behaviour as SWIG
+		\li OOLua: define OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA 0
+		\li LuaBind: define LUABIND_DISABLE_UD_CHECK and add the following macro guard to object_rep.cpp
+	\code{.cpp}
+    LUABIND_API object_rep* get_instance(lua_State* L, int index)
+    {
+        object_rep* result = static_cast<object_rep*>(lua_touserdata(L, index));
+
+#ifndef LUABIND_DISABLE_UD_CHECK
+        if (!result || !lua_getmetatable(L, index))
+            return 0;
+
+        lua_rawgeti(L, -1, 1);
+
+        if (lua_tocfunction(L, -1) != &get_instance_value)
+            result = 0;
+
+        lua_pop(L, 2);
+#endif
+        return result;
+    }
+	\endcode
+
+	For this reason the comparisons are performed for libraries with this feature enabled and disabled where possible, otherwise the category a library falls into by default.
+
+	\note
+	It is my belief that a determined party could possibly craft malicous code that will pass most library userdata checks, as essentially they all boil down to doing a check and if it passes then casting a void pointer to a type, some actually perform an undefined cast before any such check passes.\ref Cpp03CastRef "[2]"
+
+
+	\subsection ComparisonCaching Function caching
+	A Lua self call self:func() is functionally the same as self.func(self), it is also normal and recommeded usage in certain situations to cache values to locals. The comparison code is run in such a formentioned situation with tight loops, so if it were normal user code you would generally cache the member function as shown in the following example. Otherwise it would repeatively pay for the function look up when the object types are the same, whilst that is a valid concern my observed usage of C++ binding libraries is via an object call hence OOLua.
+
+	\snippet compare.lua mfuncCachedExample
+
+	For this reason the comparisons are performed for libraries both with caching function and self calls.
+	\n
+	\li \subpage OOLuaComparisonTestCode
+	\li \subpage OOLuaLibraryComparisonResults
+	\li \subpage LibraryComparisonOverview
+
+	\par 
+	\anchor GPG6_bib
+	[1] GPG6 Celes, W., Figueiredo, L.H. and Ierusalimschy, R., "Binding C/C++ Objects to Lua." Game Programming Gems 6, Charles River Media, 2006.
+	\par 
+	\anchor Cpp03CastRef
+	[2] Programming languages C++, ISO/IEC 14882:2003, "5.2.9 static_cast", American National Standards Institute, 2003
+*/
+
+/**
+\page OOLuaComparisonTestCode Comparison code
+	\section ComparisonCppCode C++
+		The comparisons are performed using library bindings to the following C++ classes
+		\snippet set_and_get.h ComparisonSetAndGetClass
+		\n
+		\snippet hierarchy.h ComparisonHierarchyClass
+	\par
+	\section ComparisonLuaCode Lua
+	The different types of function calls are ran using the following Lua module.
+	\snippet compare.lua LuaComparisonFile
+*/

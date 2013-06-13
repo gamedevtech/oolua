@@ -662,13 +662,15 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = build_scripts/oolua_generate.lua \
+                         build.txt \
                          dev/oolua.dox \
+                         dev/unit_test.dox \
                          change.log \
+                         dev/comparison.dox \
                          build_logs/profile_summary.txt \
                          include \
                          unit_tests \
-                         build_logs/profile.txt \
-                         build.txt
+                         build_logs/profile.txt
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 
