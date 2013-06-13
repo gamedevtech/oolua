@@ -18,31 +18,7 @@
 #	include "determin_qualifier.h"
 #	include <string>
 #	include "oolua_config.h"
-/*
- | Trait		| Details							|
- | ----------|--------------------------|
- |in_p		| [ @copydetails OOLUA::in_p ]		|
- |out_p		| \copydetails OOLUA::out_p		|
- |in_out_p	| [@copydetails OOLUA::in_out_p]	|
- |cpp_in_p	| [@copydetails OOLUA::cpp_in_p]	|
- |lua_out_p	| [@copydetails OOLUA::lua_out_p]	|
-	<th> <td>Trait</td>	<td>Details</td>	</th> 
- <center> 
- <table> 
- <tr> <td>in_p</td>	<td>\copybrief OOLUA::in_p</td></tr> 
- <tr> <td>out_p</td>	<td>\copybrief OOLUA::out_p</td></tr> 
- </table>
- </center> 
- 
- \li out : The calling Lua procedure does not pass this value yet the proxied procedure returns the
- value to the calling prodecure.
- returns it value to the orignal caller
- \li in_out :
- The direction the value
- Traits allow for more information to be supplied about parameter(s) to a proxied
- function or in the case of \ref OOLUA::cpp_acquire_ptr and \ref OOLUA::lua_acquire_ptr  directly from the 
- stack. They also allow the transfer of ownership 
- */ 
+
 namespace OOLUA
 {
 	
@@ -53,14 +29,15 @@ namespace OOLUA
 In C++ the use of traits which have a lua_ or cpp_ prefix can control ownership for 
 parameters, returns values and stack entries whilst traits which specify direction
 for parameters contain as part of their name "out", "in" or a combination.
- 
- \li \ref OOLUA::in_p				"in_p"
- \li \ref OOLUA::out_p				"out_p"
- \li \ref OOLUA::in_out_p			"in_out_p"
- \li \ref OOLUA::cpp_in_p			"cpp_in_p"
- \li \ref OOLUA::lua_out_p			"lua_out_p"
- \li \ref OOLUA::cpp_acquire_ptr	"cpp_acquire_ptr"
- \li \ref OOLUA::lua_acquire_ptr	"lua_acquire_ptr"
+<p>
+ | Trait	| Details						|
+ | :------- | :----------------------------- |
+ |\ref OOLUA::in_p "in_p"		| \copydetails OOLUA::in_p 		|
+ |\ref OOLUA::out_p	"out_p"	| \copydetails OOLUA::out_p		|
+ |\ref OOLUA::in_out_p	"in_out_p" | \copydetails OOLUA::in_out_p	|
+ |\ref OOLUA::cpp_in_p	"cpp_in_p" | \copydetails OOLUA::cpp_in_p	|
+ |\ref OOLUA::lua_out_p	"lua_out_p" | \copydetails OOLUA::lua_out_p	|
+<p> 
 
 */
 	
@@ -70,7 +47,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		The calling Lua procedure supplies the parameter to the proxied function.
 		No change of ownership occurs.
 		\note
-		This is the default trait used for function parameters when  no trait 
+		This is the default trait used for function parameters when no trait 
 		is supplied.
 	 */
 	template<typename T>struct in_p;
@@ -84,6 +61,17 @@ for parameters contain as part of their name "out", "in" or a combination.
 		be returned to the calling procedure. If this is a type which has a
 		proxy then it will cause a heap allocation of the type, which Lua will
 		own.
+		\code{.cpp}
+		struct foo
+		{
+			void bar( int& result);
+		};
+		OOLUA_PROXY(foo)
+			OOLUA_MEM_FUNC(void,bar,out_p<int&>)
+		OOLUA_PROXY_END
+		local result = foo.new():bar()
+		assert(result)
+		\endcode
 	*/
 	template<typename T>struct out_p;
 
@@ -94,12 +82,37 @@ for parameters contain as part of their name "out", "in" or a combination.
 		function, the value of the parameter after the proxied call will be
 		passed back to the calling procedure as a return value.
 		No change of ownership occurs.
+		\code{.cpp}
+		struct foo
+		{
+			void bar( int& input_and_result){++input_and_result;}
+		};
+		OOLUA_PROXY(foo)
+			OOLUA_MEM_FUNC(void,bar,in_out_p<int&>)
+		OOLUA_PROXY_END
+		local input = 1
+		local result = foo.new():bar(input)
+		assert(result and result~=input)
+		\endcode
 	*/
 	template<typename T>struct in_out_p;
 
 	/** \struct cpp_in_p
 		\brief Input parameter trait which will be owned by C++
 		\details Parameter supplied via Lua changes ownership to C++.
+		\code{.cpp}
+		struct foo
+		{
+			void take_ownership(foo*);
+		};
+		OOLUA_PROXY(foo)
+			OOLUA_MEM_FUNC(void,take_ownership,cpp_in_p<foo*>)
+		OOLUA_PROXY_END
+
+		m_lua->run_chunk("local f = foo.new() \n"
+						"f:take_ownership(foo.new())");
+		\endcode
+
 	*/
 	template<typename T>struct cpp_in_p;
 
@@ -111,6 +124,19 @@ for parameters contain as part of their name "out", "in" or a combination.
 		value after the function call will be owned by Lua. This is meaningful only
 		if called with a type which has a proxy and it is by reference, otherwise 
 		undefined.
+		\code{.cpp}
+		struct foo
+		{
+			foo* create();
+		};
+		OOLUA_PROXY(foo)
+			OOLUA_MEM_FUNC(lua_out_p<foo*>,create)
+		OOLUA_PROXY_END
+
+		local automatically_owned_by_lua = foo.new()
+		local also_owned_by_lua = automatically_owned_by_lua:create()
+		\endcode
+
 	*/
 	template<typename T>struct lua_out_p;
 	

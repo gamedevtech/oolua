@@ -42,7 +42,7 @@ struct MockParamWithStringMember
 {
 	std::string str;
 };
-
+/**[CppOutParamsUserData]*/
 class OutParamsUserData
 {
 public:
@@ -53,7 +53,7 @@ public:
 	virtual void ref_param(MockParamWithStringMember& mock) = 0;
 
 };
-
+/**[CppOutParamsUserData]*/
 
 class MockOutParamsUserData : public OutParamsUserData
 {

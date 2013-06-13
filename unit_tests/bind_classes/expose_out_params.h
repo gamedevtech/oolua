@@ -22,13 +22,14 @@ OOLUA_PROXY_END
 OOLUA_PROXY(MockParamWithStringMember)
 OOLUA_PROXY_END
 
+/**[ExposeOutParamsUserData]*/
 OOLUA_PROXY(OutParamsUserData)
 	OOLUA_TAGS(Abstract)
 	OOLUA_MEM_FUNC(void, ref,out_p<Stub1&>)
-	OOLUA_MEM_FUNC(void,ptr,out_p<Stub1*>)
+	OOLUA_MEM_FUNC(void,ptr,out_p<Stub1*>)//When does an out_p on a pointer make sense??
 	OOLUA_MEM_FUNC(void,ref_param,out_p<MockParamWithStringMember&>)
 	/*when enabled should give a compile time error*/
 	//OOLUA_MEM_FUNC(void,by_value,out_p<Stub1>)
 OOLUA_PROXY_END
-
+/**[ExposeOutParamsUserData]*/
 #endif

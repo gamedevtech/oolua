@@ -110,17 +110,15 @@
  		which are named \ref OOLUA::new_table.
  		\snippet table.cpp OOLuaTableAtExample
 */
-
 /*
-			\subsubsection ClassTags Tags
-				\copydetails OOLUA_TAGS
-
-			\subsubsection ClassExporting Exporting
-				\copydetails OOLuaExporting
+		\subsection OOLuaInTrait in_p
+			\copydetails OOLUA::in_p
+		\subsection OOLuaOutTrait out_p
+			\copydetails OOLUA::out_p
+			\snippet cpp_out_params.h CppOutParamsUserData
+			\snippet expose_out_params.h ExposeOutParamsUserData 
 
 */
-
-
 
 /**
 \page OOLuaProxying Proxy
@@ -132,10 +130,6 @@
 			<p>\ref OOLuaExpressive
 			\copydetails OOLuaExpressive
 		
-
-	\section OOLuaProxyTraits Traits
-		\copydetails OOLuaTraits
-
 	\section ClassProxy Class Proxy
 		Generating a proxy for a class normally takes place between two DSL procedures 
 		\ref OOLUA_PROXY and \ref OOLUA_PROXY_END although alone these do not supply 
@@ -187,7 +181,9 @@
  
 		\subsection ExposingMemberFunctions Exposing Member Functions
 			\copydetails OOLUA_MFUNC
+			<p>
 			\copydetails OOLUA_MFUNC_CONST
+			<p>
 			\snippet expose_vector_int.h StdVectorProxy
 			\snippet expose_vector_int.cpp StdVectorProxyExport
 
@@ -195,6 +191,7 @@
 			Generating an abstract proxy requires that you specify the \ref OOLUA::Abstract
 			"Abstract" tag in the \ref OOLUA_TAGS block
 			\copydetails OOLUA::Abstract
+			<p>
 			\snippet cpp_hierarchy.h CppAbstract1
 			\snippet expose_hierarchy.h ExposeAbstract1
 			\snippet expose_hierarchy.cpp ExportAbstract1
@@ -203,20 +200,25 @@
 			Using \ref OOLUA_PROXY "OOLUA_PROXY's" optional parameter(s) specifies base 
 			class(es) for the proxy
 			\copydetails OOLUA_PROXY 
+			<p>
 			\snippet cpp_hierarchy.h CppDerived1Abstract1
 			\snippet expose_hierarchy.h ExposeDerived1Abstract1
 			\snippet expose_hierarchy.cpp ExportDerived1Abstract1
 			
 		\subsection ClassOps Operators
-			\copydetails OperatorTags
+			\copydetails OperatorTags 
+			<p>
 			\snippet cpp_class_ops.h CppClassOps
 			\snippet lua_class_ops.h ClassOpsExpose
 			\snippet lua_class_ops.cpp ClassOpsExport
 			
 		\subsection ClassPublicMembers Public Members
 			\copydetails OOLUA_MGET
+			<p>
 			\copydetails OOLUA_MSET
+			<P>
 			\copydetails OOLUA_MGET_MSET
+			<p>
 			\snippet cpp_public_instances.h CppPublicMembers
 			\snippet expose_public_instances.h PublicMembersExpose
 			\snippet expose_public_instances.cpp PublicMembersExport
@@ -226,8 +228,9 @@
 
 			
 		\subsection ClassEnumerations Enumerations
-			\copydetails OOLUA_ENUMS
+			\copydetails OOLUA_ENUMS <p>
 			\copydetails OOLUA_ENUM
+			<p>
 			\snippet cpp_enum.h CppClassEnum
 			\snippet expose_enum.h ClassEnumExpose
 			\snippet expose_enum.cpp ClassEnumExport
@@ -235,6 +238,7 @@
 			
 		\subsection ClassStaticFunctions Static Functions
 			\copydetails OOLUA_SFUNC
+			<p>
 			\snippet cpp_static_and_c_functions.h CppClassStaticFunctions
 			\snippet expose_static_and_c_functions.h ClassStaticFunctionExpose
 			\snippet expose_static_and_c_functions.cpp ClassStaticFunctionExport
@@ -245,9 +249,15 @@
 		We have already seen the \ref OOLuaMinimalist version in the Hello Moon 
 		example.
 		\copybrief OOLUA_CFUNC \copydetails OOLUA_CFUNC 
+		<p>
 		\snippet hello_moon.cpp HelloMoonCFuncAndProxy
 		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalist
 		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalistUsage
+
+	\section OOLuaProxyTraits Traits
+		\copydetails OOLuaTraits
+
+
 **/
 
 /*
@@ -263,6 +273,7 @@
 			We have already seen the \ref OOLuaMinimalist version in the Hello Moon 
 			example.
 			\copybrief OOLUA_CFUNC \copydetails OOLUA_CFUNC 
+			<p>
 			\snippet hello_moon.cpp HelloMoonCFuncAndProxy
 			\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalist
 			\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalistUsage
@@ -273,9 +284,9 @@
 			\snippet hello_moon.cpp HelloMoonCFuncOverloaded
 			Then it is not enough information for C++ to detect which version is wanted
 			as there is ambiguity 
+			<p>
 			\snippet hello_moon.cpp HelloMoonCFuncProxyExpressive
 			\snippet hello_moon.cpp HelloMoonCFuncAndProxyExpressiveUsage
 	
 
 */
-

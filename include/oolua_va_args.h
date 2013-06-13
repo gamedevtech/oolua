@@ -453,18 +453,19 @@
 
 /** \addtogroup OOLuaDSL DSL
 @{
-		\def OOLUA_TAGS(TagList)
+		\def OOLUA_TAGS
 		\hideinitializer
 		\brief Allows more information to be specified about the proxy class
-		\details OOLUA_TAGS(TagList)
-		\param TagList Comma seperated list of \ref OOLuaTags
-		<p>
+		\details 
 		Tags specifiy more information about the class which should be exposed, 
 		such as:
 		\li Does the class support any operators?
 		\li Is it abstract ?
 		\li Does the class have enumerations?
 		<p>
+		OOLUA_TAGS(TagList)
+		\param TagList Comma seperated list of \ref OOLuaTags
+
 		\note An OOLUA_TAGS list without any \ref OOLuaTags entries is invalid.
 	 */
 #		define OOLUA_TAGS(...) OOLUA_TAGS_START __VA_ARGS__ OOLUA_TAGS_END
