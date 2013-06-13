@@ -52,7 +52,7 @@ PROJECT_LOGO           = ./dev/OOLua.png
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = /Users/apple/Documents/projects/oolua_moore_1.4/docs/branches/dsl
+OUTPUT_DIRECTORY       = ../../docs/branches/dsl
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
@@ -888,14 +888,14 @@ VERBATIM_HEADERS       = YES
 # particularly helpful with template rich C++ code for which doxygen's built-in 
 # parser lacks the necessairy type information.
 
-CLANG_ASSISTED_PARSING = NO
+#CLANG_ASSISTED_PARSING = NO
 
 # If clang assisted parsing is enabled you can provide the compiler with command 
 # line options that you would normally use when invoking the compiler. Note that 
 # the include paths will already be set by doxygen for the files and directories 
 # specified at INPUT and INCLUDE_PATH.
 
-CLANG_OPTIONS          = 
+#CLANG_OPTIONS          = 
 
 #---------------------------------------------------------------------------
 # configuration options related to the alphabetical class index
@@ -1345,7 +1345,7 @@ EXTRA_SEARCH_MAPPINGS  =
 # If the GENERATE_LATEX tag is set to YES (the default) Doxygen will 
 # generate Latex output.
 
-GENERATE_LATEX         = NO
+GENERATE_LATEX         = YES
 
 # The LATEX_OUTPUT tag is used to specify where the LaTeX docs will be put. 
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be 
