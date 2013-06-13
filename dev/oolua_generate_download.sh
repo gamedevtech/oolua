@@ -8,6 +8,7 @@ mkdir ../../oolua-$1
 cp -r ./* ../../oolua-$1
 mkdir ../../oolua-$1/docs
 cp -r ../../docs/branches/dsl/html/* ../../oolua-$1/docs
+cp ../../docs/branches/dsl/latex/refman.pdf $pwd_on_entry/oolua-$1.pdf
 
 cd ../../oolua-$1
 rm -rf ./lib 
@@ -50,8 +51,8 @@ cd ..
 
 cd ..
 #COPYFILE_DISABLE=true tar -zcf ../oolua-release-$1.tar.gz *
-COPYFILE_DISABLE=true tar cvf  ./oolua-$1.tar.gz ./oolua-$1 
-
+#COPYFILE_DISABLE=true tar cvf  ./oolua-$1.tar.gz ./oolua-$1 
+tar -zcf ./oolua-$1.tar.gz ./oolua-$1
 #zip -r ../oolua-release-$1.zip *
 zip -r ./oolua-$1.zip ./oolua-$1
 
