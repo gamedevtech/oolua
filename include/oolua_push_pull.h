@@ -26,7 +26,7 @@ namespace OOLUA
 	bool push2lua(lua_State* const s, float const&  value);
 	bool push2lua(lua_State* const s, lua_CFunction const &  value);
 	bool push2lua(lua_State* const s, Lua_table const &  value);//can fail if from different state
-	bool push2lua(lua_State* const s, Lua_func_ref const &  value);//can fail
+
 	
 	//cpp called
 	bool pull2cpp(lua_State* const s, bool& value);
@@ -188,9 +188,11 @@ namespace OOLUA
 
 
 
-
-	
-	
+	template<int LuaType>
+	inline bool push2lua(lua_State* const s, Lua_ref<LuaType> const &  value)
+	{
+		return value.push(s);
+	}
 	
 	template<typename T>
 	bool inline push2lua(lua_State* const  s, T const&  value)

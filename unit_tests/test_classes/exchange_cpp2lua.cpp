@@ -37,7 +37,7 @@ class Exchange_cpp2lua : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(push_invalidTable_pushReturnsTrue);
 	CPPUNIT_TEST(push_invalidFunctionReference_pushReturnsTrue);
 	
-	
+	CPPUNIT_TEST(push_invalidTableReference_pushReturnsTrue);
 
 	
 #if OOLUA_STORE_LAST_ERROR == 1
@@ -198,7 +198,12 @@ public:
 		OOLUA::Lua_func_ref f;
 		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push2lua(*m_lua,f));
 	}
-
+	void push_invalidTableReference_pushReturnsTrue()
+	{
+		OOLUA::Lua_table_ref f;
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push2lua(*m_lua,f));
+	}
+	
 	void push_invalidFunctionReference_stackTopisNil()
 	{
 		OOLUA::Lua_func_ref f;

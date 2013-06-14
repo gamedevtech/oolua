@@ -33,7 +33,8 @@ namespace OOLUA
 	bool push2lua(lua_State* const s, float const&  value);
 	bool push2lua(lua_State* const s, lua_CFunction const &  value);
 	bool push2lua(lua_State* const s, Lua_table const &  value);
-	bool push2lua(lua_State* const s, Lua_ref<OOLUA::INTERNAL::FUNCTION> const &  value);
+	template<int LuaType>
+	bool push2lua(lua_State* const s, Lua_ref<LuaType> const &  value);
 	template<typename T>
 	bool push2lua(lua_State* const s, T * const &  value);
 	template<typename T>
