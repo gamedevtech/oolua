@@ -138,12 +138,6 @@ namespace OOLUA
 		return value.push_on_stack(s);
 	}
 	
-	bool push2lua(lua_State* const s, Lua_func_ref const &  value)
-	{
-		assert(s  );
-		return value.push(s);
-	}
-	
 
 	
 	bool pull2cpp(lua_State* const s, bool& value)
