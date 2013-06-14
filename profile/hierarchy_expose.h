@@ -9,10 +9,6 @@ OOLUA_PROXY(ProfileBase)
 	OOLUA_MFUNC(increment_a_base)
 	OOLUA_MFUNC(virtual_func)
 	OOLUA_MFUNC(pure_virtual_func)
-
-//	OOLUA_MEM_FUNC(void,increment_a_base,ProfileBase*)
-//	OOLUA_MEM_FUNC(void,virtual_func)
-//	OOLUA_MEM_FUNC(void,pure_virtual_func)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ProfileAnotherBase)
