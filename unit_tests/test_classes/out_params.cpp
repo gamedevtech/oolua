@@ -16,10 +16,10 @@ void set_string_in_MockParamWithStringMember_ref(MockParamWithStringMember& mock
 class OutParams : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(OutParams);
-		CPPUNIT_TEST(inOutTrait_luaPassesIntFunctionWantsRefToInt_calledWithExspectedValue);
+		CPPUNIT_TEST(inOutTrait_luaPassesIntFunctionWantsRefToInt_calledWithExpectedValue);
 		CPPUNIT_TEST(inOutTrait_luaPassesIntFunctionWantsRefToInt_returnTypeAtTopOfStackIsInt);
 		CPPUNIT_TEST(inOutTrait_luaPassesIntFunctionWantsRefToInt_returnIsInput);
-		CPPUNIT_TEST(inOutTrait_luaPassesIntFunctionWantsRefToInt_valueAtTopOfStackIsExspectedValue);
+		CPPUNIT_TEST(inOutTrait_luaPassesIntFunctionWantsRefToInt_valueAtTopOfStackIsExpectedValue);
 
 		CPPUNIT_TEST(inOutTrait_luaPassesIntFunctionWantsIntPtr_returnValueAtTopOfStackIsInputValue);
 
@@ -27,14 +27,14 @@ class OutParams : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(inOutTrait_twoRefsToInt_firstReturnIsCorrectValue);
 		CPPUNIT_TEST(inOutTrait_twoRefsToInt_secondReturnIsCorrectValue);
 
-		CPPUNIT_TEST(outTrait_luaPassesNoParamFunctionWantsRefToInt_valueAtTopOfStackIsExspectedValue);
+		CPPUNIT_TEST(outTrait_luaPassesNoParamFunctionWantsRefToInt_valueAtTopOfStackIsExpectedValue);
 		CPPUNIT_TEST(outTrait_luaPassesNoParamFunctionWantsIntPtr_calledOnce);
 		CPPUNIT_TEST(outTrait_luaPassesNoParamFunctionWantsIntPtr_returnTypeAtTopOfStackIsInt);
-		CPPUNIT_TEST(outTrait_luaPassesNoParamFunctionWantsIntPtr_valueAtTopOfStackIsExspectedValue);
+		CPPUNIT_TEST(outTrait_luaPassesNoParamFunctionWantsIntPtr_valueAtTopOfStackIsExpectedValue);
 
 		CPPUNIT_TEST(noTraits_luaPassesIntFunctionWantsIntPtr_callsFunctionWithCorrectPointeeValue);
 		CPPUNIT_TEST(noTraits_luaPassesIntFunctionWantsIntPtr_afterCallTheStackIsTheSameAsBeforeCall);
-		CPPUNIT_TEST(luaReturnOrder_luaFunctionWhichReturnsMultipleValues_orderIsAsExspectedElseError);
+		CPPUNIT_TEST(luaReturnOrder_luaFunctionWhichReturnsMultipleValues_orderIsAsExpectedElseError);
 		CPPUNIT_TEST(luaReturnOrder_luaFunctionWhichReturnsMultipleValuesToCpp_orderFromTopOfStackIsParam3Param2Param1);
 		CPPUNIT_TEST(ordering_functionWhichReturnsValueAndTwoInOutParams_orderFromTopOfStackIsParam2Param1Return);
 	
@@ -81,11 +81,11 @@ class OutParams : public CPPUNIT_NS::TestFixture
 		m_lua->run_chunk(chunk);
 	}
 	template<typename InputAndResultType>
-	void assert_top_of_stack_is_exspected_value(InputAndResultType const& exspected)
+	void assert_top_of_stack_is_expected_value(InputAndResultType const& expected)
 	{
 		InputAndResultType top_of_stack(0);
 		OOLUA::pull(*m_lua,top_of_stack);
-		CPPUNIT_ASSERT_EQUAL(exspected,top_of_stack);
+		CPPUNIT_ASSERT_EQUAL(expected,top_of_stack);
 	}
 
 public:
@@ -100,42 +100,44 @@ public:
 	{
 		delete m_lua;
 	}
-	void inOutTrait_luaPassesIntFunctionWantsRefToInt_calledWithExspectedValue()
+	void inOutTrait_luaPassesIntFunctionWantsRefToInt_calledWithExpectedValue()
 	{
-		int exspected(OutParamsTest::Param1);
-		run_chunk_function_push_int("int_ref",exspected,true);
+		int expected(OutParamsTest::Param1);
+		run_chunk_function_push_int("int_ref",expected,true);
 		MockOutParamsTest mock;
 
-		EXPECT_CALL(mock,int_ref(::testing::Eq( exspected ) ))
+		EXPECT_CALL(mock,int_ref(::testing::Eq( expected ) ))
 			.Times(1);
 		m_lua->call("func",(OutParamsTest*)&mock);
 
 	}
 	void inOutTrait_luaPassesIntFunctionWantsRefToInt_returnTypeAtTopOfStackIsInt()
 	{
-		int exspected(OutParamsTest::Dummy);
-		run_chunk_function_push_int("int_ref",exspected,true);
+		int expected(OutParamsTest::Dummy);
+		run_chunk_function_push_int("int_ref",expected,true);
 		::testing::NiceMock<MockOutParamsTest> stub;
 		m_lua->call("func",(OutParamsTest*)&stub);
 		CPPUNIT_ASSERT_EQUAL(true, lua_type(*m_lua,-1) == LUA_TNUMBER);
 	}
+	/**[TestTraitInOut]*/
 	void inOutTrait_luaPassesIntFunctionWantsRefToInt_returnIsInput()
 	{
-		int exspected(OutParamsTest::Param1);
-		run_chunk_function_push_int("int_ref",exspected,true);
+		int expected(OutParamsTest::Param1);
 		::testing::NiceMock<MockOutParamsTest> stub;
-		m_lua->call("func",(OutParamsTest*)&stub);
-		assert_top_of_stack_is_exspected_value(exspected);
-
+		m_lua->run_chunk("return function(obj,input) return obj:int_ref(input) end");
+		m_lua->call(1,(OutParamsTest*)&stub,expected);
+		assert_top_of_stack_is_expected_value(expected);
 	}
-	void inOutTrait_luaPassesIntFunctionWantsRefToInt_valueAtTopOfStackIsExspectedValue()
+	/**[TestTraitInOut]*/
+	
+	void inOutTrait_luaPassesIntFunctionWantsRefToInt_valueAtTopOfStackIsExpectedValue()
 	{
 		int input(OutParamsTest::Param1);
-		int exspected(OutParamsTest::Param1);
+		int expected(OutParamsTest::Param1);
 		run_chunk_function_push_int("int_ref_change",input,true);
 		::testing::NiceMock<MockOutParamsTest> stub;
 		m_lua->call("func",(OutParamsTest*)&stub);
-		assert_top_of_stack_is_exspected_value(exspected);
+		assert_top_of_stack_is_expected_value(expected);
 
 	}
 	void inOutTrait_luaPassesIntFunctionWantsIntPtr_returnValueAtTopOfStackIsInputValue()
@@ -144,7 +146,7 @@ public:
 		run_chunk_function_push_int("int_ptr_in_out",input_param,true);
 		::testing::NiceMock<MockOutParamsTest> stub;
 		m_lua->call("func",(OutParamsTest*)&stub);
-		assert_top_of_stack_is_exspected_value(input_param);
+		assert_top_of_stack_is_expected_value(input_param);
 	}
 
 	void inOutTrait_twoRefsToInt_calledOnceWithCorrectInputs()
@@ -168,7 +170,7 @@ public:
 		run_chunk_function_push_two_ints("two_int_refs",value1,value2,true);
 		::testing::NiceMock<MockOutParamsTest> stub;
 		m_lua->call("func",(OutParamsTest*)&stub);
-		assert_top_of_stack_is_exspected_value(value2);
+		assert_top_of_stack_is_expected_value(value2);
 	}
 
 	void inOutTrait_twoRefsToInt_secondReturnIsCorrectValue()
@@ -194,15 +196,18 @@ public:
 			.Times(1);
 		m_lua->call("func",(OutParamsTest*)&mock);
 	}
-	void outTrait_luaPassesNoParamFunctionWantsRefToInt_valueAtTopOfStackIsExspectedValue()
+	
+	/**[TestOutTraitExampleFunction]*/
+	void outTrait_luaPassesNoParamFunctionWantsRefToInt_valueAtTopOfStackIsExpectedValue()
 	{
-		int exspected(OutParamsTest::Param1);
-		run_chunk_function_pass_nothing("int_ref_change",true);
+		int expected(OutParamsTest::Param1);
 		::testing::NiceMock<MockOutParamsTest> stub;
-		m_lua->call("func",(OutParamsTest*)&stub);
-		assert_top_of_stack_is_exspected_value(exspected);
+		m_lua->run_chunk("return function(obj) return obj:int_ref_change() end");
+		m_lua->call(1,(OutParamsTest*)&stub);
+		assert_top_of_stack_is_expected_value(expected);
 	}
-
+	/**[TestOutTraitExampleFunction]*/
+	
 	void outTrait_luaPassesNoParamFunctionWantsIntPtr_returnTypeAtTopOfStackIsInt()
 	{
 		run_chunk_function_pass_nothing("int_ptr_out",true);
@@ -211,13 +216,13 @@ public:
 		CPPUNIT_ASSERT_EQUAL(true, lua_type(*m_lua,-1) == LUA_TNUMBER);
 	}
 
-	void outTrait_luaPassesNoParamFunctionWantsIntPtr_valueAtTopOfStackIsExspectedValue()
+	void outTrait_luaPassesNoParamFunctionWantsIntPtr_valueAtTopOfStackIsExpectedValue()
 	{
 		run_chunk_function_pass_nothing("int_ptr_change_pointee",true);
 		::testing::NiceMock<MockOutParamsTest> stub;
 		m_lua->call("func",(OutParamsTest*)&stub);
-		int exspected(OutParamsTest::Param1);
-		assert_top_of_stack_is_exspected_value(exspected);
+		int expected(OutParamsTest::Param1);
+		assert_top_of_stack_is_expected_value(expected);
 	}
 
 	void noTraits_luaPassesIntFunctionWantsIntPtr_callsFunctionWithCorrectPointeeValue()
@@ -240,8 +245,9 @@ public:
 		int stackSizeAfterCall = m_lua->stack_count();
 		CPPUNIT_ASSERT_EQUAL(stackSizeBeforeCall,stackSizeAfterCall);
 	}
-
-	void luaReturnOrder_luaFunctionWhichReturnsMultipleValues_orderIsAsExspectedElseError()
+	
+	
+	void luaReturnOrder_luaFunctionWhichReturnsMultipleValues_orderIsAsExpectedElseError()
 	{
 		//NOTE: With exceptions enabled this could throw, yet in reality it will never cause
 		//an error. This test is for demostration purposes to show the return order in Lua.
@@ -255,6 +261,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(true,m_lua->call("func"));
 	}
 
+	/**[TestLuaReturnOrder]*/
 	void luaReturnOrder_luaFunctionWhichReturnsMultipleValuesToCpp_orderFromTopOfStackIsParam3Param2Param1()
 	{
 		m_lua->run_chunk("func = function(i1,i2,i3) return i1,i2,i3 end ");
@@ -272,7 +279,9 @@ public:
 		CPPUNIT_ASSERT_EQUAL(i2,r2);
 		CPPUNIT_ASSERT_EQUAL(i1,r3);
 	}
+	/**[TestLuaReturnOrder]*/
 
+	/**[TestTraitReturnOrder]*/
 	void ordering_functionWhichReturnsValueAndTwoInOutParams_orderFromTopOfStackIsParam2Param1Return()
 	{
 		int input1(OutParamsTest::Dummy);
@@ -289,6 +298,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL((int)OutParamsTest::Param1,r2);
 		CPPUNIT_ASSERT_EQUAL((int)OutParamsTest::Return,r3);
 	}
+	/**[TestTraitReturnOrder]*/
 	
 	void OutTrait_luaPassesNoParamFunctionWantsRefToUserData_topOfStackIsOwnedByLua()
 	{

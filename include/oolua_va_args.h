@@ -456,8 +456,7 @@
 		\def OOLUA_TAGS
 		\hideinitializer
 		\brief Allows more information to be specified about the proxy class
-		\details 
-		Tags specifiy more information about the class which should be exposed, 
+		\details Tags specifiy more information about the class which should be exposed, 
 		such as:
 		\li Does the class support any operators?
 		\li Is it abstract ?

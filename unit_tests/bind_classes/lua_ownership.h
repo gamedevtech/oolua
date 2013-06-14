@@ -9,14 +9,17 @@
 OOLUA_PROXY(OwnershipParamsAndReturns)
 	OOLUA_TAGS(Abstract)
 
+	/**[ProxyLuaOutTrait]*/
 	OOLUA_MEM_FUNC_RENAME(lua_takes_ownership_of_ref_2_ptr,
-						  void, ref_2_ptr,			lua_out_p<Stub1*&>)
+						void, ref_2_ptr, lua_out_p<Stub1*&>)
+	/**[ProxyLuaOutTrait]*/
 	OOLUA_MEM_FUNC_RENAME(lua_takes_ownership_of_ref_2_ptr_const,
 						  void, ref_2_ptr_const,	lua_out_p<Stub1 const * &>)
 
-
+	/**[ProxyCppInTrait]*/
 	OOLUA_MEM_FUNC_RENAME(cpp_takes_ownership_of_ptr_param,
-						   void, ptr_param ,		cpp_in_p<Stub1*>)
+						   void, ptr_param, cpp_in_p<Stub1*>)
+	/**[ProxyCppInTrait]*/
 	OOLUA_MEM_FUNC_RENAME(cpp_takes_ownership_of_ref_to_ptr_param,
 						  void, ref_2_ptr,			cpp_in_p<Stub1*&>)
 

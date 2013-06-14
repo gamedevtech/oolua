@@ -162,7 +162,7 @@
 			<p>
 
 		\subsection ProxyTags Tags
-			\copydetails OOLUA_TAGS
+			\copydetails OOLUA_TAGS <p>
 
 		\subsection DefaultConstructor Default Constructor
 			The default class constructor is a special member function like C++ and it will 
@@ -255,11 +255,78 @@
 		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalistUsage
 
 	\section OOLuaProxyTraits Traits
-		\copydetails OOLuaTraits
+		\copydetails OOLuaTraits <p>
+		\subsection OOLuaTraitInDoc in_p 
+			\copydetails OOLUA::in_p <p>
+		\subsection OOLuaTraitOutDoc out_p 
+			\copydetails OOLUA::out_p <p>
+			Member Function:
+			\snippet cpp_out_params.h CppOutTraitExampleFunction
+			Proxy Function:
+			\snippet expose_out_params.h ProxyOutTraitExampleFunction
+			Usage:
+			\snippet out_params.cpp TestOutTraitExampleFunction
+		\subsection OOLuaTraitInOutDoc in_out_p
+			\copydetails OOLUA::in_out_p <p>
+			Member Function:
+			\snippet cpp_out_params.h CppTraitInOut
+			Proxy Function:
+			\snippet expose_out_params.h ProxyTraitInOut
+			Usage:
+			\snippet out_params.cpp TestTraitInOut
+		\subsection OOLuaTraitLuaOutDoc lua_out_p
+			\copydetails OOLUA::lua_out_p <p>
+			Member Function:
+			\snippet cpp_ownership.h CppLuaOutTrait
+			Proxy Function:
+			\snippet lua_ownership.h ProxyLuaOutTrait
+			Usage:
+			\snippet set_ownership.cpp TestLuaOutTrait
+		\subsection OOLuaTraitCppInDoc cpp_in_p
+			\copydetails OOLUA::cpp_in_p <p>
+			Member Function:
+			\snippet cpp_ownership.h CppCppInTrait
+			Proxy Function:
+			\snippet lua_ownership.h ProxyCppInTrait
+			Usage:
+			\snippet set_ownership.cpp TestCppOutTrait
+
+		\subsection OOLuaTraitCppAcquirePtr cpp_acquire_ptr
+			\copydetails OOLUA::cpp_acquire_ptr <p>		
+			\snippet construct.cpp ExampleCppAcquirePtr 
+
+		\subsection OOLuaTraitReturnOrder Return Order
+			Lua supports multiple return values and C++ in a way also via references.\n
+			Lua's order is shown in the following example, simply the first return goes
+			into the first slot.
+				\snippet out_params.cpp TestLuaReturnOrder
+			Here we have a C++ member function which returns an int, the function also 
+			assigns two new values to it's parameters which are taken by reference.
+				\snippet cpp_out_params.h CppTraitReturnOrder
+			One way we could express using would be using \ref OOLUA::in_out_p "in_out_p"
+			traits.
+				\snippet expose_out_params.h ProxyTraitReturnOrder
+			<p>
+			After calling this function there will be three returned values; the return of
+			the C++ function and the values of the two parameters after the call. 
+			The top of stack (Lua stack index -1, \ref OOLUA::pull ) is the furthest right 
+			handside parameter which had an out trait, which in this case was parameter two;
+			below this is the first parameter and then the return value in that order.
+			<p>
+
+			\snippet out_params.cpp TestTraitReturnOrder
+			<p>
+			\htmlonly
+			<br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> 
+			<br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> 
+			\endhtmlonly
+			Are you a bottom up kind of person? \n
+			The return value is on the bottom of the stack (Lua stack index 1)
+			with parameter one and parameter two following it in that order.\n
 
 
 **/
-
+/*		\copydetails OOLuaTraits*/
 /*
 			\snippet cpp_member_function_calls.h FunctionCalls
 			\snippet expose_member_function_calls.h ProxyFunctionCalls

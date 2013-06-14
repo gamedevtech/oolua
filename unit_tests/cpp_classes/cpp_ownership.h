@@ -12,9 +12,12 @@ class OwnershipParamsAndReturns
 {
 public:
 	virtual ~OwnershipParamsAndReturns(){}
-	
+	/**[CppCppInTrait]*/
 	virtual void ptr_param(Stub1* ) = 0;
+	/**[CppCppInTrait]*/
+	/**[CppLuaOutTrait]*/
 	virtual void ref_2_ptr(Stub1*& ) = 0;
+	/**[CppLuaOutTrait]*/
 	
 	virtual void const_ptr(Stub1 * const ) = 0;
 	virtual void ref_2_const_ptr(Stub1 * const& ) = 0;

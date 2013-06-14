@@ -203,26 +203,49 @@ public:
 
 	}
 	
-	
-	void luaParamOutP_ref2Ptr_topOfStackGcIsTrue()
+
+	void luaParamOutP_ref2Ptr_topOfStackGcIsTrue_old()
 	{
 		std::string func = lua_out_param_helper("lua_takes_ownership_of_ref_2_ptr");
+		
+		MockOwnershipParamsAndReturns object;
+		Stub1 return_stub;
+		
+		EXPECT_CALL(object,ref_2_ptr(::testing::_))
+		.Times(1)
+		.WillOnce(::testing::SetArgReferee<0>(&return_stub));
+		
+		m_lua->call(func,(OwnershipParamsAndReturns*)&object);
+		
+		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
+		bool gc_value = OOLUA::INTERNAL::userdata_is_to_be_gced(ud);
+		OOLUA::INTERNAL::userdata_gc_value(ud,false);//stop delete being called on this stack pointer
+		CPPUNIT_ASSERT_EQUAL(true,gc_value);
+		
+	}
 
+	void luaParamOutP_ref2Ptr_topOfStackGcIsTrue()
+	{
 		MockOwnershipParamsAndReturns object;
 		Stub1 return_stub;
 		
 		EXPECT_CALL(object,ref_2_ptr(::testing::_))
 			.Times(1)
 			.WillOnce(::testing::SetArgReferee<0>(&return_stub));
-		
-		m_lua->call(func,(OwnershipParamsAndReturns*)&object);
+		/**[TestLuaOutTrait]*/
+		m_lua->run_chunk("return function(object) "
+							"return object:lua_takes_ownership_of_ref_2_ptr() "
+						 "end");
+		m_lua->register_class<OwnershipParamsAndReturns>();
+		m_lua->call(1,(OwnershipParamsAndReturns*)&object);
+		//there is now a proxy type on top of the stack which Lua owns
+		/**[TestLuaOutTrait]*/
 		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
 		bool gc_value = OOLUA::INTERNAL::userdata_is_to_be_gced(ud);
 		OOLUA::INTERNAL::userdata_gc_value(ud,false);//stop delete being called on this stack pointer
 		CPPUNIT_ASSERT_EQUAL(true,gc_value);
 
 	}
-	
 	
 
 	void luaParamOutP_ref2PtrConst_userDataPtrComparesEqualToValueSetInFunction()
@@ -304,12 +327,14 @@ public:
 		
 	}
 	
+	/**[TestCppOutTrait]*/	
 	void cppInP_ptr2UserDataType_passingPtrThatLuaOwns_topOfStackGcIsFalse()
 	{
 		bool result = returnGarbageCollectValueAfterCppTakingOwnership(
 						 "cpp_takes_ownership_of_ptr_param");
 		CPPUNIT_ASSERT_EQUAL(false,result);
 	}
+	/**[TestCppOutTrait]*/
 
 	void cppInP_ref2Ptr2UserDataType_passingPtrThatLuaOwns_topOfStackGcIsFalse()
 	{

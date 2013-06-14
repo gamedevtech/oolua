@@ -132,11 +132,13 @@ public:
 
 	void new_luaCreatesInstanceThenReturnsIt_returnIsNoneNull()
 	{
-		createAndReturnStub(m_lua);
+		/**[ExampleCppAcquirePtr]*/
+		m_lua->run_chunk("return Stub1.new()");
 		OOLUA::cpp_acquire_ptr<Stub1*> res;
 		OOLUA::pull(*m_lua,res);
 		CPPUNIT_ASSERT_EQUAL(true, res.m_ptr != 0);
 		delete res.m_ptr;
+		/**[ExampleCppAcquirePtr]*/
 	}
 	/*[MinimalProxyClassUsage]*/
 	void new_luaCreatesInstance_noException()
