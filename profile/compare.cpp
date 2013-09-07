@@ -36,54 +36,6 @@ void run_compare(lua_State* lvm, std::string const& func_name, std::string const
 
 int main()
 {
-#ifdef MFUNC_TEST	
-	{
-		OOLUA::Script L;
-		L.register_class<Set_get>();
-		run_compare(L,"mfunc","OOLua");
-	}
-#endif
-
-#ifdef VFUNC_TEST
-	{
-		OOLUA::Script L;
-		OOLUA::register_class_and_bases<ProfileMultiBases>(L);
-		run_compare(L,"vfunc","OOLua");
-	}
-#endif
-
-#ifdef CLASS_PARAM_IMPLICIT_CAST_TEST
-	{
-		OOLUA::Script L;
-		OOLUA::register_class_and_bases<ProfileMultiBases>(L);
-		run_compare(L,"class_param","OOLua");
-	}
-#endif
-
-
-#ifdef OOLUA_SWIG_COMPARE
-#	ifdef MFUNC_TEST
-	{
-		OOLUA::Script L;
-		luaopen_swig_profile(L);
-		run_compare(L,"mfunc","SWIG");
-	}
-#	endif
-#	ifdef VFUNC_TEST
-	{
-		OOLUA::Script L;
-		luaopen_swig_profile(L);
-		run_compare(L,"vfunc","SWIG");
-	}
-#	endif
-#	ifdef CLASS_PARAM_IMPLICIT_CAST_TEST
-	{
-		OOLUA::Script L;
-		luaopen_swig_profile(L);
-		run_compare(L,"class_param","SWIG");
-	}
-#	endif
-#endif
 
 #ifdef OOLUA_LUABIND_COMPARE
 #	ifdef MFUNC_TEST
@@ -135,8 +87,35 @@ int main()
 	}
 #	endif
 #endif
-	
-	
+
+
+
+#ifdef MFUNC_TEST	
+	{
+		OOLUA::Script L;
+		L.register_class<Set_get>();
+		run_compare(L,"mfunc","OOLua");
+	}
+#endif
+
+#ifdef VFUNC_TEST
+	{
+		OOLUA::Script L;
+		OOLUA::register_class_and_bases<ProfileMultiBases>(L);
+		run_compare(L,"vfunc","OOLua");
+	}
+#endif
+
+#ifdef CLASS_PARAM_IMPLICIT_CAST_TEST
+	{
+		OOLUA::Script L;
+		OOLUA::register_class_and_bases<ProfileMultiBases>(L);
+		run_compare(L,"class_param","OOLua");
+	}
+#endif
+
+
+
 #if defined OOLUA_SLB_COMPARE && LUA_VERSION_NUM == 502
 #	ifdef MFUNC_TEST
 	{
@@ -170,5 +149,32 @@ int main()
 	}
 #	endif
 #endif
-	
+
+
+
+#ifdef OOLUA_SWIG_COMPARE
+#	ifdef MFUNC_TEST
+	{
+		OOLUA::Script L;
+		luaopen_swig_profile(L);
+		run_compare(L,"mfunc","SWIG");
+	}
+#	endif
+#	ifdef VFUNC_TEST
+	{
+		OOLUA::Script L;
+		luaopen_swig_profile(L);
+		run_compare(L,"vfunc","SWIG");
+	}
+#	endif
+#	ifdef CLASS_PARAM_IMPLICIT_CAST_TEST
+	{
+		OOLUA::Script L;
+		luaopen_swig_profile(L);
+		run_compare(L,"class_param","SWIG");
+	}
+#	endif
+#endif
+
+
 }

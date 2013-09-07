@@ -18,14 +18,13 @@ local do_mfunc = function(name)
 		,LuaBridge = function() return Set_get() end
 	}
 
-	local creator = factory[name]
-	if not creator then 
-		print("| " .. name .. " vfunc | unavailable | unavailable |")
-		return {name,'vfunc','unavailable','unavailable'}
-	end
+	local self, cached = 'unavailable','unavailable'
 
-	local cached = compare.mfunc_cached( creator() )
-	local self = compare.mfunc_self( creator() )
+	local creator = factory[name]
+	if creator then 
+		cached = compare.mfunc_cached( creator() )
+		self = compare.mfunc_self( creator() )
+	end
 	print("| | | |")
 	print("| " .. name .. " mfunc | " .. cached .. " | " .. self.. " |")
 	return {name,'mfunc',cached,self}
