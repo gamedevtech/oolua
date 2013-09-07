@@ -97,7 +97,7 @@ namespace OOLUA
 			int const stack_count = lua_gettop(l);
 			if(stack_count == 0 )
 			{
-				return Constructor<T,has_typedef<OOLUA::Proxy_class<T>, OOLUA::No_default_constructor>::Result>::construct(l);
+				return Constructor<T,has_tag<OOLUA::Proxy_class<T>, OOLUA::No_default_constructor>::Result>::construct(l);
 			} 
 			luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",OOLUA::Proxy_class<T>::class_name);
 			return 0;/*required by function sig yet luaL_error never returns*/
@@ -172,7 +172,7 @@ static int oolua_factory_function(lua_State* l) \
 #define OOLUA_CONSTRUCTORS_END \
 	if(stack_count == 0 ) \
 	{ \
-		return INTERNAL::Constructor<class_,INTERNAL::has_typedef<this_type, No_default_constructor>::Result>::construct(l); \
+		return INTERNAL::Constructor<class_,INTERNAL::has_tag<this_type, No_default_constructor>::Result>::construct(l); \
 	} \
 	luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",class_name); \
 	return 0;/*required by function sig yet luaL_error never returns*/  \

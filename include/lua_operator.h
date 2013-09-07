@@ -184,7 +184,7 @@ DEFINE_OOLUA_OPERATOR_FUNCTION_(div,"__div")
 		};
 		
 		template<typename ProxyType,typename Tag>
-		struct has_typedef
+		struct has_tag
 		{
 			enum {Result = TYPELIST::IndexOf<typename tag_type<typename ProxyType::class_>::type,Tag>::value == -1 ? 0 : 1};
 		};

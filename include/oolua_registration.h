@@ -236,11 +236,11 @@ namespace OOLUA
 			set_key_value_in_table(l,"__newindex",methods,mt);
 			//mt["__newindex"]= methods
 
-			set_delete_function<T,has_typedef<Proxy_class<T>, No_public_destructor >::Result>::set(l,mt);
+			set_delete_function<T,has_tag<Proxy_class<T>, No_public_destructor >::Result>::set(l,mt);
 
 			set_create_function<T,LVD::if_or< 
-										has_typedef<Proxy_class<T>, Abstract >::Result
-										,has_typedef<Proxy_class<T>, No_public_constructors >::Result 
+										has_tag<Proxy_class<T>, Abstract >::Result
+										,has_tag<Proxy_class<T>, No_public_constructors >::Result 
 									>::value
 								>::set(l,methods);
 			
@@ -292,25 +292,25 @@ namespace OOLUA
 			set_function_in_table(l,"__index",&INTERNAL::search_in_base_classes<T>,const_methods);
 			//const_methods["__index"]= function to search bases classes for the key
 			
-			set_owner_function<T,has_typedef<Proxy_class<T>, No_public_destructor >::Result>::set(l,const_methods);
+			set_owner_function<T,has_tag<Proxy_class<T>, No_public_destructor >::Result>::set(l,const_methods);
 
-			set_delete_function<T,has_typedef<Proxy_class<T>, No_public_destructor >::Result>::set(l,const_mt);
+			set_delete_function<T,has_tag<Proxy_class<T>, No_public_destructor >::Result>::set(l,const_mt);
 
 			//set none const methods as the metatable for the const metatable
 			lua_pushvalue(l, const_mt);//const_methods const_mt const_mt
 			lua_setmetatable(l, none_const_methods);//const_methods const_mt
 			//none_const_methods[mt] = const_mt
 
-			set_equal_function<T, has_typedef<Proxy_class<T>,Equal_op>::Result>::set(l,const_mt,none_const_mt);
-			set_less_than_function<T,has_typedef<Proxy_class<T>,Less_op>::Result>::set(l,const_mt,none_const_mt);
-			set_less_than_or_equal_function<T,has_typedef<Proxy_class<T>,Less_equal_op>::Result>::set(l,const_mt,none_const_mt);
-			set_add_function<T,has_typedef<Proxy_class<T>,Add_op>::Result>::set(l,const_mt,none_const_mt);
-			set_sub_function<T,has_typedef<Proxy_class<T>,Sub_op>::Result>::set(l,const_mt,none_const_mt);
-			set_mul_function<T,has_typedef<Proxy_class<T>,Mul_op>::Result>::set(l,const_mt,none_const_mt);
-			set_div_function<T,has_typedef<Proxy_class<T>,Div_op>::Result>::set(l,const_mt,none_const_mt);
+			set_equal_function<T, has_tag<Proxy_class<T>,Equal_op>::Result>::set(l,const_mt,none_const_mt);
+			set_less_than_function<T,has_tag<Proxy_class<T>,Less_op>::Result>::set(l,const_mt,none_const_mt);
+			set_less_than_or_equal_function<T,has_tag<Proxy_class<T>,Less_equal_op>::Result>::set(l,const_mt,none_const_mt);
+			set_add_function<T,has_tag<Proxy_class<T>,Add_op>::Result>::set(l,const_mt,none_const_mt);
+			set_sub_function<T,has_tag<Proxy_class<T>,Sub_op>::Result>::set(l,const_mt,none_const_mt);
+			set_mul_function<T,has_tag<Proxy_class<T>,Mul_op>::Result>::set(l,const_mt,none_const_mt);
+			set_div_function<T,has_tag<Proxy_class<T>,Div_op>::Result>::set(l,const_mt,none_const_mt);
 			
 			
-			set_class_enums<T,has_typedef<Proxy_class<T>,Register_class_enums>::Result>::set(l);
+			set_class_enums<T,has_tag<Proxy_class<T>,Register_class_enums>::Result>::set(l);
 			
 			lua_pop(l, 1);//const_methods
 			return const_methods;
