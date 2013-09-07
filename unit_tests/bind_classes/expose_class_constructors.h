@@ -53,5 +53,14 @@ OOLUA_PROXY(LuaStateConstructors)
 	)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(DefaultConstructorThrowsStdException)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ConstructorThrowsStdException)
+	OOLUA_CTORS(
+		OOLUA_CTOR(int)
+	)
+OOLUA_PROXY_END
+
 #endif
 

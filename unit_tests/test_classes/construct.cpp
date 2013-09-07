@@ -79,6 +79,13 @@ class Construct : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(new_CallingDefaultConstructorOnTypeWithOutOne_throwsRuntimeError);
 	CPPUNIT_TEST(new_constructorTakesLuaTableRefYetPassedNil_throwsRuntimeError);
 	CPPUNIT_TEST(new_constructorTakesLuaTableYetPassedNil_throwsRuntimeError);
+
+	CPPUNIT_TEST(new_defaultConstructorThrowsException_pcallReturnsFalse);
+	CPPUNIT_TEST(new_defaultConstructorThrowsAnStdException_runChunkThrowsOOLuaRuntimeError);
+	CPPUNIT_TEST(new_constructorThrowsAnException_pcallReturnsError);
+	CPPUNIT_TEST(new_constructorWithParamThrowsAnException_pcallReturnsError);
+	CPPUNIT_TEST(new_constructorThrowsAnStdException_runChunkThrowsOOLuaRuntimeError);
+	CPPUNIT_TEST(new_constructorWithParamThrowsAnStdException_runChunkThrowsOOLuaRuntimeError);
 #endif	
 	
 	CPPUNIT_TEST(new_constructorTakesLuaState_memberStateEqualsInput);
@@ -492,7 +499,58 @@ public:
 						 "end");
 		CPPUNIT_ASSERT_THROW((m_lua->call("foo")),OOLUA::Runtime_error);
 	}
+	void new_defaultConstructorThrowsException_pcallReturnsFalse()
+	{
+		m_lua->register_class<DefaultConstructorThrowsStdException>();
+		CPPUNIT_ASSERT_NO_THROW
+		(
+			m_lua->run_chunk("assert(false == pcall(DefaultConstructorThrowsStdException.new) )");
+		);
+	}
+	void new_defaultConstructorThrowsAnStdException_runChunkThrowsOOLuaRuntimeError()
+	{
+		m_lua->register_class<DefaultConstructorThrowsStdException>();
+		CPPUNIT_ASSERT_THROW
+		(
+		 m_lua->run_chunk("DefaultConstructorThrowsStdException.new()");
+		 ,OOLUA::Runtime_error
+		 );
+	}
+	void new_constructorThrowsAnException_pcallReturnsError()
+	{
+		m_lua->register_class<ConstructorThrowsStdException>();
+		CPPUNIT_ASSERT_NO_THROW
+		(
+			m_lua->run_chunk("assert(false == pcall(ConstructorThrowsStdException.new) )");
+		);
+	}
+	void new_constructorThrowsAnStdException_runChunkThrowsOOLuaRuntimeError()
+	{
+		m_lua->register_class<ConstructorThrowsStdException>();
+		CPPUNIT_ASSERT_THROW
+		(
+			m_lua->run_chunk("ConstructorThrowsStdException.new()");
+			,OOLUA::Runtime_error
+		);
+	}
 	
+	void new_constructorWithParamThrowsAnException_pcallReturnsError()
+	{
+		m_lua->register_class<ConstructorThrowsStdException>();
+		CPPUNIT_ASSERT_NO_THROW
+		(
+			m_lua->run_chunk("assert(false == pcall(ConstructorThrowsStdException.new,1) )");
+		);
+	}
+	void new_constructorWithParamThrowsAnStdException_runChunkThrowsOOLuaRuntimeError()
+	{
+		m_lua->register_class<ConstructorThrowsStdException>();
+		CPPUNIT_ASSERT_THROW
+		(
+			m_lua->run_chunk("ConstructorThrowsStdException.new(1)");
+			,OOLUA::Runtime_error
+		);
+	}
 #endif
 	
 	void new_constructorTakesLuaState_memberStateEqualsInput()

@@ -191,6 +191,17 @@ struct LuaStateConstructors
 };
 
 
+struct DefaultConstructorThrowsStdException
+{
+	DefaultConstructorThrowsStdException();
+};
+
+struct ConstructorThrowsStdException
+{
+	ConstructorThrowsStdException();
+	ConstructorThrowsStdException(int);
+};
+
 
 
 #endif
