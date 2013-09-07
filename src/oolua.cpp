@@ -171,7 +171,14 @@ namespace OOLUA
 	
 	bool load_chunk(lua_State* lua, std::string const& chunk)
 	{
-		int res = luaL_loadbuffer(lua,chunk.c_str(),chunk.size(),"userChunk");
+#ifdef DEBUG
+#	define chunk_name chunk.c_str()
+#else
+#	define chunk_name "userChunk"
+#endif
+		
+		int res = luaL_loadbuffer(lua,chunk.c_str(),chunk.size(),chunk_name);
+#undef chunk_name
 		return INTERNAL::load_buffer_check_result(lua,res);
 	}
 	
