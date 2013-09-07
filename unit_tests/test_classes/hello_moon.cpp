@@ -28,8 +28,9 @@ void expressive_say(int input)
 }
 /** [HelloMoonCFuncOverloaded]*/
 
+/** [HelloMoonCFuncOverloadedCast]*/
 OOLUA_CFUNC( (( void(*)(char const*))expressive_say),expressive_say) 
-
+/** [HelloMoonCFuncOverloadedCast]*/
 
 /** [HelloMoonCFuncProxyExpressive]*/
 int expressive_lsay(lua_State* l)

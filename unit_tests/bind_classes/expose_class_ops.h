@@ -1,5 +1,5 @@
-#ifndef LUA_CLASS_OPS_H_
-#	define LUA_CLASS_OPS_H_
+#ifndef EXPOSE_CLASS_OPS_H_
+#	define EXPOSE_CLASS_OPS_H_
 
 #include "cpp_class_ops.h"
 #include "oolua.h"

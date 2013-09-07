@@ -1,4 +1,4 @@
-#include "lua_ownership.h"
+#include "expose_ownership.h"
 
 OOLUA_EXPORT_FUNCTIONS(OwnershipParamsAndReturns
 								,lua_takes_ownership_of_ref_2_ptr

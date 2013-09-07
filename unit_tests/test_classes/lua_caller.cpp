@@ -70,12 +70,12 @@ public:
 		return func;
 	}
 	
-	OOLUA::Lua_func_ref simple_function_for_state(OOLUA::Script& differnt_state)
+	OOLUA::Lua_func_ref simple_function_for_state(OOLUA::Script& different_state)
 	{
 		using namespace OOLUA;
 		Lua_func_ref invalid_for_caller_state;
-		load_chunk(differnt_state,"return");
-		pull(differnt_state,invalid_for_caller_state);
+		load_chunk(different_state,"return");
+		pull(different_state,invalid_for_caller_state);
 		return invalid_for_caller_state;
 	}
 	

@@ -218,20 +218,20 @@ for parameters contain as part of their name "out", "in" or a combination.
 			typedef T type;
 		};
 
-		template<typename T,typename Orignal_Type,int is_integral>struct Pull_type_;
+		template<typename T,typename Original_Type,int is_integral>struct Pull_type_;
 
-		template<typename T,typename Orignal_Type>
-		struct Pull_type_<T,Orignal_Type,0>
+		template<typename T,typename Original_Type>
+		struct Pull_type_<T,Original_Type,0>
 		{
 			typedef typename LVD::if_else<
-											LVD::is_const<Orignal_Type>::value
+											LVD::is_const<Original_Type>::value
 											,T const*
 											,T*
 										>::type type;
 		};
 
-		template<typename T,typename Orignal_Type>
-		struct Pull_type_<T,Orignal_Type,1>
+		template<typename T,typename Original_Type>
+		struct Pull_type_<T,Original_Type,1>
 		{
 			typedef T type;
 		};

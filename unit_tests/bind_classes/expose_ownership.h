@@ -1,5 +1,5 @@
-#ifndef LUA_OWNERSHIP_H_
-#	define LUA_OWNERSHIP_H_
+#ifndef EXPOSE_OWNERSHIP_H_
+#	define EXPOSE_OWNERSHIP_H_
 
 #include "expose_stub_classes.h"
 #include "cpp_ownership.h"

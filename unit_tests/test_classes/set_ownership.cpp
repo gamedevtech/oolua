@@ -1,13 +1,10 @@
 #	include "oolua_tests_pch.h"
-#	include "oolua.h"
-#	include "lua_ownership.h"
 #	include "common_cppunit_headers.h"
+#	include "oolua.h"
 
+#	include "expose_ownership.h"
 #	include "cpp_private_destructor.h"
 #	include "expose_stub_classes.h"
-
-
-#	include "lua_ownership.h"
 
 
 class Ownership : public CPPUNIT_NS::TestFixture

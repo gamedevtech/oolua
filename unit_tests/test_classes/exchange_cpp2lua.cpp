@@ -2,7 +2,7 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 #	include "cpp_class_ops.h"
-#	include "lua_class_ops.h"
+#	include "expose_class_ops.h"
 
 
 class Exchange_cpp2lua : public CPPUNIT_NS::TestFixture

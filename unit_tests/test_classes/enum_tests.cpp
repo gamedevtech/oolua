@@ -1,5 +1,5 @@
 
-
+#	include "oolua_tests_pch.h"
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 #	include "expose_enum.h"
