@@ -72,10 +72,10 @@ namespace OOLUA
 
 
 		template<typename T>
-		T* valid_base_ptr_or_null(lua_State* l,Lua_ud const* stack_ud,int userdata_index)
+		T* valid_base_ptr_or_null(Lua_ud const* stack_ud)
 		{
-			Lua_ud requested_ud = {0,&stack_top_type_is_base<T>,&OOLUA::register_class<T>,0};
-			stack_ud->base_checker(l,&requested_ud,userdata_index);
+			Lua_ud requested_ud = {0,0,&OOLUA::register_class<T>,0};
+			stack_ud->base_checker(&requested_ud,stack_ud);
 			return static_cast<T* >(requested_ud.void_class_ptr);
 		}
 
@@ -87,7 +87,7 @@ namespace OOLUA
 			if( !index_is_userdata(l,narg,ud))return 0;
 			if( ! ud_is_type<T>(ud) )
 			{
-				return valid_base_ptr_or_null<T>(l,ud,narg);
+				return valid_base_ptr_or_null<T>(ud);
 			}
 			return static_cast<T* >(ud->void_class_ptr);
 		}
@@ -105,7 +105,7 @@ namespace OOLUA
 			}
 			if( ! ud_is_type<T>(ud) )
 			{
-				return valid_base_ptr_or_null<T>(l,ud,narg);
+				return valid_base_ptr_or_null<T>(ud);
 			}
 			return static_cast<T* >(ud->void_class_ptr);
 		}

@@ -12,8 +12,8 @@ namespace OOLUA
 #	if OOLUA_USERDATA_OPTIMISATION == 1
 		bool index_is_userdata(lua_State* l,int index,Lua_ud*& ud)
 		{
-#if defined LUA_VERSION_NUM && LUA_VERSION_NUM == 502
-/*lua_objlen may or may not be a macro for lua_rawlen in luaconfig.h;
+#if defined LUA_VERSION_NUM && LUA_VERSION_NUM >= 502
+/*lua_objlen may or may not be a macro for lua_rawlen in luaconfig.h for 5.2
  so lets just work regardless of the configuration used*/
 #	define _oolua_len_ lua_rawlen 
 #else 
