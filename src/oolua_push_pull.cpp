@@ -33,7 +33,7 @@ namespace OOLUA
 			message += std::string(", yet ") + stackType;
 			throw OOLUA::Type_error(message);
 #	elif OOLUA_STORE_LAST_ERROR == 1
-			lua_pushfstring(l, "Stack type is not a %s, yet &s"
+			lua_pushfstring(l, "Stack type is not a %s, yet %s"
 							,lookingFor
 							,lua_gettop(l) ? lua_typename(l, lua_type(l,-1) ) : "empty stack" );
 			
