@@ -11,7 +11,7 @@
 #	include "fwd_push_pull.h"
 #	include "oolua_error.h"
 
-#include<cassert>
+#	include <cassert>
 #	include "push_pointer_internal.h"
 
 namespace OOLUA
@@ -42,10 +42,6 @@ namespace OOLUA
 		template<typename T,typename WT,int is_integral = 1>
 		struct maybe_integral
 		{
-			static void pull(lua_State* const s, T& value)
-			{
-				OOLUA::INTERNAL::LUA_CALLED::pull2cpp(s,value);
-			}
 			static void push(lua_State* const s, T& value)
 			{
 				OOLUA::push(s,value);
@@ -56,10 +52,6 @@ namespace OOLUA
 		template<typename T,typename WT>
 		struct maybe_integral<T,WT,0>
 		{
-			static void pull(lua_State* const s, T*& value)
-			{
-				OOLUA::INTERNAL::LUA_CALLED::pull2cpp(s,value);
-			}
 			static void push(lua_State* const s, T& value)
 			{
 				proxy_maybe_by_ref<typename WT::raw_type,T,WT::is_by_value>::push(s,value,(Owner)WT::owner);
@@ -77,41 +69,29 @@ namespace OOLUA
 	template<typename TypeWithTraits>
 	struct Member_func_helper<TypeWithTraits,No_change>
 	{
-		
-		template<typename T>
-		static void pull2cpp(lua_State* const s, T*& value)
-		{
-			maybe_integral<T,TypeWithTraits,TypeWithTraits::is_integral>::pull(s,value);
-		}
-		template<typename T>
-		static void pull2cpp(lua_State* const s, T& value)
-		{
-			maybe_integral<T,TypeWithTraits,TypeWithTraits::is_integral>::pull(s,value);
-		}
-		
-		template<typename T>
-		static void get(lua_State* const s, int idx, T*& value)
-		{
-			OOLUA::INTERNAL::LUA_CALLED::get(s,idx,value);
-		}
 		template<typename T>
 		static void get(lua_State* const s, int idx, T& value)
 		{
 			OOLUA::INTERNAL::LUA_CALLED::get(s,idx,value);
 		}
 		template<typename T>
-		static void get(int& idx, lua_State* const s,  T*& value)
-		{
-			OOLUA::INTERNAL::LUA_CALLED::get(s,idx,value);
-			++idx;
-		}
-		template<typename T>
 		static void get(int& idx, lua_State* const s, T& value)
 		{
-			OOLUA::INTERNAL::LUA_CALLED::get(s,idx,value);
+			get(s,idx,value);
 			++idx;
 		}
-		
+
+		static void get(lua_State* const s, int /*idx*/, lua_State*& l)
+		{			
+			typedef char type_has_to_be_calling_lua_state[LVD::is_same<param_type<calling_lua_state>,TypeWithTraits>::value ? 1 : -1];
+			l = s;
+		}
+
+		static void get(int& /*idx*/,lua_State* const s, lua_State*& l)
+		{			
+			typedef char type_has_to_be_calling_lua_state[LVD::is_same<param_type<calling_lua_state>,TypeWithTraits>::value ? 1 : -1];
+			l = s;
+		}
 		
 		template<typename T>
 		static void push2lua(lua_State* const s, T& value)
@@ -123,33 +103,20 @@ namespace OOLUA
 		{
 			OOLUA::push(s,value,No_change);
 		}
+
 		///special case "T* const" and "T const * const"
 		template<typename T>
 		static void push2lua(lua_State* const s, T*const& value)
 		{
 			OOLUA::push(s,value,No_change);
 		}
-		static void pull2cpp(lua_State* const s, lua_State *& l)
-		{
-			typedef char type_has_to_be_calling_lua_state[LVD::is_same<param_type<calling_lua_state>,TypeWithTraits>::value ? 1 : -1];
-			l = s;
-		}
-		static void get(lua_State* const s,int /*idx*/, lua_State *& l)
-		{
-			typedef char type_has_to_be_calling_lua_state[LVD::is_same<param_type<calling_lua_state>,TypeWithTraits>::value ? 1 : -1];
-			l = s;
-		}
-		static void get(int& /*idx*/, lua_State* const s,lua_State *& l)
-		{
-			typedef char type_has_to_be_calling_lua_state[LVD::is_same<param_type<calling_lua_state>,TypeWithTraits>::value ? 1 : -1];
-			l = s;
-		}
+
 		static void push2lua(lua_State* const , lua_State *& )
 		{
 			assert(0 && "this function should not be called");
 		}
-
 	};
+
 	template<typename TypeWithTraits>
 	struct Member_func_helper<TypeWithTraits,Cpp>
 	{
@@ -166,14 +133,7 @@ namespace OOLUA
 			get(s,idx,value);
 			++idx;
 		}
-		
-		template<typename T>
-		static void pull2cpp(lua_State* const s, T*& value)
-		{
-			OOLUA::cpp_acquire_ptr<typename TypeWithTraits::type > p;
-			OOLUA::INTERNAL::LUA_CALLED::pull2cpp(s,p);
-			value = p.m_ptr;
-		}
+
 		template<typename T>
 		static void push2lua(lua_State* const /*s*/, T*& /*value*/)//noop
 		{
@@ -200,37 +160,13 @@ namespace OOLUA
 		}
 		
 		template<typename T>
-		static void pull2cpp(lua_State* const /*s*/, T& /*value*/)//noop
-		{
-			assert(0 && "this function should never be called");
-		}
-		
-		template<typename T>
-		static void pull2cpp(lua_State* const /*s*/, T*& /*value*/)//noop
-		{
-			assert(0 && "this function should never be called");
-		}
-		
-		
-		template<typename T>
-		static void get(lua_State* const /*s*/, int /*idx*/, T& /*value*/)//noop
-		{
-			assert(0 && "this function should never be called");
-		}
-		
-		template<typename T>
 		static void get(lua_State* const /*s*/, int /*idx*/, T*& /*value*/)//noop
 		{
 			assert(0 && "this function should never be called");
 		}
-		template<typename T>
-		static void get(int& /*idx*/,lua_State* const /*s*/,  T& /*value*/)//noop
-		{
-			assert(0 && "this function should never be called");
-		}
 		
 		template<typename T>
-		static void get(int& /*idx*/,lua_State* const /*s*/, T*& /*value*/)//noop
+		static void get(int& /*idx*/,lua_State* const /*s*/,  T& /*value*/)//noop
 		{
 			assert(0 && "this function should never be called");
 		}

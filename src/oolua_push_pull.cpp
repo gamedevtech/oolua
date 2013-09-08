@@ -138,14 +138,6 @@ namespace OOLUA
 		return value.push_on_stack(s);
 	}
 	
-	bool push(lua_State* const s, Lua_func_ref const &  value)
-	{
-		assert(s  );
-		return value.push(s);
-	}
-	
-
-	
 	bool pull(lua_State* const s, bool& value)
 	{
 		/*
@@ -160,7 +152,6 @@ namespace OOLUA
 	bool pull(lua_State* const s, std::string& value)
 	{
 		if(! INTERNAL::cpp_runtime_type_check_of_top(s,LUA_TSTRING,"string") ) return false;
-		//value = lua_tolstring(s,-1,0);
 		size_t len(0);
 		char const* str = lua_tolstring(s,-1,&len);
 		value = std::string(str, len);
@@ -189,19 +180,10 @@ namespace OOLUA
 		lua_pop( s, 1);
 		return true;
 	}
-	bool pull(lua_State* const s, Lua_func_ref& value)
-	{
-		return value.pull(s);
-	}
 	
 	bool pull(lua_State* const s, Table&  value)
 	{
 		return value.pull_from_stack(s);
-	}
-	
-	bool pull(lua_State* const s, Lua_table_ref& value)
-	{
-		return value.pull(s);
 	}
 
 	
@@ -212,109 +194,54 @@ namespace OOLUA
 
 		namespace LUA_CALLED
 		{
+			
 			void pull_class_type_error(lua_State* const s,char const* type)
 			{
 				luaL_error(s,"%s %s %s","tried to pull type"
 						   ,type
 						   ,"which is not the type or a base of the type on the stack");
 			}
-			
-			void pull_error(lua_State* l, char const* when_pulling_this_type)
-			{
-				luaL_error(l,"trying to pull %s when %s is on stack"
-						   ,when_pulling_this_type
-						   , lua_typename(l, lua_type(l,-1)) );
-			}
-			
-			void pull2cpp(lua_State* const s, bool& value)
-			{
 
-#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-				if(! lua_isboolean(s,-1) )pull_error(s,"bool");
-#endif	
-				value =  lua_toboolean( s, -1) ? true : false;
-				lua_pop( s, 1);
-			}
-			void pull2cpp(lua_State* const s, std::string& value)
-			{
-#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-				if(! lua_isstring(s,-1) )pull_error(s,"std::string");
-#endif
-				//value = lua_tolstring(s,-1,0);
-				size_t len(0);
-				char const* str = lua_tolstring(s,-1,&len);
-				value = std::string(str, len);
-				lua_pop( s, 1);
-			}
-		
-			void pull2cpp(lua_State* const s, double& value)
-			{
-#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-				if(! lua_isnumber(s,-1) )pull_error(s,"double");
-#endif
-				value = static_cast<double>( lua_tonumber( s, -1) );
-				lua_pop( s, 1);
-			}
-			void pull2cpp(lua_State* const s, float& value)
-			{
-#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-				if(! lua_isnumber(s,-1) )pull_error(s,"float");
-#endif
-				value = static_cast<float>( lua_tonumber( s, -1) );
-				lua_pop( s, 1);
-			}
-			void pull2cpp(lua_State* const s, lua_CFunction& value)
-			{
-#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-				if(! lua_iscfunction(s,-1) )pull_error(s,"lua_CFunction");
-#endif
-				value = lua_tocfunction( s, -1);
-				lua_pop( s, 1);
-			}
-			void pull2cpp(lua_State* const s, Lua_func_ref& value)
-			{
-				value.lua_pull(s);
-			}
-		
-			void pull2cpp(lua_State* const s, Table&  value)
-			{
-				value.lua_pull_from_stack(s);
-			}
-		
-			void pull2cpp(lua_State* const s, Lua_table_ref& value)
-			{
-				value.lua_pull(s);
-			}
-			
-			
-			
-			
 			void pull_error(lua_State* l, int idx, char const* when_pulling_this_type)
 			{
 				luaL_error(l,"trying to pull %s when %s is on stack"
 						   ,when_pulling_this_type
 						   , lua_typename(l, lua_type(l,idx)) );
 			}
-			
+
 			void get(lua_State* const s, int idx, bool& value)
 			{
 				
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-				if(! lua_isboolean(s,idx) )pull_error(s,"bool");
+				if(! lua_isboolean(s,idx) )pull_error(s,idx,"bool");
 #endif	
 				value =  lua_toboolean( s, idx) ? true : false;
 			}
+			void get(lua_State* const s, int idx, char const*& value)
+			{
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if( lua_type(s,idx) != LUA_TSTRING )pull_error(s,idx,"char const*");
+#endif
+				value = lua_tolstring(s,idx,0);
+			}
+			void get(lua_State* const s, int idx, char *& value)
+			{
+#if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
+				if(! lua_isstring(s,idx) )pull_error(s,idx,"char*");//is this ever called?
+#endif
+				value = (char*)lua_tolstring(s,idx,0);
+			}
+//#if OOLUA_STD_STRING_IS_INTEGRAL == 1				
 			void get(lua_State* const s, int idx, std::string& value)
 			{
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
-				if(! lua_isstring(s,idx) )pull_error(s,idx,"std::string");
+				if(lua_type(s,idx) != LUA_TSTRING )pull_error(s,idx,"std::string");
 #endif
-				//value = lua_tolstring(s,-1,0);
 				size_t len(0);
 				char const* str = lua_tolstring(s,idx,&len);
 				value = std::string(str, len);
 			}
-			
+//#endif			
 			void get(lua_State* const s, int idx, double& value)
 			{
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
@@ -336,21 +263,11 @@ namespace OOLUA
 #endif
 				value = lua_tocfunction( s, idx);
 			}
-			void get(lua_State* const s, int idx, Lua_func_ref& value)
-			{
-				value.lua_get(s,idx);
-			}
-			
+
 			void get(lua_State* const s, int idx, Table&  value)
 			{
 				value.lua_get(s,idx);
-			}
-			
-			void get(lua_State* const s, int idx, Lua_table_ref& value)
-			{
-				value.lua_get(s,idx);
-			}
-		
+			}	
 		}
 	}
 }

@@ -88,7 +88,7 @@ namespace OOLUA
 #	define OOLUA_MEM_SETN(set_name,id)\
 	int set_name(lua_State* l) \
 	{\
-		OOLUA::INTERNAL::LUA_CALLED::pull2cpp(l,m_this->id);\
+		OOLUA::INTERNAL::LUA_CALLED::get(l,2,m_this->id);\
 		return 0;\
 	}
 
