@@ -173,6 +173,13 @@ namespace OOLUA
 		bool run_chunk(std::string const& chunk);
 		/**@}*/
 
+		/**@{*/
+		template<typename T>
+		bool pull(T & t);
+		template<typename T>
+		bool push(T const& t);
+		/**@}*/
+
 	protected:
 		void close_down();
 		Script(Script const& );
@@ -280,7 +287,19 @@ namespace OOLUA
 		\param filename [in] 
 	*/
 	bool run_file(lua_State* lua, std::string const & filename);
+
+	template<typename T>
+	bool Script::push(T const& value)
+	{
+		return OOLUA::push(*this,value);
+	}
 	
+	template<typename T>
+	bool Script::pull(T& value)
+	{
+		return OOLUA::pull(*this,value);
+	}
+
 }//endof namepsace OOLUA
 
 
