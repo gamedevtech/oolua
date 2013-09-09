@@ -24,14 +24,15 @@ class LuaCallsCppFunctions : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST_SUITE(LuaCallsCppFunctions);
 	CPPUNIT_TEST(cppMethodCall_callsMemberFunctionNoParams_calledOnce);
 	CPPUNIT_TEST(cppMethodCall_callsMemberFunctionNoParamsViaADifferentThread_calledOnce);
-	CPPUNIT_TEST(cppMethodCall_callsAbstractMemberFunctionNoParams_calledOnce);
-	CPPUNIT_TEST(cppMethodCall_callsAbstractMemberFunctionOneParam_calledOnceWithCorrectParam);
-	CPPUNIT_TEST(cppMethodCall_callsAbstractMemberFunctionThreeParam_calledOnceWithCorrectParams);
-	CPPUNIT_TEST(cppMethodCall_callsPtrToCharFunction_calledOnceWithCorrectParam);
-	CPPUNIT_TEST(cppMethodCall_callsPtrToConstCharFunction_calledOnceWithCorrectParam);
-	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsCharPtr_calledOnce);
-	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsHelloWorldCstring_returnCompareEqualToHelloWorldCstring);
-	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsConstHelloWorldCstring_returnCompareEqualToHelloWorldCstring);
+//	CPPUNIT_TEST(cppMethodCall_callsAbstractMemberFunctionNoParams_calledOnce);
+//	CPPUNIT_TEST(cppMethodCall_callsAbstractMemberFunctionOneParam_calledOnceWithCorrectParam);
+//	CPPUNIT_TEST(cppMethodCall_callsAbstractMemberFunctionThreeParam_calledOnceWithCorrectParams);
+
+//	CPPUNIT_TEST(cppMethodCall_callsPtrToCharFunction_calledOnceWithCorrectParam);
+//	CPPUNIT_TEST(cppMethodCall_callsPtrToConstCharFunction_calledOnceWithCorrectParam);
+//	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsCharPtr_calledOnce);
+//	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsHelloWorldCstring_returnCompareEqualToHelloWorldCstring);
+//	CPPUNIT_TEST(cppMethodCall_callsFunctionWhichReturnsConstHelloWorldCstring_returnCompareEqualToHelloWorldCstring);
 	
 #if	OOLUA_USE_EXCEPTIONS == 1
 	CPPUNIT_TEST(fromLua_luaPassesBooleanToFunctionWantingInt_throwsRuntimeError);
@@ -209,33 +210,33 @@ public:
 #if	OOLUA_USE_EXCEPTIONS == 1
 	void fromLua_luaPassesBooleanToFunctionWantingInt_throwsRuntimeError()
 	{
-		m_lua->register_class<Int_params>();
+		m_lua->register_class<IntegerFunctionInTraits>();
 		m_lua->run_chunk("foo = function(obj) "
-						 "obj:int_(true) "
+						 "obj:value(true) "
 						 "end");
-		::testing::NiceMock<MockInt> instance;
-		CPPUNIT_ASSERT_THROW((m_lua->call("foo",(Int_params*)&instance)) ,OOLUA::Runtime_error);
+		::testing::NiceMock<IntegerFunctionInTraitsMock> instance;
+		CPPUNIT_ASSERT_THROW((m_lua->call("foo",(IntegerFunctionInTraits*)&instance)) ,OOLUA::Runtime_error);
 		
 	}
 #elif OOLUA_STORE_LAST_ERROR == 1
 	void fromLua_luaPassesBooleanToFunctionWantingInt_callReturnsFalse()
 	{
-		m_lua->register_class<Int_params>();
+		m_lua->register_class<IntegerFunctionInTraits>();
 		m_lua->run_chunk("foo = function(obj) "
-						 "obj:int_(true) "
+						 "obj:value(true) "
 						 "end");
-		::testing::NiceMock<MockInt> instance;
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo",(Int_params*)&instance));
+		::testing::NiceMock<IntegerFunctionInTraitsMock> instance;
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo",(IntegerFunctionInTraits*)&instance));
 		
 	}
 	void fromLua_luaPassesBooleanToFunctionWantingInt_lastErrorHasAnEntry()
 	{
-		m_lua->register_class<Int_params>();
+		m_lua->register_class<IntegerFunctionInTraits>();
 		m_lua->run_chunk("foo = function(obj) "
-						 "obj:int_(true) "
+						 "obj:value(true) "
 						 "end");
-		::testing::NiceMock<MockInt> instance;
-		m_lua->call("foo",(Int_params*)&instance);
+		::testing::NiceMock<IntegerFunctionInTraitsMock> instance;
+		m_lua->call("foo",(IntegerFunctionInTraits*)&instance);
 		CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(*m_lua).empty() );
 		
 	}

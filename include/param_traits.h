@@ -16,8 +16,11 @@
 
 #	include "lvd_types.h"
 #	include "determin_qualifier.h"
-#	include <string>
 #	include "oolua_config.h"
+
+#if OOLUA_STD_STRING_IS_INTEGRAL == 1
+#	include <string>
+#endif
 
 namespace OOLUA
 {
@@ -718,30 +721,46 @@ for parameters contain as part of their name "out", "in" or a combination.
 	struct in_p<char*>
 	{
 		typedef char* type;
-		typedef std::string raw;
-		typedef std::string pull_type;
-		enum {in = 1};
-		enum {out = 0};
-		enum {owner = No_change};
+		typedef char* raw;//we are an integral types but very different from the char type
+		typedef char const* pull_type;//we pull as the correct type, as cast will occur
+		enum { in = 1 };
+		enum { out = 0 };
+		enum { owner = No_change };
 		enum { is_by_value = 0 };
 		enum { is_constant = 0 };
 		enum { is_integral = 1 };
 	};
 	
 	template<>
+	struct in_p<char*&>;//disabled
+
+	template<>
 	struct in_p<char const*>
 	{
 		typedef char const* type;
-		typedef std::string raw;
-		typedef std::string pull_type;
-		enum {in = 1};
-		enum {out = 0};
-		enum {owner = No_change};
+		typedef char* raw;//integral yet very different to char
+		typedef char const* pull_type;
+		enum { in = 1 };
+		enum { out = 0 };
+		enum { owner = No_change };
 		enum { is_by_value = 0 };
 		enum { is_constant = 1 };
 		enum { is_integral = 1 };
 	};
 	
+	template<>
+	struct in_p<char const*&>
+	{
+		typedef char const*& type;
+		typedef char* raw;//integral yet very different to char
+		typedef char const* pull_type;
+		enum { in = 1 };
+		enum { out = 0 };
+		enum { owner = No_change };
+		enum { is_by_value = 0 };
+		enum { is_constant = 1 };
+		enum { is_integral = 1 };
+	};
 	
 	///////////////////////////////////////////////////////////////////////////////
 	///  Specialisation for registry references
@@ -935,15 +954,21 @@ namespace OOLUA
 		{
 			enum {value = Type_enum_defaults<Cpp_type>::is_integral && !LVD::is_same<bool,Cpp_type>::value };
 		};
-		
+
+		/**[StdStringIntegralConstructor]*/
 		template<typename Cpp_type>
 		struct lua_type_is_cpp_type<Cpp_type,STRING>
 		{
 			typedef Type_list<
-			char*,std::string
+			char*
+#if OOLUA_STD_STRING_IS_INTEGRAL == 1
+			,std::string
+#endif
+			/*Your string type here*/
 			>::type Lua_string;
 			enum {value = TYPELIST::IndexOf<Lua_string,Cpp_type>::value == -1 ? 0 : 1};
 		};
+		/**[StdStringIntegralConstructor]*/
 		
 		template<typename Cpp_type>
 		struct lua_type_is_cpp_type<Cpp_type,BOOLEAN>

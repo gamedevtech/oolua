@@ -10,7 +10,7 @@
 - Added a new Lua module for \ref OOLuaComparison "comparisons" and updated C++ code, now compares with LuaBind,LuaBridge,SLB3 and SWIG
 - Added OOLua version macros \ref OOLUA_VERSION_MAJ \ref OOLUA_VERSION_MIN and \ref OOLUA_VERSION_PATCH
 - Base checking no longer touches the Lua stack
-- 
+- C string traits no longer use an std::string temporary
 
 
 \section OOLuaChanges1-4-0 1.4.0

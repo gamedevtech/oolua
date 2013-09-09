@@ -7,19 +7,20 @@
 
 namespace
 {
-	int int_set_value =1;
-	bool bool_set_value= true;
-
+	int const int_set_value =1;
 }
 
 struct IntParamHelper
 {
-	IntParamHelper()
+	IntParamHelper(OOLUA::Script* vm)
 	:mock()
 	,mockBase(&mock)
-	{}
-	MockInt mock;
-	Int_params* mockBase;
+	{
+		vm->register_class<IntegerFunctionInTraits>();
+	}
+	IntegerFunctionInTraitsMock mock;
+	IntegerFunctionInTraits* mockBase;
+	
 };
 
 
@@ -34,35 +35,31 @@ class Integral_params : public CppUnit::TestFixture
 	CPPUNIT_TEST(int_intConstRefParam_calledOnceWithCorrectParam);
 	CPPUNIT_TEST(int_intConstPtrParam_calledOnceWithCorrectParam);
 	CPPUNIT_TEST(int_intConstPtrConstParam_calledOnceWithCorrectParam);
-	CPPUNIT_TEST(int_boolParam_calledOnceWithCorrectParam);
+//	CPPUNIT_TEST(int_boolParam_calledOnceWithCorrectParam);
+	
+	CPPUNIT_TEST(string_ptrConstParam_calledOnceWithCorrectValue);
+	CPPUNIT_TEST(string_ptrConstParamPassedInt_runtimeError);
+	CPPUNIT_TEST(string_refPtrConstParam_calledOnceWithCorrectValue);
+	CPPUNIT_TEST(string_ptrParam_calledOnceWithCorrectValue);
+	CPPUNIT_TEST(string_ptrParamPassedInt_runtimeError);
+
 	CPPUNIT_TEST_SUITE_END();
 	
 	OOLUA::Script* m_lua;
 	IntParamHelper* m_helper;
-	//Generates a Lua function that when called and passed an class instance and param
-	//will call the method (func_name) on the instance.
-	//returns the Lua function name which is generated.
-	std::string generate_and_run_chunk_for_the_function_named(std::string const& func_name)
+
+	template<typename T>
+	void generate_run_and_call(std::string const& func_name,T& value)
 	{
-		std::string lua_func_name("func");
-		std::string chunk ( lua_func_name + std::string(" = function(obj,param)\n")
-						   +std::string("obj:") + func_name + std::string("(param)\n")
-						   +std::string("end\n"));
-		
-		m_lua->run_chunk(chunk);
-		return lua_func_name;
-	}
-	void generate_run_and_call(std::string const& func_name)
-	{
-		std::string func = generate_and_run_chunk_for_the_function_named(func_name);
-		m_lua->call(func,m_helper->mockBase,int_set_value);
+		m_lua->run_chunk("return function(obj,method,param) return obj[method](obj,param) end");
+		m_lua->call(1,m_helper->mockBase,func_name,value);
+
 	}
 public:
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
-		m_lua->register_class<Int_params>();
-		m_helper = new IntParamHelper;
+		m_helper = new IntParamHelper(m_lua);
 	}
 	void tearDown()
 	{
@@ -71,62 +68,96 @@ public:
 	}
 	void int_intParam_calledOnceWithCorrectParam()
 	{
-		EXPECT_CALL(m_helper->mock,
-					int_( ::testing::Eq(int_set_value) ) )
-					.Times(1);
-		generate_run_and_call("int_");
+		EXPECT_CALL(m_helper->mock,value( ::testing::Eq(int_set_value) ) ).Times(1);
+		generate_run_and_call("value",int_set_value);
 	}
 	void int_intRefParam_calledOnceWithCorrectParam()
 	{
-		EXPECT_CALL(m_helper->mock,
-					int_ref( ::testing::Eq(int_set_value) ) )
-					.Times(1);
-		generate_run_and_call("int_ref");
+		EXPECT_CALL(m_helper->mock,ref( ::testing::Eq(int_set_value) ) ).Times(1);
+		generate_run_and_call("ref",int_set_value);
 	}
 	void int_intPtrParam_calledOnceWithCorrectParam()
 	{
-		EXPECT_CALL(m_helper->mock,
-					int_ptr( ::testing::Pointee(int_set_value) ) )
-					.Times(1);
-		generate_run_and_call("int_ptr");
+		EXPECT_CALL(m_helper->mock,ptr( ::testing::Pointee(int_set_value) ) ).Times(1);
+		generate_run_and_call("ptr",int_set_value);
 	}
 	void int_intConstParam_calledOnceWithCorrectParam()
 	{
-		EXPECT_CALL(m_helper->mock,
-					int_const( ::testing::Eq(int_set_value) ) )
-					.Times(1);
-		generate_run_and_call("int_const");
+		EXPECT_CALL(m_helper->mock,constant( ::testing::Eq(int_set_value) ) ).Times(1);
+		generate_run_and_call("constant",int_set_value);
 	}
 	void int_intConstRefParam_calledOnceWithCorrectParam()
 	{
-		EXPECT_CALL(m_helper->mock,
-					int_const_ref( ::testing::Eq(int_set_value) ) )
-					.Times(1);
-		generate_run_and_call("int_const_ref");
+		EXPECT_CALL(m_helper->mock,refConst( ::testing::Eq(int_set_value) ) ).Times(1);
+		generate_run_and_call("refConst",int_set_value);
 	}
 	
 	void int_intConstPtrParam_calledOnceWithCorrectParam()
 	{
-		EXPECT_CALL(m_helper->mock,
-					int_const_ptr( ::testing::Pointee(int_set_value ) ) )
-					.Times(1);
-		generate_run_and_call("int_const_ptr");
+		EXPECT_CALL(m_helper->mock,ptrConst( ::testing::Pointee(int_set_value ) ) ).Times(1);
+		generate_run_and_call("ptrConst",int_set_value);
 	}
 	
 	void int_intConstPtrConstParam_calledOnceWithCorrectParam()
 	{
-		EXPECT_CALL(m_helper->mock,
-					int_const_ptr_const( ::testing::Pointee(int_set_value ) ) )
-					.Times(1);
-		generate_run_and_call("int_const_ptr_const");
+		EXPECT_CALL(m_helper->mock,constPtrConst( ::testing::Pointee(int_set_value ) ) ).Times(1);
+		generate_run_and_call("constPtrConst",int_set_value);
 	}
+	/*
 	void int_boolParam_calledOnceWithCorrectParam()
 	{
 		EXPECT_CALL(m_helper->mock,
 					bool_( ::testing::Eq(bool_set_value ) ) )
 		.Times(1);
-		std::string func = generate_and_run_chunk_for_the_function_named("bool_");
-		m_lua->call(func,m_helper->mockBase,bool_set_value);
+		generate_run_and_call("bool_",bool_set_value);
 	}
+	 */
+	
+	struct StringHelper
+	{
+		StringHelper(lua_State* l)
+		:mock(),object(&mock),input("input buffer")
+		{
+			OOLUA::register_class<CharFunctionInTraits>(l);
+		}
+		CharFunctionInTraitsMock mock;
+		CharFunctionInTraits* object;
+		char const* input;
+	};
+	
+	void string_ptrConstParam_calledOnceWithCorrectValue()
+	{
+		StringHelper helper(*m_lua);
+		EXPECT_CALL(helper.mock,ptrConst( ::testing::StrEq(helper.input ) ) ).Times(1);
+		m_lua->run_chunk("return function(object,input) object:ptrConst(input) end");
+		m_lua->call(1,helper.object,helper.input);
+	}
+	void string_ptrConstParamPassedInt_runtimeError()
+	{
+		StringHelper helper(*m_lua);
+		m_lua->run_chunk("return function(object) object:ptrConst(1) end");
+		CPPUNIT_ASSERT_THROW( m_lua->call(1,helper.object) ,OOLUA::Runtime_error);
+	}	
+	void string_refPtrConstParam_calledOnceWithCorrectValue()
+	{
+		StringHelper helper(*m_lua);
+	//	EXPECT_CALL(helper.mock,refPtrConst( ::testing::StrEq(helper.input ) ) ).Times(1);
+		m_lua->run_chunk("return function(object,input) object:refPtrConst(input) end");
+		m_lua->call(1,helper.object,helper.input);
+	}
+	void string_ptrParam_calledOnceWithCorrectValue()
+	{
+		StringHelper helper(*m_lua);
+		EXPECT_CALL(helper.mock,ptr(::testing::StrEq(helper.input))).Times(1);
+		m_lua->run_chunk("return function(object,input) object:ptr(input) end");
+		m_lua->call(1,helper.object,helper.input);
+	}
+	void string_ptrParamPassedInt_runtimeError()
+	{
+		StringHelper helper(*m_lua);
+		m_lua->run_chunk("return function(object) object:ptr(1) end");
+		CPPUNIT_ASSERT_THROW( m_lua->call(1,helper.object) ,OOLUA::Runtime_error);
+	}
+
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(Integral_params);
