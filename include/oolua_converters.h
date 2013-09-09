@@ -5,6 +5,11 @@
 
 #	include <string> //used for C style strings
 
+namespace LVD
+{
+	template<typename T>struct by_reference;
+}
+
 namespace OOLUA
 {
 	namespace INTERNAL 
@@ -37,7 +42,21 @@ namespace OOLUA
 		Converter(Converter const &);
 		T* m_t;
 	};
-	
+
+	template<typename T>
+	struct Converter<T const*, T>
+	{
+		typedef char T_has_to_be_by_value[ LVD::by_reference<T>::value ? -1 : 1];
+		Converter(T const* t):m_t((T*)t){}
+		operator T& () const
+		{
+			return *m_t;
+		}
+		Converter& operator = (Converter const&);
+		Converter(Converter const&);
+		T* m_t;
+	};
+
 	template<typename T>
 	struct Converter<T,T*>
 	{

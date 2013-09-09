@@ -225,6 +225,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		{
 			typedef typename LVD::if_else<
 											LVD::is_const<Original_Type>::value
+											|| INTERNAL::Type_enum_defaults<Original_Type>::is_by_value
 											,T const*
 											,T*
 										>::type type;
