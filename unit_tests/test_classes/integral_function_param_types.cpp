@@ -141,7 +141,7 @@ public:
 	void string_refPtrConstParam_calledOnceWithCorrectValue()
 	{
 		StringHelper helper(*m_lua);
-	//	EXPECT_CALL(helper.mock,refPtrConst( ::testing::StrEq(helper.input ) ) ).Times(1);
+		EXPECT_CALL(helper.mock,refPtrConst( ::testing::StrEq(helper.input ) ) ).Times(1);
 		m_lua->run_chunk("return function(object,input) object:refPtrConst(input) end");
 		m_lua->call(1,helper.object,helper.input);
 	}

@@ -555,20 +555,6 @@ for parameters contain as part of their name "out", "in" or a combination.
 			enum { is_integral = 1 };
 		};
 	
-		template<int ID>
-		struct function_return<Lua_ref<ID> >
-		{
-			typedef Lua_ref<ID> type;
-			typedef Lua_ref<ID> pull_type;
-			typedef Lua_ref<ID> raw;
-			enum { in = 0};
-			enum { out = 1};
-			enum { owner = No_change};
-			enum { is_by_value = 1 };
-			enum { is_constant = 0 };
-			enum { is_integral = 1 };
-		};
-	
 	
 #if OOLUA_STD_STRING_IS_INTEGRAL == 1	
 		template<>
@@ -692,7 +678,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		
 	}
 	///////////////////////////////////////////////////////////////////////////////
-	///  Specialisation for lua_State
+	///  Specialisation for the calling lua_State
 	///////////////////////////////////////////////////////////////////////////////
 
 	//so this must be a coroutine on the stack
@@ -762,10 +748,87 @@ for parameters contain as part of their name "out", "in" or a combination.
 		enum { is_integral = 1 };
 	};
 	
+
+
+	/*
+	 Integral specialisation helper macros
+	*/
+#define oolua_end_integral_trait(trait_is_in,trait_is_out) \
+		enum { in = trait_is_in}; \
+		enum { out = trait_is_out}; \
+		enum { owner = No_change}; \
+		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value }; \
+		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant }; \
+		enum { is_integral = 1 };
+	
+#define oolua_integral_ref_trait(specialisation,pulling_type,trait_name,trait_is_in,trait_is_out) \
+	template<int ID > \
+	struct trait_name< specialisation > \
+	{ \
+		typedef specialisation type; \
+		typedef pulling_type pull_type; \
+		typedef typename INTERNAL::Raw_type<specialisation>::type raw; \
+		oolua_end_integral_trait(trait_is_in,trait_is_out) \
+	};
+	
+#define oolua_integral_trait(specialisation,pulling_type,trait_name,trait_is_in,trait_is_out) \
+	template< > \
+	struct trait_name<specialisation > \
+	{ \
+		typedef specialisation type; \
+		typedef pulling_type pull_type; \
+		typedef INTERNAL::Raw_type<specialisation>::type raw; \
+		oolua_end_integral_trait(trait_is_in,trait_is_out) \
+	};
+
 	///////////////////////////////////////////////////////////////////////////////
 	///  Specialisation for registry references
 	///////////////////////////////////////////////////////////////////////////////
+#if 1
+	oolua_integral_ref_trait(Lua_ref<ID>,Lua_ref<ID>,in_p,1,0)
+	oolua_integral_ref_trait(Lua_ref<ID>&,Lua_ref<ID>,in_p,1,0)
+	oolua_integral_ref_trait(Lua_ref<ID> const&,Lua_ref<ID>,in_p,1,0)
 	
+	oolua_integral_ref_trait(Lua_ref<ID>&,Lua_ref<ID>,out_p,0,1)
+	oolua_integral_ref_trait(Lua_ref<ID>&,Lua_ref<ID>,in_out_p,1,1)
+	
+	oolua_integral_trait(Table,Table,in_p,1,0)
+	
+	oolua_integral_trait(Table&,Table,in_p,1,0)
+	oolua_integral_trait(Table const&,Table,in_p,1,0)
+	oolua_integral_trait(Table&,Table,out_p,0,1)
+	oolua_integral_trait(Table&,Table,in_out_p,1,1)
+	
+	namespace INTERNAL
+	{
+		oolua_integral_ref_trait(Lua_ref<ID>,Lua_ref<ID>,function_return,0,1)
+		oolua_integral_ref_trait(Lua_ref<ID>&,Lua_ref<ID>,function_return,0,1)
+		oolua_integral_ref_trait(Lua_ref<ID>const&,Lua_ref<ID>,function_return,0,1)
+		
+		oolua_integral_trait(Table,Table,function_return,0,1)
+		oolua_integral_trait(Table&,Table,function_return,0,1)
+		oolua_integral_trait(Table const&,Table,function_return,0,1)
+	}
+	
+#undef oolua_integral_ref_trait
+#else
+	namespace INERNAL
+	{
+		template<int ID>
+		struct function_return<Lua_ref<ID> >
+		{
+			typedef Lua_ref<ID> type;
+			typedef Lua_ref<ID> pull_type;
+			typedef Lua_ref<ID> raw;
+			enum { in = 0};
+			enum { out = 1};
+			enum { owner = No_change};
+			enum { is_by_value = 1 };
+			enum { is_constant = 0 };
+			enum { is_integral = 1 };
+		};
+	}
+
 	template<int ID>
 	struct in_p<Lua_ref<ID> >
 	{
@@ -837,7 +900,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		enum { is_constant = 0 };
 		enum { is_integral = 1 };
 	};
-
+#endif
 }
 
 
