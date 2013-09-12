@@ -2,9 +2,9 @@
 #	include "common_cppunit_headers.h"
 #	include "oolua.h"
 
-#	include "expose_ownership.h"
 #	include "cpp_private_destructor.h"
 #	include "expose_stub_classes.h"
+#	include "expose_ownership.h"
 
 
 class Ownership : public CPPUNIT_NS::TestFixture
@@ -49,7 +49,9 @@ class Ownership : public CPPUNIT_NS::TestFixture
 	 OOLUA::cpp_in_p<Stub1 const* const
 	 OOLUA::cpp_in_p<Stub1 const* const&
 	 */
+	
 		CPPUNIT_TEST(cppInP_ptr2UserDataType_passingPtrThatLuaOwns_topOfStackGcIsFalse);
+
 		CPPUNIT_TEST(cppInP_ref2Ptr2UserDataType_passingPtrThatLuaOwns_topOfStackGcIsFalse);
 		
 		CPPUNIT_TEST(cppInP_constPtr2UserDataType_passingPtrThatLuaOwns_topOfStackGcIsFalse);
@@ -65,12 +67,10 @@ class Ownership : public CPPUNIT_NS::TestFixture
 	
 	OOLUA::Script * m_lua;
 	template<typename Type>
-	bool call_set_owner(Type* stub,std::string const& owner)
+	bool call_set_owner(Type* object,std::string const& owner)
 	{
-		bool result = m_lua->run_chunk(
-			std::string("func = function(obj) obj:set_owner(") + owner + std::string(") end")
-			);
-		return result && m_lua->call("func",stub);
+		bool result = m_lua->run_chunk("return function(obj,owner) obj:set_owner(_G[owner]) end");
+		return result && m_lua->call(1,object,owner);
 	}
 
 public:
@@ -168,14 +168,6 @@ public:
 
 
 	
-	std::string lua_out_param_helper(std::string const& functionToBeCalled)
-	{
-		std::string func = std::string("foo=function(obj) return obj:") + functionToBeCalled + std::string("() end"); 
-		m_lua->run_chunk(func);
-		m_lua->register_class<OwnershipParamsAndReturns>();
-		return std::string("foo");//functions name
-	}
-	
 	OOLUA::INTERNAL::Lua_ud * get_ud_helper()
 	{
 		return static_cast<OOLUA::INTERNAL::Lua_ud *>(lua_touserdata(*m_lua,-1) );
@@ -183,17 +175,17 @@ public:
 	
 	void luaParamOutP_ref2Ptr_userDataPtrComparesEqualToValueSetInFunction()
 	{
-		std::string func = lua_out_param_helper("lua_takes_ownership_of_ref_2_ptr");
 
-		MockOwnershipParamsAndReturns object;
+		OwnershipParamUserDataMock mock;
+		OwnershipParamUserData* object = &mock;
 		Stub1 return_stub;
 		
-		EXPECT_CALL(object,ref_2_ptr(::testing::_))
-			.Times(1)
-			.WillOnce(::testing::SetArgReferee<0>(&return_stub));
-		
-		m_lua->call(func,(OwnershipParamsAndReturns*)&object);
+		EXPECT_CALL(mock,refPtr(::testing::_)).Times(1).WillOnce(::testing::SetArgReferee<0>(&return_stub));
+		m_lua->register_class<OwnershipParamUserData>();
+		m_lua->run_chunk("return function(object) return object:lua_takes_ownership_of_ref_2_ptr() end");
+		m_lua->call(1,object);
 
+		
 		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
 		OOLUA::INTERNAL::userdata_gc_value(ud,false);//stop delete being called on this stack pointer
 		CPPUNIT_ASSERT_EQUAL((void*)&return_stub, ud->void_class_ptr);
@@ -203,16 +195,14 @@ public:
 
 	void luaParamOutP_ref2Ptr_topOfStackGcIsTrue_old()
 	{
-		std::string func = lua_out_param_helper("lua_takes_ownership_of_ref_2_ptr");
-		
-		MockOwnershipParamsAndReturns object;
+		OwnershipParamUserDataMock mock;
+		OwnershipParamUserData* object = &mock;
 		Stub1 return_stub;
 		
-		EXPECT_CALL(object,ref_2_ptr(::testing::_))
-		.Times(1)
-		.WillOnce(::testing::SetArgReferee<0>(&return_stub));
-		
-		m_lua->call(func,(OwnershipParamsAndReturns*)&object);
+		EXPECT_CALL(mock,refPtr(::testing::_)).Times(1).WillOnce(::testing::SetArgReferee<0>(&return_stub));
+		m_lua->register_class<OwnershipParamUserData>();
+		m_lua->run_chunk("return function(object) return object:lua_takes_ownership_of_ref_2_ptr() end");
+		m_lua->call(1,object);
 		
 		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
 		bool gc_value = OOLUA::INTERNAL::userdata_is_to_be_gced(ud);
@@ -223,18 +213,15 @@ public:
 
 	void luaParamOutP_ref2Ptr_topOfStackGcIsTrue()
 	{
-		MockOwnershipParamsAndReturns object;
+		OwnershipParamUserDataMock mock;
+		OwnershipParamUserData* object = &mock;
 		Stub1 return_stub;
 		
-		EXPECT_CALL(object,ref_2_ptr(::testing::_))
-			.Times(1)
-			.WillOnce(::testing::SetArgReferee<0>(&return_stub));
+		EXPECT_CALL(mock,refPtr(::testing::_)).Times(1).WillOnce(::testing::SetArgReferee<0>(&return_stub));
 		/**[TestLuaOutTrait]*/
-		m_lua->run_chunk("return function(object) "
-							"return object:lua_takes_ownership_of_ref_2_ptr() "
-						 "end");
-		m_lua->register_class<OwnershipParamsAndReturns>();
-		m_lua->call(1,(OwnershipParamsAndReturns*)&object);
+		m_lua->register_class<OwnershipParamUserData>();
+		m_lua->run_chunk("return function(object) return object:lua_takes_ownership_of_ref_2_ptr() end");
+		m_lua->call(1,object);
 		//there is now a proxy type on top of the stack which Lua owns
 		/**[TestLuaOutTrait]*/
 		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
@@ -247,15 +234,14 @@ public:
 
 	void luaParamOutP_ref2PtrConst_userDataPtrComparesEqualToValueSetInFunction()
 	{
-		std::string func = lua_out_param_helper("lua_takes_ownership_of_ref_2_ptr_const");
-		MockOwnershipParamsAndReturns object;
+		OwnershipParamUserDataMock mock;
+		OwnershipParamUserData* object = &mock;
 		Stub1 return_stub;
 		
-		EXPECT_CALL(object,ref_2_ptr_const(::testing::_))
-			.Times(1)
-			.WillOnce(::testing::SetArgReferee<0>(&return_stub));
-		
-		m_lua->call(func,(OwnershipParamsAndReturns*)&object);
+		EXPECT_CALL(mock,refPtrConst(::testing::_)).Times(1).WillOnce(::testing::SetArgReferee<0>(&return_stub));
+		m_lua->register_class<OwnershipParamUserData>();
+		m_lua->run_chunk("return function(object) return object:lua_takes_ownership_of_ref_2_ptr_const() end");
+		m_lua->call(1,object);
 		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
 		OOLUA::INTERNAL::userdata_gc_value(ud,false);//stop delete being called on this stack pointer
 		CPPUNIT_ASSERT_EQUAL((void*)&return_stub, ud->void_class_ptr);
@@ -264,15 +250,14 @@ public:
 	
 	void luaParamOutP_ref2PtrConst_topOfStackGcIsTrue()
 	{
-		std::string func = lua_out_param_helper("lua_takes_ownership_of_ref_2_ptr_const");
-		MockOwnershipParamsAndReturns object;
+		OwnershipParamUserDataMock mock;
+		OwnershipParamUserData* object = &mock;
 		Stub1 return_stub;
 		
-		EXPECT_CALL(object,ref_2_ptr_const(::testing::_))
-			.Times(1)
-			.WillOnce(::testing::SetArgReferee<0>(&return_stub));
-		
-		m_lua->call(func,(OwnershipParamsAndReturns*)&object);
+		EXPECT_CALL(mock,refPtrConst(::testing::_)).Times(1).WillOnce(::testing::SetArgReferee<0>(&return_stub));
+		m_lua->register_class<OwnershipParamUserData>();
+		m_lua->run_chunk("return function(object) return object:lua_takes_ownership_of_ref_2_ptr_const() end");
+		m_lua->call(1,object);
 		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
 		bool gc_value = OOLUA::INTERNAL::userdata_is_to_be_gced(ud);
 		OOLUA::INTERNAL::userdata_gc_value(ud,false);//stop delete being called on this stack pointer
@@ -298,27 +283,18 @@ public:
 		OOLUA::INTERNAL::userdata_gc_value(ud,false);//stop delete being called on this stack pointer
 		CPPUNIT_ASSERT_EQUAL((void*)&stub,ud->void_class_ptr);
 	}
-	std::string generate_cpp_in_p_function(std::string func_name)
-	{
-		m_lua->register_class<OwnershipParamsAndReturns>();
-		m_lua->run_chunk(std::string("foo = function(obj,param) ")
-						 +std::string("obj:") +func_name +std::string("(param) ")
-						 +std::string("return param ")
-						 +std::string("end")
-						 );
-		return std::string("foo");
-	}
 	
 	bool returnGarbageCollectValueAfterCppTakingOwnership(std::string func_name)
 	{
-		std::string generated_func_name = generate_cpp_in_p_function(func_name);
-		::testing::NiceMock<MockOwnershipParamsAndReturns> object;
+	
+		::testing::NiceMock<OwnershipParamUserDataMock> object;
 		Stub1 stub;
-		
-		m_lua->call(generated_func_name
-					,(OwnershipParamsAndReturns*)&object
-					,OOLUA::lua_acquire_ptr<Stub1*>(&stub));
-		
+		m_lua->register_class<OwnershipParamUserData>();
+		m_lua->run_chunk("return function(object,param,name) object[name](object,param) return param end");
+		m_lua->call(1
+					,(OwnershipParamUserData*)&object
+					,OOLUA::lua_acquire_ptr<Stub1*>(&stub)
+					,func_name);
 		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
 		return OOLUA::INTERNAL::userdata_is_to_be_gced(ud);
 		
