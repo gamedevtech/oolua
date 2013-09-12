@@ -192,7 +192,7 @@ public:
 		int input(1);
 		int value(0);
 		table_containing_key_value_pair(m_lua,table,"key",input);
-		table->remove_value("key");
+		table->remove("key");
 		CPPUNIT_ASSERT_EQUAL(false, table->safe_at("key",value) );
 	}
 	
@@ -453,7 +453,7 @@ public:
 		
 		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
-		table_.set_value(1, 1);
+		table_.set(1, 1);
 		stackNotEmptyCalled = 0;
 		table_.traverse(callBackFunc_stackNotEmpty);
 		CPPUNIT_ASSERT_EQUAL(int(1),stackNotEmptyCalled);
@@ -464,7 +464,7 @@ public:
 		OOLUA::push(*m_lua,1);
 		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
-		table_.set_value(1, 1);
+		table_.set(1, 1);
 		
 		MemberCallBack l;
 		OOLUA::for_each_key_value(table_, &l, &MemberCallBack::call_back );
@@ -476,7 +476,7 @@ public:
 		OOLUA::push(*m_lua,1);
 		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
-		table_.set_value(1, 1);
+		table_.set(1, 1);
 		
 		int count = 0;
 		oolua_ipairs(table_)
@@ -493,7 +493,7 @@ public:
 		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
 		
-		for(int i=1;i<6;++i) table_.set_value(i, i);
+		for(int i=1;i<6;++i) table_.set(i, i);
 		
 		int count = 0;
 		oolua_ipairs(table_)
@@ -510,7 +510,7 @@ public:
 		OOLUA::Table table_;
 		OOLUA::new_table(*m_lua,table_);
 		
-		for(int i=1;i<6;++i) table_.set_value(i, i);
+		for(int i=1;i<6;++i) table_.set(i, i);
 		
 		oolua_ipairs(table_)
 		{

@@ -508,7 +508,7 @@ namespace OOLUA
 	inline void register_class_static(lua_State * const l,K const& k, V const& v)
 	{
 		Table meth(l,Proxy_class<T>::class_name);
-		meth.set_value(k,v);
+		meth.set(k,v);
 	}
 	
 	/** \cond INTERNAL*/

@@ -113,11 +113,11 @@ namespace OOLUA
 			Inserts the key value pair into the table if key is not present 
 			else it updates the table's key entry
 		*/
-		template<typename T,typename T1>void set_value(T const& key,T1 const& value);
+		template<typename T,typename T1>void set(T const& key,T1 const& value);
 		/** \brief
 			Removes the key from the table by setting it's value to nil
 		*/
-		template<typename T>void remove_value(T const& key);
+		template<typename T>void remove(T const& key);
 		/**@}*/
 		
 		/** \brief 
@@ -164,7 +164,7 @@ namespace OOLUA
 	}
 	
 	template<typename T,typename T1>
-	inline void Table::set_value(T const& key,T1 const& value)
+	inline void Table::set(T const& key,T1 const& value)
 	{
 		//record the stack size as we want to put the stack into the 
 		//same state that it was before entering here
@@ -182,7 +182,7 @@ namespace OOLUA
 	}
 	
 	template<typename T>
-	inline void Table::remove_value(T const& key)
+	inline void Table::remove(T const& key)
 	{
 		//record the stack size as we want to put the stack into the 
 		//same state that it was before entering here
