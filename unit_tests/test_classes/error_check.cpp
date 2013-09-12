@@ -51,6 +51,38 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ExceptionMock)
 #endif
 
 
+struct NewProblemBase
+{
+	virtual ~NewProblemBase(){}
+};
+struct NewProblemAbstract : NewProblemBase
+{
+	virtual ~NewProblemAbstract(){}
+	virtual void foo() = 0;
+};
+struct NewProblemDerived : NewProblemAbstract
+{
+	virtual ~NewProblemDerived(){}
+	void foo(){}
+};
+OOLUA_PROXY(NewProblemBase) 
+OOLUA_PROXY_END
+OOLUA_EXPORT_NO_FUNCTIONS(NewProblemBase)
+
+OOLUA_PROXY(NewProblemAbstract,NewProblemBase)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MFUNC(foo)
+OOLUA_PROXY_END
+OOLUA_EXPORT_FUNCTIONS(NewProblemAbstract,foo)
+OOLUA_EXPORT_FUNCTIONS_CONST(NewProblemAbstract)
+
+OOLUA_PROXY(NewProblemDerived,NewProblemAbstract) 
+OOLUA_PROXY_END
+OOLUA_EXPORT_NO_FUNCTIONS(NewProblemDerived)
+
+
+
+
 class Error_test : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Error_test);
@@ -100,6 +132,7 @@ class Error_test : public CPPUNIT_NS::TestFixture
 	
 		CPPUNIT_TEST(loadFile_fileDoesNotExist_returnsFalse);
 		CPPUNIT_TEST(runFile_fileDoesNotExist_returnsFalse);
+		CPPUNIT_TEST(new_onAbstractClass_runChunkReturnsFalse);
 #endif	
 	
 
@@ -137,6 +170,8 @@ class Error_test : public CPPUNIT_NS::TestFixture
 	
 		CPPUNIT_TEST(loadFile_fileDoesNotExist_callThrowsOoluaFileError);
 		CPPUNIT_TEST(runFile_fileDoesNotExist_callThrowsOoluaFileError);
+
+		CPPUNIT_TEST(new_onAbstractClass_runChunkThrowsStdRuntimeError);
 #endif	
 
 #if OOLUA_DEBUG_CHECKS == 1
@@ -644,7 +679,21 @@ public:
 		OOLUA::can_xmove(*m_lua,child);
 		CPPUNIT_ASSERT( ( lua_gettop(*m_lua) ==1 && lua_gettop(child) == 1) );
 	}
-	
+
+#if OOLUA_STORE_LAST_ERROR == 1
+	void new_onAbstractClass_runChunkReturnsFalse()
+	{
+		OOLUA::register_class_and_bases<NewProblemDerived>(*m_lua);
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_chunk("return NewProblemAbstract.new()"));
+	}
+#elif OOLUA_USE_EXCEPTIONS == 1
+	void new_onAbstractClass_runChunkThrowsStdRuntimeError()
+	{
+		OOLUA::register_class_and_bases<NewProblemDerived>(*m_lua);
+		CPPUNIT_ASSERT_THROW(m_lua->run_chunk("return NewProblemAbstract.new()"),OOLUA::Runtime_error);
+	}
+#endif
+
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(Error_test);

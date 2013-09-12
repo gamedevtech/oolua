@@ -202,6 +202,19 @@ namespace OOLUA
 		template<typename T> 
 		int search_in_base_classes(lua_State* l)
 		{
+						if(lua_type(l,-1)== LUA_TSTRING )
+			{
+				push_char_carray(l,OOLUA::INTERNAL::new_str);
+				if( 
+#if LUA_VERSION_NUM < 502
+				   lua_equal(l,-1,-2) 
+#else
+				   lua_compare(l,-1,-2,LUA_OPEQ) 
+#endif				
+				   )
+					return 0;
+				else lua_pop(l,1);
+			}
 			return R_Base_looker<T,typename Proxy_class<T>::Bases,0
 									,typename TYPELIST::At_default<typename Proxy_class<T>::Bases
 									,0

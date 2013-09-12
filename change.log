@@ -12,6 +12,7 @@
 - Base checking no longer touches the Lua stack
 - C string traits no longer use an std::string temporary
 - Script helper class now has push and pull methods
+- Bug fix. If an abstract class had a base class which was not abstract, then it was possible to call new on the type.
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function
