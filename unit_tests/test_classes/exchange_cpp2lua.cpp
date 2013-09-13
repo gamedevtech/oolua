@@ -1,6 +1,7 @@
 #	include "oolua_tests_pch.h"
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
+#	include "expose_stub_classes.h"
 #	include "cpp_class_ops.h"
 #	include "expose_class_ops.h"
 
@@ -18,24 +19,26 @@ class Exchange_cpp2lua : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(push_doublePushed_luaValueIsInput);
 		CPPUNIT_TEST(push_stringPushed_topOfStackTypeIsString);
 		CPPUNIT_TEST(push_stringPushed_luaValueIsInput);
-	//CPPUNIT_TEST(push_stringWithNullsPushed_luaValueIsInput);
+		CPPUNIT_TEST(push_stringWithNullsPushed_luaValueIsInput);
 	
 		CPPUNIT_TEST(push_classPointerPushed_topOfStackTypeIsUserdata);
-
+		CPPUNIT_TEST(push_cFunctionPointer_topOfStackTypeIsFunction);
+	
 		CPPUNIT_TEST(call_callsLuaFunctionNoParams_callReturnsTrue);
 		CPPUNIT_TEST(call_callsLuaFunctionOneParam_callReturnsTrue);
 		CPPUNIT_TEST(call_callsLuaFunctionThreeParams_callReturnsTrue);
 	
 
-		CPPUNIT_TEST(push_invalidFunctionReference_stackTopisNil);
-		CPPUNIT_TEST(push_invalidFunctionReference_stackSizeIncreasesByOne);
-	
 
-	CPPUNIT_TEST(push_invalidTable_stackSizeIncreasesByOne);
-	CPPUNIT_TEST(push_invalidTable_stackTopIsNil);
-	
-	CPPUNIT_TEST(push_invalidTable_pushReturnsTrue);
-	CPPUNIT_TEST(push_invalidFunctionReference_pushReturnsTrue);
+		CPPUNIT_TEST(push_invalidFunctionReference_stackSizeIncreasesByOne);
+		CPPUNIT_TEST(push_invalidFunctionReference_stackTopisNil);
+		CPPUNIT_TEST(push_invalidFunctionReference_pushReturnsTrue);	
+		CPPUNIT_TEST(push_validFunctionReference_topOfStackTypeIsFunction);
+
+		CPPUNIT_TEST(push_invalidTable_stackSizeIncreasesByOne);
+		CPPUNIT_TEST(push_invalidTable_stackTopIsNil);
+		CPPUNIT_TEST(push_invalidTable_pushReturnsTrue);
+		CPPUNIT_TEST(push_validTableReference_topOfStackTypeIsTable);
 	
 	
 
@@ -156,17 +159,20 @@ public:
 	void push_stringWithNullsPushed_luaValueIsInput()
 	{
 		std::string input("\0hel\0lo wo\0rl\0d\0",16);
-		std::cout <<"size with nulls " << input.size() <<std::endl;
 		assert_lua_value_is_input(input);
 	}
 
 	void push_classPointerPushed_topOfStackTypeIsUserdata()
 	{
-		m_lua->register_class<Class_ops>();
-		Class_ops input;
+		m_lua->register_class<Stub1>();
+		Stub1 input;
 		assert_top_of_stack_is_type_after_push(LUA_TUSERDATA,&input);
 	}
-
+	
+	void push_cFunctionPointer_topOfStackTypeIsFunction()
+	{
+		assert_top_of_stack_is_type_after_push(LUA_TFUNCTION,lua_gettop);		
+	}
 
 	void call_callsLuaFunctionNoParams_callReturnsTrue()
 	{
@@ -187,25 +193,14 @@ public:
 		CPPUNIT_ASSERT_EQUAL(true, m_lua->call("foo",1,2,3) );
 	}
 
-	void pullFunctionReference(OOLUA::Lua_func_ref& f)
-	{
-		m_lua->run_chunk("return function() end");
-		OOLUA::pull(*m_lua,f);
-	}
-
+	
+	
 	void push_invalidFunctionReference_pushReturnsTrue()
 	{
 		OOLUA::Lua_func_ref f;
 		CPPUNIT_ASSERT_EQUAL(true,OOLUA::push(*m_lua,f));
 	}
 
-	void push_invalidFunctionReference_stackTopisNil()
-	{
-		OOLUA::Lua_func_ref f;
-		OOLUA::push(*m_lua,f);
-		CPPUNIT_ASSERT_EQUAL(LUA_TNIL,lua_type(*m_lua, -1) );
-	}
-	
 	void push_invalidFunctionReference_stackSizeIncreasesByOne()
 	{
 		OOLUA::Lua_func_ref f;
@@ -214,11 +209,27 @@ public:
 		//will return a false positive
 		CPPUNIT_ASSERT_EQUAL(1,m_lua->stack_count() );
 	}
-	void pullValidTable(OOLUA::Table& t)
+	
+	void push_invalidFunctionReference_stackTopisNil()
 	{
-		m_lua->run_chunk("return {}");
-		OOLUA::pull(*m_lua,t);
+		OOLUA::Lua_func_ref f;
+		OOLUA::push(*m_lua,f);
+		CPPUNIT_ASSERT_EQUAL(LUA_TNIL,lua_type(*m_lua, -1) );
 	}
+	
+	void push_validFunctionReference_topOfStackTypeIsFunction()
+	{	
+		lua_pushcclosure(*m_lua, lua_gettop, 0);
+		OOLUA::Lua_func_ref ref(*m_lua,luaL_ref(*m_lua, LUA_REGISTRYINDEX));
+		OOLUA::push(*m_lua,ref);
+		CPPUNIT_ASSERT_EQUAL(LUA_TFUNCTION,lua_type(*m_lua,1));
+	}
+
+
+	
+
+	
+	
 	void push_invalidTable_pushReturnsTrue()
 	{
 		OOLUA::Table t;
@@ -237,7 +248,27 @@ public:
 		CPPUNIT_ASSERT_EQUAL(LUA_TNIL,lua_type(*m_lua, -1) );
 	}
 	
+	void push_validTableReference_topOfStackTypeIsTable()
+	{	
+		lua_createtable(*m_lua, 0, 0);
+		OOLUA::Lua_table_ref ref(*m_lua,luaL_ref(*m_lua, LUA_REGISTRYINDEX));
+		OOLUA::push(*m_lua,ref);
+		CPPUNIT_ASSERT_EQUAL(LUA_TTABLE,lua_type(*m_lua,1));
+	}
 	
+	
+	
+	void pullFunctionReference(OOLUA::Lua_func_ref& f)
+	{
+		m_lua->load_chunk("return ");
+		OOLUA::pull(*m_lua,f);
+	}
+	
+	void pullValidTable(OOLUA::Table& t)
+	{
+		lua_createtable(*m_lua, 0, 0);
+		OOLUA::pull(*m_lua,t);
+	}
 	
 #if OOLUA_STORE_LAST_ERROR == 1
 	void call_callsUnknownLuaFunction_callReturnsFalse()
