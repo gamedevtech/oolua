@@ -2,6 +2,7 @@
 #	include "common_cppunit_headers.h"
 #	include "oolua.h"
 #	include "expose_stub_classes.h"
+#	include "expose_false_integral_function_params.h"
 
 
 
@@ -40,7 +41,9 @@ class Traits_test : public CPPUNIT_NS::TestFixture
 	
 		
 	CPPUNIT_TEST(outP_refToPtrToUserType_pullIsPtrToUserType);	
-		
+	
+	CPPUNIT_TEST(callingLuaState_luaPassesNoParameterYetFunctionWantsALuaInstance_calledOnceWithCorrectInstance);
+	
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 public:
@@ -162,6 +165,16 @@ public:
 		CPPUNIT_ASSERT_EQUAL(1,is_same);
 	}	
 	
+	void callingLuaState_luaPassesNoParameterYetFunctionWantsALuaInstance_calledOnceWithCorrectInstance()
+	{
+		LuaStateParamMock mock;
+		lua_State* l = *m_lua;
+		EXPECT_CALL(mock,value(::testing::Eq(l))).Times(1);
+		
+		m_lua->register_class<LuaStateParam>();
+		m_lua->run_chunk("return function(object) object:value() end");
+		m_lua->call(1,(LuaStateParam*)&mock);
+	}
 
 };
 

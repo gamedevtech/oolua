@@ -1,10 +1,13 @@
 
 #	include "oolua_tests_pch.h"
 #	include "oolua.h"
+#	include "gmock/gmock.h"
 #	include "common_cppunit_headers.h"
 #	include "expose_stub_classes.h"
-#	include "expose_pulls_stub_param.h"
-#	include "expose_member_function_calls.h"
+#	include "expose_userdata_function_params.h"
+#	include "expose_integral_function_params.h"
+#	include "expose_false_integral_function_params.h"
+
 #	include <csetjmp>
 
 #if OOLUA_DEBUG_CHECKS == 1
@@ -89,10 +92,9 @@ class Error_test : public CPPUNIT_NS::TestFixture
 
 		CPPUNIT_TEST(userDataCheck_constUserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue);
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidCreate_resultIsTrue);
-		
 		CPPUNIT_TEST(userDataCheck_userdataOnTopOfStackWhichARelatedThreadCreated_resultIsTrue);
-		
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_stackIsTheSameSizeAfterCheck);
+		
 		CPPUNIT_TEST(registerClass_checkStackSize_stackIsEmpty);
 		CPPUNIT_TEST(scriptConstructor_checkStackSize_stackIsEmpty);
 		CPPUNIT_TEST(lua_Lopenlibs_checkStackSizeAfterCall_stackIsEmpty);
@@ -104,9 +106,9 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(userDataCheck_lightUserDataWithNoMetaTable_resultIsFalse);
 #	endif	
 #	if OOLUA_USE_EXCEPTIONS == 1
-		CPPUNIT_TEST(memberFunctionCall_luaCallsLikeStaticFunctionWithNoParameters_throwsOoluaRunTimeError);
+		CPPUNIT_TEST(memberFunctionCall_luaSelfCallOnType_throwsOoluaRunTimeError);
 #	elif OOLUA_STORE_LAST_ERROR == 1
-		CPPUNIT_TEST(memberFunctionCall_luaCallsLikeStaticFunctionWithNoParameters_callRetunsFalse);
+		CPPUNIT_TEST(memberFunctionCall_luaSelfCallOnType_callRetunsFalse);
 #	endif
 	
 #endif
@@ -129,12 +131,17 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pull_intWhenClassIsOnStack_pullReturnsFalse);
 		CPPUNIT_TEST(pull_enumWhenStringIsOnStack_callReturnsFalse);
 		CPPUNIT_TEST(pull_memberFunctionPullsClassWhenintIsOnStack_callReturnsFalse);
-	
+		CPPUNIT_TEST(pull_CFunctionFromStackTopIsNotFunc_callReturnsFalse);
+		CPPUNIT_TEST(pull_CFunctionFromStackTopIsNotFunc_errorStringIsNotEmpty);
 		CPPUNIT_TEST(loadFile_fileDoesNotExist_returnsFalse);
 		CPPUNIT_TEST(runFile_fileDoesNotExist_returnsFalse);
 		CPPUNIT_TEST(new_onAbstractClass_runChunkReturnsFalse);
+
+		CPPUNIT_TEST(luaFunctionCall_luaPassesBooleanToFunctionWantingInt_callReturnsFalse);
+		CPPUNIT_TEST(luaFunctionCall_luaPassesBooleanToFunctionWantingInt_lastErrorHasAnEntry);
+		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesTableYetPassedInt_callReturnsFalse);
 #endif	
-	
+
 
 #if OOLUA_USE_EXCEPTIONS == 1
 	
@@ -165,6 +172,8 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		
 		CPPUNIT_TEST(pull_cppAcquirePtrWhenIntOnStack_throwsTypeError);
 		
+		CPPUNIT_TEST(pull_CFunctionFromStackTopIsNotFunc_throwsRunTimeError);
+
 		CPPUNIT_TEST(exceptionSafe_memberFunctionThrowsStdRuntimeError_callThrowsOoluaRuntimeError);
 		CPPUNIT_TEST(call_afterAnExceptionTheStackIsEmpty_stackCountEqualsZero);
 	
@@ -172,6 +181,9 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(runFile_fileDoesNotExist_callThrowsOoluaFileError);
 
 		CPPUNIT_TEST(new_onAbstractClass_runChunkThrowsStdRuntimeError);
+
+		CPPUNIT_TEST(luaFunctionCall_luaPassesBooleanToFunctionWantingInt_throwsRuntimeError);
+		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesTableYetPassedInt_throwsRuntimeError);
 #endif	
 
 #if OOLUA_DEBUG_CHECKS == 1
@@ -284,20 +296,16 @@ public:
 #if OOLUA_RUNTIME_CHECKS_ENABLED ==1
 
 #	if OOLUA_USE_EXCEPTIONS == 1
-	void memberFunctionCall_luaCallsLikeStaticFunctionWithNoParameters_throwsOoluaRunTimeError()
+	void memberFunctionCall_luaSelfCallOnType_throwsOoluaRunTimeError()
 	{
-		::testing::NiceMock<FunctionCallsMock> mock;
-		m_lua->register_class<Function_calls>();
-		m_lua->run_chunk("foo = function() Function_calls:func() end"); 
-		CPPUNIT_ASSERT_THROW((m_lua->call("foo")),OOLUA::Runtime_error);
+		m_lua->register_class<IntegerFunctionInTraits>();
+		CPPUNIT_ASSERT_THROW((m_lua->run_chunk("IntegerFunctionInTraits:value(1)")),OOLUA::Runtime_error);
 	}
 #	elif OOLUA_STORE_LAST_ERROR == 1
-	void memberFunctionCall_luaCallsLikeStaticFunctionWithNoParameters_callRetunsFalse()
+	void memberFunctionCall_luaSelfCallOnType_callRetunsFalse()
 	{
-		::testing::NiceMock<FunctionCallsMock> mock;
-		m_lua->register_class<Function_calls>();
-		m_lua->run_chunk("foo = function() Function_calls:func() end"); 
-		bool result = m_lua->call("foo");
+		m_lua->register_class<IntegerFunctionInTraits>();
+		bool result = m_lua->run_chunk("IntegerFunctionInTraits:value(1)"); 
 		CPPUNIT_ASSERT_EQUAL(false,result);
 	}
 #	endif
@@ -346,9 +354,10 @@ public:
 		m_lua->run_chunk("foo = function(obj)"
 						 " obj:ptr(1) "
 						 "end");
-		m_lua->register_class<Pulls_stub>();
-		::testing::NiceMock<Mock_pulls_stub> object;
-		bool result = m_lua->call("foo",(Pulls_stub*)&object);
+		m_lua->register_class<InParamUserData>();
+		m_lua->register_class<HasIntMember>();
+		::testing::NiceMock<InParamUserDataMock> object;
+		bool result = m_lua->call("foo",(InParamUserData*)&object);
 		CPPUNIT_ASSERT_EQUAL( false,result);
 	}
 	
@@ -382,9 +391,9 @@ public:
 		m_lua->call("foo");
 		OOLUA::reset_error_value(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(true,OOLUA::get_last_error(*m_lua).empty() );
-	}	
+	}
 	
-	
+
 
 	void pull_UnrelatedClassType_pullReturnsFalse()
 	{
@@ -455,7 +464,21 @@ public:
 		m_lua->call("foo");
 		int result;
 		CPPUNIT_ASSERT_EQUAL(false,OOLUA::pull(*m_lua,result));
-	 }
+	}
+
+	void pull_CFunctionFromStackTopIsNotFunc_callReturnsFalse()
+	{	
+		OOLUA::Lua_func_ref func;
+		bool result = OOLUA::pull(*m_lua,func);
+		CPPUNIT_ASSERT_EQUAL(false,result);
+	}
+	void pull_CFunctionFromStackTopIsNotFunc_errorStringIsNotEmpty()
+	{	
+		OOLUA::Lua_func_ref func;
+		OOLUA::pull(*m_lua,func);
+		std::string error_str = OOLUA::get_last_error(*m_lua);
+		CPPUNIT_ASSERT_EQUAL(false,error_str.empty() );
+	}
 				 
 	void loadFile_fileDoesNotExist_returnsFalse()
 	{
@@ -465,7 +488,48 @@ public:
 	{
 		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_file("does_not_exist"));
 	}
-										
+	
+	void new_onAbstractClass_runChunkReturnsFalse()
+	{
+		OOLUA::register_class_and_bases<NewProblemDerived>(*m_lua);
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_chunk("return NewProblemAbstract.new()"));
+	}
+
+	void luaFunctionCall_luaPassesBooleanToFunctionWantingInt_callReturnsFalse()
+	{
+		m_lua->register_class<IntegerFunctionInTraits>();
+		m_lua->run_chunk("foo = function(obj) "
+						 "obj:value(true) "
+						 "end");
+		::testing::NiceMock<IntegerFunctionInTraitsMock> instance;
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("foo",(IntegerFunctionInTraits*)&instance));
+		
+	}
+	void luaFunctionCall_luaPassesBooleanToFunctionWantingInt_lastErrorHasAnEntry()
+	{
+		m_lua->register_class<IntegerFunctionInTraits>();
+		m_lua->run_chunk("foo = function(obj) "
+						 "obj:value(true) "
+						 "end");
+		::testing::NiceMock<IntegerFunctionInTraitsMock> instance;
+		m_lua->call("foo",(IntegerFunctionInTraits*)&instance);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::get_last_error(*m_lua).empty() );
+		
+	}
+
+	void memberFunctionCall_memberFunctionWhichTakesTableYetPassedInt_callReturnsFalse()
+	{
+		::testing::NiceMock<TableObjectParamMock> mock;
+		TableObjectParam* object( &mock );
+
+		m_lua->register_class<TableObjectParam>();
+		m_lua->run_chunk("func = function(obj) "
+							"return obj:value(1) "
+						 "end");
+
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("func",object));
+	}
+
 #endif
 	
 #if OOLUA_USE_EXCEPTIONS == 1
@@ -497,9 +561,10 @@ public:
 		m_lua->run_chunk("foo = function(obj)"
 						 " obj:ptr(1) "
 						 "end");
-		m_lua->register_class<Pulls_stub>();
-		::testing::NiceMock<Mock_pulls_stub> object;
-		CPPUNIT_ASSERT_THROW( (m_lua->call("foo",(Pulls_stub*)&object) ),OOLUA::Runtime_error);
+		m_lua->register_class<InParamUserData>();
+		m_lua->register_class<HasIntMember>();
+		::testing::NiceMock<InParamUserDataMock> object;
+		CPPUNIT_ASSERT_THROW( (m_lua->call("foo",(InParamUserData*)&object) ),OOLUA::Runtime_error);
 	}
 	
 	
@@ -537,6 +602,12 @@ public:
 		CPPUNIT_ASSERT_THROW(( OOLUA::pull(*m_lua,result) ),OOLUA::Type_error);
 	}
 	
+	void pull_CFunctionFromStackTopIsNotFunc_throwsRunTimeError()
+	{
+		OOLUA::Lua_func_ref func;
+		CPPUNIT_ASSERT_THROW( OOLUA::pull(*m_lua,func),OOLUA::Runtime_error);
+	}
+
 	void callUnknownFunction_fromCpp_throwsOoluaRuntimeError()
 	{
 		CPPUNIT_ASSERT_THROW(m_lua->call("InvalidFunctionName"),OOLUA::Runtime_error);
@@ -618,6 +689,45 @@ public:
 		CPPUNIT_ASSERT_THROW(m_lua->run_file("does_not_exist"),OOLUA::File_error);
 	}
 	
+	void new_onAbstractClass_runChunkThrowsStdRuntimeError()
+	{
+		OOLUA::register_class_and_bases<NewProblemDerived>(*m_lua);
+		CPPUNIT_ASSERT_THROW(m_lua->run_chunk("return NewProblemAbstract.new()"),OOLUA::Runtime_error);
+	}
+
+	void luaFunctionCall_luaPassesBooleanToFunctionWantingInt_throwsRuntimeError()
+	{
+		m_lua->register_class<IntegerFunctionInTraits>();
+		m_lua->run_chunk("foo = function(obj) "
+						 "obj:value(true) "
+						 "end");
+		::testing::NiceMock<IntegerFunctionInTraitsMock> instance;
+		CPPUNIT_ASSERT_THROW((m_lua->call("foo",(IntegerFunctionInTraits*)&instance)) ,OOLUA::Runtime_error);
+		
+	}
+
+	void memberFunctionCall_memberFunctionWhichTakesTableYetPassedInt_throwsRuntimeError()
+	{
+		::testing::NiceMock<TableObjectParamMock> mock;
+		TableObjectParam* object( &mock );
+
+		m_lua->register_class<TableObjectParam>();
+		m_lua->run_chunk("func = function(obj) "
+							"return obj:value(1) "
+						 "end");
+
+		CPPUNIT_ASSERT_THROW(m_lua->call("func",object), OOLUA::Runtime_error);
+	}
+
+	void string_ptrParamPassedInt_runtimeError()
+	{
+		CharFunctionInTraitsMock mock;
+		CharFunctionInTraits* object(&mock);
+		m_lua->register_class<CharFunctionInTraits>();
+		m_lua->run_chunk("return function(object) object:ptr(1) end");
+		CPPUNIT_ASSERT_THROW( m_lua->call(1,object) ,OOLUA::Runtime_error);
+	}
+
 #endif
 	
 	
@@ -679,20 +789,6 @@ public:
 		OOLUA::can_xmove(*m_lua,child);
 		CPPUNIT_ASSERT( ( lua_gettop(*m_lua) ==1 && lua_gettop(child) == 1) );
 	}
-
-#if OOLUA_STORE_LAST_ERROR == 1
-	void new_onAbstractClass_runChunkReturnsFalse()
-	{
-		OOLUA::register_class_and_bases<NewProblemDerived>(*m_lua);
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_chunk("return NewProblemAbstract.new()"));
-	}
-#elif OOLUA_USE_EXCEPTIONS == 1
-	void new_onAbstractClass_runChunkThrowsStdRuntimeError()
-	{
-		OOLUA::register_class_and_bases<NewProblemDerived>(*m_lua);
-		CPPUNIT_ASSERT_THROW(m_lua->run_chunk("return NewProblemAbstract.new()"),OOLUA::Runtime_error);
-	}
-#endif
 
 };
 

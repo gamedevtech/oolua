@@ -102,6 +102,10 @@ struct HierarchyPushPull
 class Hierarchy : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE(Hierarchy);
+
+		CPPUNIT_TEST(call_callsMemberFunctionNoParamsViaADifferentThread_calledOnce); //<--special's base test
+		CPPUNIT_TEST(call_callsMemberFunctionNoParamsViaADifferentThread_calledOnce); //<--special
+
 		CPPUNIT_TEST(call_passedBasePointer_callsFunc1Once);
 		CPPUNIT_TEST(call_passedDerivedPointer_callsFunc1Once);
 		CPPUNIT_TEST(call_virtualVoidParam3Int_calledOnceWithCorrectInput);
@@ -140,6 +144,34 @@ public:
 	void tearDown()
 	{
 		delete m_lua;
+	}
+
+	void call_callsMemberFunctionNoParams_calledOnce()
+	{
+		Derived1Abstract1 mock;
+		EXPECT_CALL(mock,func1() ).Times(1);
+		m_lua->run_chunk(
+				"foo = function(object)\n"
+					"object:func1()\n"
+				"end");
+
+		m_lua->call("foo",&mock);
+
+	}
+
+	void call_callsMemberFunctionNoParamsViaADifferentThread_calledOnce()
+	{
+		Derived1Abstract1 mock;
+		EXPECT_CALL(mock,func1() ).Times(1);
+
+		m_lua->run_chunk(
+						 "return function(object)\n"
+						 "local c = coroutine.create( function() object:func1() end )\n"
+						 "local res, err = coroutine.resume(c)\n"						 
+						 "if res == false then error(err) end\n"
+						 "end");
+		
+		m_lua->call(1,&mock);
 	}
 	void call_passedBasePointer_callsFunc1Once()
 	{

@@ -1,8 +1,7 @@
 
 #	include "oolua_tests_pch.h"
 #	include "oolua.h"
-#	include "cpp_class_ops.h"
-#	include "expose_class_ops.h"
+#	include "expose_stub_classes.h"
 #	include "cpp_private_destructor.h"
 
 #	include "common_cppunit_headers.h"
@@ -21,7 +20,6 @@ public:
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
-		m_lua->register_class<Class_ops>();
 	}
 	void tearDown()
 	{
@@ -30,8 +28,9 @@ public:
 
 	void gc_gcCalledAfterPassingToLua_entryForPointerIsFalse()
 	{
+		m_lua->register_class<Stub1>();
 		m_lua->run_chunk("func = function(o1) end");
-		Class_ops p1;
+		Stub1 p1;
 		m_lua->call("func",&p1);
 		m_lua->gc();
 		bool result = OOLUA::INTERNAL::is_there_an_entry_for_this_void_pointer(*m_lua,&p1);

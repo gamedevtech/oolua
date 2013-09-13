@@ -38,11 +38,15 @@ class Integral_params : public CppUnit::TestFixture
 //	CPPUNIT_TEST(int_boolParam_calledOnceWithCorrectParam);
 	
 	CPPUNIT_TEST(string_ptrConstParam_calledOnceWithCorrectValue);
-	CPPUNIT_TEST(string_ptrConstParamPassedInt_runtimeError);
 	CPPUNIT_TEST(string_refPtrConstParam_calledOnceWithCorrectValue);
 	CPPUNIT_TEST(string_ptrParam_calledOnceWithCorrectValue);
+#if OOLUA_USE_EXCEPTIONS == 1 
+	CPPUNIT_TEST(string_ptrConstParamPassedInt_runtimeError);
 	CPPUNIT_TEST(string_ptrParamPassedInt_runtimeError);
-
+#elif OOLUA_STORE_LAST_ERROR == 1
+	CPPUNIT_TEST(string_ptrConstParamPassedInt_callReturnsFalse);
+	CPPUNIT_TEST(string_ptrParamPassedInt_callReturnsFalse);
+#endif
 	CPPUNIT_TEST_SUITE_END();
 	
 	OOLUA::Script* m_lua;
@@ -132,12 +136,23 @@ public:
 		m_lua->run_chunk("return function(object,input) object:ptrConst(input) end");
 		m_lua->call(1,helper.object,helper.input);
 	}
+
+#if OOLUA_USE_EXCEPTIONS == 1 
 	void string_ptrConstParamPassedInt_runtimeError()
 	{
 		StringHelper helper(*m_lua);
 		m_lua->run_chunk("return function(object) object:ptrConst(1) end");
 		CPPUNIT_ASSERT_THROW( m_lua->call(1,helper.object) ,OOLUA::Runtime_error);
-	}	
+	}
+#elif OOLUA_STORE_LAST_ERROR == 1
+	void string_ptrConstParamPassedInt_callReturnsFalse()
+	{
+		StringHelper helper(*m_lua);
+		m_lua->run_chunk("return function(object) object:ptrConst(1) end");
+		CPPUNIT_ASSERT_EQUAL( false,m_lua->call(1,helper.object) );
+	}
+#endif
+
 	void string_refPtrConstParam_calledOnceWithCorrectValue()
 	{
 		StringHelper helper(*m_lua);
@@ -152,12 +167,22 @@ public:
 		m_lua->run_chunk("return function(object,input) object:ptr(input) end");
 		m_lua->call(1,helper.object,helper.input);
 	}
+	
+#if OOLUA_USE_EXCEPTIONS == 1 
 	void string_ptrParamPassedInt_runtimeError()
 	{
 		StringHelper helper(*m_lua);
 		m_lua->run_chunk("return function(object) object:ptr(1) end");
 		CPPUNIT_ASSERT_THROW( m_lua->call(1,helper.object) ,OOLUA::Runtime_error);
 	}
+#elif OOLUA_STORE_LAST_ERROR == 1
+	void string_ptrParamPassedInt_callReturnsFalse()
+	{
+		StringHelper helper(*m_lua);
+		m_lua->run_chunk("return function(object) object:ptr(1) end");
+		CPPUNIT_ASSERT_EQUAL( false, m_lua->call(1,helper.object) );
+	}
+#endif
 
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(Integral_params);

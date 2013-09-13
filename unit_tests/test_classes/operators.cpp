@@ -1,9 +1,9 @@
 #	include "oolua_tests_pch.h"
+#	include "common_cppunit_headers.h"
 #	include "oolua.h"
 #	include "cpp_class_ops.h"
 #	include "expose_class_ops.h"
 
-#	include "common_cppunit_headers.h"
 
 namespace
 {

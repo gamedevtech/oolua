@@ -15,8 +15,10 @@ class UserDataFunctionInParams : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(inTraitConst_ref_throwsRuntimeError);
 		CPPUNIT_TEST(inTraitConst_ptr_throwsRuntimeError);
 		CPPUNIT_TEST(inTraitConst_refPtr_throwsRuntimeError);
-#else
-#	error not yet done
+#elif OOLUA_STORE_LAST_ERROR == 1
+		CPPUNIT_TEST(inTraitConst_ref_callReturnsFalse);
+		CPPUNIT_TEST(inTraitConst_ptr_callReturnsFalse);
+		CPPUNIT_TEST(inTraitConst_refPtr_callReturnsFalse);
 #endif
 		CPPUNIT_TEST(inTrait_value_calledOnceWithCorrectValue);
 		CPPUNIT_TEST(inTraitConst_value_calledOnceWithCorrectValue);
@@ -25,11 +27,6 @@ class UserDataFunctionInParams : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(inTraitConst_constant_calledOnceWithCorrectValue);
 	
 		CPPUNIT_TEST(inTrait_ref_calledOnceWithCorrectValue);
-#if  OOLUA_USE_EXCEPTIONS==1
-		CPPUNIT_TEST(inTraitConst_ref_throwsRuntimeError);
-#else
-#error CPPUNIT_TEST(inTraitConst_ref_callReturnsFalse);
-#endif
 		CPPUNIT_TEST(inTrait_ptr_calledOnceWithCorrectValue);
 		CPPUNIT_TEST(inTrait_refPtr_calledOnceWithCorrectValue);
 		
@@ -112,13 +109,22 @@ public:
 		helper.run_method();
 		m_lua->call(1,helper.object,"ref",&helper.inputParam);
 	}
+#if OOLUA_USE_EXCEPTIONS == 1 
 	void inTraitConst_ref_throwsRuntimeError()
 	{
 		InHelper helper(m_lua);
 		helper.run_method();
 		CPPUNIT_ASSERT_THROW((m_lua->call(1,helper.object,"ref",helper.inputParam_ptrConst)),OOLUA::Runtime_error);
 	}
-	
+#elif OOLUA_STORE_LAST_ERROR == 1
+	void inTraitConst_ref_callReturnsFalse()
+	{
+		InHelper helper(m_lua);
+		helper.run_method();
+		CPPUNIT_ASSERT_EQUAL(false, m_lua->call(1,helper.object,"ref",helper.inputParam_ptrConst) );
+	}	
+#endif
+
 	void inTrait_refConst_calledOnceWithCorrectValue()
 	{
 		InHelper helper(m_lua);
@@ -141,13 +147,23 @@ public:
 		helper.run_method();
 		m_lua->call(1,helper.object,"ptr",&helper.inputParam);
 	}
+
+#if OOLUA_USE_EXCEPTIONS == 1 
 	void inTraitConst_ptr_throwsRuntimeError()
 	{
 		InHelper helper(m_lua);
 		helper.run_method();
 		CPPUNIT_ASSERT_THROW((m_lua->call(1,helper.object,"ptr",helper.inputParam_ptrConst)),OOLUA::Runtime_error);
 	}
-	
+#elif OOLUA_STORE_LAST_ERROR == 1
+	void inTraitConst_ptr_callReturnsFalse()
+	{
+		InHelper helper(m_lua);
+		helper.run_method();
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(1,helper.object,"ptr",helper.inputParam_ptrConst) );
+	}
+#endif
+
 	void inTrait_ptrConst_calledOnceWithCorrectValue()
 	{
 		InHelper helper(m_lua);
@@ -172,12 +188,23 @@ public:
 		helper.run_method();
 		m_lua->call(1,helper.object,"refPtr",&helper.inputParam);
 	}
+
+#if OOLUA_USE_EXCEPTIONS == 1
 	void inTraitConst_refPtr_throwsRuntimeError()
 	{
 		InHelper helper(m_lua);
 		helper.run_method();
 		CPPUNIT_ASSERT_THROW((m_lua->call(1,helper.object,"refPtr",helper.inputParam_ptrConst)),OOLUA::Runtime_error);
 	}
+#elif OOLUA_STORE_LAST_ERROR == 1
+	void inTraitConst_refPtr_callReturnsFalse()
+	{
+		InHelper helper(m_lua);
+		helper.run_method();
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(1,helper.object,"refPtr",helper.inputParam_ptrConst) );
+	}
+#endif
+
 	void inTrait_refPtrConst_calledOnceWithCorrectValue()
 	{
 		InHelper helper(m_lua);
