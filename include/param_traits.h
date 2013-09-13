@@ -556,52 +556,6 @@ for parameters contain as part of their name "out", "in" or a combination.
 		};
 	
 	
-#if OOLUA_STD_STRING_IS_INTEGRAL == 1	
-		template<>
-		struct function_return<std::string>
-		{
-			typedef std::string type;
-			typedef std::string pull_type;
-			typedef std::string raw;
-			enum { in = 0};
-			enum { out = 1};
-			enum { owner = No_change};
-			enum { is_by_value = 1 };
-			enum { is_constant = 0 };
-			enum { is_integral = 1 };
-		};
-		
-		
-		template<>
-		struct function_return<std::string&>
-		{
-			typedef std::string& type;
-			typedef std::string pull_type;
-			typedef std::string raw;
-			enum { in = 0};
-			enum { out = 1};
-			enum { owner = No_change};
-			enum { is_by_value = 0 };
-			enum { is_constant = 0 };
-			enum { is_integral = 1 };
-		};
-
-        template<>
-		struct function_return<std::string const&>
-		{
-			typedef std::string const& type;
-			typedef std::string pull_type;
-			typedef std::string raw;
-			enum { in = 0};
-			enum { out = 1};
-			enum { owner = No_change};
-			enum { is_by_value = 0 };
-			enum { is_constant = 1 };
-			enum { is_integral = 1 };
-		};
-
-#endif
-	
 	
 	
 	
@@ -784,7 +738,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 	///////////////////////////////////////////////////////////////////////////////
 	///  Specialisation for registry references
 	///////////////////////////////////////////////////////////////////////////////
-#if 1
+
 	oolua_integral_ref_trait(Lua_ref<ID>,Lua_ref<ID>,in_p,1,0)
 	oolua_integral_ref_trait(Lua_ref<ID>&,Lua_ref<ID>,in_p,1,0)
 	oolua_integral_ref_trait(Lua_ref<ID> const&,Lua_ref<ID>,in_p,1,0)
@@ -811,175 +765,32 @@ for parameters contain as part of their name "out", "in" or a combination.
 	}
 	
 #undef oolua_integral_ref_trait
-#else
-	namespace INERNAL
-	{
-		template<int ID>
-		struct function_return<Lua_ref<ID> >
-		{
-			typedef Lua_ref<ID> type;
-			typedef Lua_ref<ID> pull_type;
-			typedef Lua_ref<ID> raw;
-			enum { in = 0};
-			enum { out = 1};
-			enum { owner = No_change};
-			enum { is_by_value = 1 };
-			enum { is_constant = 0 };
-			enum { is_integral = 1 };
-		};
-	}
-
-	template<int ID>
-	struct in_p<Lua_ref<ID> >
-	{
-		typedef Lua_ref<ID> type;
-		typedef Lua_ref<ID> raw;
-		typedef Lua_ref<ID> pull_type;
-		enum { in = 1};
-		enum { out = 0};
-		enum { owner = No_change};
-		enum { is_by_value = 1 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
-	
-	template<int ID>
-	struct in_p<Lua_ref<ID>&>
-	{
-		typedef Lua_ref<ID>& type;
-		typedef Lua_ref<ID> raw;
-		typedef Lua_ref<ID> pull_type;
-		enum { in = 1};
-		enum { out = 0};
-		enum { owner = No_change};
-		enum { is_by_value = 0 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
-	
-	template<int ID>
-	struct in_p<Lua_ref<ID> const&>
-	{
-		typedef Lua_ref<ID> const& type;
-		typedef Lua_ref<ID> raw;
-		typedef Lua_ref<ID> pull_type;
-		enum { in = 1};
-		enum { out = 0};
-		enum { owner = No_change};
-		enum { is_by_value = 0 };
-		enum { is_constant = 1 };
-		enum { is_integral = 1 };
-	};
-	
-	/*
-	template<int ID>
-	struct out_p<Lua_ref<ID> >
-	{
-		typedef Lua_ref<ID> type;
-		typedef Lua_ref<ID> pull_type;
-		typedef Lua_ref<ID> raw;
-		enum { in = 0};
-		enum { out = 1};
-		enum { owner = No_change};
-		enum { is_by_value = 1 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
-	 */
-	
-	template<>
-	struct in_p<Table>
-	{
-		typedef Table type;
-		typedef Table raw;
-		typedef Table pull_type;
-		enum {in = 1};
-		enum {out = 0};
-		enum {owner = No_change};
-		enum { is_by_value = 1 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
-#endif
 }
 
 
 #if OOLUA_STD_STRING_IS_INTEGRAL == 1
+/**[StdStringIntegralTraits]*/
 namespace OOLUA
 {
-	template<>
-	struct in_p<std::string>
-	{
-		typedef std::string type;
-		typedef std::string raw;
-		typedef std::string pull_type;
-		enum {in = 1};
-		enum {out = 0};
-		enum {owner = No_change};
-		enum { is_by_value = 1 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
-    /*
-	template<>
-	struct in_p<std::string&>
-	{
-		typedef std::string& type;
-		typedef std::string raw;
-		typedef std::string pull_type;
-		enum {in = 1};
-		enum {out = 0};
-		enum {owner = No_change};
-		enum { is_by_value = 0 };
-		enum { is_constant = 1 };
-		enum { is_integral = 1 };
-	};
-    */
-	template<>
-	struct in_p<std::string const&>
-	{
-		typedef std::string const& type;
-		typedef std::string raw;
-		typedef std::string pull_type;
-		enum {in = 1};
-		enum {out = 0};
-		enum {owner = No_change};
-		enum { is_by_value = 0 };
-		enum { is_constant = 1 };
-		enum { is_integral = 1 };
-	};
-	template<>
-	struct in_out_p<std::string&>
-	{
-		typedef std::string& type;
-		typedef std::string pull_type;
-		typedef std::string raw;
-		enum { in = 1};
-		enum { out = 1};
-		enum { owner = No_change};
-		enum { is_by_value = 0 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
+	oolua_integral_trait(std::string,std::string,in_p,1,0)
+	oolua_integral_trait(std::string&,std::string,in_p,1,0)
+	oolua_integral_trait(std::string const,std::string,in_p,1,0)
+	oolua_integral_trait(std::string const&,std::string,in_p,1,0)
 	
-	template<>
-	struct out_p<std::string>;
-
-	template<>
-	struct out_p<std::string&>
+	template<>struct out_p<std::string>;//disable
+	oolua_integral_trait(std::string &,std::string,out_p,0,1)
+	oolua_integral_trait(std::string &,std::string,in_out_p,1,1)
+	namespace INTERNAL
 	{
-		typedef std::string& type;
-		typedef std::string pull_type;
-		typedef std::string raw;
-		enum { in = 0};
-		enum { out = 1};
-		enum { owner = No_change};
-		enum { is_by_value = 0 };
-		enum { is_constant = 0 };
-		enum { is_integral = 1 };
-	};
+		oolua_integral_trait(std::string,std::string,function_return,0,1)
+		oolua_integral_trait(std::string&,std::string,function_return,0,1)
+		oolua_integral_trait(std::string const,std::string,function_return,0,1)
+		oolua_integral_trait(std::string const&,std::string,function_return,0,1)
+	}
 }
+/**[StdStringIntegralTraits]*/
 #endif
+
 
 
 namespace OOLUA

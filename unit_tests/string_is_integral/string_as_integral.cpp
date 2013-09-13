@@ -2,220 +2,299 @@
 #	include "common_cppunit_headers.h"
 #	include "gmock/gmock.h"
 #	include <string>
+#	include "cpp_function_params.h"
+#	include "cpp_function_returns.h"
+
+struct oolua_string_traits{};
+typedef FunctionParamType<oolua_string_traits,std::string> StringFunctionTraits;
+typedef MockFunctionParamType<oolua_string_traits,std::string> StringFunctionTraitsMock;
+
+typedef FunctionReturnType<oolua_string_traits,std::string> StringFunctionReturnTraits;
+typedef MockFunctionReturnType<oolua_string_traits,std::string> StringFunctionReturnTraitsMock;
+
+
+OOLUA_PROXY(StringFunctionTraits)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MFUNC(value)
+	OOLUA_MFUNC(ref)
+	//OOLUA_MFUNC(constant)
+	OOLUA_MEM_FUNC(void,constant,std::string const)
+	OOLUA_MFUNC(refConst)
+	OOLUA_MEM_FUNC_RENAME(outTraitRef,void,ref,out_p<std::string&>)
+	OOLUA_MEM_FUNC_RENAME(inOutTraitRef,void,ref,in_out_p<std::string&>)
+OOLUA_PROXY_END
+
+OOLUA_EXPORT_FUNCTIONS(StringFunctionTraits
+					   ,value
+					   ,ref
+					   ,constant
+					   ,refConst
+					   ,outTraitRef
+					   ,inOutTraitRef
+					   )
+OOLUA_EXPORT_FUNCTIONS_CONST(StringFunctionTraits)
 
 
 
-class StringInteragal
+OOLUA_PROXY(StringFunctionReturnTraits)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MFUNC(value)
+	OOLUA_MFUNC(ref)
+	OOLUA_MFUNC(constant)
+//	OOLUA_MEM_FUNC(std::string const, constant)
+	OOLUA_MFUNC(refConst)
+OOLUA_PROXY_END
+
+OOLUA_EXPORT_FUNCTIONS(StringFunctionReturnTraits
+					   ,value
+					   ,ref
+					   ,constant
+					   ,refConst
+					   )
+OOLUA_EXPORT_FUNCTIONS_CONST(StringFunctionReturnTraits)
+
+
+class StringConstructorMock
 {
 public:
-    virtual ~StringInteragal(){}
-	virtual void param_string(std::string s)=0;
-    virtual std::string param_string_returnsString(std::string s)=0;
-	virtual void param_ref_2_string(std::string& s)=0;
-	virtual void param_ref_2_constString(std::string const& s)=0;
-	virtual std::string& returns_ref_2_string() = 0;
-    virtual std::string const& returns_const_ref_2_string() = 0;
+	StringConstructorMock(std::string input):m_input(input){}
+	std::string m_input;
 };
 
-	class MockStringInteragal : public StringInteragal
-	{
-	public:
-		MOCK_METHOD1(param_string,void (std::string));
-		MOCK_METHOD1(param_string_returnsString,std::string (std::string));
-		MOCK_METHOD1(param_ref_2_string,void(std::string&));
-		MOCK_METHOD1(param_ref_2_constString,void (std::string const&));
-		MOCK_METHOD0(returns_ref_2_string,std::string& ());
-        MOCK_METHOD0(returns_const_ref_2_string,std::string const& ());
-	};
+OOLUA_PROXY(StringConstructorMock)
+	OOLUA_TAGS(No_default_constructor)
+	OOLUA_CTORS(
+		OOLUA_CTOR(std::string)
+	)
+OOLUA_PROXY_END
 
-	OOLUA_PROXY(StringInteragal)
-        OOLUA_TAGS(Abstract)
-        OOLUA_MEM_FUNC(void,param_string,OOLUA::in_p<std::string>)
-        OOLUA_MEM_FUNC(void,param_ref_2_string,OOLUA::in_out_p<std::string&>)
-        OOLUA_MEM_FUNC(void,param_ref_2_constString,OOLUA::in_p<std::string const&>)
-        OOLUA_MEM_FUNC(std::string,param_string_returnsString,std::string)
-		OOLUA_MEM_FUNC(std::string&,returns_ref_2_string)
-        OOLUA_MEM_FUNC_RENAME(string_ref_out_param,void,param_ref_2_string,out_p<std::string&>)
-        OOLUA_MEM_FUNC(std::string const&, returns_const_ref_2_string)
-	OOLUA_PROXY_END
+OOLUA_EXPORT_NO_FUNCTIONS(StringConstructorMock)
 
-OOLUA_EXPORT_FUNCTIONS(StringInteragal
-								   ,param_string
-								   ,param_ref_2_string
-								   ,param_ref_2_constString
-								   ,param_string_returnsString
-								   ,returns_ref_2_string
-								   ,string_ref_out_param
-                                    ,returns_const_ref_2_string
-								   )
-OOLUA_EXPORT_FUNCTIONS_CONST(StringInteragal)
-
-
-std::string constant_string_global()
+class StringAsIntegral : public CPPUNIT_NS::TestFixture
 {
-	return std::string("Hello world");
-}
+	CPPUNIT_TEST_SUITE(StringAsIntegral);
 
-class StringAsInteragal : public CPPUNIT_NS::TestFixture
-{
-	CPPUNIT_TEST_SUITE(StringAsInteragal);
-        CPPUNIT_TEST(LuaCallsCppFunction_paramIsString_callsMethodPassingString);
-		CPPUNIT_TEST(LuaCallsCppFunction_paramIsRefToString_callsMethodPassingString);
-		CPPUNIT_TEST(LuaCallsCppFunction_paramIsRefToString_returnsExspectedString);
-		CPPUNIT_TEST(LuaCallsCppFunction_paramIsStringFunctionReturnsTheString_returnsExspectedString);
-		CPPUNIT_TEST(LuaCallsCppFunction_paramIsRef2ConstString_callsMethodPassingString);
-		CPPUNIT_TEST(LuaClassCppFunction_returnsReferenceToString_returnValueIsEqualToConstantString);
-		CPPUNIT_TEST(outParam_stringReference_returnValueIsEqualToConstantString);
-        CPPUNIT_TEST(LuaClassCppFunction_returnsReferenceToConstString_returnValueIsEqualToConstantString);
+		CPPUNIT_TEST(defaultTraitParam_value_calledOnceWithCorrectValue);
+		CPPUNIT_TEST(defaultTraitParam_ref_calledOnceWithCorrectValue);
+		CPPUNIT_TEST(defaultTraitParam_const_calledOnceWithCorrectValue);
+		CPPUNIT_TEST(defaultTraitParam_refConst_calledOnceWithCorrectValue);
+		CPPUNIT_TEST(outTraitRef_luaDoesNotPassString_calledOnceWithEmptyString);
+		CPPUNIT_TEST(outTraitRef_luaDoesNotPassStringWillAssignValue_topOfStackIsExpectedValue);
+		CPPUNIT_TEST(inOutTraitRef_luaPassesValue_calledOnceWithCorrectValue);
+		CPPUNIT_TEST(inOutTraitRef_luaPassesValue_topOfStackIsExpectedValue);
+
+#	if OOLUA_USE_EXCEPTIONS == 1	
+		CPPUNIT_TEST(defaultTraitParam_valuePassedInt_throwsRunTimeError);
+#	elif OOLUA_STORE_LAST_ERROR == 1
+		CPPUNIT_TEST(defaultTraitParam_valuePassedInt_callReturnsFalse);
+#	endif
+	
+		CPPUNIT_TEST(returnTraitValue_cppReturnsValue_topOfStackIsExpectedValue);
+		CPPUNIT_TEST(returnTraitRef_cppReturnsRef_topOfStackIsExpectedValue);
+		CPPUNIT_TEST(returnTraitConst_cppReturnsConst_topOfStackIsExpectedValue);
+		CPPUNIT_TEST(returnTraitRefConst_cppReturnsRefConst_topOfStackIsExpectedValue);
+
+
+
+	CPPUNIT_TEST(constructor_stdString_calledWithExpectedInput);
+
+#	if OOLUA_USE_EXCEPTIONS == 1	
+		CPPUNIT_TEST(constructor_stdStringPassedInt_throwsRunTimeError);
+#	elif OOLUA_STORE_LAST_ERROR == 1
+		CPPUNIT_TEST(constructor_stdStringPassedInt_runChunkReturnsFalse);
+#	endif
+	
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
 
-    std::string constant_string()
+	void assert_top_of_stack_is_expected_value(std::string & expected)
 	{
-	    return std::string("Hello world");
+		std::string top_of_stack;
+		OOLUA::pull(*m_lua,top_of_stack);
+		CPPUNIT_ASSERT_EQUAL(expected,top_of_stack);
 	}
-
-    std::string run_chunk(bool returns,std::string const& func_name,std::string const & param)
-    {
-        std::string("func");
-        std::string chunk = std::string("func = function(obj) ");
-        if(returns)chunk+=("return ");
-
-        chunk += std::string("obj:") + func_name + std::string("(\"")
-                    + param + std::string("\") end");
-
-        m_lua->run_chunk(chunk);
-        return std::string("func");
-    }
-
-    void assert_return_string_equals(std::string const& exspected)
-    {
-        std::string result;
-		OOLUA::pull(*m_lua,result);
-		CPPUNIT_ASSERT_EQUAL(exspected,result);
-    }
 public:
-    StringAsInteragal():m_lua(0){}
-    LVD_NOCOPY(StringAsInteragal)
+    StringAsIntegral():m_lua(0){}
+    LVD_NOCOPY(StringAsIntegral)
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
-		m_lua->register_class<StringInteragal>();
 	}
 	void tearDown()
 	{
 		delete m_lua;
 	}
-
-	void LuaCallsCppFunction_paramIsString_callsMethodPassingString()
+    
+	struct Helper
 	{
-        std::string input_str(constant_string());
-        std::string func_name = run_chunk(false,"param_string",input_str );
-        MockStringInteragal mock;
-		EXPECT_CALL(mock,param_string(::testing::Eq(input_str) ) )
-			.Times(1);
-		m_lua->call(func_name,(StringInteragal*)&mock);
-
+		Helper(lua_State* l)
+		:mock(),object(&mock),input("std::string buffer")
+		{
+			OOLUA::register_class<StringFunctionTraits>(l);
+		}
+		StringFunctionTraitsMock mock;
+		StringFunctionTraits* object;
+		std::string input;
+	};
+	
+	void defaultTraitParam_value_calledOnceWithCorrectValue()
+	{
+		Helper helper(*m_lua);
+		EXPECT_CALL(helper.mock,value(::testing::StrEq(helper.input))).Times(1);
+		m_lua->run_chunk("return function(object, input) object:value(input) end");
+		m_lua->call(1,helper.object,helper.input);
 	}
-
-    void LuaCallsCppFunction_paramIsRefToString_callsMethodPassingString()
-    {
-        std::string input_str(constant_string());
-        std::string func_name = run_chunk(false,"param_ref_2_string",input_str );
-        MockStringInteragal mock;
-		EXPECT_CALL(mock,param_ref_2_string(::testing::Eq(input_str) ))
-			.Times(1);
-		m_lua->call(func_name,(StringInteragal*)&mock);
-    }
-
-    void LuaCallsCppFunction_paramIsRefToString_returnsExspectedString()
-    {
-        std::string input_str(constant_string());
-        std::string func_name = run_chunk(true,"param_ref_2_string",input_str );
-		::testing::NiceMock<MockStringInteragal> stub;
-		m_lua->call(func_name,(StringInteragal*)&stub);
-        assert_return_string_equals(input_str);
-    }
-
-	void LuaCallsCppFunction_paramIsStringFunctionReturnsTheString_returnsExspectedString()
+	void defaultTraitParam_ref_calledOnceWithCorrectValue()
 	{
-        std::string input_str( constant_string() );
-        std::string func_name = run_chunk(true,"param_string_returnsString",input_str );
-
-        MockStringInteragal mock;
-		EXPECT_CALL(mock,param_string_returnsString(::testing::Eq( input_str ) ))
-			.Times(1)
-			.WillOnce(::testing::Return(input_str));
-		m_lua->call(func_name,(StringInteragal*)&mock);
-		assert_return_string_equals(input_str);
+		Helper helper(*m_lua);
+		EXPECT_CALL(helper.mock,ref(::testing::StrEq(helper.input))).Times(1);
+		m_lua->run_chunk("return function(object, input) object:ref(input) end");
+		m_lua->call(1,helper.object,helper.input);
 	}
-	void LuaCallsCppFunction_paramIsRef2ConstString_callsMethodPassingString()
+	void defaultTraitParam_const_calledOnceWithCorrectValue()
 	{
-        std::string input_str ( constant_string() );
-        std::string func_name = run_chunk(true,"param_ref_2_constString",input_str );
-
-        MockStringInteragal mock;
-		EXPECT_CALL(mock,param_ref_2_constString(::testing::Eq(input_str) ))
-			.Times(1);
-		m_lua->call(func_name,(StringInteragal*)&mock);
+		Helper helper(*m_lua);
+		EXPECT_CALL(helper.mock,constant(::testing::StrEq(helper.input))).Times(1);
+		m_lua->run_chunk("return function(object, input) object:constant(input) end");
+		m_lua->call(1,helper.object,helper.input);		
 	}
-	void LuaClassCppFunction_returnsReferenceToString_returnValueIsEqualToConstantString()
+	void defaultTraitParam_refConst_calledOnceWithCorrectValue()
 	{
-		m_lua->run_chunk("foo = function(obj) return obj:returns_ref_2_string() end");
-		
-		std::string  const_str_(constant_string());
-		std::string  &const_str( const_str_);
-		MockStringInteragal mock;
-
-		EXPECT_CALL(mock,returns_ref_2_string() )
-			.Times(1)
-			.WillOnce(::testing::ReturnRef(const_str));
-		
-		m_lua->call("foo",(StringInteragal*)&mock);
-		std::string return_value;
-		OOLUA::pull(*m_lua,return_value);
-		CPPUNIT_ASSERT_EQUAL(const_str,return_value);
+		Helper helper(*m_lua);
+		EXPECT_CALL(helper.mock,refConst(::testing::StrEq(helper.input))).Times(1);
+		m_lua->run_chunk("return function(object, input) object:refConst(input) end");
+		m_lua->call(1,helper.object,helper.input);
 	}
 	
-	void outParam_stringReference_returnValueIsEqualToConstantString()
+	void outTraitRef_luaDoesNotPassString_calledOnceWithEmptyString()
 	{
-		m_lua->run_chunk("foo = function(obj) return obj:string_ref_out_param() end");
-		MockStringInteragal mock;
-		struct set_string_ref 
-		{
-			static void to_constant_string(std::string& str){str = constant_string_global();}
-		};
-		
-		EXPECT_CALL(mock,param_ref_2_string(::testing::_) )
-			.Times(1)
-			.WillOnce(::testing::Invoke(set_string_ref::to_constant_string));
-		
-		m_lua->call("foo",(StringInteragal*)&mock);
-		std::string return_value;
-		OOLUA::pull(*m_lua,return_value);
-		CPPUNIT_ASSERT_EQUAL(constant_string_global(),return_value);
+		Helper helper(*m_lua);
+		EXPECT_CALL(helper.mock,ref(::testing::StrEq(std::string()))).Times(1);
+		m_lua->run_chunk("return function(object) object:outTraitRef() end");
+		m_lua->call(1,helper.object);
 	}
-    void LuaClassCppFunction_returnsReferenceToConstString_returnValueIsEqualToConstantString()
-    {
-        m_lua->run_chunk("foo = function(obj) return obj:returns_const_ref_2_string() end");
+
+	void outTraitRef_luaDoesNotPassStringWillAssignValue_topOfStackIsExpectedValue()
+	{
+		Helper helper(*m_lua);
+		EXPECT_CALL(helper.mock,ref(::testing::_)).Times(1).WillOnce(::testing::SetArgReferee<0>(helper.input));
+		m_lua->run_chunk("return function(object) return object:outTraitRef() end");
+		m_lua->call(1,helper.object);
+		assert_top_of_stack_is_expected_value(helper.input);
+	}
+	void inOutTraitRef_luaPassesValue_calledOnceWithCorrectValue()
+	{
+		Helper helper(*m_lua);
+		EXPECT_CALL(helper.mock,ref(::testing::StrEq(helper.input))).Times(1);
+		m_lua->run_chunk("return function(object, input) object:inOutTraitRef(input) end");
+		m_lua->call(1,helper.object,helper.input);
+	}
+	void inOutTraitRef_luaPassesValue_topOfStackIsExpectedValue()
+	{
+		Helper helper(*m_lua);
+		EXPECT_CALL(helper.mock,ref(::testing::_)).Times(1).WillOnce(::testing::SetArgReferee<0>(helper.input));
+		m_lua->run_chunk("return function(object) return object:inOutTraitRef('dontCare') end");
+		m_lua->call(1,helper.object);
+		assert_top_of_stack_is_expected_value(helper.input);
+	}
+
+	
+	
+	
+	
+	
+	
+#	if OOLUA_USE_EXCEPTIONS == 1
+	void defaultTraitParam_valuePassedInt_throwsRunTimeError()
+	{
+		Helper helper(*m_lua);
+		m_lua->run_chunk("return function(object) object:value(1) end");
+		CPPUNIT_ASSERT_THROW(m_lua->call(1,helper.object),OOLUA::Runtime_error);
+	}
+#	elif OOLUA_STORE_LAST_ERROR == 1
+	void defaultTraitParam_valuePassedInt_callReturnsFalse()
+	{
+		Helper helper(*m_lua);
+		m_lua->run_chunk("return function(object) object:value(1) end");
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(1,helper.object));
+	}
+#	endif
+	
+	
+	struct ReturnHelper
+	{
+		ReturnHelper(lua_State* l)
+		:mock(),object(&mock),output("std::string buffer")
+		{
+			OOLUA::register_class<StringFunctionReturnTraits>(l);
+		}
+		StringFunctionReturnTraitsMock mock;
+		StringFunctionReturnTraits* object;
+		std::string output;
+	};
+	
+	void returnTraitValue_cppReturnsValue_topOfStackIsExpectedValue()
+	{
+		ReturnHelper helper(*m_lua);
+		EXPECT_CALL(helper.mock,value()).Times(1).WillOnce(::testing::Return(helper.output));
+		m_lua->run_chunk("return function(object) return object:value() end");
+		m_lua->call(1,helper.object);
+		assert_top_of_stack_is_expected_value(helper.output);
+	}
+	void returnTraitRef_cppReturnsRef_topOfStackIsExpectedValue()
+	{
+		ReturnHelper helper(*m_lua);
+		EXPECT_CALL(helper.mock,ref()).Times(1).WillOnce(::testing::ReturnRef(helper.output));
+		m_lua->run_chunk("return function(object) return object:ref() end");
+		m_lua->call(1,helper.object);
+		assert_top_of_stack_is_expected_value(helper.output);
+	}
+	void returnTraitConst_cppReturnsConst_topOfStackIsExpectedValue()
+	{
+		ReturnHelper helper(*m_lua);
+		EXPECT_CALL(helper.mock,constant()).Times(1).WillOnce(::testing::Return(helper.output));
+		m_lua->run_chunk("return function(object) return object:constant() end");
+		m_lua->call(1,helper.object);
+		assert_top_of_stack_is_expected_value(helper.output);
+	}
+	void returnTraitRefConst_cppReturnsRefConst_topOfStackIsExpectedValue()
+	{
+		ReturnHelper helper(*m_lua);
+		EXPECT_CALL(helper.mock,refConst()).Times(1).WillOnce(::testing::ReturnRef(helper.output));
+		m_lua->run_chunk("return function(object) return object:refConst() end");
+		m_lua->call(1,helper.object);
+		assert_top_of_stack_is_expected_value(helper.output);
+	}
+	
+	void constructor_stdString_calledWithExpectedInput()
+	{
+		m_lua->register_class<StringConstructorMock>();
+		std::string const known_input = "ctor buffer";
+		m_lua->run_chunk("return function(input) return StringConstructorMock.new(input) end");
+		m_lua->call(1,known_input);
 		
-		std::string  const_str_(constant_string());
-		std::string const &const_str( const_str_);
-		MockStringInteragal mock;
-        
-		EXPECT_CALL(mock,returns_const_ref_2_string() )
-            .Times(1)
-            .WillOnce(::testing::ReturnRef(const_str));
-		
-		m_lua->call("foo",(StringInteragal*)&mock);
-		std::string return_value;
-		OOLUA::pull(*m_lua,return_value);
-		CPPUNIT_ASSERT_EQUAL(const_str,return_value);
-    }
-    
+		lua_pushvalue(*m_lua,-1);
+		StringConstructorMock* return_object(0);
+//		OOLUA::pull(*m_lua,return_object);
+		m_lua->pull(return_object);
+		CPPUNIT_ASSERT_EQUAL(known_input,return_object->m_input);
+	}
+#	if OOLUA_USE_EXCEPTIONS == 1	
+	void constructor_stdStringPassedInt_throwsRunTimeError()
+	{
+		m_lua->register_class<StringConstructorMock>();
+		CPPUNIT_ASSERT_THROW(m_lua->run_chunk("StringConstructorMock.new(1)"),OOLUA::Runtime_error);
+	}
+#	elif OOLUA_STORE_LAST_ERROR == 1
+	void constructor_stdStringPassedInt_runChunkReturnsFalse()
+	{
+		m_lua->register_class<StringConstructorMock>();
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_chunk("StringConstructorMock.new(1)"));
+	}
+#endif
 
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION( StringAsInteragal );
+CPPUNIT_TEST_SUITE_REGISTRATION( StringAsIntegral );
 
