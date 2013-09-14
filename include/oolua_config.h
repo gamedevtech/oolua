@@ -201,7 +201,7 @@ __pragma(warning(pop))
 
 
 #ifdef __GNUC__
-#if 0
+/*
 From GCC version 4.6 onwards you are meant to be able to push and pop diagnostic
 settings which would allow turning variadic macro warnings off per file.
 This was previously achieved by using the pramga GCC system_header; yet this may
@@ -227,15 +227,16 @@ vaarg warnings in a limited scope without effecting a user's compile options:
 #		pragma GCC system_header
 #	endif
 #endif
-/* code here */
+
+ Code wanting to be protectyed here
+ 
 #if defined __GNUC__ && defined __STRICT_ANSI__ && ( __GNUC__ >4  || ( __GNUC__ == 4 && __GNUC_MINOR__ >= 6) )
-#		pragma GCC diagnostic push 
-#	endif
+#	pragma GCC diagnostic push 
 #endif
 
 However using a 4.6 version of GCC and the above code does not prevent the warnings
 
-#endif
+*/
 
 
 
