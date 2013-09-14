@@ -6,9 +6,7 @@
 #	include "gmock/gmock.h"
 
 #	if defined __GNUC__ && defined __STRICT_ANSI__ 
-//#	pragma GCC system_header
-#		pragma GCC push_options 
-#		pragma GCC diagnostic ignored "-Wignored-qualifiers" 
+#		pragma GCC system_header
 #	endif
 
 template<typename Specialisation , typename ReturnType>
@@ -50,8 +48,5 @@ public:
 	MOCK_METHOD0_T(refConstPtrConst,ReturnType const * const &());
 };
 
-#	if defined __GNUC__ && defined __STRICT_ANSI__ 
-#		pragma GCC pop_options
-#	endif
 
 #endif
