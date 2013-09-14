@@ -201,6 +201,45 @@ __pragma(warning(pop))
 
 
 #ifdef __GNUC__
+#if 0
+From GCC version 4.6 onwards you are meant to be able to push and pop diagnostic
+settings which would allow turning variadic macro warnings off per file.
+This was previously achieved by using the pramga GCC system_header; yet this may
+hide other warnings when compiled with a combination of -ansi, -pedantic and -wall
+From version 4.2 you can use :
+pragma GCC diagnostic ignored [option]
+yet this can effect more than the file in which it wants supressing and could effect
+a users code base which is far from ideal.
+
+GCC suggests to compile with -fdiagnostics-show-option which results in the following
+warning for vaargs
+
+warning: anonymous variadic macros were introduced in C99 [-Wvariadic-macros]
+
+It would therefore seem reasonable that the following code could be used to prevent
+vaarg warnings in a limited scope without effecting a user's compile options:
+
+#if defined __GNUC__ && defined __STRICT_ANSI__ 
+#	if __GNUC__ >4  || ( __GNUC__ == 4 && __GNUC_MINOR__ >= 6)
+#		pragma GCC diagnostic push 
+#		pragma GCC diagnostic ignored "-Wvariadic-macros" 
+#	else
+#		pragma GCC system_header
+#	endif
+#endif
+/* code here */
+#if defined __GNUC__ && defined __STRICT_ANSI__ && ( __GNUC__ >4  || ( __GNUC__ == 4 && __GNUC_MINOR__ >= 6) )
+#		pragma GCC diagnostic push 
+#	endif
+#endif
+
+However using a 4.6 version of GCC and the above code does not prevent the warnings
+
+#endif
+
+
+
+
 #	define GCC_VERSION_OOLUA (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 //	SShhhhhhhhh stops gcc generating warnings about the variadic macros
 #	define GCC_PRAGMA_DO(x) _Pragma(#x)
@@ -209,13 +248,11 @@ __pragma(warning(pop))
 #	if GCC_VERSION_OOLUA >= 40600
 #		define GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA \
 			GCC_PRAGMA(diagnostic push) \
-			GCC_PRAGMA(diagnostic ignored "-Wno-variadic-macros")
+			GCC_PRAGMA(diagnostic ignored "-Wvariadic-macros")
 #		define GCC_POP_VA_WARNINGS_OOLUA GCC_PRAGMA(diagnostic pop)
 #	else
-#		define GCC_VA_ARGS_SYSTEM_HEADER_OOLUA 1
-
 //#		define GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA GCC_PRAGMA_DO(system_header)
-#		define GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA _Pragma("GCC system_header") //doesn't work boooooooooo
+//#		define GCC_PUSH_DISABLE_VA_WARNINGS_OOLUA _Pragma("GCC system_header") //doesn't work boooooooooo
 #		define GCC_POP_VA_WARNINGS_OOLUA
 #	endif
 #else
