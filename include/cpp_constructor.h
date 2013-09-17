@@ -84,10 +84,9 @@ namespace OOLUA
 		{
 			static int construct(lua_State * l)
 			{
-				luaL_error(l,"%s %s %s","No parameters passed to the constructor of the type"
+				return luaL_error(l,"%s %s %s","No parameters passed to the constructor of the type"
 						   ,OOLUA::Proxy_class<Type>::class_name
 						   ,"which does not have a default constructor.");
-				return 0;//required by function sig yet luaL_error never returns
 			}
 		};
 		
@@ -99,8 +98,7 @@ namespace OOLUA
 			{
 				return Constructor<T,has_tag<OOLUA::Proxy_class<T>, OOLUA::No_default_constructor>::Result>::construct(l);
 			} 
-			luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",OOLUA::Proxy_class<T>::class_name);
-			return 0;/*required by function sig yet luaL_error never returns*/
+			return luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",OOLUA::Proxy_class<T>::class_name);
 		}
 	}
 }
@@ -174,8 +172,7 @@ static int oolua_factory_function(lua_State* l) \
 	{ \
 		return INTERNAL::Constructor<class_,INTERNAL::has_tag<this_type, No_default_constructor>::Result>::construct(l); \
 	} \
-	luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",class_name); \
-	return 0;/*required by function sig yet luaL_error never returns*/  \
+	return luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",class_name); \
 } \
 	typedef class_ ctor_block_check;
 
