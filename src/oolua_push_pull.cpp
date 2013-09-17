@@ -20,10 +20,7 @@ namespace OOLUA
 {
 	namespace INTERNAL
 	{
-		void local_function_to_set_owner( lua_State* l,void* ptr, Owner own)
-		{
-			set_owner(l,ptr,own);
-		}
+
 		
 		void handle_cpp_pull_fail(lua_State* l,char const * lookingFor)
 		{

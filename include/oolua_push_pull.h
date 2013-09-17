@@ -48,7 +48,6 @@ namespace OOLUA
 		bool cpp_runtime_type_check_of_top(lua_State* l, int looking_for_lua_type, char const * type);
 		bool cpp_runtime_type_check_of_top(lua_State* l, compare_lua_type_func_sig compareFunc, char const * type);
 		void handle_cpp_pull_fail(lua_State* l,char const * lookingFor);
-		void local_function_to_set_owner( lua_State* l,void* ptr, Owner own);
 		
 		namespace LUA_CALLED
 		{
@@ -153,8 +152,7 @@ namespace OOLUA
 			//owner is here as it can be supplied but is ignored as the type is integral
 			static bool push(lua_State* const l, T * const &  value,Owner/* owner*/)
 			{
-				assert(l && value);
-				return OOLUA::push(l,*value);
+				return push_ptr<T,true>::push(l,value);
 			}
 			static bool push(lua_State* const l, T * const &  value)
 			{
@@ -175,12 +173,13 @@ namespace OOLUA
 				lua_pushstring (l,value);
 				return true;
 			}
-			static bool push(lua_State* const l, char * const &  value)
+			
+			static bool push(lua_State* const /*l*/, char * const &  /*value*/)
 			{
-				assert(l && value);
-				lua_pushstring (l,value);
-				return true;
+				assert(0 && "this function should not be called");
+				return false;
 			}
+
 		};
 		template<>
 		struct push_ptr<char const,true>
@@ -191,12 +190,13 @@ namespace OOLUA
 				lua_pushstring (l,value);
 				return true;
 			}
-			static bool push(lua_State* const l, char const * const &  value)
+			
+			static bool push(lua_State* const /*l*/, char const * const &  /*value*/)
 			{
-				assert(l && value);
-				lua_pushstring (l,value);
-				return true;
+				assert(0 && "this function should not be called");
+				return false;
 			}
+			 
 		};
 
 	}
@@ -389,7 +389,7 @@ MSC_POP_COMPILER_WARNING_OOLUA
 			return false;
 #	endif
 		}
-		INTERNAL::local_function_to_set_owner(s,value.m_ptr,OOLUA::Cpp);
+		OOLUA::INTERNAL::userdata_gc_value(static_cast<INTERNAL::Lua_ud*>(lua_touserdata(s, -1)), false);
 		lua_pop( s, 1);
 		return true;
 	}
@@ -526,7 +526,7 @@ MSC_POP_COMPILER_WARNING_OOLUA
 										  : Proxy_class<raw>::class_name);
 				}
 #endif
-				INTERNAL::local_function_to_set_owner(s,value.m_ptr,OOLUA::Cpp);
+				OOLUA::INTERNAL::userdata_gc_value(static_cast<INTERNAL::Lua_ud*>(lua_touserdata(s, idx)), false);
 			}
 			
 		}
