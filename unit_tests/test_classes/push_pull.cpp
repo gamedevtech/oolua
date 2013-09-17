@@ -70,6 +70,8 @@ class PushPull : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pushpull_pushClassPointer_resultAddressEqualsPushValue);
 		
 		CPPUNIT_TEST(pushPull_constPtrToCChar_pulledValueEqualsInput);
+	
+		CPPUNIT_TEST(pushPull_cFunction_pulledValueEqualsInout);
 
 	CPPUNIT_TEST_SUITE_END();
 
@@ -224,6 +226,14 @@ public:
 		std::string result;
 		OOLUA::pull(*m_lua,result);
 		CPPUNIT_ASSERT_EQUAL(std::string(constPtrToChar),result);
+	}
+	void pushPull_cFunction_pulledValueEqualsInout()
+	{
+		lua_CFunction input = lua_gettop;
+		lua_CFunction result;
+		m_lua->push(input);
+		m_lua->pull(result);
+		CPPUNIT_ASSERT_EQUAL(input,result);
 	}
 
 
