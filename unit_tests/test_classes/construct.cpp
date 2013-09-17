@@ -68,6 +68,7 @@ class Construct : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(new_CallingDefaultConstructorOnTypeWithOutOne_runChunkReturnsFalse);
 	CPPUNIT_TEST(new_constructorTakesLuaTableRefYetPassedNil_callReturnsFalse);
 	CPPUNIT_TEST(new_constructorTakesLuaTableYetPassedNil_callReturnsFalse);
+	CPPUNIT_TEST(new_defaultConstructorCalledWithParameter_runChunkReturnsFalse);
 #endif
 	
 	
@@ -86,6 +87,7 @@ class Construct : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(new_constructorWithParamThrowsAnException_pcallReturnsError);
 	CPPUNIT_TEST(new_constructorThrowsAnStdException_runChunkThrowsOOLuaRuntimeError);
 	CPPUNIT_TEST(new_constructorWithParamThrowsAnStdException_runChunkThrowsOOLuaRuntimeError);
+	CPPUNIT_TEST(new_defaultConstructorCalledWithParameter_runChunkThrowsOOLuaRuntimeError);
 #endif	
 	
 	CPPUNIT_TEST(new_constructorTakesLuaState_memberStateEqualsInput);
@@ -437,6 +439,13 @@ public:
 		bool result = m_lua->call("foo");
 		CPPUNIT_ASSERT_EQUAL(false,result);
 	}
+	
+	void new_defaultConstructorCalledWithParameter_runChunkReturnsFalse()
+	{
+		m_lua->register_class<Stub1>();
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_chunk("Stub1.new(1)"));
+	}
+	
 #endif
 	
 	
@@ -548,6 +557,15 @@ public:
 		CPPUNIT_ASSERT_THROW
 		(
 			m_lua->run_chunk("ConstructorThrowsStdException.new(1)");
+			,OOLUA::Runtime_error
+		);
+	}
+	void new_defaultConstructorCalledWithParameter_runChunkThrowsOOLuaRuntimeError()
+	{
+		m_lua->register_class<Stub1>();
+		CPPUNIT_ASSERT_THROW
+		(
+			m_lua->run_chunk("Stub1.new(1)");
 			,OOLUA::Runtime_error
 		);
 	}
