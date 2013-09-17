@@ -13,7 +13,7 @@ namespace OOLUA
             if(pcall_result == 0)return true;
 
 #if OOLUA_STORE_LAST_ERROR == 1
-            set_error_from_top_of_stack_and_pop_the_error(l);
+            if(pcall_result != LUA_ERRMEM)set_error_from_top_of_stack_and_pop_the_error(l);
 #elif OOLUA_USE_EXCEPTIONS == 1
             if( pcall_result == LUA_ERRRUN)
                 throw OOLUA::Runtime_error(l,(OOLUA::ERROR::PopTheStack*)0);
@@ -40,7 +40,7 @@ namespace OOLUA
         {
             if(result == 0)return true;
 #if OOLUA_STORE_LAST_ERROR == 1
-            set_error_from_top_of_stack_and_pop_the_error(l);
+            if(result != LUA_ERRMEM)set_error_from_top_of_stack_and_pop_the_error(l);
 #elif OOLUA_USE_EXCEPTIONS == 1
             if(result == LUA_ERRFILE)
                 throw OOLUA::File_error(l,(OOLUA::ERROR::PopTheStack*)0);

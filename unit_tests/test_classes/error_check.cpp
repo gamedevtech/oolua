@@ -90,6 +90,9 @@ int l_cfunctionTakesStub(lua_State* l)
 	OOLUA_C_FUNCTION(void,cfunctionTakesStub,OOLUA::cpp_acquire_ptr<Stub1*>)
 }
 
+void * dummy_allocator (void* /*ud*/,void* /*ptr*/,size_t /*osize*/,size_t /*nsize*/)
+{ return 0; }
+
 
 class Error_test : public CPPUNIT_NS::TestFixture
 {
@@ -151,6 +154,7 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(luaFunctionCall_luaPassesBooleanToFunctionWantingInt_callReturnsFalse);
 		CPPUNIT_TEST(luaFunctionCall_luaPassesBooleanToFunctionWantingInt_lastErrorHasAnEntry);
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesTableYetPassedInt_callReturnsFalse);
+		CPPUNIT_TEST(setAnAllocatorThatOnlyReturnsZero_returnsFalse);
 #endif
 
 
@@ -196,6 +200,8 @@ class Error_test : public CPPUNIT_NS::TestFixture
 
 		CPPUNIT_TEST(luaFunctionCall_luaPassesBooleanToFunctionWantingInt_throwsRuntimeError);
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesTableYetPassedInt_throwsRuntimeError);
+	
+		CPPUNIT_TEST(setAnAllocatorThatOnlyReturnsZero_throwsMemoryError);
 #endif	
 
 #if OOLUA_DEBUG_CHECKS == 1
@@ -564,7 +570,15 @@ public:
 
 		CPPUNIT_ASSERT_EQUAL(false,m_lua->call("func",object));
 	}
-
+	
+	void setAnAllocatorThatOnlyReturnsZero_returnsFalse()
+	{
+		void* org_ud=0;
+		lua_Alloc org = lua_getallocf(*m_lua, &org_ud);
+		lua_setallocf(*m_lua,dummy_allocator,0);
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_chunk("print'boom'"));
+		lua_setallocf(*m_lua,org,&org_ud);
+	}
 #endif
 	
 #if OOLUA_USE_EXCEPTIONS == 1
@@ -769,7 +783,15 @@ public:
 		m_lua->run_chunk("return function(object) object:ptr(1) end");
 		CPPUNIT_ASSERT_THROW( m_lua->call(1,object) ,OOLUA::Runtime_error);
 	}
-
+	
+	void setAnAllocatorThatOnlyReturnsZero_throwsMemoryError()
+	{
+		void* org_ud=0;
+		lua_Alloc org = lua_getallocf(*m_lua, &org_ud);
+		lua_setallocf(*m_lua,dummy_allocator,0);
+		CPPUNIT_ASSERT_THROW(m_lua->run_chunk("print'boom'"),OOLUA::Memory_error);
+		lua_setallocf(*m_lua,org,&org_ud);
+	}
 #endif
 	
 	
