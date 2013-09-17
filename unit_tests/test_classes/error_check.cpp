@@ -84,6 +84,11 @@ OOLUA_PROXY_END
 OOLUA_EXPORT_NO_FUNCTIONS(NewProblemDerived)
 
 
+void cfunctionTakesStub(Stub1*){}
+int l_cfunctionTakesStub(lua_State* l)
+{
+	OOLUA_C_FUNCTION(void,cfunctionTakesStub,OOLUA::cpp_acquire_ptr<Stub1*>)
+}
 
 
 class Error_test : public CPPUNIT_NS::TestFixture
@@ -129,6 +134,9 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pull_UnrelatedClassType_ptrIsNull);
 		CPPUNIT_TEST(pull_UnrelatedClassType_lastErrorStringIsNotEmpty);
 	
+		CPPUNIT_TEST(pull_FunctionTriesToAcquirePtrWhenWrongClassTypeIsOnTheStack_callReturnsFalse);
+		CPPUNIT_TEST(pull_FunctionTriesToAcquirePtrWhenWrongClassTypeIsOnTheStack_lastErrorStringIsNotEmpty);
+
 		CPPUNIT_TEST(pull_classWhenintIsOnStack_lastErrorStringIsNotEmpty);
 		CPPUNIT_TEST(pull_classWhenintIsOnStack_pullReturnsFalse);
 		CPPUNIT_TEST(pull_intWhenClassIsOnStack_pullReturnsFalse);
@@ -174,7 +182,8 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(pull_enumWhenStringIsOnStack_throwTypeError);
 		
 		CPPUNIT_TEST(pull_cppAcquirePtrWhenIntOnStack_throwsTypeError);
-		
+		CPPUNIT_TEST(pull_FunctionTriesToAcquirePtrWhenWrongClassTypeIsOnTheStack_throwsRuntimeError);
+	
 		CPPUNIT_TEST(pull_CFunctionFromStackTopIsNotFunc_throwsRunTimeError);
 
 		CPPUNIT_TEST(exceptionSafe_memberFunctionThrowsStdRuntimeError_callThrowsOoluaRuntimeError);
@@ -442,6 +451,22 @@ public:
 		CPPUNIT_ASSERT_EQUAL(false, OOLUA::get_last_error(*m_lua).empty() );
 	}
 	
+	void pull_FunctionTriesToAcquirePtrWhenWrongClassTypeIsOnTheStack_callReturnsFalse()
+	{		
+		m_lua->register_class<Stub2>();
+		Stub2 f;
+		m_lua->push(l_cfunctionTakesStub);
+		CPPUNIT_ASSERT_EQUAL( false,m_lua->call(1,&f));
+	}
+	void pull_FunctionTriesToAcquirePtrWhenWrongClassTypeIsOnTheStack_lastErrorStringIsNotEmpty()
+	{		
+		m_lua->register_class<Stub2>();
+		Stub2 f;
+		m_lua->push(l_cfunctionTakesStub);
+		m_lua->call(1,&f);
+		CPPUNIT_ASSERT_EQUAL(false, OOLUA::get_last_error(*m_lua).empty() );
+	}
+	
 	void pull_classWhenintIsOnStack_lastErrorStringIsNotEmpty()
 	{
 		m_lua->register_class<Stub1>();
@@ -557,6 +582,13 @@ public:
 		OOLUA::cpp_acquire_ptr<Stub1*> cpp_type;
 		CPPUNIT_ASSERT_THROW( (OOLUA::pull(*m_lua,cpp_type) ),OOLUA::Type_error);
 		
+	}
+	void pull_FunctionTriesToAcquirePtrWhenWrongClassTypeIsOnTheStack_throwsRuntimeError()
+	{		
+		m_lua->register_class<Stub2>();
+		Stub2 f;
+		m_lua->push(l_cfunctionTakesStub);
+		CPPUNIT_ASSERT_THROW(m_lua->call(1,&f),OOLUA::Runtime_error);
 	}
 	void pull_enumWhenStringIsOnStack_throwTypeError()
 	{
