@@ -32,7 +32,7 @@ MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
 				{
 					return 0;
 				}
-				return OOLUA::INTERNAL::class_from_index<typename TypeWithTraits::raw_type>(l,index)!=0;
+				return OOLUA::INTERNAL::check_index<typename TypeWithTraits::raw_type>(l,index)!=0;
 MSC_POP_COMPILER_WARNING_OOLUA
 			}
 

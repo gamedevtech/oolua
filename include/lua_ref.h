@@ -131,7 +131,6 @@ namespace OOLUA
 		bool push(lua_State* const lua)const;
 		bool pull(lua_State* const lua) OOLUA_DEFAULT ;
 		bool lua_push(lua_State* const lua)const;
-		bool lua_pull(lua_State* const lua);
 		bool lua_get(lua_State* const lua, int idx);
 		
 		/**
@@ -275,22 +274,7 @@ namespace OOLUA
 		}
 		return true;
 	}
-	
-	
-	template<int ID>
-	bool Lua_ref<ID>::lua_pull(lua_State* const lua) 
-	{
-		if( !pull_if_valid(lua) )
-		{
-			luaL_error(lua,
-					   "pulling incorrect type from stack. This is a ref to id %d, stack contains %s"
-					   ,ID
-					   ,lua_typename(lua,lua_type(lua, -1))
-						);
-			return false;
-		}
-		return true;
-	}
+
 	template<int ID>
 	bool Lua_ref<ID>::lua_get(lua_State* const vm, int idx) 
 	{

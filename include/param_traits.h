@@ -368,7 +368,6 @@ for parameters contain as part of their name "out", "in" or a combination.
 		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
 		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
 
-		cpp_acquire_ptr(raw* ptr):m_ptr(ptr){}
 		cpp_acquire_ptr():m_ptr(0){}
 
 		raw* m_ptr;

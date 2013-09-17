@@ -226,8 +226,7 @@ namespace OOLUA
 	template<typename T>
 	bool set_global(lua_State* l, char const* name, T& instance)
 	{
-		bool result = OOLUA::push(l, instance);
-		if (!result) return false;
+		if (! OOLUA::push(l, instance) ) return false;
 		lua_setglobal(l, name);
 		return true;
 	}

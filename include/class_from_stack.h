@@ -53,25 +53,6 @@ namespace OOLUA
 		}
 
 		template<typename T>
-		inline T* class_from_index(lua_State * l,int index)
-		{
-#if OOLUA_DEBUG_CHECKS == 1
-			assert(index >0);
-#endif
-			return check_index<T>(l,index);
-		}
-
-		template<typename T>
-		inline T* none_const_class_from_index(lua_State * l,int index)
-		{
-#if OOLUA_DEBUG_CHECKS == 1
-			assert(index >0);
-#endif
-			return check_index_no_const<T>(l,index);
-		}
-
-
-		template<typename T>
 		T* valid_base_ptr_or_null(Lua_ud const* stack_ud)
 		{
 			Lua_ud requested_ud = {0,0,&OOLUA::register_class<T>,0};

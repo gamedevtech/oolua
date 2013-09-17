@@ -39,12 +39,6 @@ namespace OOLUA
 				return static_cast<BaseType*>(static_cast<typename ProxyStackType::class_* > ( stack_ud->void_class_ptr) );
 			}
 		};
-		template<typename ProxyStackType,typename BaseType>
-		struct CastToRequestedProxyType<ProxyStackType,BaseType,0>
-		{
-			static void* cast(INTERNAL::Lua_ud const* /*stack_ud*/)
-			{return (void*)0;}
-		};
 
 		template<typename ProxyStackType,typename Bases, int BaseIndex,typename BaseType>
 		struct Is_a_base
