@@ -104,6 +104,9 @@ class Error_test : public CPPUNIT_NS::TestFixture
 #	if OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 1
 		CPPUNIT_TEST(userDataCheck_UserdataOnTopOfStackWhichOoluaDidNotCreate_resultIsFalse);
 		CPPUNIT_TEST(userDataCheck_lightUserDataWithNoMetaTable_resultIsFalse);
+#		if OOLUA_USERDATA_OPTIMISATION == 1
+			CPPUNIT_TEST(userData_craftUserDataWhichCorrectSizeYetNotCookie_isUserdataReturnsFalse);
+#		endif
 #	endif	
 #	if OOLUA_USE_EXCEPTIONS == 1
 		CPPUNIT_TEST(memberFunctionCall_luaSelfCallOnType_throwsOoluaRunTimeError);
@@ -140,7 +143,7 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(luaFunctionCall_luaPassesBooleanToFunctionWantingInt_callReturnsFalse);
 		CPPUNIT_TEST(luaFunctionCall_luaPassesBooleanToFunctionWantingInt_lastErrorHasAnEntry);
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesTableYetPassedInt_callReturnsFalse);
-#endif	
+#endif
 
 
 #if OOLUA_USE_EXCEPTIONS == 1
@@ -270,7 +273,14 @@ public:
 		int after = lua_gettop(*m_lua);
 		CPPUNIT_ASSERT_EQUAL(before,after);
 	}
-
+	
+	void userData_craftUserDataWhichCorrectSizeYetNotCookie_isUserdataReturnsFalse()
+	{
+		OOLUA::INTERNAL::Lua_ud* ud = (OOLUA::INTERNAL::Lua_ud*)lua_newuserdata(*m_lua, sizeof(OOLUA::INTERNAL::Lua_ud) );
+		memset(ud,sizeof(*ud),0);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::index_is_userdata(*m_lua,1,ud));
+							
+	}
 
 	void scriptConstructor_checkStackSize_stackIsEmpty()
 	{
