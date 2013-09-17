@@ -19,10 +19,12 @@ class Lua_globals : public CppUnit::TestFixture
 	
 #if OOLUA_USE_EXCEPTIONS ==1 	
 		CPPUNIT_TEST(globalData_setThenClearThenGetGlobalInt_getThrowsTypeError);
+		CPPUNIT_TEST(setGlobal_luaRefFromADifferentState_throwsRunTimeError);
 #endif
 	
 #if OOLUA_STORE_LAST_ERROR ==1
 		CPPUNIT_TEST(globalData_setThenClearThenGetGlobalInt_getReturnsFalse);
+		CPPUNIT_TEST(setGlobal_luaRefFromADifferentState_returnsFalse);
 #endif	
 	
 	CPPUNIT_TEST_SUITE_END();
@@ -81,6 +83,14 @@ public:
 		OOLUA::set_global_to_nil(*m_lua,"i");
 		CPPUNIT_ASSERT_THROW( OOLUA::get_global(*m_lua,"i",result),OOLUA::Type_error );
 	}
+	void setGlobal_luaRefFromADifferentState_throwsRunTimeError()
+	{
+		OOLUA::Script other;
+		OOLUA::Lua_func_ref ref;
+		other.load_chunk("return ");
+		other.pull(ref);
+		CPPUNIT_ASSERT_THROW(OOLUA::set_global(*m_lua,"dontCare",ref), OOLUA::Runtime_error);
+	}
 #endif
 	
 #if OOLUA_STORE_LAST_ERROR ==1 	
@@ -93,6 +103,16 @@ public:
 		bool result = OOLUA::get_global(*m_lua,"i",DontCare);
 		CPPUNIT_ASSERT_EQUAL( false,result );
 	}
+	
+	void setGlobal_luaRefFromADifferentState_returnsFalse()
+	{
+		OOLUA::Script other;
+		OOLUA::Lua_func_ref ref;
+		other.load_chunk("return ");
+		other.pull(ref);
+		CPPUNIT_ASSERT_EQUAL(false, OOLUA::set_global(*m_lua,"dontCare",ref));
+	}
 #endif
 };
+	
 CPPUNIT_TEST_SUITE_REGISTRATION(Lua_globals);
