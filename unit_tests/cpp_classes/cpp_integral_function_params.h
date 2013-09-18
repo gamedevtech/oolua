@@ -19,4 +19,14 @@ typedef MockFunctionParamType<oolua_test_int_in_out_traits,int> IntegerFunctionI
 typedef FunctionParamType<oolua_test_int_in_out_traits,char> CharFunctionInTraits;
 typedef MockFunctionParamType<oolua_test_int_in_out_traits,char> CharFunctionInTraitsMock;
 
+
+typedef FunctionParamType<oolua_test_int_in_traits,float> FloatFunctionInTraits;
+typedef MockFunctionParamType<oolua_test_int_in_traits,float> FloatFunctionInTraitsMock;
+
+typedef FunctionParamType<oolua_test_int_in_traits,double> DoubleFunctionInTraits;
+typedef MockFunctionParamType<oolua_test_int_in_traits,double> DoubleFunctionInTraitsMock;
+
+struct lua_State;
+typedef FunctionParamType<oolua_test_int_in_traits,int(*)(lua_State*)> CFunctionInTraits;
+typedef MockFunctionParamType<oolua_test_int_in_traits,int(*)(lua_State*)> CFunctionInTraitsMock;
 #endif

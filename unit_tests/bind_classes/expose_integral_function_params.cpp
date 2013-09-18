@@ -34,4 +34,17 @@ OOLUA_EXPORT_FUNCTIONS(CharFunctionInTraits
 					   ,refPtrConst
 					   )
 
+OOLUA_EXPORT_FUNCTIONS_CONST(FloatFunctionInTraits)
+OOLUA_EXPORT_FUNCTIONS(FloatFunctionInTraits
+					   ,value
+					   )
 
+OOLUA_EXPORT_FUNCTIONS_CONST(DoubleFunctionInTraits)
+OOLUA_EXPORT_FUNCTIONS(DoubleFunctionInTraits
+					   ,value
+					   )
+
+OOLUA_EXPORT_FUNCTIONS_CONST(CFunctionInTraits)
+OOLUA_EXPORT_FUNCTIONS(CFunctionInTraits
+					   ,value
+					   )

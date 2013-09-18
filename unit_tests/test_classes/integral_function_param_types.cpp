@@ -47,6 +47,10 @@ class Integral_params : public CppUnit::TestFixture
 	CPPUNIT_TEST(string_ptrConstParamPassedInt_callReturnsFalse);
 	CPPUNIT_TEST(string_ptrParamPassedInt_callReturnsFalse);
 #endif
+	
+	CPPUNIT_TEST(float_floatParam_CalledOnceWithCorrectParamWithinEpsilon);
+	CPPUNIT_TEST(double_doubleParam_CalledOnceWithCorrectParamWithinEpsilon);
+	CPPUNIT_TEST(cFunction_memberFunctionWhichTakesLuaCFunction_calledOnceWithCorrectParam);
 	CPPUNIT_TEST_SUITE_END();
 	
 	OOLUA::Script* m_lua;
@@ -183,6 +187,40 @@ public:
 		CPPUNIT_ASSERT_EQUAL( false, m_lua->call(1,helper.object) );
 	}
 #endif
+	
+	void float_floatParam_CalledOnceWithCorrectParamWithinEpsilon()
+	{
+		FloatFunctionInTraitsMock mock;
+		FloatFunctionInTraits* object = &mock;
+		float input = .5f;
+		m_lua->register_class<FloatFunctionInTraits>();
+		m_lua->run_chunk("return function(object,input) object:value(input) end");
+		
+		EXPECT_CALL(mock,value(::testing::FloatEq(input))).Times(1);
+		m_lua->call(1,object,input);
+	}	
+	void double_doubleParam_CalledOnceWithCorrectParamWithinEpsilon()
+	{
+		DoubleFunctionInTraitsMock mock;
+		DoubleFunctionInTraits* object = &mock;
+		double input = .5;
+		m_lua->register_class<DoubleFunctionInTraits>();
+		m_lua->run_chunk("return function(object,input) object:value(input) end");
+		
+		EXPECT_CALL(mock,value(::testing::DoubleEq(input))).Times(1);
+		m_lua->call(1,object,input);
+	}
+	
+	void cFunction_memberFunctionWhichTakesLuaCFunction_calledOnceWithCorrectParam()
+	{
+		CFunctionInTraitsMock mock;
+		CFunctionInTraits* object = &mock;
+		lua_CFunction input = lua_gettop;
+		m_lua->register_class<CFunctionInTraits>();
+		m_lua->run_chunk("return function(object,input) object:value(input) end");
+		EXPECT_CALL(mock,value(::testing::Eq(input))).Times(1);
+		m_lua->call(1,object,input);
+	}
 
 };
 CPPUNIT_TEST_SUITE_REGISTRATION(Integral_params);

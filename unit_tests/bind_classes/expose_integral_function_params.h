@@ -42,6 +42,19 @@ OOLUA_PROXY(CharFunctionInTraits)
 	OOLUA_MFUNC(refPtrConst)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(FloatFunctionInTraits)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MFUNC(value)
+OOLUA_PROXY_END
 
+OOLUA_PROXY(DoubleFunctionInTraits)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MFUNC(value)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(CFunctionInTraits)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MFUNC(value)
+OOLUA_PROXY_END
 
 #endif

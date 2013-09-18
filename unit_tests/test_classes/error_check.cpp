@@ -155,6 +155,9 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(luaFunctionCall_luaPassesBooleanToFunctionWantingInt_lastErrorHasAnEntry);
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesTableYetPassedInt_callReturnsFalse);
 		CPPUNIT_TEST(setAnAllocatorThatOnlyReturnsZero_returnsFalse);
+		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesFloatYetPassedTable_callReturnsFalse);
+		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesDoubleYetPassedTable_callReturnsFalse);
+		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesLuaCFunctionYetPassedTable_callReturnsFalse);
 #endif
 
 
@@ -202,6 +205,9 @@ class Error_test : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesTableYetPassedInt_throwsRuntimeError);
 	
 		CPPUNIT_TEST(setAnAllocatorThatOnlyReturnsZero_throwsMemoryError);
+		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesFloatYetPassedTable_throwsRuntimeError);
+		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesDoubleYetPassedTable_throwsRuntimeError);
+		CPPUNIT_TEST(memberFunctionCall_memberFunctionWhichTakesLuaCFunctionYetPassedTable_throwsRuntimeError);
 #endif	
 
 #if OOLUA_DEBUG_CHECKS == 1
@@ -579,6 +585,30 @@ public:
 		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_chunk("print'boom'"));
 		lua_setallocf(*m_lua,org,&org_ud);
 	}
+	void memberFunctionCall_memberFunctionWhichTakesFloatYetPassedTable_callReturnsFalse()
+	{
+		::testing::NiceMock<FloatFunctionInTraitsMock> stub;
+		FloatFunctionInTraits* object = &stub;
+		m_lua->register_class<FloatFunctionInTraits>();
+		m_lua->run_chunk("return function(object) object:value{} end");
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(1,object));
+	}
+	void memberFunctionCall_memberFunctionWhichTakesDoubleYetPassedTable_callReturnsFalse()
+	{
+		::testing::NiceMock<DoubleFunctionInTraitsMock> stub;
+		DoubleFunctionInTraits* object = &stub;
+		m_lua->register_class<DoubleFunctionInTraits>();
+		m_lua->run_chunk("return function(object) object:value{} end");
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(1,object));
+	}
+	void memberFunctionCall_memberFunctionWhichTakesLuaCFunctionYetPassedTable_callReturnsFalse()
+	{
+		::testing::NiceMock<CFunctionInTraitsMock> stub;
+		CFunctionInTraits* object = &stub;
+		m_lua->register_class<CFunctionInTraits>();
+		m_lua->run_chunk("return function(object) object:value{} end");
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(1,object));
+	}
 #endif
 	
 #if OOLUA_USE_EXCEPTIONS == 1
@@ -791,6 +821,30 @@ public:
 		lua_setallocf(*m_lua,dummy_allocator,0);
 		CPPUNIT_ASSERT_THROW(m_lua->run_chunk("print'boom'"),OOLUA::Memory_error);
 		lua_setallocf(*m_lua,org,&org_ud);
+	}
+	void memberFunctionCall_memberFunctionWhichTakesFloatYetPassedTable_throwsRuntimeError()
+	{
+		::testing::NiceMock<FloatFunctionInTraitsMock> stub;
+		FloatFunctionInTraits* object = &stub;
+		m_lua->register_class<FloatFunctionInTraits>();
+		m_lua->run_chunk("return function(object) object:value{} end");
+		CPPUNIT_ASSERT_THROW(m_lua->call(1,object), OOLUA::Runtime_error);
+	}
+	void memberFunctionCall_memberFunctionWhichTakesDoubleYetPassedTable_throwsRuntimeError()
+	{
+		::testing::NiceMock<DoubleFunctionInTraitsMock> stub;
+		DoubleFunctionInTraits* object = &stub;
+		m_lua->register_class<DoubleFunctionInTraits>();
+		m_lua->run_chunk("return function(object) object:value{} end");
+		CPPUNIT_ASSERT_THROW(m_lua->call(1,object), OOLUA::Runtime_error);
+	}
+	void memberFunctionCall_memberFunctionWhichTakesLuaCFunctionYetPassedTable_throwsRuntimeError()
+	{
+		::testing::NiceMock<CFunctionInTraitsMock> stub;
+		CFunctionInTraits* object = &stub;
+		m_lua->register_class<CFunctionInTraits>();
+		m_lua->run_chunk("return function(object) object:value{} end");
+		CPPUNIT_ASSERT_THROW(m_lua->call(1,object), OOLUA::Runtime_error);
 	}
 #endif
 	
