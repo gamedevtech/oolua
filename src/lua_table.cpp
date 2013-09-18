@@ -84,10 +84,6 @@ namespace OOLUA
 	{
 		return m_table_ref.pull(l);
 	}
-	void Table::lua_pull_from_stack(lua_State* l)
-	{
-		m_table_ref.lua_pull(l);
-	}
 	void Table::lua_get(lua_State* l,int idx)
 	{
 		m_table_ref.lua_get(l,idx);
