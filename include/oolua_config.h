@@ -228,7 +228,7 @@ vaarg warnings in a limited scope without effecting a user's compile options:
 #	endif
 #endif
 
- Code wanting to be protectyed here
+ Code wanting to be protected here
  
 #if defined __GNUC__ && defined __STRICT_ANSI__ && ( __GNUC__ >4  || ( __GNUC__ == 4 && __GNUC_MINOR__ >= 6) )
 #	pragma GCC diagnostic push 
