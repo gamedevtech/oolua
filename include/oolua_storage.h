@@ -107,11 +107,14 @@ namespace OOLUA
 		template<typename T>
 		int lua_set_owner(lua_State*  l)
 		{
-			T* p = class_from_index<T>(l,1);
-			lua_remove(l,1);
+			T* p = check_index<T>(l,1);
+			if(!p) return luaL_error(l, "The self/this instance to '%s' is not of type '%s'"
+									 ,OOLUA::INTERNAL::set_owner_str
+									 ,OOLUA::Proxy_class<T>::class_name
+									 );
 			Owner own(No_change);
-			pull(l,own);
-			set_owner(l,p,own);
+			OOLUA::INTERNAL::LUA_CALLED::get(l,2,own);
+			if(own != No_change) INTERNAL::userdata_gc_value(static_cast<INTERNAL::Lua_ud*>(lua_touserdata(l, 1)), own == Cpp? false : true);
 			return 0;
 		}
 

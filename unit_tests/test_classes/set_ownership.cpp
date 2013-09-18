@@ -25,6 +25,8 @@ class Ownership : public CPPUNIT_NS::TestFixture
 #if OOLUA_USE_EXCEPTIONS == 1
 		CPPUNIT_TEST(setOwner_luaOwnsOnInstanceWithNoPublicDestructor_throwsRuntimeError);
 		CPPUNIT_TEST(setOwner_cppOwnsOnInstanceWithNoPublicDestructor_throwsRuntimeError);
+		CPPUNIT_TEST(setOwner_functionCalledWithNoneClassType_throwsRuntimeError);
+		CPPUNIT_TEST(setOwner_functionCalledWithClassTypeYetNoEnumType_throwsRuntimeError);
 #endif	
 		
 		CPPUNIT_TEST(luaParamOutP_ref2Ptr_userDataPtrComparesEqualToValueSetInFunction);
@@ -164,6 +166,16 @@ public:
 		mock->release();
 		
 	}
+	void setOwner_functionCalledWithNoneClassType_throwsRuntimeError()
+	{
+		m_lua->register_class<Stub1>();
+		CPPUNIT_ASSERT_THROW( m_lua->run_chunk("Stub1.set_owner(1,Cpp_owns)"),OOLUA::Runtime_error);
+	}
+	void setOwner_functionCalledWithClassTypeYetNoEnumType_throwsRuntimeError()
+	{
+		m_lua->register_class<Stub1>();
+		CPPUNIT_ASSERT_THROW( m_lua->run_chunk("Stub1.set_owner(Stub1.new(),'foo')"),OOLUA::Runtime_error);
+	}
 #endif	
 
 
@@ -278,7 +290,11 @@ public:
 	{
 		Stub1 stub;
 		m_lua->run_chunk("foo = function(param) return param end");
-		m_lua->call("foo",OOLUA::lua_acquire_ptr<Stub1*>(&stub));
+	
+		//improve code coverage using default constructor
+		OOLUA::lua_acquire_ptr<Stub1*> ptr;
+		ptr.m_ptr = &stub;
+		m_lua->call("foo",ptr);
 		OOLUA::INTERNAL::Lua_ud * ud = get_ud_helper();
 		OOLUA::INTERNAL::userdata_gc_value(ud,false);//stop delete being called on this stack pointer
 		CPPUNIT_ASSERT_EQUAL((void*)&stub,ud->void_class_ptr);
