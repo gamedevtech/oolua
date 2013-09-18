@@ -8,8 +8,6 @@ OOLUA_PROXY(Constant)
 	OOLUA_TAGS(Abstract)
 	OOLUA_MFUNC_CONST(cpp_func_const)
 	OOLUA_MFUNC(cpp_func)
-//	OOLUA_MFUNC_CONST_RENAME(renamedUsingVaArgs,function_to_test_rename_using_varags)
-OOLUA_MFUNC_CONST(function_to_test_rename_using_varags,renamedUsingVaArgs)
 OOLUA_PROXY_END
 
 #endif
