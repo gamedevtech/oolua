@@ -13,8 +13,11 @@ bool idx_equal(lua_State* vm, int idx1, int idx2)
 	return !! lua_compare(vm, idx1, idx2, LUA_OPEQ);
 #endif
 }
+
+/*Visual Studio C4100 unreferenced formal parameter result_listener. GoogleMock*/
 MATCHER_P(RefIsEqualToValue, value, "") 
 { 
+	(void)result_listener;
 	OOLUA::push(value.state(),arg);
 	OOLUA::push(value.state(),value);
 	return idx_equal(value.state(),-1,-2);
@@ -22,9 +25,9 @@ MATCHER_P(RefIsEqualToValue, value, "")
 
 MATCHER_P(RefIsInvalid, dummyValue, "") 
 { 
+	(void)result_listener;
 	return arg.valid() == false;
 }
-
 
 class FalseIntegralFunctionParams : public CppUnit::TestFixture 
 {

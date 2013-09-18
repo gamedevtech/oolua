@@ -40,6 +40,16 @@ public:
 	virtual void twoRefs(ParamType &,ParamType &) = 0;
 };
 
+
+#ifdef _MSC_VER
+	/* I do not understand this warning for Visual Studio as the functions parameters are the same,
+		that is unless googlemock is doing something really strange?
+		Anyway, a big bag of Shhhhhhh
+	*/
+#	pragma warning(push)
+#	pragma warning(disable : 4373)
+#endif
+
 template<typename Specialisation , typename ParamType>
 class MockFunctionParamType : public FunctionParamType<Specialisation,ParamType>
 {
@@ -59,5 +69,9 @@ public:
 	MOCK_METHOD1_T(refConstPtrConst,void (ParamType const * const &));
 	MOCK_METHOD2_T(twoRefs,void(ParamType &,ParamType &));
 };
+
+#ifdef _MSC_VER
+#	pragma warning(pop)
+#endif
 
 #endif
