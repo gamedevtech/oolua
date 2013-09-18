@@ -59,25 +59,33 @@ namespace
 
 }
 
-
+/*
+ Tests that the object on which are calls are requested to be made, handles the following correctly
+ call none constant function on a none constant object
+ call a constant function on a none constant object
+ call a constant function on a constant object
+error:
+ call a none constant function on a constant object
+*/
 class Constant_functions : public CPPUNIT_NS::TestFixture
 {
 	CPPUNIT_TEST_SUITE( Constant_functions );
 		CPPUNIT_TEST(callConstantFunction_passedConstantInstance_calledOnce);
 		CPPUNIT_TEST(callConstantFunction_passedNoneConstantInstance_calledOnce);
 		CPPUNIT_TEST(callNoneConstantFunction_passedNoneConstantInstance_calledOnce);
-		CPPUNIT_TEST(callLuaAddedConstantFunction_passedConstantInstance_calledOnce);
-		CPPUNIT_TEST(callLuaAddedConstantFunction_passedNoneConstantInstance_calledOnce);
-		CPPUNIT_TEST(callLuaAddedNoneConstantFunction_passedNoneConstantInstance_calledOnce);
-	
+
+		CPPUNIT_TEST(callLuaAddedFunctionWhichCallsConstMember_passedConstantInstance_calledOnce);
+		CPPUNIT_TEST(callLuaAddedFunctionWhichCallsConstMember_passedNoneConstantInstance_calledOnce);
+		CPPUNIT_TEST(callLuaAddedFunctionWhichCallsNoneConstMember_passedNoneConstantInstance_calledOnce);
+
 #if OOLUA_STORE_LAST_ERROR ==1
 		CPPUNIT_TEST(callNoneConstantFunction_passedConstantInstance_callReturnsFalse);
-		CPPUNIT_TEST(callLuaAddedNoneConstantFunction_passedConstantInstance_callReturnsFalse);
+		CPPUNIT_TEST(callLuaAddedFunctionWhichCallsNoneConstMember_passedConstantInstance_callReturnsFalse);
 #endif	
 	
 #if OOLUA_USE_EXCEPTIONS ==1 
 		CPPUNIT_TEST(callNoneConstantFunction_passedConstantInstance_throwsRuntimeError);
-		CPPUNIT_TEST(callLuaAddedNoneConstantFunction_passedConstantInstance_throwsRuntimeError);
+		CPPUNIT_TEST(callLuaAddedFunctionWhichCallsNoneConstMember_passedConstantInstance_callThrowsRuntimeError);
 #endif
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
@@ -96,92 +104,92 @@ public:
 
 	void callConstantFunction_passedConstantInstance_calledOnce()
 	{
-		char const* name = constant_function(m_lua);
 		ConstantMockHelper helper;
-		EXPECT_CALL(helper.mock,cpp_func_const() )
-			.Times(1);
-		m_lua->call(name,helper.ptr_to_const);
+		EXPECT_CALL(helper.mock,cpp_func_const() ).Times(1);
+		m_lua->run_chunk("return function(obj) obj:cpp_func_const() end");
+		m_lua->call(1,helper.ptr_to_const);
 	}
 	void callConstantFunction_passedNoneConstantInstance_calledOnce()
 	{
-		char const* name = constant_function(m_lua);
 		ConstantMockHelper helper;
-		EXPECT_CALL(helper.mock,cpp_func_const() )
-			.Times(1);
-		m_lua->call(name,helper.ptr_to);
+		EXPECT_CALL(helper.mock,cpp_func_const() ).Times(1);
+		m_lua->run_chunk("return function(obj) obj:cpp_func_const() end");
+		m_lua->call(1,helper.ptr_to);
 	}
 
 
 	void callNoneConstantFunction_passedNoneConstantInstance_calledOnce()
 	{
-		char const* name = none_constant_function(m_lua);
 		ConstantMockHelper helper;
-		EXPECT_CALL(helper.mock,cpp_func() )
-			.Times(1);
-		m_lua->call(name,helper.ptr_to);
+		EXPECT_CALL(helper.mock,cpp_func() ).Times(1);
+		m_lua->run_chunk("return function(obj) obj:cpp_func() end");
+		m_lua->call(1,helper.ptr_to);
 	}
 
-	void callLuaAddedConstantFunction_passedConstantInstance_calledOnce()
+	void lua_added_function_calls_constant_member()
 	{
-		char const* name = add_lua_constant_function(m_lua);
-		char const* func_name = lua_added_func(m_lua,name);
-		ConstantMockHelper helper;
-		EXPECT_CALL(helper.mock,cpp_func_const() )
-			.Times(1);
-		m_lua->call(func_name,helper.ptr_to_const);
+		m_lua->run_chunk("function Constant:lua_const_func() self:cpp_func_const() end "
+						 "return function(object) object:lua_const_func() end ");
 	}
-	void callLuaAddedConstantFunction_passedNoneConstantInstance_calledOnce()
+	void callLuaAddedFunctionWhichCallsConstMember_passedConstantInstance_calledOnce()
 	{
-		char const* name = add_lua_constant_function(m_lua);
-		char const* func_name = lua_added_func(m_lua,name);
 		ConstantMockHelper helper;
-		EXPECT_CALL(helper.mock,cpp_func_const() )
-			.Times(1);
-		m_lua->call(func_name,helper.ptr_to);
+		EXPECT_CALL(helper.mock,cpp_func_const() ).Times(1);
+		m_lua->run_chunk("function Constant:lua_const_func() self:cpp_func_const() end "
+					 "return function(object) object:lua_const_func() end ");
+		m_lua->call(1,helper.ptr_to_const);
 	}
-
-
-
-	void callLuaAddedNoneConstantFunction_passedNoneConstantInstance_calledOnce()
+	void callLuaAddedFunctionWhichCallsConstMember_passedNoneConstantInstance_calledOnce()
 	{
-		char const* name = add_lua_none_constant_function(m_lua);
-		char const* func_name = lua_added_func(m_lua,name);
 		ConstantMockHelper helper;
-		EXPECT_CALL(helper.mock,cpp_func() )
-			.Times(1);
-		m_lua->call(func_name,helper.ptr_to);
+		EXPECT_CALL(helper.mock,cpp_func_const() ).Times(1);
+		lua_added_function_calls_constant_member();
+		m_lua->call(1,helper.ptr_to_const);
 	}
+	void callLuaAddedFunctionWhichCallsNoneConstMember_passedNoneConstantInstance_calledOnce()
+	{
+		ConstantMockHelper helper;
+		EXPECT_CALL(helper.mock,cpp_func() ).Times(1);
+		m_lua->run_chunk("function Constant:lua_func() self:cpp_func() end "
+						 "return function(object) object:lua_func() end ");
+		m_lua->call(1,helper.ptr_to);
+	}
+	
+
+	
 #if OOLUA_STORE_LAST_ERROR ==1
 	void callNoneConstantFunction_passedConstantInstance_callReturnsFalse()
 	{
-		char const* name = none_constant_function(m_lua);
 		ConstantMockHelper helper;
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(name,helper.ptr_to_const));
+		m_lua->run_chunk("return function(obj) obj:cpp_func() end");
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(1,helper.ptr_to_const));
 	}
-	void callLuaAddedNoneConstantFunction_passedConstantInstance_callReturnsFalse()
+
+	void callLuaAddedFunctionWhichCallsNoneConstMember_passedConstantInstance_callReturnsFalse()
 	{
-		char const* name = add_lua_none_constant_function(m_lua);
-		char const* func_name = lua_added_func(m_lua,name);
 		ConstantMockHelper helper;
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(func_name,helper.ptr_to_const));
+		m_lua->run_chunk("function Constant:lua_func() self:cpp_func() end "
+						 "return function(object) object:lua_func() end ");
+		CPPUNIT_ASSERT_EQUAL(false,m_lua->call(1,helper.ptr_to_const));
 	}
+
 #endif
 	
 #if OOLUA_USE_EXCEPTIONS ==1 
 	void callNoneConstantFunction_passedConstantInstance_throwsRuntimeError()
 	{
-		char const* name = none_constant_function(m_lua);
 		ConstantMockHelper helper;
-		CPPUNIT_ASSERT_THROW( (m_lua->call(name,helper.ptr_to_const)),OOLUA::Runtime_error);
+		m_lua->run_chunk("return function(obj) obj:cpp_func() end");
+		CPPUNIT_ASSERT_THROW( (m_lua->call(1,helper.ptr_to_const)),OOLUA::Runtime_error);
 	}
-	void callLuaAddedNoneConstantFunction_passedConstantInstance_throwsRuntimeError()
+
+	void callLuaAddedFunctionWhichCallsNoneConstMember_passedConstantInstance_callThrowsRuntimeError()
 	{
-		char const* name = add_lua_none_constant_function(m_lua);
-		char const* func_name = lua_added_func(m_lua,name);
 		ConstantMockHelper helper;
-		CPPUNIT_ASSERT_THROW( (m_lua->call(func_name,helper.ptr_to_const)),OOLUA::Runtime_error);
+		m_lua->run_chunk("function Constant:lua_func() self:cpp_func() end "
+						 "return function(object) object:lua_func() end ");
+		CPPUNIT_ASSERT_THROW( (m_lua->call(1,helper.ptr_to_const)),OOLUA::Runtime_error);
 	}
-	
 #endif
 };
 

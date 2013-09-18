@@ -108,30 +108,22 @@ namespace OOLUA
 		}
 
 #define DEFINE_OOLUA_OPERATOR_FUNCTION_(operation,lua_string_op)\
-template<typename T, bool hasOperator >\
-struct set_ ## operation ## _function\
-{\
- 	   static void set(lua_State*  const /*l*/,int /*const_metatable*/,int /*none_const_metatable*/){}\
-};\
-template<typename T>\
-struct set_ ## operation ## _function<T, true> \
-{\
- 	   static void set(lua_State*  const l,int const_metatable,int none_const_metatable)\
- 	   {\
-			  lua_pushcfunction(l, lua_## operation<T>);\
-			  int func = lua_gettop(l);\
-			  lua_pushliteral(l, lua_string_op);\
-			  int op_string = lua_gettop(l);\
-			  lua_pushvalue(l,op_string);\
-			  lua_pushvalue(l,func);\
-			  lua_settable(l, const_metatable);\
-			  lua_pushvalue(l,op_string);\
-			  lua_pushvalue(l,func);\
-			  lua_settable(l, none_const_metatable);\
-			  lua_remove(l,op_string);\
-			  lua_remove(l,func);\
-       }\
-};
+		template<typename T, bool hasOperator >\
+		struct set_ ## operation ## _function\
+		{\
+			static void set(lua_State*  const /*l*/,int /*metatable*/){}\
+		};\
+		template<typename T>\
+		struct set_ ## operation ## _function<T, true> \
+		{\
+			static void set(lua_State*  const l,int metatable)\
+			{\
+				lua_pushliteral(l, lua_string_op);\
+				lua_pushcfunction(l, lua_## operation<T>);\
+				lua_rawset(l,metatable);\
+			}\
+		};
+
 
 DEFINE_OOLUA_OPERATOR_FUNCTION_(equal,"__eq")
 DEFINE_OOLUA_OPERATOR_FUNCTION_(less_than,"__lt")

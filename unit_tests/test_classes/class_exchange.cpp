@@ -54,28 +54,46 @@ class ClassExchange : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST( BaseAndDerivedPointers_checkThereIsNoOffsetWhichIsRequiredForTests_addressCompareEqual);
     CPPUNIT_TEST( BaseAndDerivedPointers_checkTheyDoHaveOffsetsWhichIsRequiredForTests_addressAreNotTheSame);
 	CPPUNIT_TEST( checkMetatable_pushAbstract3Pointer_pointersMetatableEqualsAbstract3Metatable);
-	CPPUNIT_TEST( checkMetatable_pushConstAbstract3Pointer_pointersMetatableEqualsAbstract3ConstMetatable);
+	
+	CPPUNIT_TEST( changeOfMetatable_pushBaseAndThenDerived_basePointerChangesToUsingDerivedMetatable);
+	CPPUNIT_TEST( changeOfMetatable_pushBaseWithSameAddressAndThenDerived_basePointerChangesToUsingDerivedMetatable);
+	
 
+	CPPUNIT_TEST( const_pushConstAbstract3_userDataIsConst);
+	CPPUNIT_TEST( const_vmPushConstAbstract3_userDataIsConst);
+	
+	CPPUNIT_TEST( noneConst_pushNoneConstAbstract3_userDataIsNotConst);
+	CPPUNIT_TEST( noneConst_vmPushNoneConstAbstract3_userDataIsNotConst);
 
-	CPPUNIT_TEST( checkMetatable_pushBaseAndThenDerived_basePointerChangesToUsingDerivedMetatable);
-	CPPUNIT_TEST( checkMetatable_pushBaseWithSameAdressAndThenDerived_basePointerChangesToUsingDerivedMetatable);
-	CPPUNIT_TEST( checkMetatable_pushConstBaseWithSameAdressAndThenConstDerived_basePointerChangesToUsingConstDerivedMetatable);
+	CPPUNIT_TEST( metatable_pushConstAbstract3_metaTableIsEqualToAbstract3);
+//	CPPUNIT_TEST( metatable_pushAbstract3_metaTableIsEqualToAbstract3);
 
+	
 
-	CPPUNIT_TEST( checkMetatable_pushConstBaseWithSameAdressAndThenNoneConstDerived_basePointerChangesToUsingNoneConstDerivedMetatable );
+//	CPPUNIT_TEST( checkMetatable_pushConstDerivedAndThenConstBase_derivedUsesDerivedMetatable);
+	
+	CPPUNIT_TEST( noChangeOfConstness_pushInstanceThenSameInstanceYetAsConst_firstPushedIsNotConst );
+	CPPUNIT_TEST( noChangeOfConstness_pushInstanceThenSameInstanceYetAsConst_secondPushedIsNotConst );
+	
+	CPPUNIT_TEST( changeOfConstness_pushConstInstanceThenSameInstanceYetAsNoneConst_firstPushedIsNotConst);
+	CPPUNIT_TEST( changeOfConstness_pushConstInstanceThenSameInstanceYetAsNoneConst_secondPushedIsNotConst );
 
-	CPPUNIT_TEST( checkMetatable_pushInstanceThenSameInstanceYetAsConst_firstPushedHasNoneConstMetatable );
-	CPPUNIT_TEST( checkMetatable_pushInstanceThenSameInstanceYetAsConst_secondPushedHasNoneConstMetatable );
-
-	CPPUNIT_TEST( checkMetatable_pushConstInstanceThenSameInstanceYetAsNoneConst_firstPushedHasNoneConstMetatable);
-	CPPUNIT_TEST( checkMetatable_pushConstInstanceThenSameInstanceYetAsNoneConst_secondPushedHasNoneConstMetatable);
-
-
-	CPPUNIT_TEST( checkMetatable_pushConstBaseAndThenNoneConstDerived_basePointerChangesToUsingNoneConstDerivedMetatable );
-	CPPUNIT_TEST( checkMetatable_pushConstBaseAndThenNoneConstDerived_derivedUsesNoneConstDerivedMetatable );
-
-	CPPUNIT_TEST( checkMetatable_pushConstDerivedAndThenConstBase_derivedUsesConstDerivedMetatable);
-	CPPUNIT_TEST( checkMetatable_pushConstDerivedAndThenConstBase_baseUsesConstDerivedMetatable);
+	
+	CPPUNIT_TEST(noChangeOfConstness_pushConstThenConst_firstPushedIsConst);
+	CPPUNIT_TEST(noChangeOfConstness_pushConstThenConst_secondPushedIsConst);
+	
+	CPPUNIT_TEST(noChangeOfConstness_pushNoneConstThenNoneConst_firstPushedIsNotConst);
+	CPPUNIT_TEST(noChangeOfConstness_pushNoneConstThenNoneConst_secondPushedIsNotConst);
+	
+	
+	CPPUNIT_TEST( changeOfConstness_pushConstBaseWithSameAddressAndThenNoneConstDerived_baseChangesToNoneConst);
+	CPPUNIT_TEST( changeOfMetatable_pushConstBaseWithSameAddressAndThenNoneConstDerived_baseMetatableChangesToDerived);
+	CPPUNIT_TEST( noChangeOfConstness_pushConstBaseWithSameAddressAndThenConstDerived_baseIsConst);
+	
+	CPPUNIT_TEST( changeOfConstness_pushConstBaseAndThenNoneConstDerived_baseChangesToNoneConst);
+	CPPUNIT_TEST( changeOfMetatable_pushConstBaseAndThenNoneConstDerived_baseMetatableChangesToDerived);
+	CPPUNIT_TEST( noChangeOfConstness_pushConstBaseThenConstDerived_baseIsConst);
+	
 
 	//This test fails and is a limitation of the library
 	//CPPUNIT_TEST( differentRootsOfaTree_twoRootsPassedToLua_luaUdComparesEqual );
@@ -126,19 +144,213 @@ public:
 
 		assert_metatable_of_type_at_index_is_same_as_name(-1,OOLUA::Proxy_class<Abstract3>::class_name);
 	}
-	void checkMetatable_pushConstAbstract3Pointer_pointersMetatableEqualsAbstract3ConstMetatable()
+	
+
+	void const_pushConstAbstract3_userDataIsConst()
 	{
 		DerivedFromTwoAbstractBasesAndAbstract3 derived;
 		Abstract3 const * base = &derived;
 		m_lua->register_class<Abstract3>();
-		OOLUA::push(*m_lua,base);//ud
-
-		assert_metatable_of_type_at_index_is_same_as_name(-1,OOLUA::Proxy_class<Abstract3>::class_name_const);
+		OOLUA::push(*m_lua,base);
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,-1));
+	}
+	void const_vmPushConstAbstract3_userDataIsConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 const * base = &derived;
+		m_lua->register_class<Abstract3>();
+		m_lua->push(base);
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,-1));
 	}
 
+	void noneConst_pushNoneConstAbstract3_userDataIsNotConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 * base = &derived;
+		m_lua->register_class<Abstract3>();
+		OOLUA::push(*m_lua,base);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,-1));
+	}
+	
+	void noneConst_vmPushNoneConstAbstract3_userDataIsNotConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 * base = &derived;
+		m_lua->register_class<Abstract3>();
+		m_lua->push(base);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,-1));
+	}
+	
+	
+	/*
+	void metatable_pushAbstract3_metaTableIsEqualToAbstract3()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 * base = &derived;
+		m_lua->register_class<Abstract3>();
+		OOLUA::push(*m_lua,base);
+		
+		assert_metatable_of_type_at_index_is_same_as_name(-1,OOLUA::Proxy_class<Abstract3>::class_name);
+	}
+	 */
+	void metatable_pushConstAbstract3_metaTableIsEqualToAbstract3()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 const * base = &derived;
+		m_lua->register_class<Abstract3>();
+		OOLUA::push(*m_lua,base);
+		
+		assert_metatable_of_type_at_index_is_same_as_name(-1,OOLUA::Proxy_class<Abstract3>::class_name);
+	}
+	
+	
+	
+
+	void noChangeOfConstness_pushInstanceThenSameInstanceYetAsConst_firstPushedIsNotConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 * base = &derived;
+		Abstract3 const * base_const = &derived;
+		m_lua->register_class<Abstract3>();
+		m_lua->push(base);
+		m_lua->push(base_const);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,1));
+	}
+					 
+	void noChangeOfConstness_pushInstanceThenSameInstanceYetAsConst_secondPushedIsNotConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 * base = &derived;
+		Abstract3 const * base_const = &derived;
+		m_lua->register_class<Abstract3>();
+		m_lua->push(base);
+		m_lua->push(base_const);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,2));		
+	}
+	
+	void changeOfConstness_pushConstInstanceThenSameInstanceYetAsNoneConst_firstPushedIsNotConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 * base = &derived;
+		Abstract3 const * base_const = &derived;
+		m_lua->register_class<Abstract3>();
+		m_lua->push(base_const);
+		m_lua->push(base);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,1));
+	}
+	void changeOfConstness_pushConstInstanceThenSameInstanceYetAsNoneConst_secondPushedIsNotConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 * base = &derived;
+		Abstract3 const * base_const = &derived;
+		m_lua->register_class<Abstract3>();
+		m_lua->push(base_const);
+		m_lua->push(base);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,2));	
+	}
+	
+	
+	
+	void noChangeOfConstness_pushConstThenConst_firstPushedIsConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 const * base_const = &derived;
+		m_lua->register_class<Abstract3>();
+		m_lua->push(base_const);
+		m_lua->push(base_const);
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,1));
+	}
+	
+	void noChangeOfConstness_pushConstThenConst_secondPushedIsConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 const * base_const = &derived;
+		m_lua->register_class<Abstract3>();
+		m_lua->push(base_const);
+		m_lua->push(base_const);
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,2));		
+	}
+	
+	void noChangeOfConstness_pushNoneConstThenNoneConst_firstPushedIsNotConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3  * base = &derived;
+		m_lua->register_class<Abstract3>();
+		m_lua->push(base);
+		m_lua->push(base);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,1));
+	}
+	void noChangeOfConstness_pushNoneConstThenNoneConst_secondPushedIsNotConst()
+	{
+		DerivedFromTwoAbstractBasesAndAbstract3 derived;
+		Abstract3 * base = &derived;
+		m_lua->register_class<Abstract3>();
+		m_lua->push(base);
+		m_lua->push(base);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,2));		
+	}
+	
+	
+	
+	
+	
+	void changeOfConstness_pushConstBaseWithSameAddressAndThenNoneConstDerived_baseChangesToNoneConst()
+	{
+		BaseAndDerivedNoOffsets no_offsets(m_lua);
+		OOLUA::push(*m_lua,no_offsets.base_ptr_const);
+		OOLUA::push(*m_lua,no_offsets.derived_ptr);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,-2));
+	}
+	
+	void changeOfMetatable_pushConstBaseWithSameAddressAndThenNoneConstDerived_baseMetatableChangesToDerived()
+	{
+		BaseAndDerivedNoOffsets no_offsets(m_lua);
+		OOLUA::push(*m_lua,no_offsets.base_ptr_const);
+		OOLUA::push(*m_lua,no_offsets.derived_ptr);
+		assert_metatable_of_type_at_index_is_same_as_name(-2
+														  ,OOLUA::Proxy_class<BaseAndDerivedNoOffsets::Derived>::class_name);
+	}
+	
+	void noChangeOfConstness_pushConstBaseWithSameAddressAndThenConstDerived_baseIsConst()
+	{
+		BaseAndDerivedNoOffsets no_offsets(m_lua);
+		OOLUA::push(*m_lua,no_offsets.base_ptr_const);
+		OOLUA::push(*m_lua,no_offsets.derived_ptr_const);
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,-2));
+	}
+	
+	
+	void changeOfConstness_pushConstBaseAndThenNoneConstDerived_baseChangesToNoneConst()
+	{
+		BaseAndDerivedHaveOffsets have_offsets(m_lua);
+		OOLUA::push(*m_lua,have_offsets.base_ptr_const);
+		OOLUA::push(*m_lua,have_offsets.derived_ptr);
+		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,-2));
+	}
+	void changeOfMetatable_pushConstBaseAndThenNoneConstDerived_baseMetatableChangesToDerived()
+	{
+		BaseAndDerivedHaveOffsets have_offsets(m_lua);
+		OOLUA::push(*m_lua,have_offsets.base_ptr_const);
+		OOLUA::push(*m_lua,have_offsets.derived_ptr);
+		assert_metatable_of_type_at_index_is_same_as_name(-2
+														,OOLUA::Proxy_class<BaseAndDerivedHaveOffsets::Derived>::class_name);
+
+	}
+	
+	void noChangeOfConstness_pushConstBaseThenConstDerived_baseIsConst()
+	{
+		BaseAndDerivedHaveOffsets no_offsets(m_lua);
+		OOLUA::push(*m_lua,no_offsets.base_ptr_const);
+		OOLUA::push(*m_lua,no_offsets.derived_ptr_const);
+		CPPUNIT_ASSERT_EQUAL(true,OOLUA::INTERNAL::ud_at_index_is_const(*m_lua,-2));
+	}
+	
 
 
-	void checkMetatable_pushBaseAndThenDerived_basePointerChangesToUsingDerivedMetatable()
+
+
+
+	void changeOfMetatable_pushBaseAndThenDerived_basePointerChangesToUsingDerivedMetatable()
 	{
 		BaseAndDerivedHaveOffsets have_offsets(m_lua);
 		OOLUA::push(*m_lua,have_offsets.base_ptr);
@@ -147,7 +359,7 @@ public:
 		assert_metatable_of_type_at_index_is_same_as_name(-2
 							,OOLUA::Proxy_class<BaseAndDerivedHaveOffsets::Derived>::class_name);
 	}
-	void checkMetatable_pushBaseWithSameAdressAndThenDerived_basePointerChangesToUsingDerivedMetatable()
+	void changeOfMetatable_pushBaseWithSameAddressAndThenDerived_basePointerChangesToUsingDerivedMetatable()
 	{
         BaseAndDerivedNoOffsets no_offsets(m_lua);
 		OOLUA::push(*m_lua,no_offsets.base_ptr);
@@ -156,24 +368,7 @@ public:
 		assert_metatable_of_type_at_index_is_same_as_name(-2
 			,OOLUA::Proxy_class<BaseAndDerivedNoOffsets::Derived>::class_name);
 	}
-    void checkMetatable_pushConstBaseWithSameAdressAndThenConstDerived_basePointerChangesToUsingConstDerivedMetatable()
-	{
-        BaseAndDerivedNoOffsets no_offsets(m_lua);
-		OOLUA::push(*m_lua,no_offsets.base_ptr_const);
-		OOLUA::push(*m_lua,no_offsets.derived_ptr_const);
-
-		assert_metatable_of_type_at_index_is_same_as_name(-2
-			,OOLUA::Proxy_class<BaseAndDerivedNoOffsets::Derived>::class_name_const);
-	}
-	void checkMetatable_pushConstBaseWithSameAdressAndThenNoneConstDerived_basePointerChangesToUsingNoneConstDerivedMetatable()
-	{
-        BaseAndDerivedNoOffsets no_offsets(m_lua);
-		OOLUA::push(*m_lua,no_offsets.base_ptr_const);
-		OOLUA::push(*m_lua,no_offsets.derived_ptr);
-
-		assert_metatable_of_type_at_index_is_same_as_name(-2
-			,OOLUA::Proxy_class<BaseAndDerivedNoOffsets::Derived>::class_name);
-	}
+	
 
 
 
@@ -185,26 +380,6 @@ public:
 
 
 
-	void checkMetatable_pushInstanceThenSameInstanceYetAsConst_firstPushedHasNoneConstMetatable()
-	{
-        Class_instance<DerivedFromTwoAbstractBasesAndAbstract3> helper(m_lua);
-		OOLUA::push(*m_lua,helper.instance_ptr);
-		OOLUA::push(*m_lua,helper.instance_ptr_const);
-
-		assert_metatable_of_type_at_index_is_same_as_name(-2
-			,OOLUA::Proxy_class<DerivedFromTwoAbstractBasesAndAbstract3>::class_name);
-	}
-
-
-	void checkMetatable_pushInstanceThenSameInstanceYetAsConst_secondPushedHasNoneConstMetatable()
-	{
-		Class_instance<DerivedFromTwoAbstractBasesAndAbstract3> helper(m_lua);
-		OOLUA::push(*m_lua,helper.instance_ptr);
-		OOLUA::push(*m_lua,helper.instance_ptr_const);
-
-		assert_metatable_of_type_at_index_is_same_as_name(-1
-			,OOLUA::Proxy_class<DerivedFromTwoAbstractBasesAndAbstract3>::class_name);
-	}
 
 
 
@@ -213,67 +388,24 @@ public:
 
 
 
-	void checkMetatable_pushConstInstanceThenSameInstanceYetAsNoneConst_firstPushedHasNoneConstMetatable()
-	{
-        Class_instance<DerivedFromTwoAbstractBasesAndAbstract3> helper(m_lua);
-		OOLUA::push(*m_lua,helper.instance_ptr_const);
-		OOLUA::push(*m_lua,helper.instance_ptr);
-
-		assert_metatable_of_type_at_index_is_same_as_name(-2
-			,OOLUA::Proxy_class<DerivedFromTwoAbstractBasesAndAbstract3>::class_name);
-	}
-	void checkMetatable_pushConstInstanceThenSameInstanceYetAsNoneConst_secondPushedHasNoneConstMetatable()
-	{
-        Class_instance<DerivedFromTwoAbstractBasesAndAbstract3> helper(m_lua);
-		OOLUA::push(*m_lua,helper.instance_ptr_const);
-		OOLUA::push(*m_lua,helper.instance_ptr);
-
-		assert_metatable_of_type_at_index_is_same_as_name(-1
-			,OOLUA::Proxy_class<DerivedFromTwoAbstractBasesAndAbstract3>::class_name);
-	}
-
-
-	void checkMetatable_pushConstBaseAndThenNoneConstDerived_basePointerChangesToUsingNoneConstDerivedMetatable()
-	{
-        BaseAndDerivedHaveOffsets have_offsets(m_lua);
-		OOLUA::push(*m_lua,have_offsets.base_ptr_const);
-		OOLUA::push(*m_lua,have_offsets.derived_ptr);
-
-		assert_metatable_of_type_at_index_is_same_as_name(-2
-			,OOLUA::Proxy_class<BaseAndDerivedHaveOffsets::Derived>::class_name);
-	}
-
-	void checkMetatable_pushConstBaseAndThenNoneConstDerived_derivedUsesNoneConstDerivedMetatable()
-	{
-        BaseAndDerivedHaveOffsets have_offsets(m_lua);
-		OOLUA::push(*m_lua,have_offsets.base_ptr_const);
-		OOLUA::push(*m_lua,have_offsets.derived_ptr);
-
-		assert_metatable_of_type_at_index_is_same_as_name(-1
-			,OOLUA::Proxy_class<BaseAndDerivedHaveOffsets::Derived>::class_name);
-	}
 
 
 
-	void checkMetatable_pushConstDerivedAndThenConstBase_derivedUsesConstDerivedMetatable()
+
+
+
+	void checkMetatable_pushConstDerivedAndThenConstBase_derivedUsesDerivedMetatable()
 	{
         BaseAndDerivedHaveOffsets have_offsets(m_lua);
 		OOLUA::push(*m_lua,have_offsets.derived_ptr_const);
 		OOLUA::push(*m_lua,have_offsets.base_ptr_const);
-
+		
 		assert_metatable_of_type_at_index_is_same_as_name(-2
-			,OOLUA::Proxy_class<BaseAndDerivedHaveOffsets::Derived>::class_name_const);
+														  ,OOLUA::Proxy_class<BaseAndDerivedHaveOffsets::Derived>::class_name);
 	}
 
-	void checkMetatable_pushConstDerivedAndThenConstBase_baseUsesConstDerivedMetatable()
-	{
-        BaseAndDerivedHaveOffsets have_offsets(m_lua);
-		OOLUA::push(*m_lua,have_offsets.derived_ptr_const);
-		OOLUA::push(*m_lua,have_offsets.base_ptr_const);
 
-		assert_metatable_of_type_at_index_is_same_as_name(-1
-			,OOLUA::Proxy_class<BaseAndDerivedHaveOffsets::Derived>::class_name_const);
-	}
+	
 	/**
 	\addtogroup OOLuaKnownLimitations
 	@{

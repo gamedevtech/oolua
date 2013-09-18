@@ -47,18 +47,6 @@ namespace OOLUA
 			lua_pop(l,1);//pop nil
 			return false;
 		}
-		//returns the ud if found and cleans the stack else a NULL pointer
-		Lua_ud* find_ud_dont_care_about_type_and_clean_stack(lua_State*  l,void* ptr)
-		{
-			Lua_ud* ud(0);
-			if( is_there_an_entry_for_this_void_pointer(l,ptr) )
-			{
-				ud = static_cast<Lua_ud *>( lua_touserdata(l, -1) );
-				lua_pop(l,1);//pop ud
-				return ud;
-			}
-			return ud;
-		}
 
 
 		//on entering user data and weaktable are on the stack
@@ -76,26 +64,6 @@ namespace OOLUA
 			lua_pushlightuserdata(l,ptr);//key
 			lua_pushvalue(l,udIndex);//key ud
 			lua_rawset(l,weakIndex);//table[key]=value
-		}
-		void set_owner( lua_State* l,void* ptr, Owner own)
-		{
-#if OOLUA_DEBUG_CHECKS == 1
-			//It is an error to ever call this function with No_change
-			assert(own != No_change);
-#endif
-			Lua_ud* ud = find_ud_dont_care_about_type_and_clean_stack(l,ptr);
-	
-#if OOLUA_DEBUG_CHECKS == 1
-			//ud will always be found, if there is no entry it is an error
-			if(!ud)
-			{	
-				assert(0 && "Did not find the user data");
-			}
-			else
-#endif
-			{
-				userdata_gc_value(ud, own == Cpp ? false : true);
-			}
 		}
 
 		bool ud_at_index_is_const(lua_State* l, int index)
@@ -120,18 +88,6 @@ namespace OOLUA
 			ud->base_checker = base_checker;
 			ud->type_check = type_check;
 			userdata_const_value(ud,is_const);
-		}
-		
-		//on entrance ud is on top
-		Lua_ud* change_to_none_const_and_return_ud(lua_State* l)
-		{
-			lua_getmetatable(l,-1);//ud mt
-			push_char_carray(l,change_mt_to_none_const_field);//ud mt str
-			lua_gettable(l,-2);//ud mt func
-			lua_CFunction set_metatable_none_const = lua_tocfunction(l,-1);
-			lua_pop(l,2);//ud
-			set_metatable_none_const(l);
-			return static_cast<Lua_ud *>( lua_touserdata(l, -1) );
 		}
 		
 	}

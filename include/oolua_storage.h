@@ -79,10 +79,6 @@ namespace OOLUA
 		template<typename T>
 		Lua_ud* reset_metatable(lua_State*  l,T* ptr,bool is_const);
 
-		Lua_ud* find_ud_dont_care_about_type_and_clean_stack(lua_State*  l,void* ptr);
-
-		void set_owner( lua_State* l,void* ptr, Owner own);
-
 		void add_ptr_if_required(lua_State* const l, void* ptr,int udIndex,int weakIndex);
 
 
@@ -102,7 +98,6 @@ namespace OOLUA
 
 		bool ud_at_index_is_const(lua_State* l, int index);
 
-		Lua_ud* change_to_none_const_and_return_ud(lua_State* l);
 
 		template<typename T>
 		int lua_set_owner(lua_State*  l)
@@ -123,7 +118,7 @@ namespace OOLUA
 		//if found it is left on the top of the stack and returns the Lua_ud ptr
 		//else the stack is same as on entrance to the function and null is returned
 		template<typename T>
-		inline Lua_ud* find_ud(lua_State*  l,T* ptr,bool is_const)
+		inline Lua_ud* find_ud(lua_State*  l,T* ptr,bool const is_const)
 		{
 			bool has_entry = is_there_an_entry_for_this_void_pointer(l,ptr);//(ud or no addition to the stack)
 			Lua_ud* ud(0);
@@ -135,24 +130,26 @@ namespace OOLUA
 					top of stack is derived from T with no offset pointer and it can be upcast to T
 					top of stack is a registered base class of T with no offset pointer
 				*/
-				bool was_const = ud_at_index_is_const(l,-1);
+				ud = static_cast<Lua_ud *>( lua_touserdata(l, -1));
+				bool const was_const = OOLUA::INTERNAL::userdata_is_constant(ud);
 
-				if( (was_const && is_const) || (is_const) )//no change required
+				if ( is_const )	
 				{
 					if( class_from_stack_top<T>(l) )
-						return static_cast<Lua_ud *>( lua_touserdata(l, -1) );
+						return ud;
 				}
-				else if( was_const && !is_const)//change
+				else if( was_const )//change
 				{
 					if( class_from_stack_top<T>(l) )
 					{
-						return change_to_none_const_and_return_ud(l);
+						INTERNAL::userdata_const_value(ud,false);
+						return ud;
 					}
 				}
 				else //was not const and is not const
 				{
 					if( none_const_class_from_stack_top<T>(l) )
-						return static_cast<Lua_ud *>( lua_touserdata(l, -1) );
+						return ud;
 				}
 
 				//if T was a base of the stack or T was the stack it has been returned
@@ -192,10 +189,7 @@ namespace OOLUA
 			Lua_ud *ud = static_cast<Lua_ud *>( lua_touserdata(l, -1) );//ud
 			reset_userdata(ud, ptr, is_const, &requested_ud_is_a_base<T>, &OOLUA::register_class<T>);	
 			//change the metatable associated with the ud
-			lua_getfield(l, LUA_REGISTRYINDEX
-						 ,  (char*) (is_const ? OOLUA::Proxy_class<T>::class_name_const 
-													 : OOLUA::Proxy_class<T>::class_name)
-						 );
+			lua_getfield(l, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name );
 
 			lua_setmetatable(l,-2);//set ud's metatable to this
 
@@ -216,10 +210,8 @@ namespace OOLUA
 		{		
 			Lua_ud* ud = new_userdata(l, ptr, is_const,&requested_ud_is_a_base<T>,&OOLUA::register_class<T>);
 			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
-			lua_getfield(l, LUA_REGISTRYINDEX
-						 ,  (char*) (is_const ? OOLUA::Proxy_class<T>::class_name_const 
-									 : OOLUA::Proxy_class<T>::class_name)
-						 );
+			
+			lua_getfield(l, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name );
 
 #if	OOLUA_DEBUG_CHECKS ==1
 			assert( lua_isnoneornil(l,-1) ==0 && "no metatable of this name found in registry" );

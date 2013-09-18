@@ -6,7 +6,6 @@
 - Calling new in Lua now requires the dot notation
 - New \ref OOLuaFileGeneration "Lua module" which generates boilerplate OOLua C++ files, removes old console application
 - Added HTML docs and improved inline documentation for DSL, makes online wiki invalid
-- Improved preformance
 - Added a new Lua module for \ref OOLuaComparison "comparisons" and updated C++ code, now compares with LuaBind,LuaBridge,SLB3 and SWIG
 - Added OOLua version macros \ref OOLUA_VERSION_MAJ \ref OOLUA_VERSION_MIN and \ref OOLUA_VERSION_PATCH
 - Base checking no longer touches the Lua stack
@@ -15,6 +14,7 @@
 - Bug fix. If an abstract class had a base class which was not abstract, then it was possible to call new on the type.
 - Renamed Table::set_value to Table::set
 - Renamed Table::remove_value to Table::remove
+- New Lua simplified class format, which improves improves self call performance
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function
