@@ -306,7 +306,7 @@ public:
 	void userData_craftUserDataWhichCorrectSizeYetNotCookie_isUserdataReturnsFalse()
 	{
 		OOLUA::INTERNAL::Lua_ud* ud = (OOLUA::INTERNAL::Lua_ud*)lua_newuserdata(*m_lua, sizeof(OOLUA::INTERNAL::Lua_ud) );
-		memset(ud,sizeof(*ud),0);
+		memset(ud,0,sizeof(*ud));
 		CPPUNIT_ASSERT_EQUAL(false,OOLUA::INTERNAL::index_is_userdata(*m_lua,1,ud));
 							
 	}
