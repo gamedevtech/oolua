@@ -155,6 +155,8 @@ for parameters contain as part of their name "out", "in" or a combination.
 				Convertor(T&);
 			};
 			static no test(Convertor);
+			static no test(float&);
+			static no test(double&);
 			static yes test(int);
 			static From& make_from();
 		public:

@@ -37,6 +37,8 @@ class Enum_tests : public CppUnit::TestFixture
 		CPPUNIT_TEST(canConvertToIntFrom_classType_valueEqualsZero);
 		CPPUNIT_TEST(canConvertToIntFrom_enumType_valueEqualsOne);
 	
+		CPPUNIT_TEST(canConvertToIntFrom_float_valueEqualsZero);
+		CPPUNIT_TEST(canConvertToIntFrom_double_valueEqualsZero);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
@@ -214,7 +216,14 @@ public:
 	{
 		CPPUNIT_ASSERT_EQUAL(1,(int)(OOLUA::INTERNAL::can_convert_to_int<Enums::COLOUR>::value));
 	}
-
+	void canConvertToIntFrom_float_valueEqualsZero()
+	{
+		CPPUNIT_ASSERT_EQUAL(0,(int)(OOLUA::INTERNAL::can_convert_to_int<float>::value));
+	}
+	void canConvertToIntFrom_double_valueEqualsZero()
+	{
+		CPPUNIT_ASSERT_EQUAL(0,(int)(OOLUA::INTERNAL::can_convert_to_int<double>::value));
+	}
 
 	
 };
