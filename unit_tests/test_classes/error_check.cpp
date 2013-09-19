@@ -18,6 +18,11 @@
 //#	include "lua/lua.hpp"
 #endif
 
+
+#ifdef _MSC_VER
+#	pragma warning(push)
+#	pragma warning(disable : 4702)//unreachable code
+#endif
 namespace  
 {
 	jmp_buf mark; 
@@ -28,6 +33,9 @@ namespace
 	}
 	enum  SomeEnum {someEnumValue};	
 }
+#ifdef _MSC_VER
+#	pragma warning(pop)
+#endif
 
 
 #if OOLUA_USE_EXCEPTIONS ==  1
