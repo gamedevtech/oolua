@@ -30,7 +30,7 @@
 void run_compare(lua_State* lvm, std::string const& func_name, std::string const& binding )
 {
 	OOLUA::Lua_function caller(lvm);
-	if (! OOLUA::run_file(lvm,"./binding_compare.lua") or ! caller(func_name,binding) )
+	if (! OOLUA::run_file(lvm,"./binding_compare.lua") || ! caller(func_name,binding) )
 		std::cout <<OOLUA::get_last_error(lvm);
 }
 
