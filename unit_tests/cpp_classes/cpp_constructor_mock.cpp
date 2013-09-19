@@ -14,6 +14,10 @@ namespace ParamValues
 
 #if OOLUA_USE_EXCEPTIONS ==1
 #include <stdexcept>
+#	ifdef _MSC_VER
+#		pragma warning(push)
+#		pragma warning(disable : 4702)//unreachable code
+#	endif
 DefaultConstructorThrowsStdException::DefaultConstructorThrowsStdException()
 {
 	throw std::runtime_error("Default Constructor which throws an exception");
@@ -26,6 +30,9 @@ ConstructorThrowsStdException::ConstructorThrowsStdException(int)
 {
 	throw std::runtime_error("Constructor which throws an exception");
 }
+#	ifdef _MSC_VER
+#		pragma warning(pop)
+#	endif
 
 #else
 DefaultConstructorThrowsStdException::DefaultConstructorThrowsStdException() {}
