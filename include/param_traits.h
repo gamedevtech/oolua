@@ -22,6 +22,7 @@
 #	include <string>
 #endif
 
+struct lua_State;
 namespace OOLUA
 {
 	
@@ -224,9 +225,9 @@ for parameters contain as part of their name "out", "in" or a combination.
 		};
 
 		template<typename T,typename Original_Type,int is_integral>struct Pull_type_;
-
-		template<typename T,typename Original_Type>
-		struct Pull_type_<T,Original_Type,0>
+	
+		template<typename Original_Type,typename T>
+		struct pull_type_maybe_const
 		{
 			typedef typename LVD::if_else<
 											LVD::is_const<Original_Type>::value
@@ -234,6 +235,20 @@ for parameters contain as part of their name "out", "in" or a combination.
 											,T const*
 											,T*
 										>::type type;
+		};
+
+		/*specialisation to prevent Visual Studio warnings, that const applied to a function is ignored*/
+		template<typename Original_Type>
+		struct pull_type_maybe_const<Original_Type,int (lua_State*)>
+		{
+			typedef int(*type)(lua_State*);
+		};
+
+		/* should rename Pull_maybe_const */
+		template<typename T,typename Original_Type>
+		struct Pull_type_<T,Original_Type,0>
+		{
+			typedef typename pull_type_maybe_const<Original_Type,T>::type type;
 		};
 
 		template<typename T,typename Original_Type>
