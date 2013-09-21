@@ -33,7 +33,7 @@ namespace OOLUA
 	/** \var version_number
 	 \brief OOLua version int*/
 	static const int version_number = OOLUA_VERSION_MAJ*10000+OOLUA_VERSION_MIN*1000+OOLUA_VERSION_PATCH;
-}
+} // namespace OOLUA
 
 #undef OOLUA_DO_STRINGISE
 #undef OOLUA_STRINGISE

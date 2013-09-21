@@ -4,8 +4,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file cpp_constructor.h
 ///  @author Liam Devine
-///  \copyright 
-///  See licence.txt for more details. \n 
+///  \copyright
+///  See licence.txt for more details. \n
 ///////////////////////////////////////////////////////////////////////////////
 #	include "lua_includes.h"
 #	include "oolua_storage.h"
@@ -17,7 +17,7 @@
 
 #include "oolua_boilerplate.h"
 
-#if defined __GNUC__ && defined __STRICT_ANSI__ 
+#if defined __GNUC__ && defined __STRICT_ANSI__
 /*shhhhh about va args and c99*/
 #	pragma GCC system_header
 #endif
@@ -29,28 +29,29 @@
 #	include "oolua_error.h"
 
 #	define OOLUA_CONSTRUCTOR_TRY \
-	try { 
+	try {
+// NOLINT
 
-#	define OOLUA_CONSTRUCTOR_RESPONSE(ExceptionType,Class,ArgNums) \
-	luaL_error(l, "%s exception in %d argument %s constructor. what() : %s"\
-			,ExceptionType \
+#	define OOLUA_CONSTRUCTOR_RESPONSE(ExceptionType, Class, ArgNums) \
+	luaL_error(l, "%s exception in %d argument %s constructor. what() : %s" \
+			, ExceptionType \
 			, ArgNums \
 			, OOLUA::Proxy_class<Class>::class_name \
 			, err.what());
 
-#	define OOLUA_CONSTRUCTOR_CATCH(Class,Num) \
+#	define OOLUA_CONSTRUCTOR_CATCH(Class, Num) \
 	} \
 	catch(OOLUA::Runtime_error const& err) \
 	{ \
-		OOLUA_CONSTRUCTOR_RESPONSE("OOLUA::Runtime_error",Class,Num)\
+		OOLUA_CONSTRUCTOR_RESPONSE("OOLUA::Runtime_error", Class, Num)\
 	}\
 	catch(std::runtime_error const& err) \
 	{ \
-		OOLUA_CONSTRUCTOR_RESPONSE("std::runtime_error",Class,Num)\
+		OOLUA_CONSTRUCTOR_RESPONSE("std::runtime_error", Class, Num)\
 	}\
 	catch(std::exception const& err) \
 	{ \
-		OOLUA_CONSTRUCTOR_RESPONSE("std::exception",Class,Num)\
+		OOLUA_CONSTRUCTOR_RESPONSE("std::exception", Class, Num)\
 	}\
 	catch(...) \
 	{ \
@@ -58,50 +59,50 @@
 	}
 #else
 #	define OOLUA_CONSTRUCTOR_TRY
-#	define OOLUA_CONSTRUCTOR_CATCH(Class,Num)
+#	define OOLUA_CONSTRUCTOR_CATCH(Class, Num)
 #endif
 
- 
+
 namespace OOLUA
 {
 	namespace INTERNAL
 	{
-		template<typename Type,int HasNoDefaultTypedef>
+		template<typename Type, int HasNoDefaultTypedef>
 		struct Constructor
 		{
 			static int construct(lua_State * l)
 			{
 				OOLUA_CONSTRUCTOR_TRY
 				Type* obj = new Type;
-				add_ptr(l,obj,false,Lua);
-				OOLUA_CONSTRUCTOR_CATCH(Type,0)
+				add_ptr(l, obj, false, Lua);
+				OOLUA_CONSTRUCTOR_CATCH(Type, 0)
 				return 1;
 			}
 		};
-		
+
 		template<typename Type>
-		struct Constructor<Type,1>
+		struct Constructor<Type, 1>
 		{
 			static int construct(lua_State * l)
 			{
-				return luaL_error(l,"%s %s %s","No parameters passed to the constructor of the type"
-						   ,OOLUA::Proxy_class<Type>::class_name
-						   ,"which does not have a default constructor.");
+				return luaL_error(l, "%s %s %s", "No parameters passed to the constructor of the type"
+						   , OOLUA::Proxy_class<Type>::class_name
+						   , "which does not have a default constructor.");
 			}
 		};
-		
+
 		template<typename T>
 		inline int oolua_generic_default_constructor(lua_State* l)
 		{
 			int const stack_count = lua_gettop(l);
 			if(stack_count == 0 )
 			{
-				return Constructor<T,has_tag<OOLUA::Proxy_class<T>, OOLUA::No_default_constructor>::Result>::construct(l);
-			} 
-			return luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",OOLUA::Proxy_class<T>::class_name);
+				return Constructor<T, has_tag<OOLUA::Proxy_class<T>, OOLUA::No_default_constructor>::Result>::construct(l);
+			}
+			return luaL_error(l, "%s %d %s %s", "Could not match", stack_count, "parameter constructor for type", OOLUA::Proxy_class<T>::class_name);
 		}
-	}
-}
+	} // namespace INTERNAL // NOLINT
+} // namespace OOLUA
 
 #define OOLUA_CONSTRUCTOR_GENERATE_NUM(NUM) \
 namespace OOLUA \
@@ -114,7 +115,7 @@ namespace OOLUA \
 			static int construct(lua_State* l) \
 			{ \
 				int index(1); \
-				if( OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_##NUM ) \
+				if(OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_##NUM) \
 				{ \
 					valid_construct(l); \
 					return 1; \
@@ -126,13 +127,13 @@ namespace OOLUA \
 				int index(1); \
 				OOLUA_CONSTRUCTOR_PARAM_##NUM \
 				OOLUA_CONSTRUCTOR_TRY \
-				Class* obj = new Class( OOLUA_CONVERTER_PARAMS_##NUM ); \
-				add_ptr(l,obj,false,Lua); \
-				OOLUA_CONSTRUCTOR_CATCH(Class,NUM) \
+				Class* obj = new Class(OOLUA_CONVERTER_PARAMS_##NUM); \
+				add_ptr(l, obj, false, Lua); \
+				OOLUA_CONSTRUCTOR_CATCH(Class, NUM) \
 			} \
 		}; \
-	} \
-}
+	} /* namespace INTERNAL*/ /*NOLINT*/\
+} /* namespace OOLUA*/
 
 
 OOLUA_INTERNAL_CONSTRUCTORS_GEN
@@ -170,9 +171,9 @@ static int oolua_factory_function(lua_State* l) \
 #define OOLUA_CONSTRUCTORS_END \
 	if(stack_count == 0 ) \
 	{ \
-		return INTERNAL::Constructor<class_,INTERNAL::has_tag<this_type, No_default_constructor>::Result>::construct(l); \
+		return INTERNAL::Constructor<class_, INTERNAL::has_tag<this_type, No_default_constructor>::Result>::construct(l); \
 	} \
-	return luaL_error(l,"%s %d %s %s","Could not match",stack_count,"parameter constructor for type",class_name); \
+	return luaL_error(l, "%s %d %s %s", "Could not match", stack_count, "parameter constructor for type", class_name); \
 } \
 	typedef class_ ctor_block_check;
 
@@ -186,11 +187,11 @@ static int oolua_factory_function(lua_State* l) \
 	\details OOLUA_CTORS(ConstructorEntriesList)
 	\param ConstructorEntriesList List of \ref OOLUA_CTOR
 	<p>
-	To enable the construction of an instance which is a specific type, there must be 
-	constructor(s) for that type registered with OOLua. \ref OOLUA_CTORS is the block into 
+	To enable the construction of an instance which is a specific type, there must be
+	constructor(s) for that type registered with OOLua. \ref OOLUA_CTORS is the block into
 	which you can define none default constructor entries using \ref OOLUA_CTOR.
 	<p>
-	Constructors are the only real type of overloading which is permitted by OOLua 
+	Constructors are the only real type of overloading which is permitted by OOLua
 	and there is an important point which should be noted. OOLua will try and match
 	the number of parameters on the stack with the amount required by each OOLUA_CTOR
 	entry and will look in the order they were defined. When interacting with the Lua
@@ -200,7 +201,7 @@ static int oolua_factory_function(lua_State* l) \
 	even if a reference is required. This means for example that if there are constructors
 	such as Foo::Foo(int) and Foo::Foo(float) it will depend on which was defined first
 	in the OOLUA_CTORS block as to which will be invoked for a call such as Foo.new(1).
- 
+
 	\see \ref OOLUA::No_default_constructor "No_default_constructor"
 	\note An OOLUA_CTORS block without any \ref OOLUA_CTOR entries is invalid.
 */
@@ -208,4 +209,4 @@ static int oolua_factory_function(lua_State* l) \
 /**@}*/
 
 
-#endif 
+#endif

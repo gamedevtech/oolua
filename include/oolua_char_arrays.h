@@ -6,7 +6,6 @@
  This file is to do away with magic string literals whilst also not paying the cost of a strlen
 */
 
-
 namespace OOLUA
 {
 	namespace INTERNAL
@@ -18,10 +17,10 @@ namespace OOLUA
 		static const char weak_lookup_name [] = "__weak_lookup";
 		static const char new_str [] = "new";
 		static const char oolua_str [] = "OOLua";
-	}
-}
+	} // namespace INTERNAL
+} // namespace OOLUA
 
-#define push_char_carray(lua,carray)lua_pushlstring(lua, carray, sizeof(carray)-1)
+#define push_char_carray(lua, carray)lua_pushlstring(lua, carray, sizeof(carray)-1)
 
 /** \endcond*/
 #endif

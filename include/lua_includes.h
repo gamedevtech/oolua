@@ -17,7 +17,7 @@ extern "C"
 #	include "lua/lauxlib.h"
 #	include "lua/lualib.h"
 #elif defined __GNUC__
-	
+
 #	include "lua/lua.h"
 #	include "lua/lauxlib.h"
 #	include "lua/lualib.h"
@@ -28,7 +28,6 @@ extern "C"
 #	include "lualib.h"
 */
 #endif
-
 }
 
 #endif //LUA_INCLUDES_H_

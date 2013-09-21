@@ -6,7 +6,7 @@ struct lua_State;
 namespace OOLUA
 {
 	void lua_stack_dump(lua_State * const L);
-}
+} // namespace OOLUA
 
 #endif//LUA_DEBUG_STACK_DUMP_H_
 

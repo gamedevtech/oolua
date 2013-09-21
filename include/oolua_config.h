@@ -3,12 +3,12 @@
 
 /** \addtogroup OOLuaConfig
 @{ */
-	
+
 	/** \addtogroup OOLuaErrorReporting Error Reporting
 	@{
 		\brief
 		Defines how any errors are reported
-		\details Errors can be reported either by using exceptions or storing 
+		\details Errors can be reported either by using exceptions or storing
 		a retreivable error string, only one of these methods is allowed
 		and this condition is enforced, yet also neither are required. If both
 		are disabled then it depends on \ref OOLUA_DEBUG_CHECKS as to whether
@@ -20,7 +20,7 @@
 		\brief \b Default: Disabled
 		\details
 		Throws exceptions from C++ code.
-		This could be the return of a pcall, or from pulling an incorrect type 
+		This could be the return of a pcall, or from pulling an incorrect type
 		off the stack when \ref OOLUA_RUNTIME_CHECKS_ENABLED is enabled
 		\param 0 Disabled
 		\param 1 Enabled
@@ -53,8 +53,8 @@
 	/**@}*/
 
 
-	/** \addtogroup OOLuaErrorChecking Error Checking 
-	@{ 
+	/** \addtogroup OOLuaErrorChecking Error Checking
+	@{
 		\brief Defines the type of checks which will be performed
 	*/
 
@@ -63,7 +63,7 @@
 		\brief \b Default: Enabled
 		\details
 		Checks that a type being pulled off the stack is of the correct type,
-		if this is a proxy type, it also checks the userdata on the stack was 
+		if this is a proxy type, it also checks the userdata on the stack was
 		created by OOLua
 		\param 0 Disabled
 		\param 1 Enabled
@@ -77,7 +77,7 @@
 		\hideinitializer
 		\brief \b Default: Enabled
 		\details
-		Does what it says on the tin, only valid when 
+		Does what it says on the tin, only valid when
 		\ref OOLUA_RUNTIME_CHECKS_ENABLED is enabled
 		\param 0 Disabled
 		\param 1 Enabled
@@ -98,9 +98,9 @@
 		\hideinitializer
 		\brief \b Default: Enabled
 		\details
-		Userdata optimisation which checks for a magic cookie to try and ensure 
-		it was created by OOLua, by default this is on when userdata checking 
-		is on. Turning this off by setting it to zero will use a slower yet 
+		Userdata optimisation which checks for a magic cookie to try and ensure
+		it was created by OOLua, by default this is on when userdata checking
+		is on. Turning this off by setting it to zero will use a slower yet
 		correct (as correct as can be) method. \n
 		Only meaningful when \ref OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA is
 		enabled
@@ -119,7 +119,7 @@
 		\details
 			\li Adds Checks for NULL pointers
 			\li Adds a stack trace to errors reported by pcall
-			\li Calls assert on errors if both \ref OOLUA_USE_EXCEPTIONS and 
+			\li Calls assert on errors if both \ref OOLUA_USE_EXCEPTIONS and
 				\ref OOLUA_STORE_LAST_ERROR are both disabled
 		\param 0 Disabled
 		\param 1 Enabled
@@ -152,7 +152,7 @@
 #			define OOLUA_RUNTIME_CHECKS_ENABLED 1
 #		endif
 
-#		if defined OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA && OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 0 
+#		if defined OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA && OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 0
 #			undef OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA
 #		endif
 
@@ -188,14 +188,14 @@
 
 /** \cond INTERNAL */
 
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
 #	define MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
-__pragma(warning(push)) \
-__pragma(warning(disable : 4127)) 
+__pragma(warning(push)) /*NOLINT*/ \
+__pragma(warning(disable : 4127)) /*NOLINT*/
 #	define MSC_POP_COMPILER_WARNING_OOLUA \
-__pragma(warning(pop)) 
+__pragma(warning(pop)) /*NOLINT*/
 #else
-#	define MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA 
+#	define MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
 #	define MSC_POP_COMPILER_WARNING_OOLUA
 #endif
 
@@ -219,19 +219,19 @@ warning: anonymous variadic macros were introduced in C99 [-Wvariadic-macros]
 It would therefore seem reasonable that the following code could be used to prevent
 vaarg warnings in a limited scope without effecting a user's compile options:
 
-#if defined __GNUC__ && defined __STRICT_ANSI__ 
+#if defined __GNUC__ && defined __STRICT_ANSI__
 #	if __GNUC__ >4  || ( __GNUC__ == 4 && __GNUC_MINOR__ >= 6)
-#		pragma GCC diagnostic push 
-#		pragma GCC diagnostic ignored "-Wvariadic-macros" 
+#		pragma GCC diagnostic push
+#		pragma GCC diagnostic ignored "-Wvariadic-macros"
 #	else
 #		pragma GCC system_header
 #	endif
 #endif
 
  Code wanting to be protected here
- 
+
 #if defined __GNUC__ && defined __STRICT_ANSI__ && ( __GNUC__ >4  || ( __GNUC__ == 4 && __GNUC_MINOR__ >= 6) )
-#	pragma GCC diagnostic push 
+#	pragma GCC diagnostic push
 #endif
 
 However using a 4.6 version of GCC and the above code does not prevent the warnings
@@ -263,10 +263,10 @@ However using a 4.6 version of GCC and the above code does not prevent the warni
 
 
 #if OOLUA_USE_EXCEPTIONS == 1
-#	if defined __GNUC__ && ( ( !defined __EXCEPTIONS) || (defined __EXCEPTIONS && __EXCEPTIONS != 1) ) 
-#			error OOLua has been compiled with exceptions yet they have been disabled for this build 
+#	if defined __GNUC__ && ( ( !defined __EXCEPTIONS) || (defined __EXCEPTIONS && __EXCEPTIONS != 1) )
+#			error OOLua has been compiled with exceptions yet they have been disabled for this build
 #	elif defined _MSC_VER //&& !defined _HAS_EXCEPTIONS
-#		if defined(_HAS_EXCEPTIONS) && (_HAS_EXCEPTIONS == 0) 
+#		if defined(_HAS_EXCEPTIONS) && (_HAS_EXCEPTIONS == 0)
 #			error OOLua has been compiled with exceptions yet they have been disabled for this build
 #		endif
 #	endif

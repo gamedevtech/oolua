@@ -5,8 +5,8 @@
 ///  @file typelist_structs.h
 ///  @remarks This file was auto generated
 ///  @author Liam Devine
-///  \copyright 
-///  See licence.txt for more details. \n 
+///  \copyright
+///  See licence.txt for more details. \n
 ///////////////////////////////////////////////////////////////////////////////
 
 /** \cond INTERNAL*/
@@ -14,7 +14,8 @@
 namespace TYPE
 {
 	struct Null_type{};
-}
+} // namespace TYPE
+
 /// the compile time list, where a standard list with raw pointers uses NULL for no type
 /// this list has Null_type, which is an empty struct
 ///a node in the lists
@@ -47,7 +48,7 @@ private:
 	typedef typename Type_list
 		<
 			 T02, T03, T04, T05, T06, T07, T08, T09, T10,
-		T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, 
+		T11, T12, T13, T14, T15, T16, T17, T18, T19, T20,
 		T21, T22, T23, T24, T25, T26, T27, T28, T29, T30,
 		T31, T32, T33, T34, T35, T36, T37, T38, T39, T40,
 		T41, T42, T43, T44, T45, T46, T47, T48, T49, T50

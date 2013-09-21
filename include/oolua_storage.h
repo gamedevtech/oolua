@@ -30,9 +30,9 @@ namespace OOLUA
 			{
 				lua_getfield(l, LUA_REGISTRYINDEX, OOLUA::INTERNAL::weak_lookup_name);
 			}
-			static void setWeakTable(lua_State* l,int value_index)
+			static void setWeakTable(lua_State* l, int value_index)
 			{
-				push_char_carray(l,OOLUA::INTERNAL::weak_lookup_name);
+				push_char_carray(l, OOLUA::INTERNAL::weak_lookup_name);
 				lua_pushvalue(l, value_index);
 				lua_rawset(l, LUA_REGISTRYINDEX);
 			}
@@ -48,53 +48,53 @@ namespace OOLUA
 				//yet we need to stop warnings
 				//NOTE: in 5.2 we can push a light c function here
 				is_const_func_sig func = OOLUA::INTERNAL::userdata_is_constant;
-                void** stopwarnings = (void**)&func;
-				lua_pushlightuserdata(l,*stopwarnings);
+				void** stopwarnings = reinterpret_cast<void**>(&func);
+				lua_pushlightuserdata(l, *stopwarnings);
 				lua_rawget(l, LUA_REGISTRYINDEX);
 			}
-			static void setWeakTable(lua_State* l,int value_index)
+			static void setWeakTable(lua_State* l, int value_index)
 			{
 				//it is safe as the pointers are the same size
 				//yet we need to stop warnings
 				//NOTE: in 5.2 we can push a light c function here
 				is_const_func_sig func = OOLUA::INTERNAL::userdata_is_constant;
-                void** stopwarnings = (void**)&func;
-				lua_pushlightuserdata(l,*stopwarnings);
+				void** stopwarnings = reinterpret_cast<void**>(&func);
+				lua_pushlightuserdata(l, *stopwarnings);
 				lua_pushvalue(l, value_index);
 				lua_rawset(l, LUA_REGISTRYINDEX);
 			}
 		};
 
-		typedef VoidPointerSameSizeAsFunctionPointer<sizeof(void*)> Weak_table;
+		typedef VoidPointerSameSizeAsFunctionPointer<sizeof(void*)> Weak_table; // NOLINT
 
 		//pushes the weak top and returns its index
 		int push_weak_table(lua_State* l);
-		template<typename T>Lua_ud* add_ptr(lua_State*  l,T* const ptr,bool is_const,Owner owner);
+		template<typename T>Lua_ud* add_ptr(lua_State*  l, T* const ptr, bool is_const, Owner owner);
 
-		template<typename T>Lua_ud* find_ud(lua_State*  l,T* ptr,bool is_const);
+		template<typename T>Lua_ud* find_ud(lua_State*  l, T* ptr, bool is_const);
 
-		bool is_there_an_entry_for_this_void_pointer(lua_State* l,void* ptr);
-		bool is_there_an_entry_for_this_void_pointer(lua_State* l,void* ptr,int tableIndex);
+		bool is_there_an_entry_for_this_void_pointer(lua_State* l, void* ptr);
+		bool is_there_an_entry_for_this_void_pointer(lua_State* l, void* ptr, int tableIndex);
 
 		template<typename T>
-		Lua_ud* reset_metatable(lua_State*  l,T* ptr,bool is_const);
+		Lua_ud* reset_metatable(lua_State*  l, T* ptr, bool is_const);
 
-		void add_ptr_if_required(lua_State* const l, void* ptr,int udIndex,int weakIndex);
+		void add_ptr_if_required(lua_State* const l, void* ptr, int udIndex, int weakIndex);
 
 
-		Lua_ud* new_userdata(lua_State* l, void* ptr,bool is_const
-							 ,oolua_function_check_base base_checker,oolua_type_check_function type_check);		
-		void reset_userdata(Lua_ud* ud, void* ptr,bool is_const
-							,oolua_function_check_base base_checker,oolua_type_check_function type_check);
-	
-		template<typename Type,typename Bases, int BaseIndex,typename BaseType>
+		Lua_ud* new_userdata(lua_State* l, void* ptr, bool is_const
+							 , oolua_function_check_base base_checker, oolua_type_check_function type_check);
+		void reset_userdata(Lua_ud* ud, void* ptr, bool is_const
+							, oolua_function_check_base base_checker, oolua_type_check_function type_check);
+
+		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Add_ptr;
 
-		template<typename Type,typename Bases, int BaseIndex,typename BaseType>
+		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Has_a_root_entry;
 
 		template<typename T>
-		int lua_set_owner(lua_State*  l);
+		int lua_set_owner(lua_State* l);
 
 		bool ud_at_index_is_const(lua_State* l, int index);
 
@@ -102,13 +102,13 @@ namespace OOLUA
 		template<typename T>
 		int lua_set_owner(lua_State*  l)
 		{
-			T* p = check_index<T>(l,1);
+			T* p = check_index<T>(l, 1);
 			if(!p) return luaL_error(l, "The self/this instance to '%s' is not of type '%s'"
-									 ,OOLUA::INTERNAL::set_owner_str
-									 ,OOLUA::Proxy_class<T>::class_name
-									 );
+									 , OOLUA::INTERNAL::set_owner_str
+									 , OOLUA::Proxy_class<T>::class_name);
+
 			Owner own(No_change);
-			OOLUA::INTERNAL::LUA_CALLED::get(l,2,own);
+			OOLUA::INTERNAL::LUA_CALLED::get(l, 2, own);
 			if(own != No_change) INTERNAL::userdata_gc_value(static_cast<INTERNAL::Lua_ud*>(lua_touserdata(l, 1)), own == Cpp? false : true);
 			return 0;
 		}
@@ -118,9 +118,9 @@ namespace OOLUA
 		//if found it is left on the top of the stack and returns the Lua_ud ptr
 		//else the stack is same as on entrance to the function and null is returned
 		template<typename T>
-		inline Lua_ud* find_ud(lua_State*  l,T* ptr,bool const is_const)
+		inline Lua_ud* find_ud(lua_State*  l, T* ptr, bool const is_const)
 		{
-			bool has_entry = is_there_an_entry_for_this_void_pointer(l,ptr);//(ud or no addition to the stack)
+			bool has_entry = is_there_an_entry_for_this_void_pointer(l, ptr);//(ud or no addition to the stack)
 			Lua_ud* ud(0);
 			if(has_entry )//ud
 			{
@@ -130,19 +130,18 @@ namespace OOLUA
 					top of stack is derived from T with no offset pointer and it can be upcast to T
 					top of stack is a registered base class of T with no offset pointer
 				*/
-				ud = static_cast<Lua_ud *>( lua_touserdata(l, -1));
+				ud = static_cast<Lua_ud *>(lua_touserdata(l, -1));
 				bool const was_const = OOLUA::INTERNAL::userdata_is_constant(ud);
 
-				if ( is_const )	
+				if (is_const)
 				{
-					if( class_from_stack_top<T>(l) )
-						return ud;
+					if(class_from_stack_top<T>(l)) return ud;
 				}
-				else if( was_const )//change
+				else if (was_const)//change
 				{
-					if( class_from_stack_top<T>(l) )
+					if(class_from_stack_top<T>(l))
 					{
-						INTERNAL::userdata_const_value(ud,false);
+						INTERNAL::userdata_const_value(ud, false);
 						return ud;
 					}
 				}
@@ -154,7 +153,7 @@ namespace OOLUA
 
 				//if T was a base of the stack or T was the stack it has been returned
 				//top of stack is a registered base class of T with no offset pointer
-				return reset_metatable(l,ptr, was_const && is_const);
+				return reset_metatable(l, ptr, was_const && is_const);
 			}
 			else
 			{
@@ -168,53 +167,53 @@ namespace OOLUA
 				bool base_is_stored(false);
 				Has_a_root_entry<
 						T
-						,typename FindRootBases<T>::Result
-						,0
-						,typename TYPELIST::At_default< typename FindRootBases<T>::Result, 0, TYPE::Null_type >::Result
+						, typename FindRootBases<T>::Result
+						, 0
+						, typename TYPELIST::At_default< typename FindRootBases<T>::Result, 0, TYPE::Null_type >::Result
 					> checkRoots;
-				checkRoots(l,ptr,weak_table,base_is_stored);
-				lua_remove(l,weak_table);
+				checkRoots(l, ptr, weak_table, base_is_stored);
+				lua_remove(l, weak_table);
 				if(base_is_stored)
 				{
-					bool was_const = ud_at_index_is_const(l,-1);
-					ud = reset_metatable(l,ptr,was_const && is_const);
+					bool was_const = ud_at_index_is_const(l, -1);
+					ud = reset_metatable(l, ptr, was_const && is_const);
 				}
 			}
 			return ud;
 		}
 
 		template<typename T>
-		inline Lua_ud* reset_metatable(lua_State* l,T* ptr,bool is_const)
+		inline Lua_ud* reset_metatable(lua_State* l, T* ptr, bool is_const)
 		{
-			Lua_ud *ud = static_cast<Lua_ud *>( lua_touserdata(l, -1) );//ud
-			reset_userdata(ud, ptr, is_const, &requested_ud_is_a_base<T>, &OOLUA::register_class<T>);	
+			Lua_ud *ud = static_cast<Lua_ud *>(lua_touserdata(l, -1));//ud
+			reset_userdata(ud, ptr, is_const, &requested_ud_is_a_base<T>, &OOLUA::register_class<T>);
 			//change the metatable associated with the ud
-			lua_getfield(l, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name );
+			lua_getfield(l, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);
 
-			lua_setmetatable(l,-2);//set ud's metatable to this
+			lua_setmetatable(l, -2);//set ud's metatable to this
 
 			int weak_index = push_weak_table(l);//ud weakTable
 			//then register all the bases that need it
 			Add_ptr<T
-					,typename OOLUA::Proxy_class<T>::AllBases
-					,0
-					,typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
+					, typename OOLUA::Proxy_class<T>::AllBases
+					, 0
+					, typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
 				> addThisTypesBases;
-			addThisTypesBases(l,ptr,weak_index-1,weak_index);
-			lua_pop(l,1);//ud
+			addThisTypesBases(l, ptr, weak_index-1, weak_index);
+			lua_pop(l, 1);//ud
 			return ud;
 		}
-		
-		template<typename T>
-		inline Lua_ud* add_ptr(lua_State* const l,T* const ptr,bool is_const,Owner owner)
-		{		
-			Lua_ud* ud = new_userdata(l, ptr, is_const,&requested_ud_is_a_base<T>,&OOLUA::register_class<T>);
-			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
-			
-			lua_getfield(l, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name );
 
-#if	OOLUA_DEBUG_CHECKS ==1
-			assert( lua_isnoneornil(l,-1) ==0 && "no metatable of this name found in registry" );
+		template<typename T>
+		inline Lua_ud* add_ptr(lua_State* const l, T* const ptr, bool is_const, Owner owner)
+		{
+			Lua_ud* ud = new_userdata(l, ptr, is_const, &requested_ud_is_a_base<T>, &OOLUA::register_class<T>);
+			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
+
+			lua_getfield(l, LUA_REGISTRYINDEX, OOLUA::Proxy_class<T>::class_name);
+
+#if	OOLUA_DEBUG_CHECKS == 1
+			assert(lua_isnoneornil(l, -1) == 0 && "no metatable of this name found in registry");
 #endif
 			////Pops a table from the stack and sets it as the new metatable for the value at the given acceptable index
 			lua_setmetatable(l, -2);
@@ -222,74 +221,74 @@ namespace OOLUA
 			int weakIndex = push_weak_table(l);//ud,weakTable
 			int udIndex = weakIndex -1;
 
-			add_ptr_if_required(l,ptr,udIndex,weakIndex);//it is required
+			add_ptr_if_required(l, ptr, udIndex, weakIndex);//it is required
 
 			Add_ptr<T
-					,typename OOLUA::Proxy_class<T>::AllBases
-					,0
-					,typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
+					, typename OOLUA::Proxy_class<T>::AllBases
+					, 0
+					, typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases, 0, TYPE::Null_type >::Result
 				> addThisTypesBases;
-			addThisTypesBases(l,ptr,udIndex,weakIndex);
+			addThisTypesBases(l, ptr, udIndex, weakIndex);
 
-			lua_pop(l,1);//ud
+			lua_pop(l, 1);//ud
 			return ud;
 		}
 
-		template<typename Type,typename Bases, int BaseIndex,typename BaseType>
+		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Add_ptr
 		{
-			void operator()(lua_State * const l,Type* ptr,int udIndex,int weakIndex)
+			void operator()(lua_State * const l, Type* ptr, int udIndex, int weakIndex)
 			{
 				//add this type if needed
-				add_ptr_if_required(l,(BaseType*)ptr,udIndex,weakIndex);
+				add_ptr_if_required(l, static_cast<BaseType*>(ptr), udIndex, weakIndex);
 				//add the next in the type list if needed
 				Add_ptr<
 						Type
-						,Bases
-						,BaseIndex + 1
-						,typename TYPELIST::At_default< Bases, BaseIndex + 1, TYPE::Null_type >::Result
+						, Bases
+						, BaseIndex + 1
+						, typename TYPELIST::At_default< Bases, BaseIndex + 1, TYPE::Null_type >::Result
 					> addBaseNextPtr;
-				addBaseNextPtr(l,ptr,udIndex,weakIndex);
+				addBaseNextPtr(l, ptr, udIndex, weakIndex);
 			}
 		};
 
-		template<typename Type,typename Bases, int BaseIndex>
-		struct Add_ptr<Type,Bases,BaseIndex,TYPE::Null_type>
+		template<typename Type, typename Bases, int BaseIndex>
+		struct Add_ptr<Type, Bases, BaseIndex, TYPE::Null_type>
 		{
-			void operator()(lua_State * const /*l*/,Type* /*ptr*/,int /*udIndex*/,int /*weakIndex*/)const
+			void operator()(lua_State * const /*l*/, Type* /*ptr*/, int /*udIndex*/, int /*weakIndex*/)const
 			{}
 		};
 
-		template<typename Type,typename Bases, int BaseIndex,typename BaseType>
+		template<typename Type, typename Bases, int BaseIndex, typename BaseType>
 		struct Has_a_root_entry
 		{
-			void operator()(lua_State * const l,Type* ptr,int weakIndex,bool& result)
+			void operator()(lua_State * const l, Type* ptr, int weakIndex, bool& result)
 			{
 				if(result)return;
-				result = is_there_an_entry_for_this_void_pointer(l,(BaseType*)ptr,weakIndex);
+				result = is_there_an_entry_for_this_void_pointer(l, static_cast<BaseType*>(ptr), weakIndex);
 				if(result)return;
 				Has_a_root_entry<
 						Type
-						,Bases
-						,BaseIndex + 1
-						,typename TYPELIST::At_default< Bases, BaseIndex + 1, TYPE::Null_type >::Result
+						, Bases
+						, BaseIndex + 1
+						, typename TYPELIST::At_default< Bases, BaseIndex + 1, TYPE::Null_type >::Result
 					> checkNextBase;
-				checkNextBase(l,ptr,weakIndex,result);
+				checkNextBase(l, ptr, weakIndex, result);
 			}
 		};
 
-		template<typename Type,typename Bases, int BaseIndex>
-		struct Has_a_root_entry<Type,Bases,BaseIndex,TYPE::Null_type>
+		template<typename Type, typename Bases, int BaseIndex>
+		struct Has_a_root_entry<Type, Bases, BaseIndex, TYPE::Null_type>
 		{
-			void operator()(lua_State * const /*l*/,Type* /*ptr*/,int /*weakIndex*/,bool& /*result*/)const
+			void operator()(lua_State * const /*l*/, Type* /*ptr*/, int /*weakIndex*/, bool& /*result*/)const
 			{}
 		};
 
 
-	}
+	} // namespace INTERNAL // NOLINT
 	/**\endcond*/
 
 
-}
+} // namespace OOLUA
 
 #endif

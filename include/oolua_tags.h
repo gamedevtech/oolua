@@ -3,17 +3,17 @@
 ///  Possible members for a \ref OOLUA_TAGS "Tag block"
 ///  @author Liam Devine
 ///  \copyright
-///  See licence.txt for more details. \n 
+///  See licence.txt for more details.
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef OOLUA_TAGS_H_
 # define OOLUA_TAGS_H_
 
 /**  \addtogroup OOLuaTags Tags
 @{
-\brief 
+\brief
 Possible members for \ref OOLUA_TAGS which help express more information about
 a class which is to be proxied.
-	
+
 	\struct OOLUA::Abstract
 	\brief The class being mirrored is an abstract class.
 	\details
@@ -21,11 +21,11 @@ a class which is to be proxied.
 	look for any constructors for the type and the type will not be constructable
 	from Lua. Specifying an \ref OOLUA_CTORS block will have no effect and such a
 	block will be ignored.
- 
+
 	\addtogroup OperatorTags Operator Tags
 	@{
 		\brief Informs that a class has an operator exposed
-		\details \ref OperatorTags inform OOLua that a class exposes one or more of the 
+		\details \ref OperatorTags inform OOLua that a class exposes one or more of the
 		operators supported:
 			\li \ref OOLUA::Less_op "Less_op"
 			\li \ref OOLUA::Equal_op "Equal_op"
@@ -35,9 +35,9 @@ a class which is to be proxied.
 			\li \ref OOLUA::Mul_op "Mul_op"
 			\li \ref OOLUA::Sub_op "Sub_op"
 			\li \ref OOLUA::Add_op "Add_op"
-	
- 
-	
+
+
+
 	\struct OOLUA::Less_op
 	\brief Less than operator is defined for the type.
 
@@ -62,25 +62,25 @@ a class which is to be proxied.
 	\struct OOLUA::Add_op
 	\brief Addition operator is defined for the type.
 	@}
- 
+
 	\struct OOLUA::No_default_constructor
 	\brief
 	There is not a default constructor in the public interface yet there are other
 	constructors.
-	\details 
+	\details
 	There is not a public default constructor or you do not wish to expose such a
 	constructor, yet there are other constructors which will be specified by
 	\ref OOLUA_CTOR entries inside a \ref OOLUA_CTOR block.
 
 	\struct OOLUA::No_public_constructors
 	\brief There are no constructors in the public interface.
-	\details 
+	\details
 	When OOLua encounters this tag it will not look for any constructors for the
 	type and the type will not be constructable from Lua. Specifying an OOLUA_CTORS
 	block will have no effect and such a block will be ignored.
- 
+
 	\struct OOLUA::No_public_destructor
-	\brief 
+	\brief
 	There is not a destructor in the public interface and OOLua will not attempt to
 	delete an instance of this type
 
@@ -107,6 +107,6 @@ namespace OOLUA
 	struct No_public_constructors{};
 	struct No_public_destructor{};
 	struct Register_class_enums{};
-}
+} // namespace OOLUA
 /**@}*/
 #endif

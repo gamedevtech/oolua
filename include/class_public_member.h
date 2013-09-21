@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file class_public_member.h
 ///  @author Liam Devine
-///  \copyright 
-///  See licence.txt for more details. \n 
+///  \copyright
+///  See licence.txt for more details. \n
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef CLASS_PUBLIC_MEMBER_H_
@@ -11,52 +11,50 @@
 #include "fwd_push_pull.h"
 #include "param_traits.h"
 
-namespace OOLUA 
+namespace OOLUA
 {
 	/** \cond INTERNAL */
 	namespace INTERNAL
 	{
-	
-		template<typename T,int shouldBeByRef>
-		struct shouldPushValueByReference 
+
+		template<typename T, int shouldBeByRef>
+		struct shouldPushValueByReference
 		{
 			enum {value = 0};
-			static void push(lua_State* l,T* input)
+			static void push(lua_State* l, T* input)
 			{
-				OOLUA::push(l,*input);		
+				OOLUA::push(l, *input);
 			}
 		};
-	
+
 		template<typename T>
-		struct shouldPushValueByReference<T,1>
+		struct shouldPushValueByReference<T, 1>
 		{
 			enum {value = 1};
-			static void push(lua_State* l ,T* input)
+			static void push(lua_State* l, T* input)
 			{
-				OOLUA::push(l,input);
+				OOLUA::push(l, input);
 			}
 		};
-	
-		struct PushPublicMember 
+
+		struct PushPublicMember
 		{
 			template<typename T>
 			static void push(lua_State* l, T* input)
 			{
-				shouldPushValueByReference<T, 
+				shouldPushValueByReference<T,
 					//can not have a pointer to reference.
 					//T will either be a pointer to type
 					//or type
-					OOLUA::INTERNAL::is_param_by_value<T>::value 
+					OOLUA::INTERNAL::is_param_by_value<T>::value
 					&& has_a_proxy_type<typename OOLUA::INTERNAL::Raw_type<T>::type >::value >
-						::push(l,input);
+						::push(l, input);
 			}
-		
 		};
-		
-	}
-	
+
+	} // namespace INTERNAL // NOLINT
 	/** \endcond */
-}
+} // namespace OOLUA
 
 /** \addtogroup OOLuaDSL
  @{*/
@@ -67,15 +65,15 @@ namespace OOLUA
 	/** \def OOLUA_MEM_GETN
 		\hideinitializer
 		\brief Generates a getter for a public member
-		\details OOLUA_MEM_GETN(get_name,id)	
+		\details OOLUA_MEM_GETN(get_name,id)
 		\param get_name	Name of the proxy function which is generated
 		\param id Public member name
 	*/
-#	define OOLUA_MEM_GETN(get_name,id)\
-	int get_name(lua_State* l) const\
-	{\
-		OOLUA::INTERNAL::PushPublicMember::push(l,&m_this->id);\
-		return 1;\
+#	define OOLUA_MEM_GETN(get_name, id) \
+	int get_name(lua_State* l) const \
+	{ \
+		OOLUA::INTERNAL::PushPublicMember::push(l, &m_this->id); \
+		return 1; \
 	}
 
 	/** \def OOLUA_MEM_SETN
@@ -85,11 +83,11 @@ namespace OOLUA
 		\param set_name	Name of the proxy function which is generated
 		\param id Public member name
 	 */
-#	define OOLUA_MEM_SETN(set_name,id)\
+#	define OOLUA_MEM_SETN(set_name, id) \
 	int set_name(lua_State* l) \
-	{\
-		OOLUA::INTERNAL::LUA_CALLED::get(l,2,m_this->id);\
-		return 0;\
+	{ \
+		OOLUA::INTERNAL::LUA_CALLED::get(l, 2, m_this->id); \
+		return 0; \
 	}
 
 
@@ -105,7 +103,7 @@ namespace OOLUA
 		\brief Generates a getter for a public member
 		\param id Public member name
 	*/
-#	define OOLUA_MGET(id) OOLUA_MEM_GETN(get_##id,id)
+#	define OOLUA_MGET(id) OOLUA_MEM_GETN(get_##id, id)
 
 	/** \def OOLUA_MSET
 		\hideinitializer
@@ -113,7 +111,7 @@ namespace OOLUA
 		\brief Generates a setter for a public member
 		\param id Public member name
 	 */
-#	define OOLUA_MSET(id) OOLUA_MEM_SETN(set_##id,id)
+#	define OOLUA_MSET(id) OOLUA_MEM_SETN(set_##id, id)
 
 	/** \def OOLUA_MGET_MSET
 		\hideinitializer

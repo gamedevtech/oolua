@@ -19,29 +19,28 @@ namespace OOLUA
 {
 	/** \addtogroup OOLuaErrorReporting
 	@{*/
-	
-    /** \brief Reset the error state such that a call to OOLUA::get_last_error
+
+	/** \brief Reset the error state such that a call to OOLUA::get_last_error
 		will return an empty string.
 		\see OOLuaErrorReporting
 		\note This function is a nop when \ref OOLUA_STORE_LAST_ERROR is not enabled
 	*/
 	void reset_error_value(lua_State*l);
-    /** \brief Returns the last stored error
+	/** \brief Returns the last stored error
 		\return empty string if there is not an error else the error message
 		\see OOLuaErrorReporting
 		\note This function is a nop when \ref OOLUA_STORE_LAST_ERROR is not enabled
 	*/
-    std::string get_last_error(lua_State*l);
+	std::string get_last_error(lua_State*l);
 	/**@}*/
-	
+
 	/** \cond INTERNAL*/
-    namespace INTERNAL
-    {
+	namespace INTERNAL
+	{
 		void set_error_from_top_of_stack_and_pop_the_error(lua_State*l);
-    }
+	} // namespace INTERNAL
 	/** \endcond */
 
-}
+} // namespace OOLUA
 
 #endif
-

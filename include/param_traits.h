@@ -25,23 +25,23 @@
 struct lua_State;
 namespace OOLUA
 {
-	
+
 /** \addtogroup OOLuaTraits Traits
 @{
 \brief Provides direction and ownership information.
 \details
-In C++ the use of traits which have a lua_ or cpp_ prefix can control ownership for 
+In C++ the use of traits which have a lua_ or cpp_ prefix can control ownership for
 parameters, returns values and stack entries whilst traits which specify direction
 for parameters contain as part of their name "out", "in" or a combination.
 */
-	
+
 	/** \struct in_p
 		\brief Input parameter trait
 		\details
 		The calling Lua procedure supplies the parameter to the proxied function.
 		No change of ownership occurs.
 		\note
-		This is the default trait used for function parameters when no trait 
+		This is the default trait used for function parameters when no trait
 		is supplied.
 	 */
 	template<typename T>struct in_p;
@@ -51,7 +51,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		\details
 		The calling Lua procedure does not pass the parameter to the proxied
 		function, instead one is created using the default constructor and
-		passed to the proxied function. The result after the proxied call with 
+		passed to the proxied function. The result after the proxied call with
 		be returned to the calling procedure. If this is a type which has a
 		proxy then it will cause a heap allocation of the type, which Lua will
 		own.
@@ -80,71 +80,71 @@ for parameters contain as part of their name "out", "in" or a combination.
 		\details
 		Lua code does not pass an instance to the C++ function, yet the pushed back
 		value after the function call will be owned by Lua. This is meaningful only
-		if called with a type which has a proxy and it is by reference, otherwise 
+		if called with a type which has a proxy and it is by reference, otherwise
 		undefined.
 	*/
 	template<typename T>struct lua_out_p;
-	
-	
-	
+
+
+
 	/** \struct cpp_acquire_ptr
 		\brief Change of ownership to C++
 		\details
 		Informs the binding that C++ will take control of the pointer being used
-		and call delete on it when appropriate. This is only valid for 
+		and call delete on it when appropriate. This is only valid for
 		OOLUA::pull calls.
 	*/
 	template<typename T>struct cpp_acquire_ptr;
-	
+
 	/** \struct lua_acquire_ptr
 		\brief Change of ownership to Lua
 		\details
 		Informs the binding that Lua will take control of the pointer being used
-		and call delete on it when appropriate. This is only valid for 
+		and call delete on it when appropriate. This is only valid for
 		OOLUA::push calls
 	*/
 	template<typename T>struct lua_acquire_ptr;
-	
+
 	/** \struct OOLUA::calling_lua_state
 		\brief Informs that the calling state is a parameter for a function
 	*/
 	struct calling_lua_state;
-	
+
 	/** \enum Owner
 		Which language owns the parameter Lua, Cpp or no change to ownership
 	*/
 	enum Owner
 	{	No_change	/*!< No change of ownership*/
-		,Cpp		/*!< Change in ownership, C++ will now own the instance*/
-		,Lua		/*!< Change in ownership, Lua will now own the instance*/
+		, Cpp		/*!< Change in ownership, C++ will now own the instance*/
+		, Lua		/*!< Change in ownership, Lua will now own the instance*/
 	};
-	
+
 /**}@*/
-	
-	
+
+
 	/** \cond INTERNAL*/
 	template<typename T>
 	class Proxy_class;
-	
+
 	class Table;
 	template<int ID>struct Lua_ref;
-	
-	namespace INTERNAL 
+
+	namespace INTERNAL
 	{
-		
+
 		template<typename Type>
 		struct has_a_proxy_type
 		{
 			typedef OOLUA::Proxy_class<Type> proxy_type;
-			template <typename U> 
-			static char (& has_none_proxy_typedef(typename U::OoluaNoneProxy*))[1]; 
-			
-			template <typename U> 
-			static char (& has_none_proxy_typedef(...))[2]; 
-			
-			enum {value = sizeof( has_none_proxy_typedef<proxy_type>(0) ) == 1 ? 0 : 1} ;
+			template <typename U>
+			static char (& has_none_proxy_typedef(typename U::OoluaNoneProxy*))[1];
+
+			template <typename U>
+			static char (& has_none_proxy_typedef(...))[2];
+
+			enum {value = sizeof(has_none_proxy_typedef<proxy_type>(0)) == 1 ? 0 : 1};
 		};
-		
+
 		template <typename From>
 		class can_convert_to_int
 		{
@@ -158,12 +158,12 @@ for parameters contain as part of their name "out", "in" or a combination.
 			static no test(Convertor);
 			static no test(float&);
 			static no test(double&);
-			static yes test(int);
+			static yes test(int); // NOLINT
 			static From& make_from();
 		public:
-			enum { value = sizeof(  test( make_from() ) )  == sizeof(yes) ? 1 : 0 };
+			enum { value = sizeof test(make_from()) == sizeof(yes) ? 1 : 0 };
 		};
-		
+
 		template<typename T>
 		struct Raw_type
 		{
@@ -177,13 +177,13 @@ for parameters contain as part of their name "out", "in" or a combination.
 		template<typename T>
 		struct Type_enum_defaults
 		{
-			enum { is_by_value = ! LVD::by_reference<typename LVD::remove_all_const<T>::type >::value };
+			enum { is_by_value = !LVD::by_reference<typename LVD::remove_all_const<T>::type >::value };
 			enum { is_constant =  LVD::is_const<T>::value };
-			enum 
-			{ 
-				is_integral = LVD::is_integral_type< typename Raw_type<T>::raw >::value 
-					|| /*enum*/( !has_a_proxy_type<typename Raw_type<T>::raw>::value
-								&& can_convert_to_int<typename Raw_type<T>::raw>::value )
+			enum
+			{
+				is_integral = LVD::is_integral_type< typename Raw_type<T>::raw >::value
+					|| /*enum*/(!has_a_proxy_type<typename Raw_type<T>::raw>::value
+								&& can_convert_to_int<typename Raw_type<T>::raw>::value)
 			};
 		};
 
@@ -191,7 +191,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		template<typename T>
 		struct is_param_by_value
 		{
-			enum { value = ! LVD::by_reference<T>::value };
+			enum { value = !LVD::by_reference<T>::value };
 		};
 
 		template<typename T>
@@ -210,62 +210,62 @@ for parameters contain as part of their name "out", "in" or a combination.
 			typedef typename LVD::remove_all_ptrs<T>::type type;
 		};
 
-		template<typename T,int is_integral>struct Pull_type;
+		template<typename T, int is_integral>struct Pull_type;
 
 		template<typename T>
-		struct Pull_type<T,0>
+		struct Pull_type<T, 0>
 		{
 			typedef T* type;
 		};
-		
+
 		template<typename T>
-		struct Pull_type<T,1>
+		struct Pull_type<T, 1>
 		{
 			typedef T type;
 		};
 
-		template<typename T,typename Original_Type,int is_integral>struct Pull_type_;
-	
-		template<typename Original_Type,typename T>
+		template<typename T, typename Original_Type, int is_integral>struct Pull_type_;
+
+		template<typename Original_Type, typename T>
 		struct pull_type_maybe_const
 		{
 			typedef typename LVD::if_else<
 											LVD::is_const<Original_Type>::value
 											|| INTERNAL::Type_enum_defaults<Original_Type>::is_by_value
-											,T const*
-											,T*
+											, T const*
+											, T*
 										>::type type;
 		};
 
 		/*specialisation to prevent Visual Studio warnings, that const applied to a function is ignored*/
 		template<typename Original_Type>
-		struct pull_type_maybe_const<Original_Type,int (lua_State*)>
+		struct pull_type_maybe_const<Original_Type, int (lua_State*)> // NOLINT
 		{
-			typedef int(*type)(lua_State*);
+			typedef int(*type)(lua_State*); // NOLINT
 		};
 
 		/* should rename Pull_maybe_const */
-		template<typename T,typename Original_Type>
-		struct Pull_type_<T,Original_Type,0>
+		template<typename T, typename Original_Type>
+		struct Pull_type_<T, Original_Type, 0>
 		{
-			typedef typename pull_type_maybe_const<Original_Type,T>::type type;
+			typedef typename pull_type_maybe_const<Original_Type, T>::type type;
 		};
 
-		template<typename T,typename Original_Type>
-		struct Pull_type_<T,Original_Type,1>
+		template<typename T, typename Original_Type>
+		struct Pull_type_<T, Original_Type, 1>
 		{
 			typedef T type;
 		};
-		
-	}
-	
-	
+
+	} // namespace INTERNAL // NOLINT
+
+
 	template<typename T>
 	struct in_p
 	{
 		typedef T type;
 		typedef typename INTERNAL::Raw_type<T>::type raw;
-		typedef typename INTERNAL::Pull_type_<raw,T,INTERNAL::Type_enum_defaults<type>::is_integral>::type pull_type;
+		typedef typename INTERNAL::Pull_type_<raw, T, INTERNAL::Type_enum_defaults<type>::is_integral>::type pull_type;
 		enum {in = 1};
 		enum {out = 0};
 		enum {owner = No_change};
@@ -279,7 +279,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 	{
 		typedef T type;
 		typedef typename INTERNAL::Raw_type<T>::type raw;
-        typedef typename INTERNAL::Pull_type<raw,LVD::is_integral_type<raw>::value >::type pull_type;
+		typedef typename INTERNAL::Pull_type<raw, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 1};
 		enum { out = 1};
 		enum { owner = No_change};
@@ -289,10 +289,9 @@ for parameters contain as part of their name "out", "in" or a combination.
 		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
 	};
 
-	
+
 	template<>
 	struct out_p<void>;
-	
 
 	template<typename T>
 	struct out_p
@@ -307,17 +306,16 @@ for parameters contain as part of their name "out", "in" or a combination.
 		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
 		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
 		typedef char type_has_to_be_by_reference [INTERNAL::Type_enum_defaults<type>::is_by_value ? -1 : 1 ];
-
 	};
-	
-		
+
+
 	//cpp takes ownership
 	template<typename T>
 	struct cpp_in_p
 	{
 		typedef T type;
 		typedef typename INTERNAL::Raw_type<T>::type raw;
-        typedef typename INTERNAL::Pull_type<raw,LVD::is_integral_type<raw>::value >::type pull_type;
+		typedef typename INTERNAL::Pull_type<raw, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 1};
 		enum { out = 0};
 		enum { owner = Cpp};
@@ -326,7 +324,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
 		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
 		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
-		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&,type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
 	};
 
 	template<typename T>
@@ -349,13 +347,13 @@ for parameters contain as part of their name "out", "in" or a combination.
 	{
 		enum{value = 1};
 	};
-	
+
 	template<typename T>
 	struct lua_out_p
 	{
 		typedef T type;
 		typedef typename INTERNAL::Raw_type<T>::type raw;
-		typedef typename INTERNAL::Pull_type_<raw,T,LVD::is_integral_type<raw>::value >::type pull_type;
+		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
 		enum { owner = Lua};
@@ -364,20 +362,20 @@ for parameters contain as part of their name "out", "in" or a combination.
 		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
 		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
 		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
-		typedef char must_be_assignable [ ( is_constant && ! ref_to_ptr_const<type>::value )
-										 || ( ref_to_const_ptr<type>::value )
+		typedef char must_be_assignable [ (is_constant && !ref_to_ptr_const<type>::value)
+										 || (ref_to_const_ptr<type>::value)
 											? -1 : 1];
-		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&,type>::value ? -1 : 1];
-		typedef char type_can_not_be_just_a_pointer_to_type [LVD::is_same<raw*,type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_pointer_to_type [LVD::is_same<raw*, type>::value ? -1 : 1];
 	};
-	
+
 
 	template<typename T>
 	struct cpp_acquire_ptr
 	{
 		typedef T type;
 		typedef typename INTERNAL::Raw_type<T>::type raw;
-		typedef typename INTERNAL::Pull_type_<raw,T,LVD::is_integral_type<raw>::value>::type pull_type;
+		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value>::type pull_type;
 		enum { in = 1 };
 		enum { out = 0 };
 		enum { owner = Cpp };
@@ -390,16 +388,16 @@ for parameters contain as part of their name "out", "in" or a combination.
 		raw* m_ptr;
 		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
 		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
-		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&,type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
 	};
-	
-	
+
+
 	template<typename T>
 	struct lua_acquire_ptr
 	{
 		typedef T type;
 		typedef typename INTERNAL::Raw_type<T>::type raw;
-		typedef typename INTERNAL::Pull_type_<raw,T,LVD::is_integral_type<raw>::value >::type pull_type;
+		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
 		enum { in = 0};
 		enum { out = 1};
 		enum { owner = Lua};
@@ -412,11 +410,10 @@ for parameters contain as part of their name "out", "in" or a combination.
 		pull_type m_ptr;
 		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
 		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
-		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&,type>::value ? -1 : 1];
-
+		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
 	};
 
-	namespace INTERNAL 
+	namespace INTERNAL
 	{
 
 		///////////////////////////////////////////////////////////////////////////////
@@ -437,7 +434,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		{
 			enum { out = T::out + lua_return_count<T1>::out };
 		};
-		
+
 		///////////////////////////////////////////////////////////////////////////////
 		///  @struct has_param_traits
 		///  Checks if the type is a trait type or not.
@@ -508,7 +505,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		};
 
 		template<typename T>
-		struct param_type_typedef<T,false>
+		struct param_type_typedef<T, false>
 		{
 			typedef in_p<T> in_param;
 			typedef typename in_param::type type;
@@ -530,7 +527,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		template<typename T>
 		struct param_type
 		{
-			typedef param_type_typedef<T,has_param_traits<T>::value> p_type;
+			typedef param_type_typedef<T, has_param_traits<T>::value> p_type;
 			typedef typename p_type::type  type;
 			typedef typename p_type::pull_type pull_type;
 			typedef typename p_type::raw raw_type;
@@ -542,13 +539,13 @@ for parameters contain as part of their name "out", "in" or a combination.
 			enum { is_constant = p_type::is_constant };
 			enum { is_integral = p_type::is_integral };
 		};
-	
+
 		template<typename T>
 		struct function_return
 		{
 			typedef T type;//real type
 			typedef typename Raw_type<T>::type raw;//all modifiers removed
-			typedef typename Pull_type<raw,LVD::is_integral_type<raw>::value >::type pull_type;
+			typedef typename Pull_type<raw, LVD::is_integral_type<raw>::value >::type pull_type;
 			enum { in = 0};
 			enum { out = 1};
 			enum { owner = No_change};
@@ -556,7 +553,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 			enum { is_constant = Type_enum_defaults<type>::is_constant  };
 			enum { is_integral = Type_enum_defaults<type>::is_integral  };
 		};
-	
+
 		template<>
 		struct function_return<void>
 		{
@@ -570,11 +567,11 @@ for parameters contain as part of their name "out", "in" or a combination.
 			enum { is_constant = 0 };
 			enum { is_integral = 1 };
 		};
-	
-	
-	
-	
-	
+
+
+
+
+
 		template<typename T, bool True>
 		struct return_type_typedef
 		{
@@ -588,10 +585,10 @@ for parameters contain as part of their name "out", "in" or a combination.
 			enum { is_constant = T::is_constant };
 			enum { is_integral = T::is_integral };
 		};
-	
+
 		//uses default traits
 		template<typename T>
-		struct return_type_typedef<T,false>
+		struct return_type_typedef<T, false>
 		{
 			typedef function_return<T> out_param;
 			typedef typename out_param::type type;
@@ -604,36 +601,36 @@ for parameters contain as part of their name "out", "in" or a combination.
 			enum { is_constant = out_param::is_constant };
 			enum { is_integral = out_param::is_integral };
 		};
-	
-	
+
+
 		template<typename T>
 		struct has_return_traits
 		{
 			enum{value = 0};
 		};
-	
+
 		template<typename T>
 		struct has_return_traits< lua_out_p<T> >
 		{
 			enum {value = 1};
 		};
-	
+
 		template<typename T>
 		struct has_return_traits< lua_acquire_ptr<T> >
 		{
 			enum {value = 1};
 		};
-	
+
 		template<typename T>
 		struct has_return_traits< function_return<T> >
 		{
 			enum {value = 1};
 		};
-	
+
 		template<typename T>
 		struct return_type_traits
 		{
-			typedef return_type_typedef<T,has_return_traits<T>::value> r_type;
+			typedef return_type_typedef<T, has_return_traits<T>::value> r_type;
 			typedef typename r_type::type  type;
 			typedef typename r_type::pull_type pull_type;
 			typedef typename r_type::raw raw_type;
@@ -645,17 +642,18 @@ for parameters contain as part of their name "out", "in" or a combination.
 			enum { is_constant = r_type::is_constant  };
 			enum { is_integral = r_type::is_integral  };
 		};
-		
-	}
+
+	} // namespace INTERNAL // NOLINT
+
 	///////////////////////////////////////////////////////////////////////////////
 	///  Specialisation for the calling lua_State
 	///////////////////////////////////////////////////////////////////////////////
 
 	//so this must be a coroutine on the stack
 	template struct in_p<lua_State*>;//disable it
-	
+
 	struct calling_lua_state {};
-	
+
 	template<>
 	struct in_p<calling_lua_state>
 	{
@@ -686,7 +684,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		enum { is_constant = 0 };
 		enum { is_integral = 1 };
 	};
-	
+
 	template<>
 	struct in_p<char*&>;//disabled
 
@@ -703,7 +701,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		enum { is_constant = 1 };
 		enum { is_integral = 1 };
 	};
-	
+
 	template<>
 	struct in_p<char const*&>
 	{
@@ -717,93 +715,93 @@ for parameters contain as part of their name "out", "in" or a combination.
 		enum { is_constant = 1 };
 		enum { is_integral = 1 };
 	};
-	
+
 
 
 	/*
 	 Integral specialisation helper macros
 	*/
-#define oolua_end_integral_trait(trait_is_in,trait_is_out) \
+#define oolua_end_integral_trait(trait_is_in, trait_is_out) \
 		enum { in = trait_is_in}; \
 		enum { out = trait_is_out}; \
 		enum { owner = No_change}; \
 		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value }; \
 		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant }; \
 		enum { is_integral = 1 };
-	
-#define oolua_integral_ref_trait(specialisation,pulling_type,trait_name,trait_is_in,trait_is_out) \
+
+#define oolua_integral_ref_trait(specialisation, pulling_type, trait_name, trait_is_in, trait_is_out) \
 	template<int ID > \
 	struct trait_name< specialisation > \
 	{ \
 		typedef specialisation type; \
 		typedef pulling_type pull_type; \
 		typedef typename INTERNAL::Raw_type<specialisation>::type raw; \
-		oolua_end_integral_trait(trait_is_in,trait_is_out) \
+		oolua_end_integral_trait(trait_is_in, trait_is_out) \
 	};
-	
-#define oolua_integral_trait(specialisation,pulling_type,trait_name,trait_is_in,trait_is_out) \
+
+#define oolua_integral_trait(specialisation, pulling_type, trait_name, trait_is_in, trait_is_out) \
 	template< > \
 	struct trait_name<specialisation > \
 	{ \
 		typedef specialisation type; \
 		typedef pulling_type pull_type; \
 		typedef INTERNAL::Raw_type<specialisation>::type raw; \
-		oolua_end_integral_trait(trait_is_in,trait_is_out) \
+		oolua_end_integral_trait(trait_is_in, trait_is_out) \
 	};
 
 	///////////////////////////////////////////////////////////////////////////////
 	///  Specialisation for registry references
 	///////////////////////////////////////////////////////////////////////////////
 
-	oolua_integral_ref_trait(Lua_ref<ID>,Lua_ref<ID>,in_p,1,0)
-	oolua_integral_ref_trait(Lua_ref<ID>&,Lua_ref<ID>,in_p,1,0)
-	oolua_integral_ref_trait(Lua_ref<ID> const&,Lua_ref<ID>,in_p,1,0)
-	
-	oolua_integral_ref_trait(Lua_ref<ID>&,Lua_ref<ID>,out_p,0,1)
-	oolua_integral_ref_trait(Lua_ref<ID>&,Lua_ref<ID>,in_out_p,1,1)
-	
-	oolua_integral_trait(Table,Table,in_p,1,0)
-	
-	oolua_integral_trait(Table&,Table,in_p,1,0)
-	oolua_integral_trait(Table const&,Table,in_p,1,0)
-	oolua_integral_trait(Table&,Table,out_p,0,1)
-	oolua_integral_trait(Table&,Table,in_out_p,1,1)
-	
+	oolua_integral_ref_trait(Lua_ref<ID>, Lua_ref<ID>, in_p, 1, 0)
+	oolua_integral_ref_trait(Lua_ref<ID>&, Lua_ref<ID>, in_p, 1, 0)
+	oolua_integral_ref_trait(Lua_ref<ID> const&, Lua_ref<ID>, in_p, 1, 0)
+
+	oolua_integral_ref_trait(Lua_ref<ID>&, Lua_ref<ID>, out_p, 0, 1)
+	oolua_integral_ref_trait(Lua_ref<ID>&, Lua_ref<ID>, in_out_p, 1, 1)
+
+	oolua_integral_trait(Table, Table, in_p, 1, 0)
+
+	oolua_integral_trait(Table&, Table, in_p, 1, 0)
+	oolua_integral_trait(Table const&, Table, in_p, 1, 0)
+	oolua_integral_trait(Table&, Table, out_p, 0, 1)
+	oolua_integral_trait(Table&, Table, in_out_p, 1, 1)
+
 	namespace INTERNAL
 	{
-		oolua_integral_ref_trait(Lua_ref<ID>,Lua_ref<ID>,function_return,0,1)
-		oolua_integral_ref_trait(Lua_ref<ID>&,Lua_ref<ID>,function_return,0,1)
-		oolua_integral_ref_trait(Lua_ref<ID>const&,Lua_ref<ID>,function_return,0,1)
-		
-		oolua_integral_trait(Table,Table,function_return,0,1)
-		oolua_integral_trait(Table&,Table,function_return,0,1)
-		oolua_integral_trait(Table const&,Table,function_return,0,1)
-	}
-	
+		oolua_integral_ref_trait(Lua_ref<ID>, Lua_ref<ID> , function_return, 0, 1)
+		oolua_integral_ref_trait(Lua_ref<ID>&, Lua_ref<ID>, function_return, 0, 1)
+		oolua_integral_ref_trait(Lua_ref<ID>const&, Lua_ref<ID>, function_return, 0, 1)
+
+		oolua_integral_trait(Table, Table, function_return, 0, 1)
+		oolua_integral_trait(Table&, Table, function_return, 0, 1)
+		oolua_integral_trait(Table const&, Table, function_return, 0, 1)
+	} // namespace INTERNAL
+
 #undef oolua_integral_ref_trait
-}
+} // namespace OOLUA
 
 
 #if OOLUA_STD_STRING_IS_INTEGRAL == 1
 /**[StdStringIntegralTraits]*/
 namespace OOLUA
 {
-	oolua_integral_trait(std::string,std::string,in_p,1,0)
-	oolua_integral_trait(std::string&,std::string,in_p,1,0)
-	oolua_integral_trait(std::string const,std::string,in_p,1,0)
-	oolua_integral_trait(std::string const&,std::string,in_p,1,0)
-	
+	oolua_integral_trait(std::string, std::string, in_p, 1, 0)
+	oolua_integral_trait(std::string&, std::string, in_p, 1 , 0)
+	oolua_integral_trait(std::string const, std::string, in_p, 1, 0)
+	oolua_integral_trait(std::string const&, std::string, in_p, 1, 0)
+
 	template<>struct out_p<std::string>;//disable
-	oolua_integral_trait(std::string &,std::string,out_p,0,1)
-	oolua_integral_trait(std::string &,std::string,in_out_p,1,1)
+	oolua_integral_trait(std::string &, std::string, out_p, 0, 1)
+	oolua_integral_trait(std::string &, std::string, in_out_p, 1, 1)
 	namespace INTERNAL
 	{
-		oolua_integral_trait(std::string,std::string,function_return,0,1)
-		oolua_integral_trait(std::string&,std::string,function_return,0,1)
-		oolua_integral_trait(std::string const,std::string,function_return,0,1)
-		oolua_integral_trait(std::string const&,std::string,function_return,0,1)
-	}
-}
+		oolua_integral_trait(std::string, std::string, function_return, 0, 1)
+		oolua_integral_trait(std::string&, std::string, function_return, 0, 1)
+		oolua_integral_trait(std::string const, std::string, function_return, 0, 1)
+		oolua_integral_trait(std::string const&, std::string, function_return, 0, 1)
+	} // namespace INTERNAL
+} // namespace OOLUA
 /**[StdStringIntegralTraits]*/
 #endif
 
@@ -813,17 +811,17 @@ namespace OOLUA
 {
 	namespace INTERNAL
 	{
-		
+
 		enum LUA
 		{
 			BOOLEAN = 1,
-			
+
 			NUMBER = 3,
 			STRING = 4,
 			TABLE = 5,
 			FUNCTION = 6
 		};
-		/*		
+		/*
 		 #define LUA_TNIL		0
 		 #define LUA_TBOOLEAN		1
 		 #define LUA_TLIGHTUSERDATA	2
@@ -834,55 +832,52 @@ namespace OOLUA
 		 #define LUA_TUSERDATA		7
 		 #define LUA_TTHREAD		8
 		 */
-		
+
 		//Used for constructors to check parameters on the stack
-		template<typename Cpp_type,int Lua_type>
+		template<typename Cpp_type, int Lua_type>
 		struct lua_type_is_cpp_type;
-		
+
 		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type,NUMBER>
+		struct lua_type_is_cpp_type<Cpp_type, NUMBER>
 		{
-			enum {value = Type_enum_defaults<Cpp_type>::is_integral && !LVD::is_same<bool,Cpp_type>::value };
+			enum {value = Type_enum_defaults<Cpp_type>::is_integral && !LVD::is_same<bool, Cpp_type>::value };
 		};
 
 		/**[StdStringIntegralConstructor]*/
 		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type,STRING>
+		struct lua_type_is_cpp_type<Cpp_type, STRING>
 		{
 			typedef Type_list<
 			char*
 #if OOLUA_STD_STRING_IS_INTEGRAL == 1
-			,std::string
+			, std::string
 #endif
 			/*Your string type here*/
 			>::type Lua_string;
-			enum {value = TYPELIST::IndexOf<Lua_string,Cpp_type>::value == -1 ? 0 : 1};
+			enum {value = TYPELIST::IndexOf<Lua_string, Cpp_type>::value == -1 ? 0 : 1};
 		};
 		/**[StdStringIntegralConstructor]*/
-		
+
 		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type,BOOLEAN>
+		struct lua_type_is_cpp_type<Cpp_type, BOOLEAN>
 		{
-			enum {value = LVD::is_same<bool,Cpp_type>::value};
+			enum {value = LVD::is_same<bool, Cpp_type>::value};
 		};
 		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type,FUNCTION>
+		struct lua_type_is_cpp_type<Cpp_type, FUNCTION>
 		{
-			enum {value = LVD::is_same<Lua_ref<FUNCTION> ,Cpp_type>::value};
+			enum {value = LVD::is_same<Lua_ref<FUNCTION>, Cpp_type>::value};
 		};
 		template<typename Cpp_type>
-		struct lua_type_is_cpp_type<Cpp_type,TABLE>
+		struct lua_type_is_cpp_type<Cpp_type, TABLE>
 		{
-			
 			typedef Type_list<
-			Lua_ref<TABLE>,Table
+			Lua_ref<TABLE>, Table
 			>::type Table_types;
-			enum {value = TYPELIST::IndexOf<Table_types,Cpp_type>::value == -1 ? 0 : 1};
+			enum {value = TYPELIST::IndexOf<Table_types, Cpp_type>::value == -1 ? 0 : 1};
 		};
-	}
+	} // namespace INTERNAL // NOLINT
 	/**\endcond*/
-}
-
-
+} // namespace OOLUA
 
 #endif //PARAM_TRAITS_H_

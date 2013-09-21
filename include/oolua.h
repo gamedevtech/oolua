@@ -1,4 +1,4 @@
-/** 
+/**
 	\file oolua.h
 	Header file for Object Oriented Lua.
 */
@@ -7,12 +7,12 @@
 
 /**
 	\mainpage
- 
+
 	\section OOLuaIntroduction Introduction
 	\subsection OOLuaHipster Hipster
-	OOLua is cross platform, test driven, dependancy free Open Source library which uses C++03 
-	template metaprogramming and pre-processor magic to generate non intrusive proxies that 
-	provide a fast bridge for the interaction of C++ classes with Lua; in addition it also 
+	OOLua is cross platform, test driven, dependancy free Open Source library which uses C++03
+	template metaprogramming and pre-processor magic to generate non intrusive proxies that
+	provide a fast bridge for the interaction of C++ classes with Lua; in addition it also
 	provides a thin abstraction layer for interfacing with the Lua stack. It supports muliple
 	inheritance C++ classes without using C++ RTTI and does not use execeptions by default
 	although they are easliy enabled.
@@ -21,15 +21,15 @@
 	OOLua is a library which makes it easy to use C++ classes in Lua and also operating
 	on the stack using a typed interface for common operations.
 
-	This is not a fully original work, instead it builds on ideas from binding 
-	classes using <a href="http://lua-users.org/wiki/CppBindingWithLunar" target="_blank">Lunar</a> 
+	This is not a fully original work, instead it builds on ideas from binding
+	classes using <a href="http://lua-users.org/wiki/CppBindingWithLunar" target="_blank">Lunar</a>
 	and <a href="http://www.lua.org/notes/ltn005.html" target="_blank">Lua Technical Note 5</a>.
- 
+
 	\section OOLuaCompatibility Lua compatibility
 	This version of the library is compatible with the following Lua implementations
 		\li Rio Lua 5.1 and 5.2 http://www.lua.org
 		\li LuaJIT 1.1.8 and 2.0 http://www.luajit.org/
- 
+
 	\section OOLuaLinks Links
 		\li Project Home  http://code.google.com/p/oolua
 		\li Issue tracker http://code.google.com/p/oolua/issues/list
@@ -37,7 +37,7 @@
 		\li Twitter http://twitter.com/OOLua
 		\li <a href="http://oolua.googlecode.com/svn/docs/trunk/html/index.html">Latest trunk documentation</a>
 		\li <a href="http://oolua.googlecode.com/svn/docs/branches/dsl/html/index.html">This documentation</a>
- 
+
 	\section OOLuaLicence Licence
 	OOLua:
 	\copyright
@@ -58,10 +58,10 @@
 	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 	THE SOFTWARE.\n
- 
+
 	Loki Type lists:
 	\copydetails type_list.h
- 
+
 	Luna :
 	\copydetails oolua_registration.h
 */
@@ -88,8 +88,8 @@
 #	include "lua_stack_dump.h"
 #	include "oolua_tags.h"
 #	include "member_func_helper.h"
-#   include "oolua_registration.h"
-#   include "oolua_error.h"
+#	include "oolua_registration.h"
+#	include "oolua_error.h"
 #	include "oolua_version.h"
 #	include "cpp_constructor.h"
 #	include "oolua_va_args.h"
@@ -104,14 +104,14 @@ namespace OOLUA
 {
 
 	/** \class Script
-		\brief OOLua helper class 
+		\brief OOLua helper class
 		\details
 		OOLua is purposely designed not to be dependent on the OOLUA::Script class
 		and therefore passes around it's dependency of a lua_State instance.
-		This class is only a helper and anything you can do with it 
-		can be accomplished either via using a Lua_function struct, calling OOLUA 
+		This class is only a helper and anything you can do with it
+		can be accomplished either via using a Lua_function struct, calling OOLUA
 		namespaced functions or using the Lua C API.
-		
+
 		Script provides the following :
 		\li Scopes a lua_State pointer
 		\li Provides access to the lua_State pointer via a cast operator and function
@@ -124,7 +124,7 @@ namespace OOLUA
 		This class is not copy constructible or assignable.
 		To accomplish this a counted reference to the lua_State would need to be
 		maintained.
-		\note If you do not want to or can not use this class please see 
+		\note If you do not want to or can not use this class please see
 		\ref OOLUA::setup_user_lua_state "setup_user_lua_state"
 	*/
 	class Script
@@ -132,16 +132,16 @@ namespace OOLUA
 	public:
 		/** Function object instance which can be used to call Lua functions*/
 		Lua_function call;
-		
+
 		/**@{*/
 		Script();
 		~Script();
 		/**@}*/
 
-		/**@{*/	
+		/**@{*/
 		/** \brief Returns the stack count from the lua_State */
 		int stack_count(){ return lua_gettop(m_lua); }
-		/** \brief Convertion operator so that a \ref OOLUA::Script "Script" 
+		/** \brief Convertion operator so that a \ref OOLUA::Script "Script"
 			instance can be passed in place of a lua_State pointer*/
 		operator lua_State * () const {return m_lua;}
 		/** \brief Sometimes you may want to be explicit \see Script::operator()  */
@@ -149,19 +149,19 @@ namespace OOLUA
 		/** \brief Performs a garbage collection on the state*/
 		void gc();
 		/**@}*/
-		
+
 		/**@{*/
 		/** \brief Helper function \see OOLUA::register_class*/
 		template<typename T>
 		void register_class();
 		/** \brief Helper function \see OOLUA::register_class*/
 		template<typename T>
-		void register_class(T* );
+		void register_class(T* /*dummy*/); // NOLINT
 		/** \brief Helper function \see OOLUA::register_class_static */
-		template<typename T,typename K,typename V>
+		template<typename T, typename K, typename V>
 		void register_class_static(K const& k, V const& v);
 		/**@}*/
-		
+
 		/**@{*/
 		/** \brief Helper function \see OOLUA::run_file */
 		bool run_file(std::string const & filename);
@@ -182,10 +182,9 @@ namespace OOLUA
 
 	protected:
 		void close_down();
-		Script(Script const& );
-		Script& operator = (Script const& );
+		Script(Script const&);
+		Script& operator = (Script const&);
 		lua_State* m_lua;
-
 	};
 
 
@@ -194,116 +193,111 @@ namespace OOLUA
 	{
 		OOLUA::register_class<T>(m_lua);
 	}
+
 	template<typename T>
-	inline void Script::register_class(T* /*dummy*/)
+	inline void Script::register_class(T* /*dummy*/) // NOLINT
 	{
 		register_class<T>();
 	}
 
-	template<typename T,typename K,typename V>
+	template<typename T, typename K, typename V>
 	inline void Script::register_class_static(K const& k, V const& v)
 	{
-			OOLUA::register_class_static<T>(m_lua,k,v);
+			OOLUA::register_class_static<T>(m_lua, k, v);
 	}
-	
-	
-	/** 
+
+	/**
 		\brief If you want to use OOLua with a lua_State you already have active
 		or supplied by some third party then calling this function
 		adds the necessary tables and globals for it to work with OOLua.
-		\param[in] l lua_State to be initialise by OOLua 
+		\param[in] l lua_State to be initialise by OOLua
 	*/
 	void setup_user_lua_state(lua_State* l);
-	
-	/** 
+
+	/**
 		\brief Helper function to set a Lua global variable.
 		\tparam T Type for instance
 		\param[in] l lua_State
-		\param[in] name Global name to set 
+		\param[in] name Global name to set
 		\param[in] instance Any variable which is valid to push to the stack
 		\return Boolean indicating if the operation was successful \see OOLuaErrorReporting
 	*/
 	template<typename T>
 	bool set_global(lua_State* l, char const* name, T& instance)
 	{
-		if (! OOLUA::push(l, instance) ) return false;
+		if ( !OOLUA::push(l, instance) ) return false;
 		lua_setglobal(l, name);
 		return true;
 	}
 
 	inline bool set_global(lua_State* l, char const* name, lua_CFunction instance)
 	{
-		lua_pushcclosure(l,instance,0);
+		lua_pushcclosure(l, instance, 0);
 		lua_setglobal(l, name);
 		return true;
 	}
-	
-	/** 
+
+	/**
 		\brief Helper function to set a Lua global variable to nil.
 		\param[in] l lua_State
-		\param[in] name Global name to set 
+		\param[in] name Global name to set
 	*/
 	void set_global_to_nil(lua_State*l, char const * name);
-	
-	/** 
+
+	/**
 		\brief Helper function to set a Lua global variable.
 		\tparam T Type for instance
 		\param[in] l lua_State
-		\param[in] name Global name to query 
+		\param[in] name Global name to query
 		\param[out] instance Any variable which is valid to pull from the stack
 		\return Boolean indicating if the operation was successful \see OOLuaErrorReporting
-	*/	
+	*/
 	template<typename T>
 	bool get_global(lua_State* l, char const* name, T& instance)
 	{
 		lua_getglobal(l, name);
 		return OOLUA::pull(l, instance);
 	}
-	
+
 	/** \brief Uses the Lua C API to check if it is valid to move data between the states
 		\param[in] vm0
 		\param[in] vm1
 		\returns true is vm0 and vm1 are different yet related states, else false
 	*/
-	bool can_xmove(lua_State* vm0,lua_State* vm1);
+	bool can_xmove(lua_State* vm0, lua_State* vm1);
 	/** \brief Loads a chunk leaving the resulting function on the stack
 		\param lua [in] \copydoc lua_State
-		\param chunk [in] 
+		\param chunk [in]
 	*/
 	bool load_chunk(lua_State* lua, std::string const& chunk);
 	/** \brief Loads and runs a chunk of code
 		\param lua [in] \copydoc lua_State
-		\param chunk [in] 
+		\param chunk [in]
 	*/
 	bool run_chunk(lua_State* lua, std::string const& chunk);
 	/** \brief Loads a file leaving the resulting function on the stack
 		\param lua [in] \copydoc lua_State
-		\param filename [in] 
+		\param filename [in]
 	 */
 	bool load_file(lua_State* lua, std::string const & filename);
 	/** \brief Loads and runs the file
 		\param lua [in] \copydoc lua_State
-		\param filename [in] 
+		\param filename [in]
 	*/
 	bool run_file(lua_State* lua, std::string const & filename);
 
 	template<typename T>
 	bool Script::push(T const& value)
 	{
-		return OOLUA::push(*this,value);
+		return OOLUA::push(*this, value);
 	}
-	
+
 	template<typename T>
 	bool Script::pull(T& value)
 	{
-		return OOLUA::pull(*this,value);
+		return OOLUA::pull(*this, value);
 	}
 
-}//endof namepsace OOLUA
-
-
-
+} // namespace OOLUA
 
 #endif //OOLUA_H_
-
-

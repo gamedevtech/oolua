@@ -7,19 +7,19 @@ struct lua_State;
 namespace OOLUA
 {
 	/** \cond INTERNAL*/
-    namespace INTERNAL
-    {
+	namespace INTERNAL
+	{
 		struct Lua_ud;
-		typedef void (*oolua_function_check_base)(INTERNAL::Lua_ud* __restrict ,INTERNAL::Lua_ud const* __restrict);
+		typedef void (*oolua_function_check_base)(INTERNAL::Lua_ud* __restrict, INTERNAL::Lua_ud const* __restrict);
 		typedef void (*oolua_type_check_function)(lua_State * l);
-        struct Lua_ud
-        {
+		struct Lua_ud
+		{
 			void* void_class_ptr;
 			oolua_function_check_base base_checker;
 			oolua_type_check_function type_check;
 			LVD::uint32 flags;
 		};
-	
+
 #if OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 1 && OOLUA_USERDATA_OPTIMISATION == 1
 	/*lowest nibble is reserved for flags*/
 #	define OOLUA_MAGIC_COOKIE	0xfC105Ef0
@@ -30,10 +30,10 @@ namespace OOLUA
 		void userdata_const_value(Lua_ud* ud, bool value);
 		bool userdata_is_constant(Lua_ud const* ud);
 		bool userdata_is_to_be_gced(Lua_ud const * ud);
-		void userdata_gc_value(Lua_ud* ud,bool value);
-		
-		enum UD_FLAGS {CONST_FLAG = 0x01,GC_FLAG = 0x02};
-		
+		void userdata_gc_value(Lua_ud* ud, bool value);
+
+		enum UD_FLAGS {CONST_FLAG = 0x01, GC_FLAG = 0x02};
+
 		inline void userdata_const_value(Lua_ud* ud, bool value)
 		{
 			if(value)ud->flags |= CONST_FLAG;
@@ -47,14 +47,15 @@ namespace OOLUA
 		{
 			return (ud->flags & GC_FLAG ) !=0;
 		}
-		inline void userdata_gc_value(Lua_ud* ud,bool value)
+		inline void userdata_gc_value(Lua_ud* ud, bool value)
 		{
 			if(value) ud->flags |= GC_FLAG;
-			else ud->flags &= (~ GC_FLAG);
-		}	
+			else ud->flags &= (~GC_FLAG);
+		}
 
-    }
+	} // namespace INTERNAL //NOLINT
 	/**\endcond*/
-}
+
+} // namespace OOLUA
 
 #endif
