@@ -216,12 +216,6 @@ class Error_test : public CPPUNIT_NS::TestFixture
 #if OOLUA_DEBUG_CHECKS == 1
 		CPPUNIT_TEST(push_unregisteredClass_callsLuaPanic);
 #endif
-#if OOLUA_STORE_LAST_ERROR == 1
-		CPPUNIT_TEST(setAnAllocatorThatOnlyReturnsZero_returnsFalse);
-#endif
-#if OOLUA_USE_EXCEPTIONS == 1
-		CPPUNIT_TEST(setAnAllocatorThatOnlyReturnsZero_throwsMemoryError);
-#endif
 /* ====================== LuaJIT2 protected tests ===========================*/
 
 		CPPUNIT_TEST(canXmove_vm0IsNULL_returnsFalse);
@@ -842,44 +836,22 @@ public:
 	}
 #endif
 
-/* ====================== LuaJIT2 protected tests ===========================*/
-	/*
-	These are tests which can not currently be preformed when using LuaJit2
-	or can not be preformed on specific platforms with LuaJIT2.
-	As you can not detect LuaJIT at compile time we use a
-	runtime check instead. Yes this should not really happen
-	in a test but we do here reguardless.
-	*/
-#if OOLUA_STORE_LAST_ERROR == 1
-	/*
-	The problem here does not arise when we check for the error and the
-	error does correcly happen and is handled; yet fails when memory
-	is being deallocated in the lua_State tear down.
-	*/
-	void setAnAllocatorThatOnlyReturnsZero_returnsFalse()
+
+	bool isLuaJIT2()
 	{
-		if( m_lua->run_chunk("require'jit'") ) return;
-
-		void* org_ud=0;
-		lua_Alloc org = lua_getallocf(*m_lua, &org_ud);
-		lua_setallocf(*m_lua,dummy_allocator,0);
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_chunk("print'boom'"));
-		lua_setallocf(*m_lua,org,&org_ud);
+		/*
+		jit.version_num
+		Contains the version number of the LuaJIT core.
+		Version xx.yy.zz is represented by the decimal number xxyyzz.
+		*/
+		m_lua->run_chunk("local res, ret = pcall( "
+							"function() return require('jit').version_num >= 20000 end) "
+						"return res == true and ret == true");
+		bool result; m_lua->pull(result);
+		return result;
 	}
-#endif
-#if OOLUA_USE_EXCEPTIONS == 1
-	void setAnAllocatorThatOnlyReturnsZero_throwsMemoryError()
-	{
-		if( m_lua->run_chunk("require'jit'") ) return;
 
-		void* org_ud=0;
-		lua_Alloc org = lua_getallocf(*m_lua, &org_ud);
-		lua_setallocf(*m_lua,dummy_allocator,0);
-		CPPUNIT_ASSERT_THROW(m_lua->run_chunk("print'boom'"),OOLUA::Memory_error);
-		lua_setallocf(*m_lua,org,&org_ud);
-	}
-#endif
-
+/* ====================== LuaJIT2 protected test ===========================*/
 #if OOLUA_DEBUG_CHECKS == 1
 #	if LUAJIT_VERSION_NUM >= 20000
 		/*LuaJIT2 will throw on some platforms */
@@ -891,7 +863,7 @@ public:
 		*/
 		void push_unregisteredClass_callsLuaPanic()
 		{
-			if( m_lua->run_chunk("require'jit'") ) return;
+			if(isLuaJIT2()) return;
 
 			Stub1 stubtmp;
 			Stub1* stubptr(&stubtmp);
@@ -906,10 +878,10 @@ public:
 			else
 				CPPUNIT_ASSERT_EQUAL(true,true );//we hit the at panic
 		}
+
 #	endif
 #endif
-
-/* ====================== LuaJIT2 protected tests ===========================*/
+/* ====================== LuaJIT2 protected test ===========================*/
 
 	void canXmove_vm0IsNULL_returnsFalse()
 	{
