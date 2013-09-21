@@ -10,12 +10,13 @@
 - Added OOLua version macros \ref OOLUA_VERSION_MAJ \ref OOLUA_VERSION_MIN and \ref OOLUA_VERSION_PATCH
 - Base checking no longer touches the Lua stack
 - C string traits no longer use an std::string temporary
-- Script helper class now has push and pull methods
+- Script helper class now has \ref Script::push and \ref Script::pull methods
 - Bug fix. If an abstract class had a base class which was not abstract, then it was possible to call new on the type.
-- Renamed Table::set_value to Table::set
-- Renamed Table::remove_value to Table::remove
-- New Lua simplified class format, which improves improves self call performance
+- Renamed Table::set_value to \ref Table::set
+- Renamed Table::remove_value to \ref Table::remove
+- New Lua simplified class format, which improves self call performance
 - Extra parameters to bound functions are now ignored. Does not include constructors
+- Renamed Script::get_ptr to \ref Script::state for consistency
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function
@@ -30,7 +31,7 @@
 - Added function return traits for a reference to constant std::string
 - Bug fix Issue 28: Proxy checker typedefs in the default scope instead of public. (Sakamoto)
 - Bug fix Issue 29: Lua 5.2 calls __gc method with a table. (Ilia Pavlovets)
-- Prevent invalid Lua stack indexes when pulling a Lua_ref or Proxy_class. Indexes Zero (lua_gettop result)  or -1 with an empty stack. 
+- Prevent invalid Lua stack indexes when pulling a Lua_ref or Proxy_class. Indexes Zero (lua_gettop result)  or -1 with an empty stack.
 - Bug fix Issue 30: Table traverse function incorrectly assumes the stack is empty (Steve Nichols)
 - Added \ref oolua_ipairs and \ref oolua_ipairs_end macros for iterating over arrays
 - Added \ref oolua_pairs and \ref oolua_pairs_end macros for iterating over tables
@@ -50,7 +51,7 @@
 - Bug fix Issue 22 : Remove return statements which generate warning with gcc (Tim Mensch)
 - Refactored so that anything which is not meant to be called by a user, is now in the OOLUA::INTERNAL namespace,
 - Added compile time constraints to traits
-- OOLUA::cpp_acquire_ptr and OOLUA::lua_acquire_ptr - Type supplied to template is now the real type <foo*> or <foo const*> 
+- OOLUA::cpp_acquire_ptr and OOLUA::lua_acquire_ptr - Type supplied to template is now the real type <foo*> or <foo const*>
 - Bug fix : Converter was not taking the parameter by reference when it needed to.
 - Removed the restriction of using classes only in the thread they were created under all conditions
 
@@ -65,9 +66,9 @@
 - Added OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 - Broke ABI removing default constructor being forced
 - Added OOLUA::table_set_value which does not retrieve the table from the registry yet uses a stack index
-- Added convenance function OOLUA::new_table 
+- Added convenience function OOLUA::new_table
 - Added copy constructor to Lua_ref and Lua_table
-- Added param traits for Lua_ref 
+- Added param traits for Lua_ref
 - Added push member to lua_ref
 - Enabled a constructor to take a Lua_func_ref
 - Bug fix Issue 10 : fixed user type return on the stack (Tomm)
@@ -97,9 +98,9 @@
 - OOLUA::push2lua now returns a boolean which is the result of the operation, if exceptions are enabled it throws on error
 - OOLUA::Lua_function now adds a trackback (copied from Lua code) which is enabled with OOLUA_DEBUG_CHECKS
 - Operator functions now use the OOLUA::LUA_CALLED::pull2cpp functions which act differently to OOLUA::pull2cpp on an error
-- OOLUA::Lua_ref has two extra functions to be used via Lua code, lua_pull and lua_push 
+- OOLUA::Lua_ref has two extra functions to be used via Lua code, lua_pull and lua_push
 - Bug fix : OOLUA::Lua_table's safe_at now does the correct thing when exceptions are enabled and does not let an exception escape.
-- Added definition of OOLUA::get_last_error even if store last error is not enabled, in this instance it is a no op. 
+- Added definition of OOLUA::get_last_error even if store last error is not enabled, in this instance it is a no op.
 - Exceptions now can pop the error of the Lua stack and Runtime_error can be initialsed with a string
 - oolua_member_function.h 's proxy calling functions now wrap code in a try block if exceptions are enabled.
 - Removed LUA_GLOBALSINDEX define from lua_includes when using Lua 5.2 instead lua_getglobal and lua_setglobal are used throughout
@@ -119,7 +120,7 @@
 
 
 \section OOLuaChanges1-2-2 1.2.2
-- Converted Premake scripts to Premake4 
+- Converted Premake scripts to Premake4
 - Optimised the checking of a type against a requested type
 - Userdata name now changes when it's constant status in set_type_top_to_none_const
 - Added Xcode support to Premake scripts
@@ -130,7 +131,7 @@
 - Added a readme.txt with details of library as many download locations are now available
 - Bug fix Issue 8 : Passing a c style string to a member function bug as reported by (airbash)
 - Bug fix Issue 8 : A corresponding bug of a member function which returns a c style string.
-- Added define in lua_includes.h to support Lua 5.2 and 5.1.4 simultaneously 
+- Added define in lua_includes.h to support Lua 5.2 and 5.1.4 simultaneously
 - Renamed platform test scripts
 - Added build scripts to create a local install
 

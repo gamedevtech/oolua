@@ -145,7 +145,7 @@ namespace OOLUA
 			instance can be passed in place of a lua_State pointer*/
 		operator lua_State * () const {return m_lua;}
 		/** \brief Sometimes you may want to be explicit \see Script::operator()  */
-		lua_State * const & get_ptr() const {return m_lua;}
+		lua_State * const & state() const {return m_lua;}
 		/** \brief Performs a garbage collection on the state*/
 		void gc();
 		/**@}*/
