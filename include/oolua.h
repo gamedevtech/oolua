@@ -10,7 +10,7 @@
 
 	\section OOLuaIntroduction Introduction
 	\subsection OOLuaHipster Hipster
-	OOLua is cross platform, test driven, dependency free Open Source library which uses C++03
+	OOLua is cross platform, test driven, dependancy free Open Source library which uses C++03
 	template meta-programming and pre-processor magic to generate non intrusive proxies that
 	provide a fast bridge for the interaction of C++ classes with Lua; in addition it also
 	provides a thin abstraction layer for interfacing with the Lua stack. It supports multiple
