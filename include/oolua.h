@@ -10,12 +10,12 @@
 
 	\section OOLuaIntroduction Introduction
 	\subsection OOLuaHipster Hipster
-	OOLua is cross platform, test driven, dependancy free Open Source library which uses C++03
-	template metaprogramming and pre-processor magic to generate non intrusive proxies that
+	OOLua is cross platform, test driven, dependency free Open Source library which uses C++03
+	template meta-programming and pre-processor magic to generate non intrusive proxies that
 	provide a fast bridge for the interaction of C++ classes with Lua; in addition it also
-	provides a thin abstraction layer for interfacing with the Lua stack. It supports muliple
-	inheritance C++ classes without using C++ RTTI and does not use execeptions by default
-	although they are easliy enabled.
+	provides a thin abstraction layer for interfacing with the Lua stack. It supports multiple
+	inheritance C++ classes without using C++ RTTI and does not use exceptions by default
+	although they are easily enabled.
 
 	\subsection OOLuaNormal Normal
 	OOLua is a library which makes it easy to use C++ classes in Lua and also operating
@@ -141,7 +141,7 @@ namespace OOLUA
 		/**@{*/
 		/** \brief Returns the stack count from the lua_State */
 		int stack_count(){ return lua_gettop(m_lua); }
-		/** \brief Convertion operator so that a \ref OOLUA::Script "Script"
+		/** \brief Conversion operator so that a \ref OOLUA::Script "Script"
 			instance can be passed in place of a lua_State pointer*/
 		operator lua_State * () const {return m_lua;}
 		/** \brief Sometimes you may want to be explicit \see Script::operator()  */
