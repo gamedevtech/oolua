@@ -498,16 +498,6 @@ for parameters contain as part of their name "out", "in" or a combination.
 		{
 			enum {value = 1};
 		};
-		template<typename T>
-		struct has_param_traits< lua_acquire_ptr<T> >
-		{
-			enum {value = 1};
-		};
-		template<typename T>
-		struct has_param_traits< cpp_acquire_ptr<T> >
-		{
-			enum {value = 1};
-		};
 
 		///////////////////////////////////////////////////////////////////////////////
 		///  @struct param_type_typedef
@@ -631,24 +621,6 @@ for parameters contain as part of their name "out", "in" or a combination.
 		struct has_return_traits
 		{
 			enum{value = 0};
-		};
-
-		template<typename T>
-		struct has_return_traits< lua_out_p<T> >
-		{
-			enum {value = 1};
-		};
-
-		template<typename T>
-		struct has_return_traits< lua_acquire_ptr<T> >
-		{
-			enum {value = 1};
-		};
-
-		template<typename T>
-		struct has_return_traits< function_return<T> >
-		{
-			enum {value = 1};
 		};
 
 		template<typename T>

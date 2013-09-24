@@ -95,7 +95,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(NewProblemDerived)
 void cfunctionTakesStub(Stub1*){}
 int l_cfunctionTakesStub(lua_State* l)
 {
-	OOLUA_C_FUNCTION(void,cfunctionTakesStub,OOLUA::cpp_acquire_ptr<Stub1*>)
+	OOLUA_C_FUNCTION(void,cfunctionTakesStub,OOLUA::cpp_in_p<Stub1*>)
 }
 
 void * dummy_allocator (void* /*ud*/,void* /*ptr*/,size_t /*osize*/,size_t /*nsize*/)
