@@ -12,3 +12,12 @@ OOLUA_EXPORT_FUNCTIONS(UserDataFunctionDefaultReturnTraits
 					   )
 
 OOLUA_EXPORT_FUNCTIONS_CONST(UserDataFunctionDefaultReturnTraits)
+
+OOLUA_EXPORT_FUNCTIONS(UserDataFunctionReturnTraits
+						, ptr
+						, ptrConst
+						, refPtrConst
+						, refConstPtrConst
+					)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(UserDataFunctionReturnTraits)

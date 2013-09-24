@@ -16,4 +16,12 @@ OOLUA_PROXY(UserDataFunctionDefaultReturnTraits)
 	OOLUA_MFUNC(refConstPtrConst)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(UserDataFunctionReturnTraits)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MEM_FUNC(lua_return<Stub1*>,ptr)
+	OOLUA_MEM_FUNC(lua_return<Stub1 const*>,ptrConst)
+	OOLUA_MEM_FUNC(lua_return<Stub1 const*&>,refPtrConst)
+	OOLUA_MEM_FUNC(lua_return<Stub1 const*const&>,refConstPtrConst)
+OOLUA_PROXY_END
+
 #endif

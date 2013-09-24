@@ -8,23 +8,32 @@ class UserDataFunctionReturns : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST_SUITE(UserDataFunctionReturns);
 		CPPUNIT_TEST(functionReturn_returnsRefToInstance_gcFlagIsFalse);
 		CPPUNIT_TEST(functionReturn_returnsRefToInstance_resultComparesEqualToInstance);
-	
+
 		CPPUNIT_TEST(functionReturn_returnsRefToConstantInstance_gcFlagIsFalse);
 		CPPUNIT_TEST(functionReturn_returnsRefToConstantInstance_resultComparesEqualToInstance);
-	
+
 		CPPUNIT_TEST(functionReturn_returnsPtrToInstance_gcFlagIsFalse);
 		CPPUNIT_TEST(functionReturn_returnsPtrToInstance_resultComparesEqualToInstance);
 
 		CPPUNIT_TEST(functionReturn_returnsPtrToConstantInstance_gcFlagIsFalse);
 		CPPUNIT_TEST(functionReturn_returnsPtrToConstantInstance_resultComparesEqualToInstance);
-	
+
 		CPPUNIT_TEST(functionReturn_returnsRefPtrToConstantInstance_gcFlagIsFalse);
 		CPPUNIT_TEST(functionReturn_returnsRefPtrToConstantInstance_resultComparesEqualToInstance);
-	
+
 		CPPUNIT_TEST(functionReturn_returnsRefConstPtrToConstantInstance_gcFlagIsFalse);
 		CPPUNIT_TEST(functionReturn_returnsRefConstPtrToConstantInstance_resultComparesEqualToInstance);
 
 		CPPUNIT_TEST(functionReturn_returnsByValue_instanceIsToBeGarbageCollected);
+
+		CPPUNIT_TEST(luaReturnTrait_callsMethodPtr_returnValueIsToBeGarbageCollected);
+		CPPUNIT_TEST(luaReturnTrait_callsMethodPtrConst_returnValueIsToBeGarbageCollected);
+		CPPUNIT_TEST(luaReturnTrait_callsMethodPtrConst_returnValueIsConst);
+		CPPUNIT_TEST(luaReturnTrait_callsMethodRefPtrConst_returnValueIsToBeGarbageCollected);
+		CPPUNIT_TEST(luaReturnTrait_callsMethodRefPtrConst_returnValueIsConst);
+		CPPUNIT_TEST(luaReturnTrait_callsMethodRefConstPtrConst_returnValueIsToBeGarbageCollected);
+		CPPUNIT_TEST(luaReturnTrait_callsMethodRefConstPtrConst_returnValueIsConst);
+
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -32,24 +41,44 @@ class UserDataFunctionReturns : public CPPUNIT_NS::TestFixture
 	{
 		DefaultTraitHelper(OOLUA::Script* lua)
 			:mock(),object(&mock),return_stub(),m_lua(lua)
-		{ 
+		{
 			m_lua->register_class<UserDataFunctionDefaultReturnTraits>();
 			m_lua->register_class<Stub1>();
 		}
-		
+
 		bool call_object_method(std::string const& method_name)
 		{
 			bool res = m_lua->run_chunk("return function(object,method) return object[method](object) end");
 			if(!res)return res;
 			return m_lua->call(-1,object,method_name);
 		}
-		
+
 		UserDataFunctionDefaultReturnTraitsMock mock;
 		UserDataFunctionDefaultReturnTraits* object;
 		Stub1 return_stub;
 		OOLUA::Script* m_lua;
 	};
-	
+	struct ReturnTraitHelper
+	{
+		ReturnTraitHelper(OOLUA::Script* lua)
+			:mock(),object(&mock),return_stub(),m_lua(lua)
+		{
+			m_lua->register_class<UserDataFunctionReturnTraits>();
+			m_lua->register_class<Stub1>();
+		}
+
+		bool call_object_method(std::string const& method_name)
+		{
+			bool res = m_lua->run_chunk("return function(object,method) return object[method](object) end");
+			if(!res)return res;
+			return m_lua->call(-1,object,method_name);
+		}
+
+		UserDataFunctionReturnTraitsMock mock;
+		UserDataFunctionReturnTraits* object;
+		Stub1 return_stub;
+		OOLUA::Script* m_lua;
+	};
 public:
 	void setUp()
 	{
@@ -65,7 +94,16 @@ public:
 		OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud *>( lua_touserdata(*m_lua, -1) );
 		CPPUNIT_ASSERT_EQUAL(flag,OOLUA::INTERNAL::userdata_is_to_be_gced(ud));
 	}
-	
+	void assert_that_tops_const_flag_is(bool flag)
+	{
+		OOLUA::INTERNAL::Lua_ud* ud = static_cast<OOLUA::INTERNAL::Lua_ud *>( lua_touserdata(*m_lua, -1) );
+		CPPUNIT_ASSERT_EQUAL(flag,OOLUA::INTERNAL::userdata_is_constant(ud));
+	}
+
+	void set_tops_gc_flag_to(bool flag)
+	{
+		OOLUA::INTERNAL::userdata_gc_value((OOLUA::INTERNAL::Lua_ud*)lua_touserdata(*m_lua,-1),flag);
+	}
 	void functionReturn_returnsRefToInstance_gcFlagIsFalse()
 	{
 		DefaultTraitHelper helper(m_lua);
@@ -73,7 +111,7 @@ public:
 		helper.call_object_method("ref");
 		assert_that_tops_gc_flag_is(false);
 	};
-	
+
 	void functionReturn_returnsRefToInstance_resultComparesEqualToInstance()
 	{
 		DefaultTraitHelper helper(m_lua);
@@ -81,9 +119,9 @@ public:
 		helper.call_object_method("ref");
 		assert_return_equals_input<Stub1*>(*m_lua,&helper.return_stub);
 	};
-	
 
-	
+
+
 	void functionReturn_returnsRefToConstantInstance_gcFlagIsFalse()
 	{
 		DefaultTraitHelper helper(m_lua);
@@ -92,7 +130,7 @@ public:
 
 		assert_that_tops_gc_flag_is(false);
 	};
-	
+
 	void functionReturn_returnsRefToConstantInstance_resultComparesEqualToInstance()
 	{
 		DefaultTraitHelper helper(m_lua);
@@ -100,8 +138,8 @@ public:
 		helper.call_object_method("refConst");
 		assert_return_equals_input<Stub1 const*>(*m_lua,&helper.return_stub);
 	};
-	
-	
+
+
 	void functionReturn_returnsPtrToInstance_gcFlagIsFalse()
 	{
 		DefaultTraitHelper helper(m_lua);
@@ -109,7 +147,7 @@ public:
 		helper.call_object_method("ptr");
 		assert_that_tops_gc_flag_is(false);
 	};
-	
+
 	void functionReturn_returnsPtrToInstance_resultComparesEqualToInstance()
 	{
 		DefaultTraitHelper helper(m_lua);
@@ -117,8 +155,8 @@ public:
 		helper.call_object_method("ptr");
 		assert_return_equals_input<Stub1*>(*m_lua,&helper.return_stub);
 	};
-	
-	
+
+
 	void functionReturn_returnsPtrToConstantInstance_gcFlagIsFalse()
 	{
 		DefaultTraitHelper helper(m_lua);
@@ -133,7 +171,7 @@ public:
 		helper.call_object_method("ptrConst");
 		assert_return_equals_input<Stub1 const*>(*m_lua,&helper.return_stub);
 	};
-	
+
 	void functionReturn_returnsRefPtrToConstantInstance_gcFlagIsFalse()
 	{
 		DefaultTraitHelper helper(m_lua);
@@ -167,8 +205,8 @@ public:
 		helper.call_object_method("refConstPtrConst");
 		assert_return_equals_input<Stub1 const *>(*m_lua,&helper.return_stub);
 	};
-	
-	
+
+
 	void functionReturn_returnsByValue_instanceIsToBeGarbageCollected()
 	{
 		DefaultTraitHelper helper(m_lua);
@@ -185,6 +223,66 @@ public:
 		CPPUNIT_ASSERT_EQUAL((Return_double*)0,returnPtr);
 	}
 	 */
+	void luaReturnTrait_callsMethodPtr_returnValueIsToBeGarbageCollected()
+	{
+		ReturnTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,ptr()).Times(1).WillOnce(::testing::Return(&helper.return_stub));
+		helper.call_object_method("ptr");
+		assert_that_tops_gc_flag_is(true);
+		set_tops_gc_flag_to(false);
+	}
+	void luaReturnTrait_callsMethodPtrConst_returnValueIsToBeGarbageCollected()
+	{
+		ReturnTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,ptrConst()).Times(1).WillOnce(::testing::Return(&helper.return_stub));
+		helper.call_object_method("ptrConst");
+		assert_that_tops_gc_flag_is(true);
+		set_tops_gc_flag_to(false);
+	}
+	void luaReturnTrait_callsMethodPtrConst_returnValueIsConst()
+	{
+		ReturnTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,ptrConst()).Times(1).WillOnce(::testing::Return(&helper.return_stub));
+		helper.call_object_method("ptrConst");
+		assert_that_tops_const_flag_is(true);
+		set_tops_gc_flag_to(false);
+	}
+	void luaReturnTrait_callsMethodRefPtrConst_returnValueIsToBeGarbageCollected()
+	{
+		ReturnTraitHelper helper(m_lua);
+		Stub1 const* return_value = &helper.return_stub;
+		EXPECT_CALL(helper.mock,refPtrConst()).Times(1).WillOnce(::testing::ReturnRef(return_value));
+		helper.call_object_method("refPtrConst");
+		assert_that_tops_gc_flag_is(true);
+		set_tops_gc_flag_to(false);
+	}
+	void luaReturnTrait_callsMethodRefPtrConst_returnValueIsConst()
+	{
+		ReturnTraitHelper helper(m_lua);
+		Stub1 const* return_value = &helper.return_stub;
+		EXPECT_CALL(helper.mock,refPtrConst()).Times(1).WillOnce(::testing::ReturnRef(return_value));
+		helper.call_object_method("refPtrConst");
+		assert_that_tops_const_flag_is(true);
+		set_tops_gc_flag_to(false);
+	}
+	void luaReturnTrait_callsMethodRefConstPtrConst_returnValueIsToBeGarbageCollected()
+	{
+		ReturnTraitHelper helper(m_lua);
+		Stub1 const * const return_value = &helper.return_stub;
+		EXPECT_CALL(helper.mock,refConstPtrConst()).Times(1).WillOnce(::testing::ReturnRef(return_value));
+		helper.call_object_method("refConstPtrConst");
+		assert_that_tops_gc_flag_is(true);
+		set_tops_gc_flag_to(false);
+	}
+	void luaReturnTrait_callsMethodRefConstPtrConst_returnValueIsConst()
+	{
+		ReturnTraitHelper helper(m_lua);
+		Stub1 const * const return_value = &helper.return_stub;
+		EXPECT_CALL(helper.mock,refConstPtrConst()).Times(1).WillOnce(::testing::ReturnRef(return_value));
+		helper.call_object_method("refConstPtrConst");
+		assert_that_tops_const_flag_is(true);
+		set_tops_gc_flag_to(false);
+	}
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(UserDataFunctionReturns);

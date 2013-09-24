@@ -18,6 +18,8 @@
 - Extra parameters to bound functions are now ignored. Does not include constructors
 - Renamed Script::get_ptr to \ref Script::state for consistency
 - Added a base class exception type \ref OOLUA::Exception
+- Added \ref OOLUA::lua_return which is a specific trait for return types which will be owned by Lua.
+
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function
