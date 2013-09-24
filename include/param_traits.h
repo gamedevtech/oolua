@@ -332,6 +332,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
 		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
 		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_reference_to_const_type [	LVD::is_same<raw const&, type>::value ? -1 : 1];
 	};
 
 	template<typename T>

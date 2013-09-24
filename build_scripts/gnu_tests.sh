@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 function failed()
 {
     echo "Failed: $@" >&1
@@ -8,7 +8,7 @@ function failed()
 
 function failing_may_not_be_an_error()
 {
-	echo "Failed: $@. For details of the error and how to correct it, see the log file " >&1 
+	echo "Failed: $@. For details of the error and how to correct it, see the log file " >&1
 	echo build_logs/${1}_gnu_${2}.log
 }
 
@@ -18,15 +18,15 @@ premake4 gmake linux
 
 function_to_call_on_error=failed
 
-if [ ! -d build_logs ]; then 
+if [ ! -d build_logs ]; then
 	mkdir build_logs
 fi
 
 #1: test_name 2:config
-function run_test() 
+function run_test()
 {
 timeStartLocal=$(date +%s)
-	echo running $1 $2  
+	echo running $1 $2
 	make config=${2} ${1} >  ./build_logs/${1}_gnu_${2}.log || $function_to_call_on_error ${1} ${2}
 timeEndLocal=$(date +%s)
 timeDiffLocal=$(( $timeEndLocal - $timeStartLocal ))
