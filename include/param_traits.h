@@ -545,7 +545,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 			typedef param_type_typedef<T, has_param_traits<T>::value> p_type;
 			typedef typename p_type::type  type;
 			typedef typename p_type::pull_type pull_type;
-			typedef typename p_type::raw raw_type;
+			typedef typename p_type::raw raw;
 
 			enum { in = p_type::in };
 			enum { out = p_type::out };
@@ -636,7 +636,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 			typedef return_type_typedef<T, has_return_traits<T>::value> r_type;
 			typedef typename r_type::type  type;
 			typedef typename r_type::pull_type pull_type;
-			typedef typename r_type::raw raw_type;
+			typedef typename r_type::raw raw;
 
 			enum { in = r_type::in };
 			enum { out = r_type::out };

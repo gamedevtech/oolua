@@ -321,16 +321,16 @@ MSC_POP_COMPILER_WARNING_OOLUA
 			static bool pull(lua_State* const s, T *&  value)
 			{
 				assert(s);
-				typename OOLUA::INTERNAL::param_type<T>::raw_type* class_ptr;
-				pull_class_type<typename OOLUA::INTERNAL::param_type<T>::raw_type>
+				typename OOLUA::INTERNAL::param_type<T>::raw* class_ptr;
+				pull_class_type<typename OOLUA::INTERNAL::param_type<T>::raw>
 					(s, OOLUA::INTERNAL::param_type<T*>::is_constant, class_ptr);
 
 				if(!class_ptr)
 				{
 #	if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 					INTERNAL::handle_cpp_pull_fail(s, OOLUA::INTERNAL::param_type<T*>::is_constant
-												   ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name_const
-												   : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name);
+												   ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name_const
+												   : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
 #	elif OOLUA_DEBUG_CHECKS == 1
 					assert(class_ptr);
 #	endif
@@ -452,16 +452,16 @@ MSC_POP_COMPILER_WARNING_OOLUA
 			{
 				static void get(lua_State* const s, int idx, T *&  value)
 				{
-					typename OOLUA::INTERNAL::param_type<T>::raw_type* class_ptr;
-					INTERNAL::stack_class_type<typename OOLUA::INTERNAL::param_type<T>::raw_type
+					typename OOLUA::INTERNAL::param_type<T>::raw* class_ptr;
+					INTERNAL::stack_class_type<typename OOLUA::INTERNAL::param_type<T>::raw
 													, OOLUA::INTERNAL::param_type<T*>::is_constant
 												>::get(s, idx, class_ptr);
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 					if(!class_ptr)
 					{
 						pull_class_type_error(s, OOLUA::INTERNAL::param_type<T*>::is_constant
-											  ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name_const
-											  : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw_type>::class_name);
+											  ? Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name_const
+											  : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
 					}
 #endif
 					value = class_ptr;

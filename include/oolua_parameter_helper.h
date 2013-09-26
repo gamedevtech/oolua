@@ -31,7 +31,7 @@ MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
 				{
 					return 0;
 				}
-				return OOLUA::INTERNAL::check_index<typename TypeWithTraits::raw_type>(l, index) != 0;
+				return OOLUA::INTERNAL::check_index<typename TypeWithTraits::raw>(l, index) != 0;
 MSC_POP_COMPILER_WARNING_OOLUA
 			}
 		};
@@ -55,15 +55,15 @@ MSC_POP_COMPILER_WARNING_OOLUA
 				switch ( lua_type(l, index) )
 				{
 					case LUA_TBOOLEAN :
-						return lua_type_is_cpp_type<typename ParamWithTraits::raw_type, LUA_TBOOLEAN>::value && ++index ? 1 : 0;
+						return lua_type_is_cpp_type<typename ParamWithTraits::raw, LUA_TBOOLEAN>::value && ++index ? 1 : 0;
 					case LUA_TNUMBER :
-						return lua_type_is_cpp_type<typename ParamWithTraits::raw_type, LUA_TNUMBER>::value && ++index ? 1 : 0;
+						return lua_type_is_cpp_type<typename ParamWithTraits::raw, LUA_TNUMBER>::value && ++index ? 1 : 0;
 					case LUA_TSTRING :
-						return lua_type_is_cpp_type<typename ParamWithTraits::raw_type, LUA_TSTRING>::value && ++index ? 1 : 0;
+						return lua_type_is_cpp_type<typename ParamWithTraits::raw, LUA_TSTRING>::value && ++index ? 1 : 0;
 					case LUA_TFUNCTION :
-						return lua_type_is_cpp_type<typename ParamWithTraits::raw_type, LUA_TFUNCTION>::value && ++index ? 1 : 0;
+						return lua_type_is_cpp_type<typename ParamWithTraits::raw, LUA_TFUNCTION>::value && ++index ? 1 : 0;
 					case LUA_TTABLE :
-						return lua_type_is_cpp_type<typename ParamWithTraits::raw_type, LUA_TTABLE>::value && ++index ? 1 : 0;
+						return lua_type_is_cpp_type<typename ParamWithTraits::raw, LUA_TTABLE>::value && ++index ? 1 : 0;
 					case LUA_TUSERDATA:
 						if( index_can_convert_to_type<ParamWithTraits, ParamWithTraits::is_integral>::valid(l, index) )
 						{

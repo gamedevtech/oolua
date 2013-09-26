@@ -54,7 +54,7 @@ namespace OOLUA
 		{
 			static void push(lua_State* const s, T& value)
 			{
-				proxy_maybe_by_ref<typename WT::raw_type, T, WT::is_by_value>::push(s, value, (Owner)WT::owner);
+				proxy_maybe_by_ref<typename WT::raw, T, WT::is_by_value>::push(s, value, (Owner)WT::owner);
 			}
 		};
 	} // namespace //NOLINT
@@ -157,7 +157,7 @@ namespace OOLUA
 			template<typename T>
 			static void push2lua(lua_State* const s, T& value)
 			{
-				proxy_maybe_by_ref<typename TypeWithTraits::raw_type
+				proxy_maybe_by_ref<typename TypeWithTraits::raw
 								, T
 								, TypeWithTraits::is_by_value>
 							::push(s, value, (Owner)TypeWithTraits::owner);
