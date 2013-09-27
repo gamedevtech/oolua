@@ -59,5 +59,12 @@ run_test lua_return_ref_const_stub
 run_test out_int
 run_test out_stub
 
+run_test maybe_null_int
+run_test maybe_null_stub
+run_test maybe_null_ref_stub
+run_test maybe_null_ref_const_stub
+run_test maybe_null_ref_ptr_stub
+
+
 premake4 clean >/dev/null 2>&1
 cd build_scripts

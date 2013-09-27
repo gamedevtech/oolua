@@ -286,4 +286,12 @@ void luaAcquire_validTraits_willCompile()
 	OOLUA::lua_acquire_ptr<Stub1 const *const&>	pass8;(void)pass8;
 }
 
+void maybeNull_validTraits_willCompile()
+{
+	OOLUA::maybe_null<Stub1 *>					pass1;(void)pass1;
+	OOLUA::maybe_null<Stub1 *const>				pass2;(void)pass2;
+	OOLUA::maybe_null<Stub1 const *>			pass3;(void)pass3;
+	OOLUA::maybe_null<Stub1 const *const>		pass4;(void)pass4;
+
+}
 CPPUNIT_TEST_SUITE_REGISTRATION( Traits_test );
