@@ -21,7 +21,7 @@
 	{ \
 		OOLUA_CONVERTER_##NUM \
 		typename R::type r( (m_this->*ptr2mem)(OOLUA_CONVERTER_PARAMS_##NUM) ); \
-		Member_func_helper<R, R::owner>::push2lua(l, r); \
+		Member_func_helper<typename R::traits, R::owner>::push2lua(l, r); \
 	}
 
 #	define OOLUA_INTERNAL_MEMBER_CALLER_NO_RETURN_NUM(NUM) \
@@ -38,7 +38,7 @@
 	{ \
 		OOLUA_CONVERTER_##NUM \
 		typename R::type r( (*ptr2func)(OOLUA_CONVERTER_PARAMS_##NUM) ); \
-		Member_func_helper<R, R::owner>::push2lua(l, r); \
+		Member_func_helper<typename R::traits, R::owner>::push2lua(l, r); \
 	}
 
 #	define OOLUA_INTERNAL_C_CALLER_NO_RETURN_NUM(NUM) \

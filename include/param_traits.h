@@ -428,7 +428,6 @@ for parameters contain as part of their name "out", "in" or a combination.
 		typedef char type_can_not_be_a_reference_to_const_ptr [ LVD::is_same<raw *const&, type>::value ? -1 : 1];
 		typedef char type_can_not_be_a_reference_to_const_ptr_const [ LVD::is_same<raw const*const&, type>::value ? -1 : 1];
 		typedef char type_can_not_be_a_reference_to_ptr_const [ LVD::is_same<raw const*&, type>::value ? -1 : 1];
-
 	};
 
 	template<typename T>
@@ -626,31 +625,14 @@ for parameters contain as part of their name "out", "in" or a combination.
 		template<typename T, bool True>
 		struct return_type_typedef
 		{
-			typedef typename T::type type;
-			typedef typename T::pull_type pull_type;
-			typedef typename T::raw raw;
-			enum { in = T::in};
-			enum { out = T::out};
-			enum { owner = T::owner};
-			enum { is_by_value = T::is_by_value };
-			enum { is_constant = T::is_constant };
-			enum { is_integral = T::is_integral };
+			typedef T traits;
 		};
 
 		//uses default traits
 		template<typename T>
 		struct return_type_typedef<T, false>
 		{
-			typedef function_return<T> out_param;
-			typedef typename out_param::type type;
-			typedef typename out_param::pull_type pull_type;
-			typedef typename out_param::raw raw;
-			enum { in = out_param::in};
-			enum { out = out_param::out};
-			enum { owner = No_change};
-			enum { is_by_value = out_param::is_by_value };
-			enum { is_constant = out_param::is_constant };
-			enum { is_integral = out_param::is_integral };
+			typedef function_return<T> traits;
 		};
 
 
@@ -667,19 +649,25 @@ for parameters contain as part of their name "out", "in" or a combination.
 		};
 
 		template<typename T>
+		struct has_return_traits< maybe_null<T> >
+		{
+			enum {value = 1};
+		};
+
+		template<typename T>
 		struct return_type_traits
 		{
-			typedef return_type_typedef<T, has_return_traits<T>::value> r_type;
-			typedef typename r_type::type  type;
-			typedef typename r_type::pull_type pull_type;
-			typedef typename r_type::raw raw;
+			typedef typename return_type_typedef<T, has_return_traits<T>::value>::traits traits;
+			typedef typename traits::type  type;
+			typedef typename traits::pull_type pull_type;
+			typedef typename traits::raw raw;
 
-			enum { in = r_type::in };
-			enum { out = r_type::out };
-			enum { owner = r_type::owner };
-			enum { is_by_value = r_type::is_by_value  };
-			enum { is_constant = r_type::is_constant  };
-			enum { is_integral = r_type::is_integral  };
+			enum { in = traits::in };
+			enum { out = traits::out };
+			enum { owner = traits::owner };
+			enum { is_by_value = traits::is_by_value  };
+			enum { is_constant = traits::is_constant  };
+			enum { is_integral = traits::is_integral  };
 		};
 
 	} // namespace INTERNAL // NOLINT

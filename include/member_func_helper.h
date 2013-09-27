@@ -66,6 +66,22 @@ namespace OOLUA
 
 		template<typename TypeWithTraits, int owner>struct Member_func_helper;
 
+		/*
+		Specialisation for the maybe_null type.
+		If NULL it pushes nil to the stack else calls the normal helper static function.
+		*/
+		template<typename MaybeNullType>
+		struct Member_func_helper<maybe_null<MaybeNullType>, No_change>
+		{
+			static void push2lua(lua_State* l, MaybeNullType ptr)
+			{
+				if (ptr)
+					Member_func_helper<function_return<MaybeNullType>, No_change>::push2lua(l, ptr);
+				else
+					lua_pushnil(l);
+			}
+		};
+
 		template<typename TypeWithTraits>
 		struct Member_func_helper<TypeWithTraits, No_change>
 		{

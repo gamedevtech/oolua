@@ -6,12 +6,22 @@
 #	include "cpp_stub_classes.h"
 struct oolua_test_userdata_returns_default_traits{};
 struct oolua_test_userdata_return_traits{};
-
+struct oolua_test_userdata_maybe_null_traits{};
 
 typedef FunctionReturnType<oolua_test_userdata_returns_default_traits,Stub1> UserDataFunctionDefaultReturnTraits;
 typedef MockFunctionReturnType<oolua_test_userdata_returns_default_traits,Stub1> UserDataFunctionDefaultReturnTraitsMock;
 
 typedef FunctionReturnType<oolua_test_userdata_return_traits,Stub1> UserDataFunctionReturnTraits;
 typedef MockFunctionReturnType<oolua_test_userdata_return_traits,Stub1> UserDataFunctionReturnTraitsMock;
+
+typedef FunctionReturnType<oolua_test_userdata_maybe_null_traits,Stub1> UserDataFunctionReturnMaybeNullTraits;
+typedef MockFunctionReturnType<oolua_test_userdata_maybe_null_traits,Stub1> UserDataFunctionReturnMaybeNullTraitsMock;
+
+struct MaybeNullStaticFuncs
+{
+	static Stub1* returns_null_ptr(){return NULL;}
+	static Stub1* valid_ptr(){return &return_value;}
+	static Stub1 return_value;
+};
 
 #endif
