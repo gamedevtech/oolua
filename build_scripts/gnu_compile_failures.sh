@@ -64,7 +64,9 @@ run_test maybe_null_stub
 run_test maybe_null_ref_stub
 run_test maybe_null_ref_const_stub
 run_test maybe_null_ref_ptr_stub
-
+run_test maybe_null_ref_const_ptr_stub
+run_test maybe_null_ref_const_ptr_const_stub
+run_test maybe_null_ref_ptr_const_stub
 
 premake4 clean >/dev/null 2>&1
 cd build_scripts
