@@ -28,6 +28,7 @@ include("./unit_tests/tests_must_fail/lua_return/")
 include("./unit_tests/tests_must_fail/cpp_acquire/")
 include("./unit_tests/tests_must_fail/lua_acquire/")
 include("./unit_tests/tests_must_fail/maybe_null/")
+include("./unit_tests/tests_must_fail/lua_maybe_null/")
 
 local gen = require'build_scripts.oolua_generate'
 local gen_details = gen.default_details()

@@ -4,25 +4,6 @@
 #	include "expose_stub_classes.h"
 #	include "expose_false_integral_function_params.h"
 
-class CGameData
-{
-public:
-	CGameData( int i )
-		: m_iLockpickLevel(i)
-	{}
-	int m_iLockpickLevel;
-};
-
-OOLUA_PROXY(CGameData)
-	OOLUA_TAGS(No_public_constructors)
-	OOLUA_MEM_GETN(GetLockpickLevel,m_iLockpickLevel)
-OOLUA_PROXY_END
-
-OOLUA_EXPORT_FUNCTIONS_CONST(CGameData,GetLockpickLevel)
-OOLUA_EXPORT_FUNCTIONS(CGameData)
-
-
-
 namespace
 {
 	struct StubNoneProxy {};
@@ -58,6 +39,7 @@ class Traits_test : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(outP_refToPtrToUserType_pullIsPtrToUserType);
 
 	CPPUNIT_TEST(callingLuaState_luaPassesNoParameterYetFunctionWantsALuaInstance_calledOnceWithCorrectInstance);
+	CPPUNIT_TEST(luaMaybeNull_onwershipIsSetToLua);
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script * m_lua;
 public:
@@ -190,6 +172,11 @@ public:
 		m_lua->call(1,(LuaStateParam*)&mock);
 	}
 
+	void luaMaybeNull_onwershipIsSetToLua()
+	{
+		CPPUNIT_ASSERT_EQUAL((int)OOLUA::Lua, (int)OOLUA::lua_maybe_null<Stub1*>::owner);
+	}
+
 };
 
 
@@ -292,6 +279,14 @@ void maybeNull_validTraits_willCompile()
 	OOLUA::maybe_null<Stub1 *const>				pass2;(void)pass2;
 	OOLUA::maybe_null<Stub1 const *>			pass3;(void)pass3;
 	OOLUA::maybe_null<Stub1 const *const>		pass4;(void)pass4;
-
 }
+
+void luaMaybeNull_validTraits_willCompile()
+{
+	OOLUA::lua_maybe_null<Stub1 *>				pass1;(void)pass1;
+	OOLUA::lua_maybe_null<Stub1 *const>			pass2;(void)pass2;
+	OOLUA::lua_maybe_null<Stub1 const *>		pass3;(void)pass3;
+	OOLUA::lua_maybe_null<Stub1 const *const>	pass4;(void)pass4;
+}
+
 CPPUNIT_TEST_SUITE_REGISTRATION( Traits_test );

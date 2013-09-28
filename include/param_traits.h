@@ -104,6 +104,17 @@ for parameters contain as part of their name "out", "in" or a combination.
 	*/
 	template<typename T>struct maybe_null;
 
+	/** \struct lua_maybe_null
+		\breif Return trait for a pointer which at runtime maybe NULL and also
+		allowing transfer of ownership.
+		\details
+		The type returned from the function is a pointer instance whose
+		runtime value maybe NULL. If it is NULL then lua_pushnil will be called
+		else the pointer will be pushed and transfer ownership of the instance
+		to Lua. This is only valid for function return types.
+	*/
+	template<typename T>struct lua_maybe_null;
+
 	/** \struct cpp_acquire_ptr
 		\brief Change of ownership to C++
 		\details
@@ -414,6 +425,32 @@ for parameters contain as part of their name "out", "in" or a combination.
 		enum { in = 0};
 		enum { out = 1};
 		enum { owner = No_change};
+		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value  };
+		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
+		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
+		typedef char type_can_not_be_integral [is_integral ? -1 : 1 ];
+		typedef char type_has_to_be_by_reference [is_by_value ? -1 : 1 ];
+		typedef char type_can_not_be_just_a_reference_to_type [	LVD::is_same<raw&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_just_a_const_reference_to_type [ LVD::is_same<raw const&, type>::value ? -1 : 1];
+		/*Reference to pointer:
+		this could be valid in some situations, until such a time as it is required
+		or requested disable it*/
+		typedef char type_can_not_be_a_reference_to_ptr [ LVD::is_same<raw *&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_a_reference_to_const_ptr [ LVD::is_same<raw *const&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_a_reference_to_const_ptr_const [ LVD::is_same<raw const*const&, type>::value ? -1 : 1];
+		typedef char type_can_not_be_a_reference_to_ptr_const [ LVD::is_same<raw const*&, type>::value ? -1 : 1];
+	};
+
+
+	template<typename T>
+	struct lua_maybe_null
+	{
+		typedef T type;
+		typedef typename INTERNAL::Raw_type<T>::type raw;
+		typedef typename INTERNAL::Pull_type_<raw, T, LVD::is_integral_type<raw>::value >::type pull_type;
+		enum { in = 0};
+		enum { out = 1};
+		enum { owner = Lua};
 		enum { is_by_value = INTERNAL::Type_enum_defaults<type>::is_by_value  };
 		enum { is_constant = INTERNAL::Type_enum_defaults<type>::is_constant  };
 		enum { is_integral = INTERNAL::Type_enum_defaults<type>::is_integral  };
