@@ -48,6 +48,23 @@ class UserDataFunctionReturns : public CPPUNIT_NS::TestFixture
 		CPPUNIT_TEST(maybeNullTrait_callsCFunctionWhichReturnsNull_stackTopIsNil);
 		CPPUNIT_TEST(maybeNullTrait_callsCFunctionWhichReturnsValidPtr_stackSizeIncreasesByOne);
 		CPPUNIT_TEST(maybeNullTrait_callsCFunctionWhichReturnsValidPtr_stackTopIsUserdata);
+
+		CPPUNIT_TEST(luaMaybeNullTrait_callsMethodPtrWhichReturnsNull_stackSizeIncreasesByOne);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsMethodPtrWhichReturnsNull_stackTopIsNil);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsMethodPtrWhichReturnsValidPtr_stackSizeIncreasesByOne);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsMethodPtrWhichReturnsValidPtr_stackTopIsUserData);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsMethodPtrWhichReturnsValidPtr_stackTopGcValueIsTrue);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsMethodConstPtrWhichReturnsNull_stackSizeIncreasesByOne);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsMethodConstPtrWhichReturnsNull_stackTopIsNil);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsMethodConstPtrWhichReturnsValidPtr_stackSizeIncreasesByOne);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsMethodConstPtrWhichReturnsValidPtr_stackTopIsUserData);
+
+		CPPUNIT_TEST(luaMaybeNullTrait_callsCFunctionWhichReturnsNull_stackSizeIncreasesByOne);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsCFunctionWhichReturnsNull_stackTopIsNil);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsCFunctionWhichReturnsValidPtr_stackSizeIncreasesByOne);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsCFunctionWhichReturnsValidPtr_stackTopIsUserdata);
+		CPPUNIT_TEST(luaMaybeNullTrait_callsCFunctionWhichReturnsValidPtr_stackTopGcValueIsTrue);
+
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -112,6 +129,29 @@ class UserDataFunctionReturns : public CPPUNIT_NS::TestFixture
 
 		UserDataFunctionReturnMaybeNullTraitsMock mock;
 		UserDataFunctionReturnMaybeNullTraits* object;
+		Stub1 return_stub;
+		OOLUA::Script* m_lua;
+	};
+
+	struct LuaMaybeNullTraitHelper
+	{
+		LuaMaybeNullTraitHelper(OOLUA::Script* lua)
+			:mock(),object(&mock),return_stub(),m_lua(lua)
+		{
+			m_lua->register_class<UserDataFunctionReturnLuaMaybeNullTraits>();
+			m_lua->register_class<Stub1>();
+		}
+
+		bool call_object_method(std::string const& method_name)
+		{
+			bool res = m_lua->run_chunk("return function(object,method) return object[method](object) end");
+			if(!res)return res;
+			OOLUA::Lua_func_ref func; m_lua->pull(func);
+			return m_lua->call(func,object,method_name);
+		}
+
+		UserDataFunctionReturnLuaMaybeNullTraitsMock mock;
+		UserDataFunctionReturnLuaMaybeNullTraits* object;
 		Stub1 return_stub;
 		OOLUA::Script* m_lua;
 	};
@@ -428,6 +468,135 @@ public:
 		OOLUA::set_global(*m_lua,"valid_ptr",lua_proxy_returns_valid_ptr);
 		m_lua->run_chunk("return valid_ptr()");
 		CPPUNIT_ASSERT_EQUAL(LUA_TUSERDATA,lua_type(*m_lua,-1));
+	}
+
+	void luaMaybeNullTrait_callsMethodPtrWhichReturnsNull_stackSizeIncreasesByOne()
+	{
+		LuaMaybeNullTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,ptr()).Times(1).WillOnce(::testing::Return((Stub1*)NULL));
+		int stackSizeBefore = lua_gettop(*m_lua);
+		helper.call_object_method("ptr");
+		CPPUNIT_ASSERT_EQUAL(stackSizeBefore+1,lua_gettop(*m_lua));
+	}
+
+	void luaMaybeNullTrait_callsMethodPtrWhichReturnsNull_stackTopIsNil()
+	{
+		LuaMaybeNullTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,ptr()).Times(1).WillOnce(::testing::Return((Stub1*)NULL));
+		helper.call_object_method("ptr");
+		CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(*m_lua,-1));
+	}
+
+
+
+
+	void luaMaybeNullTrait_callsMethodPtrWhichReturnsValidPtr_stackSizeIncreasesByOne()
+	{
+		LuaMaybeNullTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,ptr()).Times(1).WillOnce(::testing::Return(&helper.return_stub));
+		int stackSizeBefore = lua_gettop(*m_lua);
+		helper.call_object_method("ptr");
+		CPPUNIT_ASSERT_EQUAL(stackSizeBefore+1,lua_gettop(*m_lua));
+		set_tops_gc_flag_to(false);
+	}
+
+	void luaMaybeNullTrait_callsMethodPtrWhichReturnsValidPtr_stackTopIsUserData()
+	{
+		LuaMaybeNullTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,ptr()).Times(1).WillOnce(::testing::Return(&helper.return_stub));
+		helper.call_object_method("ptr");
+		CPPUNIT_ASSERT_EQUAL(LUA_TUSERDATA, lua_type(*m_lua,-1));
+		set_tops_gc_flag_to(false);
+	}
+
+	void luaMaybeNullTrait_callsMethodPtrWhichReturnsValidPtr_stackTopGcValueIsTrue()
+	{
+		LuaMaybeNullTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,ptr()).Times(1).WillOnce(::testing::Return(&helper.return_stub));
+		helper.call_object_method("ptr");
+		assert_that_tops_gc_flag_is(true);
+		set_tops_gc_flag_to(false);
+	}
+
+	void luaMaybeNullTrait_callsMethodConstPtrWhichReturnsNull_stackSizeIncreasesByOne()
+	{
+		LuaMaybeNullTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,constPtr()).Times(1).WillOnce(::testing::Return((Stub1 *const)NULL));
+		int stackSizeBefore = lua_gettop(*m_lua);
+		helper.call_object_method("constPtr");
+		CPPUNIT_ASSERT_EQUAL(stackSizeBefore+1,lua_gettop(*m_lua));
+	}
+
+	void luaMaybeNullTrait_callsMethodConstPtrWhichReturnsNull_stackTopIsNil()
+	{
+		LuaMaybeNullTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,constPtr()).Times(1).WillOnce(::testing::Return((Stub1 *const)NULL));
+		helper.call_object_method("constPtr");
+		CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(*m_lua,-1));
+	}
+
+	void luaMaybeNullTrait_callsMethodConstPtrWhichReturnsValidPtr_stackSizeIncreasesByOne()
+	{
+		LuaMaybeNullTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,constPtr()).Times(1).WillOnce(::testing::Return(&helper.return_stub));
+		int stackSizeBefore = lua_gettop(*m_lua);
+		helper.call_object_method("constPtr");
+		CPPUNIT_ASSERT_EQUAL(stackSizeBefore+1,lua_gettop(*m_lua));
+		set_tops_gc_flag_to(false);
+	}
+
+	void luaMaybeNullTrait_callsMethodConstPtrWhichReturnsValidPtr_stackTopIsUserData()
+	{
+		LuaMaybeNullTraitHelper helper(m_lua);
+		EXPECT_CALL(helper.mock,constPtr()).Times(1).WillOnce(::testing::Return(&helper.return_stub));
+		helper.call_object_method("constPtr");
+		CPPUNIT_ASSERT_EQUAL(LUA_TUSERDATA, lua_type(*m_lua,-1));
+		set_tops_gc_flag_to(false);
+	}
+
+	void luaMaybeNullTrait_callsCFunctionWhichReturnsNull_stackSizeIncreasesByOne()
+	{
+		m_lua->register_class<Stub1>();
+		OOLUA::set_global(*m_lua,"null_ptr",lua_proxy_returns_lua_null_ptr);
+		int stackSizeBefore = lua_gettop(*m_lua);
+		m_lua->run_chunk("return null_ptr()");
+		CPPUNIT_ASSERT_EQUAL(stackSizeBefore+1,lua_gettop(*m_lua));
+	}
+
+	void luaMaybeNullTrait_callsCFunctionWhichReturnsNull_stackTopIsNil()
+	{
+		m_lua->register_class<Stub1>();
+		OOLUA::set_global(*m_lua,"null_ptr",lua_proxy_returns_lua_null_ptr);
+		m_lua->run_chunk("return null_ptr()");
+		CPPUNIT_ASSERT_EQUAL(LUA_TNIL,lua_type(*m_lua,-1));
+	}
+
+	void luaMaybeNullTrait_callsCFunctionWhichReturnsValidPtr_stackSizeIncreasesByOne()
+	{
+		m_lua->register_class<Stub1>();
+		OOLUA::set_global(*m_lua,"valid_ptr",lua_proxy_returns_lua_valid_ptr);
+		int stackSizeBefore = lua_gettop(*m_lua);
+		m_lua->run_chunk("return valid_ptr()");
+		CPPUNIT_ASSERT_EQUAL(stackSizeBefore+1,lua_gettop(*m_lua));
+		set_tops_gc_flag_to(false);
+	}
+
+	void luaMaybeNullTrait_callsCFunctionWhichReturnsValidPtr_stackTopIsUserdata()
+	{
+		m_lua->register_class<Stub1>();
+		OOLUA::set_global(*m_lua,"valid_ptr",lua_proxy_returns_lua_valid_ptr);
+		m_lua->run_chunk("return valid_ptr()");
+		CPPUNIT_ASSERT_EQUAL(LUA_TUSERDATA,lua_type(*m_lua,-1));
+		set_tops_gc_flag_to(false);
+	}
+
+	void luaMaybeNullTrait_callsCFunctionWhichReturnsValidPtr_stackTopGcValueIsTrue()
+	{
+		m_lua->register_class<Stub1>();
+		OOLUA::set_global(*m_lua,"valid_ptr",lua_proxy_returns_lua_valid_ptr);
+		m_lua->run_chunk("return valid_ptr()");
+		assert_that_tops_gc_flag_is(true);
+		set_tops_gc_flag_to(false);
 	}
 
 };

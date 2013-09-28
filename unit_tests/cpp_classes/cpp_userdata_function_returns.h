@@ -7,6 +7,7 @@
 struct oolua_test_userdata_returns_default_traits{};
 struct oolua_test_userdata_return_traits{};
 struct oolua_test_userdata_maybe_null_traits{};
+struct oolua_test_userdata_lua_maybe_null_traits{};
 
 typedef FunctionReturnType<oolua_test_userdata_returns_default_traits,Stub1> UserDataFunctionDefaultReturnTraits;
 typedef MockFunctionReturnType<oolua_test_userdata_returns_default_traits,Stub1> UserDataFunctionDefaultReturnTraitsMock;
@@ -16,6 +17,9 @@ typedef MockFunctionReturnType<oolua_test_userdata_return_traits,Stub1> UserData
 
 typedef FunctionReturnType<oolua_test_userdata_maybe_null_traits,Stub1> UserDataFunctionReturnMaybeNullTraits;
 typedef MockFunctionReturnType<oolua_test_userdata_maybe_null_traits,Stub1> UserDataFunctionReturnMaybeNullTraitsMock;
+
+typedef FunctionReturnType<oolua_test_userdata_lua_maybe_null_traits,Stub1> UserDataFunctionReturnLuaMaybeNullTraits;
+typedef MockFunctionReturnType<oolua_test_userdata_lua_maybe_null_traits,Stub1> UserDataFunctionReturnLuaMaybeNullTraitsMock;
 
 struct MaybeNullStaticFuncs
 {

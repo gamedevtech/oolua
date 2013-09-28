@@ -40,5 +40,15 @@ OOLUA_PROXY_END
 
 int lua_proxy_returns_null_ptr(lua_State* l);
 int lua_proxy_returns_valid_ptr(lua_State* l);
+int lua_proxy_returns_lua_null_ptr(lua_State* l);
+int lua_proxy_returns_lua_valid_ptr(lua_State* l);
+
+OOLUA_PROXY(UserDataFunctionReturnLuaMaybeNullTraits)
+	OOLUA_TAGS(Abstract)
+	OOLUA_MEM_FUNC(lua_maybe_null<Stub1*>,ptr)
+	OOLUA_MEM_FUNC(lua_maybe_null<Stub1 *const>,constPtr)
+	OOLUA_MEM_FUNC(lua_maybe_null<Stub1 const*>,ptrConst)
+	OOLUA_MEM_FUNC(lua_maybe_null<Stub1 const*const>,constPtrConst)
+OOLUA_PROXY_END
 
 #endif

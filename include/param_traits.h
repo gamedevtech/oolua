@@ -692,6 +692,12 @@ for parameters contain as part of their name "out", "in" or a combination.
 		};
 
 		template<typename T>
+		struct has_return_traits< lua_maybe_null<T> >
+		{
+			enum {value = 1};
+		};
+
+		template<typename T>
 		struct return_type_traits
 		{
 			typedef typename return_type_typedef<T, has_return_traits<T>::value>::traits traits;
