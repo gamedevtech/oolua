@@ -30,8 +30,6 @@ OOLUA_EXPORT_FUNCTIONS(UserDataFunctionReturnMaybeNullTraits
 					)
 OOLUA_EXPORT_FUNCTIONS_CONST(UserDataFunctionReturnMaybeNullTraits)
 
-//OOLUA_CFUNC(&MaybeNullStaticFuncs::returns_null_ptr,lua_proxy_returns_null_ptr)
-
 int lua_proxy_returns_null_ptr(lua_State* l)
 {
 	OOLUA_C_FUNCTION(OOLUA::maybe_null<Stub1*>,MaybeNullStaticFuncs::returns_null_ptr)
