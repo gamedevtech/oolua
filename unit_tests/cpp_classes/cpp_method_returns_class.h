@@ -7,10 +7,10 @@ class Method_returns_class
 {
 public:
 	Method_returns_class()
-	:return_instance()
-	,return_ptr(&return_instance)
-	,return_ptr_const(return_ptr)
-	,return_ref_const_ptr_const(return_ptr_const)
+		: return_instance()
+		, return_ptr(&return_instance)
+		, return_ptr_const(return_ptr)
+		, return_ref_const_ptr_const(return_ptr_const)
 	{}
 	Return_double& ref(){return return_instance;}
 	Return_double const & ref_const(){return return_instance;}
@@ -22,11 +22,11 @@ public:
 	Method_returns_class(Method_returns_class const&);
 	Return_double return_stack_instance()
 	{
-		return  Return_double(); 
+		return  Return_double();
 	}
 	Return_double* returns_null()
 	{
-		return (Return_double*)0;
+		return NULL;
 	}
 private:
 	Return_double return_instance;

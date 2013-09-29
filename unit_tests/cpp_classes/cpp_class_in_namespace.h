@@ -4,7 +4,7 @@
 namespace TEST_NAMESPACED_CLASS
 {
 	struct Namespaced{};
-}
+} //namespace TEST_NAMESPACED_CLASS
 
 #endif
 

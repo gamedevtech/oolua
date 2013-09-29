@@ -11,33 +11,33 @@ class FunctionParamType
 public:
 	virtual ~FunctionParamType(){}
 	/**[ValueParam]*/
-	virtual void value(ParamType) = 0;
+	virtual void value(ParamType instance) = 0;
 	/**[ValueParam]*/
 
 	/**[PtrParam]*/
-	virtual void ptr(ParamType*) = 0;
+	virtual void ptr(ParamType* instance) = 0;
 	/**[PtrParam]*/
 
 	/**[RefParam]*/
-	virtual void ref(ParamType&)=0;
+	virtual void ref(ParamType& instance)=0;
 	/**[RefParam]*/
 
 	/**[RefPtrParam]*/
-	virtual void refPtr(ParamType*&) = 0;
+	virtual void refPtr(ParamType*& instance) = 0;
 	/**[RefPtrParam]*/
 
-	virtual void constant(ParamType const) = 0;
-	virtual void refConst(ParamType const &) = 0;
-	virtual void ptrConst(ParamType const *) = 0;
+	virtual void constant(ParamType const instance) = 0;
+	virtual void refConst(ParamType const & instance) = 0;
+	virtual void ptrConst(ParamType const * instance) = 0;
 	/**[RefPtrConstParam]*/
-	virtual void refPtrConst(ParamType const* &) = 0;
+	virtual void refPtrConst(ParamType const* & instance) = 0;
 	/**[RefPtrConstParam]*/
-	virtual void constPtr(ParamType * const) = 0;
-	virtual void refConstPtr(ParamType * const&) = 0;
-	virtual void constPtrConst(ParamType const * const) = 0;
-	virtual void refConstPtrConst(ParamType const * const &) = 0;
-	
-	virtual void twoRefs(ParamType &,ParamType &) = 0;
+	virtual void constPtr(ParamType * const instance) = 0;
+	virtual void refConstPtr(ParamType * const& instance) = 0;
+	virtual void constPtrConst(ParamType const * const instance) = 0;
+	virtual void refConstPtrConst(ParamType const * const & instance) = 0;
+
+	virtual void twoRefs(ParamType & instance1, ParamType & instance2) = 0;
 };
 
 
@@ -51,23 +51,23 @@ public:
 #endif
 
 template<typename Specialisation , typename ParamType>
-class MockFunctionParamType : public FunctionParamType<Specialisation,ParamType>
+class MockFunctionParamType : public FunctionParamType<Specialisation, ParamType>
 {
 public:
-	MOCK_METHOD1_T(value,void (ParamType));
-	MOCK_METHOD1_T(ptr,void (ParamType*));
-	MOCK_METHOD1_T(ref,void (ParamType&));
-	MOCK_METHOD1_T(refPtr,void (ParamType*&));
-	
-	MOCK_METHOD1_T(constant,void (ParamType const));
-	MOCK_METHOD1_T(refConst,void (ParamType const &));
-	MOCK_METHOD1_T(ptrConst,void (ParamType const *));
-	MOCK_METHOD1_T(refPtrConst,void (ParamType const* &));
-	MOCK_METHOD1_T(constPtr,void (ParamType * const));
-	MOCK_METHOD1_T(refConstPtr,void (ParamType * const&));
-	MOCK_METHOD1_T(constPtrConst,void(ParamType const * const));
-	MOCK_METHOD1_T(refConstPtrConst,void (ParamType const * const &));
-	MOCK_METHOD2_T(twoRefs,void(ParamType &,ParamType &));
+	MOCK_METHOD1_T(value, void(ParamType));
+	MOCK_METHOD1_T(ptr, void(ParamType*)); // NOLINT(readability/function)
+	MOCK_METHOD1_T(ref, void(ParamType&));
+	MOCK_METHOD1_T(refPtr, void(ParamType*&));
+
+	MOCK_METHOD1_T(constant, void(ParamType const));
+	MOCK_METHOD1_T(refConst, void(ParamType const &));
+	MOCK_METHOD1_T(ptrConst, void(ParamType const *));
+	MOCK_METHOD1_T(refPtrConst, void(ParamType const* &));
+	MOCK_METHOD1_T(constPtr, void(ParamType * const));
+	MOCK_METHOD1_T(refConstPtr, void(ParamType * const&));
+	MOCK_METHOD1_T(constPtrConst, void(ParamType const * const));
+	MOCK_METHOD1_T(refConstPtrConst, void(ParamType const * const &));
+	MOCK_METHOD2_T(twoRefs, void(ParamType &, ParamType &));
 };
 
 #ifdef _MSC_VER

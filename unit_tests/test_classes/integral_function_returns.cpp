@@ -5,7 +5,7 @@
 
 #	include "expose_integral_function_returns.h"
 
-class IntegralFunctionReturns : public CppUnit::TestFixture 
+class IntegralFunctionReturns : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(IntegralFunctionReturns);
 		CPPUNIT_TEST(cString_functionReturnsPtrToChar_resultIsExpectedValue);
@@ -21,35 +21,36 @@ public:
 	{
 		delete m_lua;
 	}
-	
+
 	void cString_functionReturnsPtrToChar_resultIsExpectedValue()
 	{
 		CStringFunctionReturnMock mock;
 		CStringFunctionReturn* object = &mock;
-		char * input = (char*)"hello world";
-		EXPECT_CALL(mock,ptr()).Times(1).WillOnce(::testing::Return(input));
+		char * input = const_cast<char*>("hello world");
+		EXPECT_CALL(mock, ptr()).Times(1).WillOnce(::testing::Return(input));
 
 		m_lua->register_class<CStringFunctionReturn>();
 		m_lua->run_chunk("return function(object) return object:ptr() end");
-		m_lua->call(1,object);
+		m_lua->call(1, object);
 		std::string result;
 		m_lua->pull(result);
-		CPPUNIT_ASSERT_EQUAL(std::string(input),result);
+		CPPUNIT_ASSERT_EQUAL(std::string(input), result);
 	}
+
 	void cString_functionReturnsPtrToConstChar_resultIsExpectedValue()
 	{
 		CStringFunctionReturnMock mock;
 		CStringFunctionReturn* object = &mock;
 		char const * input = "hello world";
-		EXPECT_CALL(mock,ptrConst()).Times(1).WillOnce(::testing::Return(input));
+		EXPECT_CALL(mock, ptrConst()).Times(1).WillOnce(::testing::Return(input));
 
 		m_lua->register_class<CStringFunctionReturn>();
 		m_lua->run_chunk("return function(object) return object:ptrConst() end");
-		m_lua->call(1,object);
+		m_lua->call(1, object);
 		std::string result;
 		m_lua->pull(result);
-		CPPUNIT_ASSERT_EQUAL(std::string(input),result);
+		CPPUNIT_ASSERT_EQUAL(std::string(input), result);
 	}
-
 };
+
 CPPUNIT_TEST_SUITE_REGISTRATION(IntegralFunctionReturns);

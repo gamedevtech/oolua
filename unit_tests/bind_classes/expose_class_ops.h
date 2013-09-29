@@ -7,13 +7,13 @@
 /*[ClassOpsExpose]*/
 OOLUA_PROXY(Class_ops)
 	OOLUA_TAGS(
-		Equal_op,
-		Less_op,
-		Less_equal_op,
-		Add_op,
-		Sub_op,
-		Mul_op,
-		Div_op
+		Equal_op
+		, Less_op
+		, Less_equal_op
+		, Add_op
+		, Sub_op
+		, Mul_op
+		, Div_op
 	)
 	OOLUA_MFUNC_CONST(geti)
 OOLUA_PROXY_END

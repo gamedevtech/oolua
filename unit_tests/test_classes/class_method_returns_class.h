@@ -5,15 +5,12 @@
 #	include "common_cppunit_headers.h"
 #	include "oolua.h"
 
-//bad includes we just net oolua_pushull_fwd
-//and the include for CPPUNIT macro
-
-template<typename Return_type,typename Input_type>
+template<typename Return_type, typename Input_type>
 void assert_return_equals_input(lua_State* l, Input_type input)
 {
 	Return_type result;
-	OOLUA::pull(l,result);
-	CPPUNIT_ASSERT_EQUAL((Return_type)input,result);
+	OOLUA::pull(l, result);
+	CPPUNIT_ASSERT_EQUAL((Return_type)input, result);// NOLINT(readability/casting)
 }
 
 #endif//TEST_PUSH_H_

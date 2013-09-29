@@ -14,7 +14,7 @@ struct PrivateDestructor
 		return new PrivateDestructor;
 	}
 private:
-	PrivateDestructor (PrivateDestructor const&);
+	PrivateDestructor(PrivateDestructor const&);
 	PrivateDestructor& operator =(PrivateDestructor const&);
 	PrivateDestructor(){}
 	~PrivateDestructor(){}
@@ -24,7 +24,7 @@ private:
 OOLUA_PROXY(PrivateDestructor)
 	OOLUA_TAGS(
 		No_public_constructors
-		,No_public_destructor 
+		, No_public_destructor
 	)
 OOLUA_PROXY_END
 

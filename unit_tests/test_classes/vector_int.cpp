@@ -7,7 +7,6 @@
 
 
 class Lua_vector_int : public CPPUNIT_NS::TestFixture
-
 {
 	CPPUNIT_TEST_SUITE(Lua_vector_int);
 		CPPUNIT_TEST(popBack_passedVectorWithOneEntery_vectorsSizeIsZero);
@@ -17,8 +16,10 @@ class Lua_vector_int : public CPPUNIT_NS::TestFixture
 	OOLUA::Script * m_lua;
 	vector_int v;
 public:
-    Lua_vector_int():m_lua(0){}
-    LVD_NOCOPY(Lua_vector_int)
+	Lua_vector_int()
+		: m_lua(0)
+	{}
+	LVD_NOCOPY(Lua_vector_int)
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
@@ -28,7 +29,7 @@ public:
 	{
 		delete m_lua;
 		vector_int m;
-		v.swap( m );
+		v.swap(m);
 	}
 
 	void popBack_passedVectorWithOneEntery_vectorsSizeIsZero()
@@ -38,29 +39,31 @@ public:
 					"v:pop_back() \n"
 				"end");
 		v.push_back(1);
-		m_lua->call("func",&v);
-		CPPUNIT_ASSERT_EQUAL(vector_int::size_type(0),v.size() );
+		m_lua->call("func", &v);
+		CPPUNIT_ASSERT_EQUAL(vector_int::size_type(0), v.size());
 	}
+
 	void pushBack_passedEmptyVector_sizeEqualsOne()
 	{
 		m_lua->run_chunk(
 				"func = function (v)\n"
 					"v:push_back(1) \n"
 				"end");
-		m_lua->call("func",&v);
-		CPPUNIT_ASSERT_EQUAL(vector_int::size_type(1),v.size() );
+		m_lua->call("func", &v);
+		CPPUNIT_ASSERT_EQUAL(vector_int::size_type(1), v.size());
 	}
+
 	void size_passedEmptyVector_returnEqualsZero()
 	{
 		m_lua->run_chunk(
 				"func = function (v)\n"
 					"return v:size() \n"
 				"end");
-		m_lua->call("func",&v);
+		m_lua->call("func", &v);
 		int res;
-		OOLUA::pull(*m_lua,res);
-		CPPUNIT_ASSERT_EQUAL(int(0), res );
+		OOLUA::pull(*m_lua, res);
+		CPPUNIT_ASSERT_EQUAL(int(0), res); //NOLINT(readability/casting)
 	}
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION( Lua_vector_int );
+CPPUNIT_TEST_SUITE_REGISTRATION(Lua_vector_int);

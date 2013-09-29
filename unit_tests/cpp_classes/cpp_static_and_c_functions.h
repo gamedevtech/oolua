@@ -6,7 +6,7 @@ class ClassHasStaticFunction
 {
 public:
 	static void static_function(){}
-	static void static_function(int){}
+	static void static_function(int /*DontCare*/){}
 	static int returns_input(int t){return t;}
 };
 /*[CppClassStaticFunctions]*/

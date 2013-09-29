@@ -28,21 +28,20 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(OutParamUserData)
 	OOLUA_TAGS(Abstract)
-	OOLUA_MEM_FUNC_RENAME(outTraitRef,void, ref,out_p<HasIntMember&>)
-	OOLUA_MEM_FUNC_RENAME(outTraitPtr,void,ptr,out_p<HasIntMember*>)//When does an out_p on a pointer make sense??
+	OOLUA_MEM_FUNC_RENAME(outTraitRef, void, ref, out_p<HasIntMember&>)
+	OOLUA_MEM_FUNC_RENAME(outTraitPtr, void, ptr, out_p<HasIntMember*>)//When does an out_p on a pointer make sense??
 	/**[UserDataProxyOutTraitRefPtr]*/
-	OOLUA_MEM_FUNC_RENAME(outTraitRefPtr,void,refPtr,out_p<HasIntMember*&>)
+	OOLUA_MEM_FUNC_RENAME(outTraitRefPtr, void, refPtr, out_p<HasIntMember*&>)
 	/**[UserDataProxyOutTraitRefPtr]*/
 
-	OOLUA_MEM_FUNC_RENAME(inOutTraitRef,void, ref,in_out_p<HasIntMember&>)
-	OOLUA_MEM_FUNC_RENAME(inOutTraitPtr,void,ptr,in_out_p<HasIntMember*>)//When does an out_p on a pointer make sense??
-	OOLUA_MEM_FUNC_RENAME(inOutTraitRefPtr,void,refPtr,in_out_p<HasIntMember*&>)
+	OOLUA_MEM_FUNC_RENAME(inOutTraitRef, void, ref, in_out_p<HasIntMember&>)
+	OOLUA_MEM_FUNC_RENAME(inOutTraitPtr, void, ptr, in_out_p<HasIntMember*>)//When does an out_p on a pointer make sense??
+	OOLUA_MEM_FUNC_RENAME(inOutTraitRefPtr, void, refPtr, in_out_p<HasIntMember*&>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(InOutParamUserData)
 	OOLUA_TAGS(Abstract)
 OOLUA_PROXY_END
-
 /**[ExposeOutParamsUserData]*/
 
 #endif

@@ -15,8 +15,8 @@ public:
 class ConstantMock : public Constant
 {
 public:
-	MOCK_CONST_METHOD0(cpp_func_const,void ());
-	MOCK_METHOD0(cpp_func,void ());
+	MOCK_CONST_METHOD0(cpp_func_const, void());
+	MOCK_METHOD0(cpp_func, void());
 };
 
 #endif

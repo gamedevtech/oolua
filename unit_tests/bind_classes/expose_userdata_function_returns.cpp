@@ -2,14 +2,13 @@
 #include "expose_userdata_function_returns.h"
 
 OOLUA_EXPORT_FUNCTIONS(UserDataFunctionDefaultReturnTraits
-					   ,ref
-					   ,refConst
-					   ,ptr
-					   ,ptrConst
-					   ,refPtrConst
-					   ,refConstPtrConst
-					   ,value
-					   )
+						, ref
+						, refConst
+						, ptr
+						, ptrConst
+						, refPtrConst
+						, refConstPtrConst
+						, value)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(UserDataFunctionDefaultReturnTraits)
 
@@ -17,8 +16,7 @@ OOLUA_EXPORT_FUNCTIONS(UserDataFunctionReturnTraits
 						, ptr
 						, ptrConst
 						, refPtrConst
-						, refConstPtrConst
-					)
+						, refConstPtrConst)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(UserDataFunctionReturnTraits)
 
@@ -26,34 +24,32 @@ OOLUA_EXPORT_FUNCTIONS(UserDataFunctionReturnMaybeNullTraits
 						, ptr
 						, constPtr
 						, ptrConst
-						, constPtrConst
-					)
+						, constPtrConst)
 OOLUA_EXPORT_FUNCTIONS_CONST(UserDataFunctionReturnMaybeNullTraits)
 
 int lua_proxy_returns_null_ptr(lua_State* l)
 {
-	OOLUA_C_FUNCTION(OOLUA::maybe_null<Stub1*>,MaybeNullStaticFuncs::returns_null_ptr)
+	OOLUA_C_FUNCTION(OOLUA::maybe_null<Stub1*>, MaybeNullStaticFuncs::returns_null_ptr)
 }
 
 int lua_proxy_returns_valid_ptr(lua_State* l)
 {
-	OOLUA_C_FUNCTION(OOLUA::maybe_null<Stub1*>,MaybeNullStaticFuncs::valid_ptr)
+	OOLUA_C_FUNCTION(OOLUA::maybe_null<Stub1*>, MaybeNullStaticFuncs::valid_ptr)
 }
 
 int lua_proxy_returns_lua_null_ptr(lua_State* l)
 {
-	OOLUA_C_FUNCTION(OOLUA::lua_maybe_null<Stub1*>,MaybeNullStaticFuncs::returns_null_ptr)
+	OOLUA_C_FUNCTION(OOLUA::lua_maybe_null<Stub1*>, MaybeNullStaticFuncs::returns_null_ptr)
 }
 
 int lua_proxy_returns_lua_valid_ptr(lua_State* l)
 {
-	OOLUA_C_FUNCTION(OOLUA::lua_maybe_null<Stub1*>,MaybeNullStaticFuncs::valid_ptr)
+	OOLUA_C_FUNCTION(OOLUA::lua_maybe_null<Stub1*>, MaybeNullStaticFuncs::valid_ptr)
 }
 
 OOLUA_EXPORT_FUNCTIONS(UserDataFunctionReturnLuaMaybeNullTraits
 						, ptr
 						, constPtr
 						, ptrConst
-						, constPtrConst
-					)
+						, constPtrConst)
 OOLUA_EXPORT_FUNCTIONS_CONST(UserDataFunctionReturnLuaMaybeNullTraits)

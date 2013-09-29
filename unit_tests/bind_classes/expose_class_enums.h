@@ -4,14 +4,13 @@
 #	include "oolua.h"
 #	include "cpp_class_enums.h"
 
-
 /*
-Register_class_enums : tag for hey there are enums in this class that need registering when 
+Register_class_enums : tag for hey there are enums in this class that need registering when
 the class type is registered
 */
 
 OOLUA_PROXY(ClassWithEnums)
-	OOLUA_TAGS (
+	OOLUA_TAGS(
 		No_public_constructors
 		, Register_class_enums
 	)

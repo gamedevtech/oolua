@@ -10,7 +10,7 @@ namespace ParamValues
 	const std::string string_set("hello world");
 	const char* c_string_not_set = "not set";
 	const char* c_string_set= "hello world";
-}
+} //namespace ParamValues
 
 #if OOLUA_USE_EXCEPTIONS ==1
 #include <stdexcept>
@@ -26,7 +26,7 @@ ConstructorThrowsStdException::ConstructorThrowsStdException()
 {
 	throw std::runtime_error("Constructor which throws an exception");
 }
-ConstructorThrowsStdException::ConstructorThrowsStdException(int)
+ConstructorThrowsStdException::ConstructorThrowsStdException(int /*DontCare*/)//NOLINT
 {
 	throw std::runtime_error("Constructor which throws an exception");
 }
@@ -37,5 +37,5 @@ ConstructorThrowsStdException::ConstructorThrowsStdException(int)
 #else
 DefaultConstructorThrowsStdException::DefaultConstructorThrowsStdException() {}
 ConstructorThrowsStdException::ConstructorThrowsStdException() {}
-ConstructorThrowsStdException::ConstructorThrowsStdException(int) {}
+ConstructorThrowsStdException::ConstructorThrowsStdException(int /*DontCare*/) {}
 #endif

@@ -5,7 +5,7 @@
 class Enums
 {
 public:
-	enum COLOUR{GREEN=0,INVALID};
+	enum COLOUR{GREEN = 0, INVALID};
 	Enums()
 		:m_enum(INVALID)
 	{}

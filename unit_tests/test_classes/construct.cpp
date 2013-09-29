@@ -16,9 +16,7 @@ class Construct : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(new_luaCreatesInstanceThenReturnsIt_returnIsNoneNull);
 	CPPUNIT_TEST(new_luaCreatesInstance_noException);
 
-
 	CPPUNIT_TEST(register_noDefaultConstructor_compiles);
-
 
 	CPPUNIT_TEST(new_CallingIntParamConstructor_runChunkReturnsTrue);
 	CPPUNIT_TEST(new_CallingIntParamConstructorPassingInitialisedValue_InstanceHasIntSetToInitialisedValue);
@@ -30,12 +28,9 @@ class Construct : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(new_CallingCharConstPtrParamConstructor_runChunkReturnsTrue);
 	CPPUNIT_TEST(new_CallingCharConstPtrParamConstructorPassingInitialisedValue_InstanceHasStringSetToInitialisedValue);
 
-
 	CPPUNIT_TEST(new_twoParamConstructorIntAndBool_runChunkReturnsTrue);
 	CPPUNIT_TEST(new_twoParamConstructorIntAndBool_InstanceHasIntValueSet);
 	CPPUNIT_TEST(new_twoParamConstructorIntAndBool_InstanceHasBoolValueSet);
-
-
 
 	CPPUNIT_TEST(new_oneParamConstructorStub1_callReturnsTrue);
 	CPPUNIT_TEST(new_oneParamConstructorStub1_instanceMemberIsSet);
@@ -48,8 +43,6 @@ class Construct : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(new_oneParamStub3WhichIsConst_callReturnsTrue);
 	CPPUNIT_TEST(new_oneParamStub3WhichIsConst_constStub3ConstructorCalled);
 
-
-
 	CPPUNIT_TEST(new_constructorTakesLuaFuncRef_callReturnsTrue);
 	CPPUNIT_TEST(new_constructorTakesLuaFuncRef_FuncRefMemberIsValid);
 
@@ -57,7 +50,6 @@ class Construct : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(new_constructorTakesLuaTable_tableMemberIsValid);
 
 	CPPUNIT_TEST(new_constructorTakesLuaTableRef_callReturnsTrue);
-
 
 
 #if OOLUA_STORE_LAST_ERROR	== 1
@@ -93,8 +85,6 @@ class Construct : public CPPUNIT_NS::TestFixture
 	CPPUNIT_TEST(new_constructorTakesLuaState_memberStateEqualsInput);
 	CPPUNIT_TEST(new_constructorTakesIntAndLuaState_memberStateEqualsInput);
 	CPPUNIT_TEST(new_constructorTakesIntAndLuaState_memberIntEqualsInput);
-
-
 	CPPUNIT_TEST_SUITE_END();
 
 	OOLUA::Script * m_lua;
@@ -121,12 +111,14 @@ class Construct : public CPPUNIT_NS::TestFixture
 	};
 	void pull_ParamWrapper(ParamConstructorWrapper& wrap)
 	{
-		OOLUA::pull(*m_lua,wrap.instance);
+		OOLUA::pull(*m_lua, wrap.instance);
 		wrap.set_ptr_to_auto_delete();
 	}
 public:
-    Construct():m_lua(0){}
-    LVD_NOCOPY(Construct)
+	Construct()
+		: m_lua(0)
+	{}
+	LVD_NOCOPY(Construct)
 	/*[MinimalProxyClassRegister]*/
 	void setUp()
 	{
@@ -144,7 +136,7 @@ public:
 		/**[ExampleCppAcquirePtr]*/
 		m_lua->run_chunk("return Stub1.new()");
 		OOLUA::cpp_acquire_ptr<Stub1*> res;
-		OOLUA::pull(*m_lua,res);
+		OOLUA::pull(*m_lua, res);
 		CPPUNIT_ASSERT_EQUAL(true, res.m_ptr != 0);
 		delete res.m_ptr;
 		/**[ExampleCppAcquirePtr]*/
@@ -152,7 +144,7 @@ public:
 	/*[MinimalProxyClassUsage]*/
 	void new_luaCreatesInstance_noException()
 	{
-		CPPUNIT_ASSERT_NO_THROW( m_lua->run_chunk("Stub1.new()") );
+		CPPUNIT_ASSERT_NO_THROW(m_lua->run_chunk("Stub1.new()"));
 	}
 	/**[MinimalProxyClassUsage]*/
 
@@ -163,93 +155,96 @@ public:
 				"return Stub1.new() \n"
 			"end");
 		lua->run_chunk(foo);
-		CPPUNIT_ASSERT_NO_THROW( lua->call("createAndReturn") );
+		CPPUNIT_ASSERT_NO_THROW(lua->call("createAndReturn"));
 	}
 
 	void register_noDefaultConstructor_compiles()
 	{
 		m_lua->register_class<ParamConstructor>();
 	}
+
 	void new_CallingIntParamConstructor_runChunkReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
 		bool result = m_lua->run_chunk("ParamConstructor.new(1)");
-		CPPUNIT_ASSERT_EQUAL(true,result);
-
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
+
 	void new_CallingIntParamConstructorPassingInitialisedValue_InstanceHasIntSetToInitialisedValue()
 	{
-		m_lua->call(register_and_create_one_param_constructor(),ParamValues::int_set);
+		m_lua->call(register_and_create_one_param_constructor(), ParamValues::int_set);
 		ParamConstructorWrapper wrap;
 		pull_ParamWrapper(wrap);
-		CPPUNIT_ASSERT_EQUAL(ParamValues::int_set,wrap.instance.m_ptr->m_int);
+		CPPUNIT_ASSERT_EQUAL(ParamValues::int_set, wrap.instance.m_ptr->m_int);
 	}
+
 	void new_CallingBoolParamConstructor_runChunkReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
 		bool result = m_lua->run_chunk("ParamConstructor.new(true)");
-		CPPUNIT_ASSERT_EQUAL(true,result);
-
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
 
 	void new_CallingBoolParamConstructorPassingInitialisedValue_InstanceHasBoolSetToInitialisedValue()
 	{
-		m_lua->call(register_and_create_one_param_constructor(),ParamValues::bool_set);
+		m_lua->call(register_and_create_one_param_constructor(), ParamValues::bool_set);
 		ParamConstructorWrapper wrap;
 		pull_ParamWrapper(wrap);
-		CPPUNIT_ASSERT_EQUAL(ParamValues::bool_set,wrap.instance.m_ptr->m_bool);
+		CPPUNIT_ASSERT_EQUAL(ParamValues::bool_set, wrap.instance.m_ptr->m_bool);
 	}
 
 	void new_CallingIntPtrParamConstructor_runChunkReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
 		bool result = m_lua->run_chunk("ParamConstructor.new(1)");
-		CPPUNIT_ASSERT_EQUAL(true,result);
-
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
+
 	void new_CallingIntPtrParamConstructorPassingInitialisedValue_InstanceHasIntPtrSetToInitialisedValue()
 	{
-		m_lua->call(register_and_create_one_param_constructor(),ParamValues::int_set);
+		m_lua->call(register_and_create_one_param_constructor(), ParamValues::int_set);
 		ParamConstructorWrapper wrap;
 		pull_ParamWrapper(wrap);
-		CPPUNIT_ASSERT_EQUAL(ParamValues::int_set,wrap.instance.m_ptr->m_int_ptr);
+		CPPUNIT_ASSERT_EQUAL(ParamValues::int_set, wrap.instance.m_ptr->m_int_ptr);
 	}
-
-
 
 
 	void new_CallingCharConstPtrParamConstructor_runChunkReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
 		bool result = m_lua->run_chunk("ParamConstructor.new(\"do not care\")");
-		CPPUNIT_ASSERT_EQUAL(true,result);
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
+
 	void new_CallingCharConstPtrParamConstructorPassingInitialisedValue_InstanceHasStringSetToInitialisedValue()
 	{
-		m_lua->call(register_and_create_one_param_constructor(),ParamValues::c_string_set);
+		m_lua->call(register_and_create_one_param_constructor(), ParamValues::c_string_set);
 		ParamConstructorWrapper wrap;
 		pull_ParamWrapper(wrap);
-		CPPUNIT_ASSERT_EQUAL(ParamValues::string_set,wrap.instance.m_ptr->m_string);
+		CPPUNIT_ASSERT_EQUAL(ParamValues::string_set, wrap.instance.m_ptr->m_string);
 	}
+
 	void new_twoParamConstructorIntAndBool_runChunkReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
 		bool result = m_lua->run_chunk("ParamConstructor.new(1,true)");
-		CPPUNIT_ASSERT_EQUAL(true,result);
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
+
 	void new_twoParamConstructorIntAndBool_InstanceHasIntValueSet()
 	{
-		m_lua->call(register_and_create_two_param_constructor(),ParamValues::int_set,ParamValues::bool_set);
+		m_lua->call(register_and_create_two_param_constructor(), ParamValues::int_set, ParamValues::bool_set);
 		ParamConstructorWrapper wrap;
 		pull_ParamWrapper(wrap);
-		CPPUNIT_ASSERT_EQUAL(ParamValues::int_set,wrap.instance.m_ptr->m_int);
+		CPPUNIT_ASSERT_EQUAL(ParamValues::int_set, wrap.instance.m_ptr->m_int);
 	}
+
 	void new_twoParamConstructorIntAndBool_InstanceHasBoolValueSet()
 	{
-		m_lua->call(register_and_create_two_param_constructor(),ParamValues::int_set,ParamValues::bool_set);
+		m_lua->call(register_and_create_two_param_constructor(), ParamValues::int_set, ParamValues::bool_set);
 		ParamConstructorWrapper wrap;
 		pull_ParamWrapper(wrap);
-		CPPUNIT_ASSERT_EQUAL(ParamValues::bool_set,wrap.instance.m_ptr->m_bool);
+		CPPUNIT_ASSERT_EQUAL(ParamValues::bool_set, wrap.instance.m_ptr->m_bool);
 	}
 
 
@@ -257,17 +252,18 @@ public:
 	{
 		m_lua->register_class<Stub1>();
 		Stub1 stub1;
-		bool result = m_lua->call(register_and_create_one_param_constructor(),&stub1);
-		CPPUNIT_ASSERT_EQUAL(true,result);
+		bool result = m_lua->call(register_and_create_one_param_constructor(), &stub1);
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
+
 	void new_oneParamConstructorStub1_instanceMemberIsSet()
 	{
 		m_lua->register_class<Stub1>();
 		Stub1 stub;
-		m_lua->call(register_and_create_one_param_constructor(),&stub);
+		m_lua->call(register_and_create_one_param_constructor(), &stub);
 		ParamConstructorWrapper wrap;
 		pull_ParamWrapper(wrap);
-		CPPUNIT_ASSERT_EQUAL(&stub,wrap.instance.m_ptr->m_stub1);
+		CPPUNIT_ASSERT_EQUAL(&stub, wrap.instance.m_ptr->m_stub1);
 	}
 
 	void new_twoParamConstructorStub1AndStub2_callReturnsTrue()
@@ -276,46 +272,45 @@ public:
 		m_lua->register_class<Stub2>();
 		Stub1 stub1;
 		Stub2 stub2;
-		bool result = m_lua->call(register_and_create_two_param_constructor(),&stub1,&stub2);
-		CPPUNIT_ASSERT_EQUAL(true,result);
+		bool result = m_lua->call(register_and_create_two_param_constructor(), &stub1, &stub2);
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
-
 
 
 	void new_oneParamConstructorStub2ByValue_callReturnsTrue()
 	{
 		m_lua->register_class<Stub2>();
 		Stub2 stub;
-		bool result = m_lua->call(register_and_create_one_param_constructor(),&stub);
-		CPPUNIT_ASSERT_EQUAL(true,result);
+		bool result = m_lua->call(register_and_create_one_param_constructor(), &stub);
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
 
 	void new_oneParamConstructorStub2ByValue_instanceMemberIsSet()
 	{
 		m_lua->register_class<Stub2>();
 		Stub2 stub;
-		m_lua->call(register_and_create_one_param_constructor(),&stub);
+		m_lua->call(register_and_create_one_param_constructor(), &stub);
 		ParamConstructorWrapper wrap;
 		pull_ParamWrapper(wrap);
-		CPPUNIT_ASSERT_EQUAL(ParamValues::bool_set,wrap.instance.m_ptr->m_stub_passed_by_value);
+		CPPUNIT_ASSERT_EQUAL(ParamValues::bool_set, wrap.instance.m_ptr->m_stub_passed_by_value);
 	}
+
 	void new_oneParamStub3WhichIsConst_callReturnsTrue()
 	{
 		m_lua->register_class<Stub3>();
 		Stub3 stub;
-		bool result = m_lua->call(register_and_create_one_param_constructor(),(Stub3 const*)&stub);
-		CPPUNIT_ASSERT_EQUAL(true,result);
+		bool result = m_lua->call(register_and_create_one_param_constructor(), (Stub3 const*)&stub);
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
 	void new_oneParamStub3WhichIsConst_constStub3ConstructorCalled()
 	{
 		m_lua->register_class<Stub3>();
 		Stub3 stub;
-		m_lua->call(register_and_create_one_param_constructor(),(Stub3 const*)&stub);
+		m_lua->call(register_and_create_one_param_constructor(), (Stub3 const*)&stub);
 		ParamConstructorWrapper wrap;
 		pull_ParamWrapper(wrap);
-		CPPUNIT_ASSERT_EQUAL(ParamValues::bool_set,wrap.instance.m_ptr->m_const_stub3);
+		CPPUNIT_ASSERT_EQUAL(ParamValues::bool_set, wrap.instance.m_ptr->m_const_stub3);
 	}
-
 
 
 	void new_constructorTakesLuaFuncRef_callReturnsTrue()
@@ -326,8 +321,9 @@ public:
 							"ParamConstructor.new(f) "
 						 "end");
 		bool result = m_lua->call("foo");
-		CPPUNIT_ASSERT_EQUAL(true,result);
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
+
 	void new_constructorTakesLuaFuncRef_FuncRefMemberIsValid()
 	{
 		m_lua->register_class<ParamConstructor>();
@@ -339,8 +335,9 @@ public:
 		ParamConstructorWrapper p;
 		pull_ParamWrapper(p);
 		bool isValid = p.instance.m_ptr->m_func_ref.valid();
-		CPPUNIT_ASSERT_EQUAL(true,isValid);
+		CPPUNIT_ASSERT_EQUAL(true, isValid);
 	}
+
 	void new_constructorTakesLuaTable_callReturnsTrue()
 	{
 		m_lua->register_class<ParamConstructor>();
@@ -349,7 +346,7 @@ public:
 						 "ParamConstructor.new(t) "
 						 "end");
 		bool result = m_lua->call("foo");
-		CPPUNIT_ASSERT_EQUAL(true,result);
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
 
 	void new_constructorTakesLuaTable_tableMemberIsValid()
@@ -362,8 +359,9 @@ public:
 		m_lua->call("foo");
 		ParamConstructorWrapper wrap;
 		pull_ParamWrapper(wrap);
-		CPPUNIT_ASSERT_EQUAL(true,wrap.instance.m_ptr->m_table.valid() );
+		CPPUNIT_ASSERT_EQUAL(true, wrap.instance.m_ptr->m_table.valid() );
 	}
+
 	void new_constructorTakesLuaTableRef_callReturnsTrue()
 	{
 		m_lua->register_class<TableRefConstructor>();
@@ -372,25 +370,24 @@ public:
 						 "TableRefConstructor.new(t) "
 						 "end");
 		bool result = m_lua->call("foo");
-		CPPUNIT_ASSERT_EQUAL(true,result);
+		CPPUNIT_ASSERT_EQUAL(true, result);
 	}
 
 
-
-#if OOLUA_STORE_LAST_ERROR ==1
+#if OOLUA_STORE_LAST_ERROR == 1
 	void new_twoParamConstructorIntAndBoolPassedStringAsFirstParam_runChunkReturnsFalse()
 	{
 		m_lua->register_class<ParamConstructor>();
 		bool result = m_lua->run_chunk("ParamConstructor.new(\"dont care\",true)");
-		CPPUNIT_ASSERT_EQUAL(false,result);
+		CPPUNIT_ASSERT_EQUAL(false, result);
 	}
 
 	void new_oneParamConstructorPassingAnInvalidParam_callReturnsFalse()
 	{
 		m_lua->register_class<InvalidStub>();
 		InvalidStub stub;
-		bool result = m_lua->call(register_and_create_one_param_constructor(),&stub);
-		CPPUNIT_ASSERT_EQUAL(false,result);
+		bool result = m_lua->call(register_and_create_one_param_constructor(), &stub);
+		CPPUNIT_ASSERT_EQUAL(false, result);
 	}
 
 	void new_twoParamConstructorStub1AndInvalid_callReturnsFalse()
@@ -399,22 +396,22 @@ public:
 		m_lua->register_class<InvalidStub>();
 		Stub1 stub1;
 		InvalidStub stub2;
-		bool result = m_lua->call(register_and_create_two_param_constructor(),&stub1,&stub2);
-		CPPUNIT_ASSERT_EQUAL(false,result);
+		bool result = m_lua->call(register_and_create_two_param_constructor(), &stub1, &stub2);
+		CPPUNIT_ASSERT_EQUAL(false, result);
 	}
 
 	void new_callNewOnTypeWithNoPublicConstructors_runChunkReturnsFalse()
 	{
 		m_lua->register_class<WithOutConstructors>();
 		bool result = m_lua->run_chunk("WithOutConstructors.new()");
-		CPPUNIT_ASSERT_EQUAL(false,result);
+		CPPUNIT_ASSERT_EQUAL(false, result);
 	}
 
 	void new_CallingDefaultConstructorOnTypeWithOutOne_runChunkReturnsFalse()
 	{
 		m_lua->register_class<ParamConstructor>();
 		bool result = m_lua->run_chunk("ParamConstructor.new()");
-		CPPUNIT_ASSERT_EQUAL(false,result);
+		CPPUNIT_ASSERT_EQUAL(false, result);
 	}
 
 	//nil is not convertable to a type in a constructor
@@ -426,7 +423,7 @@ public:
 						 "TableRefConstructor.new(t) "
 						 "end");
 		bool result = m_lua->call("foo");
-		CPPUNIT_ASSERT_EQUAL(false,result);
+		CPPUNIT_ASSERT_EQUAL(false, result);
 	}
 
 	void new_constructorTakesLuaTableYetPassedNil_callReturnsFalse()
@@ -437,13 +434,13 @@ public:
 						 "ParamConstructor.new(t) "
 						 "end");
 		bool result = m_lua->call("foo");
-		CPPUNIT_ASSERT_EQUAL(false,result);
+		CPPUNIT_ASSERT_EQUAL(false, result);
 	}
 
 	void new_defaultConstructorCalledWithParameter_runChunkReturnsFalse()
 	{
 		m_lua->register_class<Stub1>();
-		CPPUNIT_ASSERT_EQUAL(false,m_lua->run_chunk("Stub1.new(1)"));
+		CPPUNIT_ASSERT_EQUAL(false, m_lua->run_chunk("Stub1.new(1)"));
 	}
 
 #endif
@@ -454,16 +451,16 @@ public:
 	void new_twoParamConstructorIntAndBoolPassedStringAsFirstParam_throwsRuntimeError()
 	{
 		m_lua->register_class<ParamConstructor>();
-		CPPUNIT_ASSERT_THROW ( (m_lua->run_chunk("ParamConstructor.new(\"dont care\",true)"))
-							  ,OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW((m_lua->run_chunk("ParamConstructor.new(\"dont care\",true)"))
+								, OOLUA::Runtime_error);
 	}
 
 	void new_oneParamConstructorPassingAnInvalidParam_throwsRuntimeError()
 	{
 		m_lua->register_class<InvalidStub>();
 		InvalidStub stub;
-		CPPUNIT_ASSERT_THROW( (m_lua->call(register_and_create_one_param_constructor(),&stub))
-							 ,OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW((m_lua->call(register_and_create_one_param_constructor(), &stub))
+								, OOLUA::Runtime_error);
 	}
 
 	void new_twoParamConstructorStub1AndInvalid_throwsRuntimeError()
@@ -472,21 +469,21 @@ public:
 		m_lua->register_class<InvalidStub>();
 		Stub1 stub1;
 		InvalidStub stub2;
-		CPPUNIT_ASSERT_THROW( (m_lua->call(register_and_create_two_param_constructor(),&stub1,&stub2) )
-							 ,OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW((m_lua->call(register_and_create_two_param_constructor(), &stub1, &stub2) )
+								, OOLUA::Runtime_error);
 	}
 
 	void new_callNewOnTypeWithNoPublicConstructors_throwsRuntimeError()
 	{
 		m_lua->register_class<WithOutConstructors>();
-		CPPUNIT_ASSERT_THROW( (m_lua->run_chunk("WithOutConstructors.new()")), OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW((m_lua->run_chunk("WithOutConstructors.new()")), OOLUA::Runtime_error);
 	}
 
 	void new_CallingDefaultConstructorOnTypeWithOutOne_throwsRuntimeError()
 	{
 		m_lua->register_class<ParamConstructor>();
-		CPPUNIT_ASSERT_THROW( (m_lua->run_chunk("ParamConstructor.new()"))
-							 ,OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW((m_lua->run_chunk("ParamConstructor.new()"))
+								, OOLUA::Runtime_error);
 	}
 
 	//nil is not convertable to a type in a constructor
@@ -497,8 +494,9 @@ public:
 						 "local t = nil "
 						 "TableRefConstructor.new(t) "
 						 "end");
-		CPPUNIT_ASSERT_THROW((m_lua->call("foo")),OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW((m_lua->call("foo")), OOLUA::Runtime_error);
 	}
+
 	void new_constructorTakesLuaTableYetPassedNil_throwsRuntimeError()
 	{
 		m_lua->register_class<ParamConstructor>();
@@ -506,41 +504,45 @@ public:
 						 "local t = nil "
 						 "ParamConstructor.new(t) "
 						 "end");
-		CPPUNIT_ASSERT_THROW((m_lua->call("foo")),OOLUA::Runtime_error);
+		CPPUNIT_ASSERT_THROW((m_lua->call("foo")), OOLUA::Runtime_error);
 	}
+
 	void new_defaultConstructorThrowsException_pcallReturnsFalse()
 	{
 		m_lua->register_class<DefaultConstructorThrowsStdException>();
 		CPPUNIT_ASSERT_NO_THROW
 		(
-			m_lua->run_chunk("assert(false == pcall(DefaultConstructorThrowsStdException.new) )");
-		);
+			m_lua->run_chunk("assert(false == pcall(DefaultConstructorThrowsStdException.new))");
+		); //NOLINT(whitespace/parens)
 	}
+
 	void new_defaultConstructorThrowsAnStdException_runChunkThrowsOOLuaRuntimeError()
 	{
 		m_lua->register_class<DefaultConstructorThrowsStdException>();
 		CPPUNIT_ASSERT_THROW
 		(
-		 m_lua->run_chunk("DefaultConstructorThrowsStdException.new()");
-		 ,OOLUA::Runtime_error
-		 );
+			m_lua->run_chunk("DefaultConstructorThrowsStdException.new()");
+			, OOLUA::Runtime_error
+		); //NOLINT(whitespace/parens)
 	}
+
 	void new_constructorThrowsAnException_pcallReturnsError()
 	{
 		m_lua->register_class<ConstructorThrowsStdException>();
 		CPPUNIT_ASSERT_NO_THROW
 		(
 			m_lua->run_chunk("assert(false == pcall(ConstructorThrowsStdException.new) )");
-		);
+		); //NOLINT(whitespace/parens)
 	}
+
 	void new_constructorThrowsAnStdException_runChunkThrowsOOLuaRuntimeError()
 	{
 		m_lua->register_class<ConstructorThrowsStdException>();
 		CPPUNIT_ASSERT_THROW
 		(
 			m_lua->run_chunk("ConstructorThrowsStdException.new()");
-			,OOLUA::Runtime_error
-		);
+			, OOLUA::Runtime_error
+		); //NOLINT(whitespace/parens)
 	}
 
 	void new_constructorWithParamThrowsAnException_pcallReturnsError()
@@ -549,25 +551,27 @@ public:
 		CPPUNIT_ASSERT_NO_THROW
 		(
 			m_lua->run_chunk("assert(false == pcall(ConstructorThrowsStdException.new,1) )");
-		);
+		); //NOLINT(whitespace/parens)
 	}
+
 	void new_constructorWithParamThrowsAnStdException_runChunkThrowsOOLuaRuntimeError()
 	{
 		m_lua->register_class<ConstructorThrowsStdException>();
 		CPPUNIT_ASSERT_THROW
 		(
 			m_lua->run_chunk("ConstructorThrowsStdException.new(1)");
-			,OOLUA::Runtime_error
-		);
+			, OOLUA::Runtime_error
+		); //NOLINT(whitespace/parens)
 	}
+
 	void new_defaultConstructorCalledWithParameter_runChunkThrowsOOLuaRuntimeError()
 	{
 		m_lua->register_class<Stub1>();
 		CPPUNIT_ASSERT_THROW
 		(
 			m_lua->run_chunk("Stub1.new(1)");
-			,OOLUA::Runtime_error
-		);
+			, OOLUA::Runtime_error
+		); //NOLINT(whitespace/parens)
 	}
 #endif
 
@@ -579,8 +583,8 @@ public:
 						 "end");
 		OOLUA::cpp_acquire_ptr<LuaStateConstructors*> stateCtor;
 		m_lua->call("foo");
-		OOLUA::pull(*m_lua,stateCtor);
-		CPPUNIT_ASSERT_EQUAL(m_lua->state() ,stateCtor.m_ptr->lua);
+		OOLUA::pull(*m_lua, stateCtor);
+		CPPUNIT_ASSERT_EQUAL(m_lua->state(), stateCtor.m_ptr->lua);
 		delete stateCtor.m_ptr;
 	}
 
@@ -592,8 +596,8 @@ public:
 						 "end");
 		OOLUA::cpp_acquire_ptr<LuaStateConstructors*> stateCtor;
 		m_lua->call("foo");
-		OOLUA::pull(*m_lua,stateCtor);
-		CPPUNIT_ASSERT_EQUAL(m_lua->state(),stateCtor.m_ptr->lua);
+		OOLUA::pull(*m_lua, stateCtor);
+		CPPUNIT_ASSERT_EQUAL(m_lua->state(), stateCtor.m_ptr->lua);
 		delete stateCtor.m_ptr;
 	}
 
@@ -604,12 +608,11 @@ public:
 						 "return LuaStateConstructors.new(i) "
 						 "end");
 		OOLUA::cpp_acquire_ptr<LuaStateConstructors*> stateCtor;
-		m_lua->call("foo",ParamValues::int_set);
-		OOLUA::pull(*m_lua,stateCtor);
-		CPPUNIT_ASSERT_EQUAL(ParamValues::int_set,stateCtor.m_ptr->m_int);
+		m_lua->call("foo", ParamValues::int_set);
+		OOLUA::pull(*m_lua, stateCtor);
+		CPPUNIT_ASSERT_EQUAL(ParamValues::int_set, stateCtor.m_ptr->m_int);
 		delete stateCtor.m_ptr;
 	}
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION( Construct );
-
+CPPUNIT_TEST_SUITE_REGISTRATION(Construct);

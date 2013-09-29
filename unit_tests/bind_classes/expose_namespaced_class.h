@@ -7,11 +7,9 @@
 namespace OOLUA
 {
 	typedef TEST_NAMESPACED_CLASS::Namespaced Namespaced;
-}
+} // namespace OOLUA
 
 OOLUA_PROXY(Namespaced)
 OOLUA_PROXY_END
 
 #endif
-
-

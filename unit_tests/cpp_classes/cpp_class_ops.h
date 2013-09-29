@@ -6,12 +6,12 @@
 class Class_ops
 {
 public:
-	Class_ops(int const & i ):m_i(i){}
+	Class_ops(int const & i):m_i(i){}
 	Class_ops():m_i(0){}
-	Class_ops( Class_ops const& rhs)
-        :m_i(rhs.m_i)
+	Class_ops(Class_ops const& rhs)
+		:m_i(rhs.m_i)
 	{}
-	
+
 	int const& geti()const
 	{
 		return m_i;

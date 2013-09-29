@@ -9,5 +9,4 @@ struct Stub3 {};
 struct InvalidStub {};
 struct Return_double{};
 
-
 #endif

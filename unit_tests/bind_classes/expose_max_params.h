@@ -5,8 +5,8 @@
 #	include "oolua.h"
 
 OOLUA_PROXY(VoidReturnIntParam)
-	OOLUA_TAGS( Abstract )
-	OOLUA_MFUNC(one)	
+	OOLUA_TAGS(Abstract)
+	OOLUA_MFUNC(one)
 	OOLUA_MFUNC(two)
 	OOLUA_MFUNC(three)
 	OOLUA_MFUNC(four)

@@ -6,44 +6,42 @@
 
 /*[ExposeAbstract1]*/
 OOLUA_PROXY(Abstract1)
-	OOLUA_TAGS( Abstract )
+	OOLUA_TAGS(Abstract)
 	OOLUA_MFUNC(virtualVoidParam3Int)
 	OOLUA_MFUNC(func1)
 OOLUA_PROXY_END
 /*[ExposeAbstract1]*/
 
 OOLUA_PROXY(Abstract2)
-	OOLUA_TAGS( Abstract )
+	OOLUA_TAGS(Abstract)
 	OOLUA_MFUNC(func2_1)
 	OOLUA_MFUNC_CONST(constVirtualFunction)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Abstract3)
-	OOLUA_TAGS( Abstract )
+	OOLUA_TAGS(Abstract)
 	OOLUA_MFUNC(func3_1)
 OOLUA_PROXY_END
 
 /*[ExposeDerived1Abstract1]*/
-OOLUA_PROXY(Derived1Abstract1,Abstract1)
+OOLUA_PROXY(Derived1Abstract1, Abstract1)
 OOLUA_PROXY_END
 /*[ExposeDerived1Abstract1]*/
 
-OOLUA_PROXY(TwoAbstractBases,Abstract1,Abstract2)
+OOLUA_PROXY(TwoAbstractBases, Abstract1, Abstract2)
 	OOLUA_MFUNC_CONST(constVirtualFunction)
 OOLUA_PROXY_END
 
 
-OOLUA_PROXY(DerivedFromTwoAbstractBasesAndAbstract3,TwoAbstractBases,Abstract3)
+OOLUA_PROXY(DerivedFromTwoAbstractBasesAndAbstract3, TwoAbstractBases, Abstract3)
 OOLUA_PROXY_END
-
-
 
 namespace BASE_HELPERS
 {
 	//NOTE: Base class order is defined and used in OOLUA code.
 	//Immediate bases come first in the order defined in the OOLUA_BASES_START to OOLUA_BASES_END block
 	//then the bases of these base classes again in the order they were defined.
-	inline std::vector<std::string>allBasesOfDerivedFromTwoAbstractBasesAndAbstract3()
+	inline std::vector<std::string> allBasesOfDerivedFromTwoAbstractBasesAndAbstract3()
 	{
 		std::vector<std::string> v;
 		v.push_back("TwoAbstractBases");
@@ -64,5 +62,6 @@ namespace BASE_HELPERS
 		v.push_back("Abstract2");
 		return v;
 	}
-}
+} // namespace BASE_HELPERS
+
 #endif

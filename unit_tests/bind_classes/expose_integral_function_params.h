@@ -7,7 +7,7 @@
 
 
 OOLUA_PROXY(IntegerFunctionInTraits)
-	OOLUA_TAGS( Abstract )
+	OOLUA_TAGS(Abstract)
 	OOLUA_MFUNC(value)
 	OOLUA_MFUNC(ref)
 	OOLUA_MFUNC(ptr)
@@ -21,18 +21,18 @@ OOLUA_PROXY_END
 OOLUA_PROXY(IntegerFunctionInOutTraits)
 	OOLUA_TAGS(Abstract)
 	/**[IntegerInOutOutTraitRef]*/
-	OOLUA_MEM_FUNC(void,ref,in_out_p<int&>)
+	OOLUA_MEM_FUNC(void, ref, in_out_p<int&>)
 	/**[IntegerInOutOutTraitRef]*/
-	OOLUA_MEM_FUNC(void,ptr,in_out_p<int*>)
-	OOLUA_MEM_FUNC(void,refPtr,in_out_p<int*&>)
-	OOLUA_MEM_FUNC(void,twoRefs,in_out_p<int&>,in_out_p<int&>)
+	OOLUA_MEM_FUNC(void, ptr, in_out_p<int*>)
+	OOLUA_MEM_FUNC(void, refPtr, in_out_p<int*&>)
+	OOLUA_MEM_FUNC(void, twoRefs, in_out_p<int&>, in_out_p<int&>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(IntegerFunctionOutTraits)
 	OOLUA_TAGS(Abstract)
-	OOLUA_MEM_FUNC(void,ref,out_p<int&>)
-	OOLUA_MEM_FUNC(void,ptr,out_p<int*>)
-	OOLUA_MEM_FUNC(void,refPtr,out_p<int*&>)
+	OOLUA_MEM_FUNC(void, ref, out_p<int&>)
+	OOLUA_MEM_FUNC(void, ptr, out_p<int*>)
+	OOLUA_MEM_FUNC(void, refPtr, out_p<int*&>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CharFunctionInTraits)

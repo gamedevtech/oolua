@@ -4,7 +4,7 @@
 #	include "oolua.h"
 #	include "expose_class_enums.h"
 
-class ClassMemberEnums : public CppUnit::TestFixture 
+class ClassMemberEnums : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(ClassMemberEnums);
 	CPPUNIT_TEST(enumIsRegistered_safeAtReturnsTrue);
@@ -14,7 +14,9 @@ class ClassMemberEnums : public CppUnit::TestFixture
 	CPPUNIT_TEST_SUITE_END();
 	OOLUA::Script* m_lua;
 public:
-	ClassMemberEnums():m_lua(0){}
+	ClassMemberEnums()
+		: m_lua(0)
+	{}
 	void setUp()
 	{
 		m_lua = new OOLUA::Script;
@@ -26,40 +28,39 @@ public:
 	void enumIsRegistered_safeAtReturnsTrue()
 	{
 		m_lua->register_class<ClassWithEnums>();
-		OOLUA::Table t(*m_lua,OOLUA::Proxy_class<ClassWithEnums>::class_name);
-		int value=-1;
-		bool result = t.safe_at("ENUM_0",value);
+		OOLUA::Table t(*m_lua, OOLUA::Proxy_class<ClassWithEnums>::class_name);
+		int value = -1;
+		bool result = t.safe_at("ENUM_0", value);
 		CPPUNIT_ASSERT_EQUAL(true , result);
 	}
-	
-	
+
+
 	void queriesKnownValue_enum0AsInt_safeAtreturnsEnum0()
 	{
 		m_lua->register_class<ClassWithEnums>();
-		OOLUA::Table t(*m_lua,OOLUA::Proxy_class<ClassWithEnums>::class_name);
-		int value=-1;
-		t.safe_at("ENUM_0",value);
-		CPPUNIT_ASSERT_EQUAL((int)ClassWithEnums::ENUM_0 , value);
+		OOLUA::Table t(*m_lua, OOLUA::Proxy_class<ClassWithEnums>::class_name);
+		int value = -1;
+		t.safe_at("ENUM_0", value);
+		CPPUNIT_ASSERT_EQUAL((int)ClassWithEnums::ENUM_0, value); // NOLINT(readability/casting)
 	}
-	
+
 	void queriesKnownValue_enum0Enum_safeAtreturnsEnum0()
 	{
 		m_lua->register_class<ClassWithEnums>();
-		OOLUA::Table t(*m_lua,OOLUA::Proxy_class<ClassWithEnums>::class_name);
+		OOLUA::Table t(*m_lua, OOLUA::Proxy_class<ClassWithEnums>::class_name);
 		ClassWithEnums::ClassEnum return_value = ClassWithEnums::ENUM_1;
-		t.safe_at("ENUM_0",return_value);
-		CPPUNIT_ASSERT_EQUAL(ClassWithEnums::ENUM_0 , return_value);
+		t.safe_at("ENUM_0", return_value);
+		CPPUNIT_ASSERT_EQUAL(ClassWithEnums::ENUM_0, return_value);
 	}
-	
+
 	void luaReturnsEnum0_resultIsEqualToEnum0()
 	{
 		m_lua->register_class<ClassWithEnums>();
 		m_lua->run_chunk("return ClassWithEnums.ENUM_0");
 		ClassWithEnums::ClassEnum return_value = ClassWithEnums::ENUM_1;
-		OOLUA::pull(*m_lua,return_value);
-		CPPUNIT_ASSERT_EQUAL(ClassWithEnums::ENUM_0 , return_value);
+		OOLUA::pull(*m_lua, return_value);
+		CPPUNIT_ASSERT_EQUAL(ClassWithEnums::ENUM_0, return_value);
 	}
-
-
 };
+
 CPPUNIT_TEST_SUITE_REGISTRATION(ClassMemberEnums);

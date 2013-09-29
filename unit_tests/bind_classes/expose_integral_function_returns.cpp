@@ -3,9 +3,7 @@
 
 
 OOLUA_EXPORT_FUNCTIONS(CStringFunctionReturn
-					   ,ptr
-					   ,ptrConst
-					   )
+						, ptr
+						, ptrConst)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(CStringFunctionReturn)
-

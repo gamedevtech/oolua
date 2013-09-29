@@ -9,14 +9,14 @@ OOLUA_EXPORT_NO_FUNCTIONS(ClassHasStaticFunction)
 //the function being proxied is overloaded, specify more info using a cast
 OOLUA_CFUNC(
 			((void(*)(void))ClassHasStaticFunction::static_function)
-			,oolua_ClassHasStaticFunction_static_function
+			, oolua_ClassHasStaticFunction_static_function
 			)
 
 //the function being proxied is overloaded, use the Expressive OOLUA_C_FUNCTION
 int oolua_ClassHasStaticFunction_static_function_int(lua_State* l)
 {
 	//this function is overloaded
-	OOLUA_C_FUNCTION(void,ClassHasStaticFunction::static_function,int)
+	OOLUA_C_FUNCTION(void, ClassHasStaticFunction::static_function, int)
 }
 /*DealingWithOverloadedStaticOrCFunctions*/
 

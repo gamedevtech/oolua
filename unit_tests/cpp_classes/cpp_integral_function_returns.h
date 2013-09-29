@@ -3,10 +3,9 @@
 
 #	include "cpp_function_returns.h"
 
-
 struct fake_integral_return_specialisation{};
 
-typedef FunctionReturnType<fake_integral_return_specialisation,char> CStringFunctionReturn;
-typedef MockFunctionReturnType<fake_integral_return_specialisation,char> CStringFunctionReturnMock;
+typedef FunctionReturnType<fake_integral_return_specialisation, char> CStringFunctionReturn;
+typedef MockFunctionReturnType<fake_integral_return_specialisation, char> CStringFunctionReturnMock;
 
 #endif

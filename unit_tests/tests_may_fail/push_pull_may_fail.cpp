@@ -6,14 +6,14 @@
 namespace
 {
 	template<typename T>
-	void push_then_pull(OOLUA::Script * lua,T input, T& output)
+	void push_then_pull(OOLUA::Script * lua, T input, T& output)
 	{
-		OOLUA::push(*lua,input);
-		OOLUA::pull(*lua,output);
+		OOLUA::push(*lua, input);
+		OOLUA::pull(*lua, output);
 	}
 	std::string ILP64_and_LP64_fail_message(bool large_number)
 	{
-		return std::string("If you want to use a value this ") +std::string(large_number ? "big" : "small") 
+		return std::string("If you want to use a value this ") + std::string(large_number ? "big" : "small")
 		+ std::string(" with Lua, you will need change some if not all of the following in luaconf.h :\n"
 		"LUA_INTEGER\n"
 		"LUA_NUMBER_DOUBLE \n"
@@ -27,18 +27,18 @@ namespace
 	{
 		T input((std::numeric_limits<T >::max)());
 		T result(0);
-		push_then_pull(lua,input,result);
-		CPPUNIT_ASSERT_EQUAL_MESSAGE(ILP64_and_LP64_fail_message(true),input, result);
+		push_then_pull(lua, input, result);
+		CPPUNIT_ASSERT_EQUAL_MESSAGE(ILP64_and_LP64_fail_message(true), input, result);
 	}
 	template<typename T>
 	void assert_result_equals_numeric_limits_min_plus_one(OOLUA::Script * lua)
 	{
 		T input((std::numeric_limits<T >::min)()+1);
 		T result(0);
-		push_then_pull(lua,input,result);
-		CPPUNIT_ASSERT_EQUAL_MESSAGE(ILP64_and_LP64_fail_message(false),input, result);
+		push_then_pull(lua, input, result);
+		CPPUNIT_ASSERT_EQUAL_MESSAGE(ILP64_and_LP64_fail_message(false), input, result);
 	}
-}
+} // namespace
 
 class PushPullMayFail : public CPPUNIT_NS::TestFixture
 {
@@ -62,22 +62,26 @@ public:
 	{
 		delete m_lua;
 	}
+
 	void pushPull_pushSignedIntMax_pulledValueEqualsSignedIntMax_ILP64dataModelWillFail()
 	{
 		assert_result_equals_numeric_limits_max<int>(m_lua);
 	}
+
 	void pushPull_pushSignedIntMinPlusOne_pulledValueEqualsSignedIntMinPlusOne_ILP64dataModelWillFail()
 	{
 		assert_result_equals_numeric_limits_min_plus_one<int>(m_lua);
 	}
+
 	void pushPull_pushSignedLongMax_pulledValueEqualsSignedLongMax_ILP64andLP64dataModelsWillFail()
 	{
 		assert_result_equals_numeric_limits_max<signed long>(m_lua);
 	}
+
 	void pushPull_pushSignedLongMinPlusOne_pulledValueEqualsSignedLongMinPlusOne_ILP64andLP64dataModelsWillFail()
 	{
 		assert_result_equals_numeric_limits_min_plus_one<signed long>(m_lua);
 	}
 };
 
-CPPUNIT_TEST_SUITE_REGISTRATION( PushPullMayFail );
+CPPUNIT_TEST_SUITE_REGISTRATION(PushPullMayFail);

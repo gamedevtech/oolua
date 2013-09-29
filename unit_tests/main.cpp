@@ -24,7 +24,6 @@ int main(int argc, char** argv)
 		xml->setStyleSheet("report.xsl");
 		runner.setOutputter(xml);
 		runner.addTest( suite );
-		//return runner.run() ? 0 : 1;
 		bool result = runner.run();
 		return !result;
 #	else

@@ -7,17 +7,17 @@
 #	include "lua_table.h"
 #	include "cpp_function_returns.h"
 
-struct fake_return_default{};//why is this needed out traits?
+struct fake_return_default{};
 
-typedef FunctionReturnType<fake_return_default,OOLUA::Lua_func_ref> FunctionRefReturn;
-typedef MockFunctionReturnType<fake_return_default,OOLUA::Lua_func_ref> FunctionRefReturnMock;
+typedef FunctionReturnType<fake_return_default, OOLUA::Lua_func_ref> FunctionRefReturn;
+typedef MockFunctionReturnType<fake_return_default, OOLUA::Lua_func_ref> FunctionRefReturnMock;
 
-typedef FunctionReturnType<fake_return_default,OOLUA::Lua_table_ref> TableRefReturn;
-typedef MockFunctionReturnType<fake_return_default,OOLUA::Lua_table_ref> TableRefReturnMock;
+typedef FunctionReturnType<fake_return_default, OOLUA::Lua_table_ref> TableRefReturn;
+typedef MockFunctionReturnType<fake_return_default, OOLUA::Lua_table_ref> TableRefReturnMock;
 
 
 
-typedef FunctionReturnType<fake_return_default,OOLUA::Table> TableObjectReturn;
-typedef MockFunctionReturnType<fake_return_default,OOLUA::Table> TableObjectReturnMock;
+typedef FunctionReturnType<fake_return_default, OOLUA::Table> TableObjectReturn;
+typedef MockFunctionReturnType<fake_return_default, OOLUA::Table> TableObjectReturnMock;
 
 #endif

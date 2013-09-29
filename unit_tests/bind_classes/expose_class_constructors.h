@@ -11,14 +11,14 @@ OOLUA_PROXY(ParamConstructor)
 		No_default_constructor
 	)
 	OOLUA_CTORS(
-		OOLUA_CTOR(bool )
-		OOLUA_CTOR(int )
+		OOLUA_CTOR(bool) /*NOLINT(readability/casting)*/
+		OOLUA_CTOR(int) /*NOLINT(readability/casting)*/
 		OOLUA_CTOR(char const*)
-		OOLUA_CTOR(int,bool)
-		OOLUA_CTOR(Stub1 *)
-		OOLUA_CTOR(Stub1 *,Stub2*)
+		OOLUA_CTOR(int, bool)
+		OOLUA_CTOR(Stub1 *) /*NOLINT(readability/casting)*/
+		OOLUA_CTOR(Stub1 *, Stub2*)
 		OOLUA_CTOR(Stub2)
-		OOLUA_CTOR(Stub3*)
+		OOLUA_CTOR(Stub3*) /*NOLINT(readability/casting)*/
 		OOLUA_CTOR(Stub3 const *)
 		OOLUA_CTOR(OOLUA::Lua_func_ref)
 		OOLUA_CTOR(OOLUA::Table)
@@ -49,7 +49,7 @@ OOLUA_PROXY(LuaStateConstructors)
 	)
 	OOLUA_CTORS(
 		OOLUA_CTOR(calling_lua_state)
-		OOLUA_CTOR(int,calling_lua_state)
+		OOLUA_CTOR(int, calling_lua_state)
 	)
 OOLUA_PROXY_END
 
@@ -58,9 +58,8 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(ConstructorThrowsStdException)
 	OOLUA_CTORS(
-		OOLUA_CTOR(int)
+		OOLUA_CTOR(int) /*NOLINT(readability/casting)*/
 	)
 OOLUA_PROXY_END
 
 #endif
-

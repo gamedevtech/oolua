@@ -8,12 +8,19 @@
 class OutParamsTest
 {
 public:
-	enum PARAM_CONSTANTS{Return=-1,Param1=1,Param2=2,Param3=3,Dummy=6500};
+	enum PARAM_CONSTANTS
+	{
+		Return = -1
+		, Param1 = 1
+		, Param2 = 2
+		, Param3 = 3
+		, Dummy = 6500
+	};
     virtual ~OutParamsTest(){}
 	/**[CppTraitInOut]*/
-	virtual void int_ref(int& ) =0;
+	virtual void int_ref(int&) =0;
 	/**[CppTraitInOut]*/
-	virtual void two_int_refs(int& ,int&) =0;
+	virtual void two_int_refs(int&, int&) =0;
 	/**[CppOutTraitExampleFunction]*/
 	virtual void int_ref_change(int& i)
 	{
@@ -34,18 +41,17 @@ public:
 		return Return;
 	}
 	/**[CppTraitReturnOrder]*/
-
 };
 
 class MockOutParamsTest : public OutParamsTest
 {
 public:
-	MOCK_METHOD1(int_ref,void (int&));
-	MOCK_METHOD2(two_int_refs,void(int& i,int&) );
-	MOCK_METHOD1(int_ptr,void (int*));
+	MOCK_METHOD1(int_ref, void(int&));
+	MOCK_METHOD2(two_int_refs, void(int&, int&) );
+	MOCK_METHOD1(int_ptr, void(int*)); //NOLINT(readability/function)
 };
 
-struct MockParamWithStringMember 
+struct MockParamWithStringMember
 {
 	std::string str;
 };
@@ -58,17 +64,16 @@ public:
 	virtual void ptr(Stub1* stub) = 0;
 	virtual void by_value(Stub1 stub) = 0;
 	virtual void ref_param(MockParamWithStringMember& mock) = 0;
-
 };
 /**[CppOutParamsUserData]*/
 
 class MockOutParamsUserData : public OutParamsUserData
 {
 public:
-	MOCK_METHOD1(ref,void (Stub1&));
-	MOCK_METHOD1(ptr,void (Stub1*));
-	MOCK_METHOD1(by_value,void (Stub1));
-	MOCK_METHOD1(ref_param,void (MockParamWithStringMember& ));
+	MOCK_METHOD1(ref, void(Stub1&));
+	MOCK_METHOD1(ptr, void(Stub1*)); //NOLINT(readability/function)
+	MOCK_METHOD1(by_value, void(Stub1));
+	MOCK_METHOD1(ref_param, void(MockParamWithStringMember&));
 };
 
 #endif
