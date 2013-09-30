@@ -58,11 +58,11 @@ namespace OOLUA
 	\brief
 	Struct which is used to call a Lua function.
 	\details
-	\ref Lua_function is a lua_State function caller object, the state in which
-	it calls a function is specified in either the \ref Lua_function(lua_State*)
+	\ref OOLUA::Lua_function "Lua_function" is a lua_State function caller object, the state in which
+	it calls a function is specified in either the \ref OOLUA::Lua_function::Lua_function(lua_State*)
 	"constructor" or via \ref bind_script.
 	This object provides function call operator overloads upto
-	\ref OOLuaConfigLuaParams "\"lua_params\"" count + 1 parameters the first of which being
+	\ref OOLuaConfigLuaParams "\"lua_params\"" count + 1 parameters, the first of which being
 	the function which is to be called and it's type maybe one of:
 		\li std::string A function in Lua's global table
 		\li \ref OOLUA::Lua_func_ref A reference to a function

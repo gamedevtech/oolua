@@ -36,16 +36,17 @@ namespace OOLUA
 		\details
 		The Lua_ref templated class stores a reference using Lua's
 		reference system luaL_ref and luaL_unref. This class also stores the
-		lua_State for which the reference is valid for so that one from a
+		lua_State for which the reference is valid, so that one from a
 		different Lua universe is difficult to be used incorrectly. A reference
-		from the same Lua universe yet a different lua_State is \ref valid
-		to be used in the universe.
+		from the same Lua universe yet a different lua_State is valid to be used
+		in the universe.
 		<p>
 		The class takes ownership of any reference passed either to the
-		\ref Lua_ref(lua_State* const,int const&) "two argument constructor"
-		or the \ref set_ref function. On going out of scope a \ref valid
-		reference is guaranteed to be released, you can also force a release
-		by passing an instance to \ref swap on which \ref valid returns false.
+		\ref OOLUA::Lua_ref::Lua_ref(lua_State* const,int const&) "two argument constructor"
+		or the \ref OOLUA::Lua_ref::set_ref "set_ref" function. On going out of scope
+		a \ref OOLUA::Lua_ref::valid "valid" reference is guaranteed to be released,
+		you can also force a release by passing an instance to \ref OOLUA::Lua_ref::swap
+		"swap" for which \ref OOLUA::Lua_ref::valid "valid" returns false.
 		<p>
 		There are two special values for the reference which Lua provides,
 		both of which OOLua will treat as an invalid reference:
@@ -94,7 +95,7 @@ namespace OOLUA
 			Creates a copy of rhs
 			\details
 			If rhs is valid then creates a new Lua reference to the value which rhs
-			refers to, else intialises this instead so that a \ref Lua_ref::valid
+			refers to, otherwise it initialises this instance so that a \ref Lua_ref::valid
 			call returns false.
 		 */
 		Lua_ref(Lua_ref const& rhs) OOLUA_DEFAULT;
@@ -154,22 +155,26 @@ namespace OOLUA
 	/** \cond INTERNAL*/
 	template<int ID>
 	Lua_ref<ID>::Lua_ref(lua_State* const lua, int const& ref)
-		:m_lua(lua), m_ref(ref)
+		: m_lua(lua)
+		, m_ref(ref)
 	{}
 
 	template<int ID>
 	Lua_ref<ID>::Lua_ref(lua_State* const lua)
-		:m_lua(lua), m_ref(LUA_NOREF)
+		: m_lua(lua)
+		, m_ref(LUA_NOREF)
 	{}
 
 	template<int ID>
 	Lua_ref<ID>::Lua_ref()
-		:m_lua(0), m_ref(LUA_NOREF)
+		: m_lua(0)
+		, m_ref(LUA_NOREF)
 	{}
 
 	template<int ID>
 	Lua_ref<ID>::Lua_ref(Lua_ref<ID> const& rhs)
-		:m_lua(0), m_ref(LUA_NOREF)
+		: m_lua(0)
+		, m_ref(LUA_NOREF)
 	{
 		if (rhs.valid())
 		{

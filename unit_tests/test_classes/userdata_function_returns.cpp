@@ -305,6 +305,7 @@ public:
 		assert_that_tops_gc_flag_is(true);
 	}
 
+	/**[LuaReturnTraitPtrUsage]*/
 	void luaReturnTrait_callsMethodPtr_returnValueIsToBeGarbageCollected()
 	{
 		ReturnTraitHelper helper(m_lua);
@@ -313,6 +314,7 @@ public:
 		assert_that_tops_gc_flag_is(true);
 		set_tops_gc_flag_to(false);
 	}
+	/**[LuaReturnTraitPtrUsage]*/
 
 	void luaReturnTrait_callsMethodPtrConst_returnValueIsToBeGarbageCollected()
 	{
@@ -423,6 +425,7 @@ public:
 		CPPUNIT_ASSERT_EQUAL(stackSizeBefore+1, lua_gettop(*m_lua));
 	}
 
+	/**[MaybeNullTraitConstPtrUsage]*/
 	void maybeNullTrait_callsMethodConstPtrWhichReturnsNull_stackTopIsNil()
 	{
 		MaybeNullTraitHelper helper(m_lua);
@@ -430,6 +433,7 @@ public:
 		helper.call_object_method("constPtr");
 		CPPUNIT_ASSERT_EQUAL(LUA_TNIL, lua_type(*m_lua, -1));
 	}
+	/**[MaybeNullTraitConstPtrUsage]*/
 
 	void maybeNullTrait_callsMethodConstPtrWhichReturnsValidPtr_stackSizeIncreasesByOne()
 	{
@@ -518,6 +522,7 @@ public:
 		set_tops_gc_flag_to(false);
 	}
 
+	/**[LuaMaybeNullTraitPtrUsage]*/
 	void luaMaybeNullTrait_callsMethodPtrWhichReturnsValidPtr_stackTopGcValueIsTrue()
 	{
 		LuaMaybeNullTraitHelper helper(m_lua);
@@ -526,6 +531,7 @@ public:
 		assert_that_tops_gc_flag_is(true);
 		set_tops_gc_flag_to(false);
 	}
+	/**[LuaMaybeNullTraitPtrUsage]*/
 
 	void luaMaybeNullTrait_callsMethodConstPtrWhichReturnsNull_stackSizeIncreasesByOne()
 	{

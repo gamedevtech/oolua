@@ -86,7 +86,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 	template<typename T>struct lua_out_p;
 
 	/** \struct lua_return
-		\breif Return trait for a type which will be owned by Lua
+		\brief Return trait for a type which will be owned by Lua
 		\details
 		The type returned from the function is a heap allocated instance whose
 		ownership will be controlled by Lua. This is only valid for function
@@ -95,7 +95,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 	template<typename T>struct lua_return;
 
 	/** \struct maybe_null
-		\breif Return trait for a pointer which at runtime maybe NULL.
+		\brief Return trait for a pointer which at runtime maybe NULL.
 		\details
 		The type returned from the function is a pointer instance whose
 		runtime value maybe NULL. If it is NULL then lua_pushnil will be called
@@ -105,7 +105,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 	template<typename T>struct maybe_null;
 
 	/** \struct lua_maybe_null
-		\breif Return trait for a pointer which at runtime maybe NULL and also
+		\brief Return trait for a pointer which at runtime maybe NULL and also
 		allowing transfer of ownership.
 		\details
 		The type returned from the function is a pointer instance whose

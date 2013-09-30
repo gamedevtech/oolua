@@ -6,4 +6,4 @@ cd ..
 #/Applications/Doxygen.app/Contents/Resources/doxygen dev/oolua.Doxyfile
 /usr/local/bin/doxygen ./dev/oolua.Doxyfile
 cd dev
-lua51 'latex_contents.lua'
+#lua51 'latex_contents.lua'

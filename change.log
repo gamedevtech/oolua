@@ -10,13 +10,13 @@
 - Added OOLua version macros \ref OOLUA_VERSION_MAJ \ref OOLUA_VERSION_MIN and \ref OOLUA_VERSION_PATCH
 - Base checking no longer touches the Lua stack
 - C string traits no longer use an std::string temporary
-- Script helper class now has \ref Script::push and \ref Script::pull methods
+- Script helper class now has \ref OOLUA::Script::push and \ref OOLUA::Script::pull methods
 - Bug fix. If an abstract class had a base class which was not abstract, then it was possible to call new on the type.
-- Renamed Table::set_value to \ref Table::set
-- Renamed Table::remove_value to \ref Table::remove
+- Renamed Table::set_value to \ref OOLUA::Table::set
+- Renamed Table::remove_value to \ref OOLUA::Table::remove
 - New Lua simplified class format, which improves self call performance
 - Extra parameters to bound functions are now ignored. Does not include constructors
-- Renamed Script::get_ptr to \ref Script::state for consistency
+- Renamed Script::get_ptr to \ref OOLUA::Script::state for consistency
 - Added a base class exception type \ref OOLUA::Exception
 - Added \ref OOLUA::lua_return which is a specific trait for return types which will be owned by Lua.
 - Added \ref OOLUA::maybe_null which allows C functions and member functions to return NULL

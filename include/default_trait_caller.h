@@ -21,13 +21,7 @@ namespace OOLUA
 		{
 			return default_traits_caller<func_type>::call(l, this_, mfptr);
 		}
-/*
-		template<typename this_type, typename func_type>
-		int proxy_const_member_function_with_default_traits(lua_State* l, this_type* this_, func_type mfptr)
-		{
-			return default_traits_const_caller<func_type>::call(l, this_, mfptr);
-		}
-*/
+
 		template<typename this_type, typename func_type>
 		int constproxy_member_function_with_default_traits(lua_State* l, this_type* this_, func_type mfptr)
 		{

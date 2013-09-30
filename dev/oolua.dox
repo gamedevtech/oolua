@@ -2,9 +2,9 @@
 	\brief Lua virtual machine
 	\details
 	Taken from Lua manual :
-	An opaque structure that points to a thread and indirectly (through the thread) 
-	to the whole state of a Lua interpreter. The Lua library is fully reentrant: it 
-	has no global variables. All information about a state is accessible through this 
+	An opaque structure that points to a thread and indirectly (through the thread)
+	to the whole state of a Lua interpreter. The Lua library is fully reentrant: it
+	has no global variables. All information about a state is accessible through this
 	structure.
 */
 
@@ -26,8 +26,8 @@
 */
 
 
-/** 
-\page OOLuaUseage Usage 
+/**
+\page OOLuaUseage Usage
 \brief
 
 	Most if not all of the code snippets shown in this document are working pieces of code taken directly from the \ref OOLuaTestFiles "unit test files", as such the code is always correct although it may at times not marry up to the text which surrounds it in this documentation. If you should see such a thing please report it on the \ref OOLuaLinks "issue tracker".
@@ -41,7 +41,7 @@
 
 /**
 \page OOLuaFirstLook First look
- 
+
 	\section HelloMoon Hello Moon
 		\snippet hello_moon.cpp HelloMoonCFuncAndProxy
 		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalist
@@ -56,13 +56,13 @@
 
  	\section OOLuaLuaStateAndScript lua_State and Script
  		\copydetails OOLUA::Script
- 		
+
 	\section OOLuaAndTheStack OOLua and the Lua stack
 		The Lua C API does not force you to treat the stack as such a data structure
 		with operations on just one end, instead for convenience it uses indices to
 		identify stack slots for a procedure. Given that it is a C API without C++'s name
 		mangling and overloading it also provides a function per type for pushing to the
-		stack. 
+		stack.
 		<p>
 		OOLua tries to enforce a clean stack after operations as such it provides a simple
 		interface to the Lua stack which consists of two functions :
@@ -72,76 +72,66 @@
  		Most usage of OOLua will only require these functions to interact with the stack
  		yet you are free to mix Lua C API calls if you take into account \ref OOLUA::pull
  		"pull" removes top when it is valid.
- 		
+
  */
- 
+
  /**
  \page LuaTypesInOOLua Lua Types in OOLua
  	\brief OOLua has three types to help interact with Lua types
- 	\section OOLuaTypesRef Lua_ref 
+ 	\section OOLuaTypesRef Lua_ref
  		\copydetails OOLUA::Lua_ref
- 		For your connivence there are two predefined typedefs:
+ 		For your convenience there are two predefined typedefs:
  		\li \ref OOLUA::Lua_func_ref
- 		\snippet exchange_lua2cpp.cpp FunctionReferencePullSetup
  		\snippet exchange_lua2cpp.cpp FunctionReferencePull
- 			
+
  		\li \ref OOLUA::Lua_table_ref
  		\snippet exchange_lua2cpp.cpp PullingTableRefOffTheStack
- 			
- 	\section OOLuaTypesFunction Lua_function 
+
+ 	\section OOLuaTypesFunction Lua_function
  		\copydetails OOLUA::Lua_function
  			\subsection CallingALuaFunction Calling a Lua function
-			A Lua function can be called using the function object 
-			\ref OOLUA::Lua_function of which there is an instance bound in the 
-			constructor for Script \ref OOLUA::Script::call. Lua_function has 
-			overloaded function call operators which take upto the maximum 
+			A Lua function can be called using the function object
+			\ref OOLUA::Lua_function of which there is an instance bound in the
+			constructor for Script \ref OOLUA::Script::call. Lua_function has
+			overloaded function call operators which take upto the maximum
 			defined OOLuaConfigLuaParams "\"lua_params\"".\n
-		
+
 			Name:
 			\snippet lua_caller.cpp CallingFunctionByGlobalName
 			Lua_func_ref:
 			\snippet lua_caller.cpp CallingFunctionByFuncRef
 			Valid stack index
 			\snippet lua_caller.cpp CallingFunctionByValidStackIndex
-		
- 	 \section OOLuaTypesTable Table 
+
+ 	 \section OOLuaTypesTable Table
  		\copydetails OOLUA::Table
  		<p>There are two helper functions for creating a \ref OOLUA::Table both of
  		which are named \ref OOLUA::new_table.
  		\snippet table.cpp OOLuaTableAtExample
 */
-/*
-		\subsection OOLuaInTrait in_p
-			\copydetails OOLUA::in_p
-		\subsection OOLuaOutTrait out_p
-			\copydetails OOLUA::out_p
-			\snippet cpp_out_params.h CppOutParamsUserData
-			\snippet expose_out_params.h ExposeOutParamsUserData 
-
-*/
 
 /**
 \page OOLuaProxying Proxy
 	\section OOLuaProxyDSL DSL
-			\copybrief OOLuaDSL 
+			\copybrief OOLuaDSL
 			\copydetails OOLuaDSL
 			<p>\ref OOLuaMinimalist
 			\copydetails OOLuaMinimalist
 			<p>\ref OOLuaExpressive
 			\copydetails OOLuaExpressive
-		
+
 	\section ClassProxy Class Proxy
-		Generating a proxy for a class normally takes place between two DSL procedures 
-		\ref OOLUA_PROXY and \ref OOLUA_PROXY_END although alone these do not supply 
+		Generating a proxy for a class normally takes place between two DSL procedures
+		\ref OOLUA_PROXY and \ref OOLUA_PROXY_END although alone these do not supply
 		enough information for a proxy to be generated, the following shows the usage
 		of the DSL to proxy and use a C++ class in Lua.
 
 		\subsection MinimalClassProxy Minimal Class Proxy
 			\snippet cpp_stub_classes.h UsedAsMinimalClass
-			To proxy a class and be able to use it in Lua requires a three part process. 
+			To proxy a class and be able to use it in Lua requires a three part process.
 			<p>
 				\subsubsection ProxyBlock Proxy Block
-				Firstly you create a proxy block which starts with a OOLUA_PROXY call to which 
+				Firstly you create a proxy block which starts with a OOLUA_PROXY call to which
 				you pass the name of the C++ class to be proxied, this block ends at the next
 				OOLUA_PROXY_END. Soon we will see how to proxy other aspects of a class in this
 				block.
@@ -150,11 +140,11 @@
 				\subsubsection ClassExporting Exporting
 				Secondly export member functions which are to be available to Lua for the type.
 				\copydetails OOLuaExporting
-				<p>		
+				<p>
 				\snippet expose_stub_classes.cpp MinimalProxyExport
 			<p>
-				\subsubsection ClassRegistering Registering 
-				Lastly we register the type with a lua_State after which the type can be \ref DefaultConstructor "created" 
+				\subsubsection ClassRegistering Registering
+				Lastly we register the type with a lua_State after which the type can be \ref DefaultConstructor "created"
 				and used in Lua.
 				\snippet construct.cpp MinimalProxyClassRegister
 				<p>
@@ -165,20 +155,20 @@
 			\copydetails OOLUA_TAGS <p>
 
 		\subsection DefaultConstructor Default Constructor
-			The default class constructor is a special member function like C++ and it will 
-			be impliclty defined for a type unless \ref OOLuaTags "otherwise specified". When 
+			The default class constructor is a special member function like C++ and it will
+			be implicitly defined for a type unless \ref OOLuaTags "otherwise specified". When
 			available for a type "foo" in can be called in Lua using the following syntax.
 			\code{.lua}
 				foo.new()
 			\endcode
 			\see OOLUA::Abstract OOLUA::No_default_constructor OOLUA::No_public_constructors
-		
-		\subsection ClassConstructors Constructors	
+
+		\subsection ClassConstructors Constructors
 			<p>
 			\copydetails OOLUA_CTORS
 			<p>
 			\snippet expose_class_constructors.h ExposeConstructors
- 
+
 		\subsection ExposingMemberFunctions Exposing Member Functions
 			\copydetails OOLUA_MFUNC
 			<p>
@@ -197,21 +187,21 @@
 			\snippet expose_hierarchy.cpp ExportAbstract1
 
 		\subsection BaseClass Base Classes
-			Using \ref OOLUA_PROXY "OOLUA_PROXY's" optional parameter(s) specifies base 
+			Using \ref OOLUA_PROXY "OOLUA_PROXY's" optional parameter(s) specifies base
 			class(es) for the proxy
-			\copydetails OOLUA_PROXY 
+			\copydetails OOLUA_PROXY
 			<p>
 			\snippet cpp_hierarchy.h CppDerived1Abstract1
 			\snippet expose_hierarchy.h ExposeDerived1Abstract1
 			\snippet expose_hierarchy.cpp ExportDerived1Abstract1
-			
+
 		\subsection ClassOps Operators
-			\copydetails OperatorTags 
+			\copydetails OperatorTags
 			<p>
 			\snippet cpp_class_ops.h CppClassOps
-			\snippet lua_class_ops.h ClassOpsExpose
-			\snippet lua_class_ops.cpp ClassOpsExport
-			
+			\snippet expose_class_ops.h ClassOpsExpose
+			\snippet expose_class_ops.cpp ClassOpsExport
+
 		\subsection ClassPublicMembers Public Members
 			\copydetails OOLUA_MGET
 			<p>
@@ -226,7 +216,7 @@
 			<b>Public member access in Lua is via a member function</b>
 			\snippet public_variables.cpp PublicMemberUsage
 
-			
+
 		\subsection ClassEnumerations Enumerations
 			\copydetails OOLUA_ENUMS <p>
 			\copydetails OOLUA_ENUM
@@ -235,7 +225,7 @@
 			\snippet expose_enum.h ClassEnumExpose
 			\snippet expose_enum.cpp ClassEnumExport
 			\snippet enum_tests.cpp ClassEnumUsage
-			
+
 		\subsection ClassStaticFunctions Static Functions
 			\copydetails OOLUA_SFUNC
 			<p>
@@ -243,12 +233,12 @@
 			\snippet expose_static_and_c_functions.h ClassStaticFunctionExpose
 			\snippet expose_static_and_c_functions.cpp ClassStaticFunctionExport
 
-		
+
 	\section CFunctions C Functions
 		\subsection CFunctionMinimalist Minimalist
-		We have already seen the \ref OOLuaMinimalist version in the Hello Moon 
+		We have already seen the \ref OOLuaMinimalist version in the Hello Moon
 		example.
-		\copybrief OOLUA_CFUNC \copydetails OOLUA_CFUNC 
+		\copybrief OOLUA_CFUNC \copydetails OOLUA_CFUNC
 		<p>
 		\snippet hello_moon.cpp HelloMoonCFuncAndProxy
 		\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalist
@@ -256,73 +246,104 @@
 
 	\section OOLuaProxyTraits Traits
 		\copydetails OOLuaTraits <p>
-		\subsection OOLuaTraitInDoc in_p 
-			\copydetails OOLUA::in_p <p>
-		\subsection OOLuaTraitOutDoc out_p 
-			\copydetails OOLUA::out_p <p>
-			Member Function:
-			\snippet cpp_out_params.h CppOutTraitExampleFunction
-			Proxy Function:
-			\snippet expose_out_params.h ProxyOutTraitExampleFunction
-			Usage:
-			\snippet out_params.cpp TestOutTraitExampleFunction
-		\subsection OOLuaTraitInOutDoc in_out_p
-			\copydetails OOLUA::in_out_p <p>
-			Member Function:
-			\snippet cpp_out_params.h CppTraitInOut
-			Proxy Function:
-			\snippet expose_out_params.h ProxyTraitInOut
-			Usage:
-			\snippet out_params.cpp TestTraitInOut
-		\subsection OOLuaTraitLuaOutDoc lua_out_p
-			\copydetails OOLUA::lua_out_p <p>
-			Member Function:
-			\snippet cpp_ownership.h CppLuaOutTrait
-			Proxy Function:
-			\snippet lua_ownership.h ProxyLuaOutTrait
-			Usage:
-			\snippet set_ownership.cpp TestLuaOutTrait
-		\subsection OOLuaTraitCppInDoc cpp_in_p
-			\copydetails OOLUA::cpp_in_p <p>
-			Member Function:
-			\snippet cpp_ownership.h CppCppInTrait
-			Proxy Function:
-			\snippet lua_ownership.h ProxyCppInTrait
-			Usage:
-			\snippet set_ownership.cpp TestCppOutTrait
+		\subsection OOLuaParamTraits Parameter Traits
+			\subsubsection OOLuaTraitInDoc in_p
+				\copydetails OOLUA::in_p <p>
+				Member Function:
+				\snippet cpp_function_params.h RefPtrConstParam
+				Proxy Function:
+				\snippet expose_userdata_function_params.h UserDataProxyInTraitRefPtrConst
+				Usage:
+				\snippet userdata_function_params.cpp UserDataProxyInTraitUsage
+			\subsubsection OOLuaTraitOutDoc out_p
+				\copydetails OOLUA::out_p <p>
+				Member Function:
+				\snippet cpp_function_params.h RefPtrParam
+				Proxy Function:
+				\snippet expose_userdata_function_params.h UserDataProxyOutTraitRefPtr
+				Usage:
+				\snippet userdata_function_out_params.cpp UserDataOutParamUsage
+			\subsubsection OOLuaTraitInOutDoc in_out_p
+				\copydetails OOLUA::in_out_p <p>
+				Member Function:
+				\snippet cpp_function_params.h RefParam
+				Proxy Function:
+				\snippet expose_integral_function_params.h IntegerInOutOutTraitRef
+				Usage:
+				\snippet integral_function_out_params.cpp IntegerInOutParamUsage
+			\subsubsection OOLuaTraitLuaOutDoc lua_out_p
+				\copydetails OOLUA::lua_out_p <p>
+				Member Function:
+				\snippet cpp_function_params.h RefPtrParam
+				Proxy Function:
+				\snippet expose_ownership.h ProxyLuaOutTrait
+				Usage:
+				\snippet set_ownership.cpp TestLuaOutTrait
+			\subsubsection OOLuaTraitCppInDoc cpp_in_p
+				\copydetails OOLUA::cpp_in_p <p>
+				Member Function:
+				\snippet cpp_function_params.h PtrParam
+				Proxy Function:
+				\snippet expose_ownership.h ProxyCppInTrait
+				Usage:
+				\snippet set_ownership.cpp TestCppOutTrait
 
-		\subsection OOLuaTraitCppAcquirePtr cpp_acquire_ptr
-			\copydetails OOLUA::cpp_acquire_ptr <p>		
-			\snippet construct.cpp ExampleCppAcquirePtr 
+		\subsection OOLuaReturnTraits Function Return Traits
+			\subsubsection OOLuaLuaReturnTrait lua_return
+				\copydetails OOLUA::lua_return <p>
+				Member Function:
+				\snippet cpp_function_returns.h PtrReturn
+				Proxy Function:
+				\snippet expose_userdata_function_returns.h UserDataProxyLuaReturnTrait
+				Usage:
+				\snippet userdata_function_returns.cpp LuaReturnTraitPtrUsage
+			\subsubsection OOLuaMaybeNullTrait maybe_null
+				\copydetails OOLUA::maybe_null <p>
+				Member Function:
+				\snippet cpp_function_returns.h ConstPtrReturn
+				Proxy Function:
+				\snippet expose_userdata_function_returns.h UserDataProxyMaybeNullTrait
+				Usage:
+				\snippet userdata_function_returns.cpp 	MaybeNullTraitConstPtrUsage
+			\subsubsection OOLuaLuaMaybeNullTrait lua_maybe_null
+				\copydetails OOLUA::lua_maybe_null <p>
+				Member Function:
+				\snippet cpp_function_returns.h PtrReturn
+				Proxy Function:
+				\snippet expose_userdata_function_returns.h UserDataProxyLuaMaybeNullTrait
+				Usage:
+				\snippet userdata_function_returns.cpp LuaMaybeNullTraitPtrUsage
+
+		\subsection OOLuaStackTraits Stack Traits
+			\subsubsection OOLuaTraitCppAcquirePtr cpp_acquire_ptr
+				\copydetails OOLUA::cpp_acquire_ptr <p>
+				\snippet construct.cpp ExampleCppAcquirePtr
+			\subsubsection OOLuaTraitLuaAcquirePtr lua_acquire_ptr
+				\copydetails OOLUA::lua_acquire_ptr <p>
+				\snippet construct.cpp ExampleCppAcquirePtr
 
 		\subsection OOLuaTraitReturnOrder Return Order
-			Lua supports multiple return values and C++ in a way also via references.\n
-			Lua's order is shown in the following example, simply the first return goes
-			into the first slot.
-				\snippet out_params.cpp TestLuaReturnOrder
-			Here we have a C++ member function which returns an int, the function also 
-			assigns two new values to it's parameters which are taken by reference.
-				\snippet cpp_out_params.h CppTraitReturnOrder
-			One way we could express using would be using \ref OOLUA::in_out_p "in_out_p"
-			traits.
-				\snippet expose_out_params.h ProxyTraitReturnOrder
+				Lua supports multiple return values for functions ( return = [explist] ). The order of returns in the stack is shown in the following example, simply the first result will be inserted at the top of stack.
+				\snippet return_order.cpp TestLuaReturnOrder
+			C++ in a way also supports multiple returns via references. Here we have a C++ member function which returns an int, the function also assigns a new value to the parameter which is taken by reference.
+				\snippet return_order.cpp CppTraitReturnOrderOneParam
+			In effect this function has two return values so one way we could proxy the function and detail that information would be using the \ref OOLuaExpressive DSL macro \ref OOLUA_MEM_FUNC and applying an \ref OOLUA::in_out_p "in_out_p" trait to the parameter.
+				\snippet return_order.cpp ProxyTraitReturnOrderOneParam
 			<p>
-			After calling this function there will be three returned values; the return of
-			the C++ function and the values of the two parameters after the call. 
-			The top of stack (Lua stack index -1, \ref OOLUA::pull ) is the furthest right 
-			handside parameter which had an out trait, which in this case was parameter two;
-			below this is the first parameter and then the return value in that order.
+			After calling this function there will be two returned values; the return of
+			the C++ function and the value of the parameter after the call.
+			The top of stack will contain the furthest right handside parameter which had an out trait, which in this case there was only one, below this will be proceeding parameters which had out traits and then the return value in that order.
 			<p>
 
 			\snippet out_params.cpp TestTraitReturnOrder
 			<p>
 			\htmlonly
-			<br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> 
-			<br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> 
+			<br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br />
+			<br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br /> <br />
 			\endhtmlonly
 			Are you a bottom up kind of person? \n
 			The return value is on the bottom of the stack (Lua stack index 1)
-			with parameter one and parameter two following it in that order.\n
+			with parameter one at index 2.\n
 
 
 **/
@@ -337,23 +358,23 @@
 /*
 	\section OOLuaCFunctionProxy Proxying a C Function
 		\subsection CFunctionMinimalist Minimalist
-			We have already seen the \ref OOLuaMinimalist version in the Hello Moon 
+			We have already seen the \ref OOLuaMinimalist version in the Hello Moon
 			example.
-			\copybrief OOLUA_CFUNC \copydetails OOLUA_CFUNC 
+			\copybrief OOLUA_CFUNC \copydetails OOLUA_CFUNC
 			<p>
 			\snippet hello_moon.cpp HelloMoonCFuncAndProxy
 			\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalist
 			\snippet hello_moon.cpp HelloMoonCFuncAndProxyMinimalistUsage
-		
+
 		\subsection CFunctionExpressive Expressive
-			\copybrief OOLUA_C_FUNCTION \copydetails OOLUA_C_FUNCTION 
+			\copybrief OOLUA_C_FUNCTION \copydetails OOLUA_C_FUNCTION
 			When there are overloaded versions of a function such as
 			\snippet hello_moon.cpp HelloMoonCFuncOverloaded
 			Then it is not enough information for C++ to detect which version is wanted
-			as there is ambiguity 
+			as there is ambiguity
 			<p>
 			\snippet hello_moon.cpp HelloMoonCFuncProxyExpressive
 			\snippet hello_moon.cpp HelloMoonCFuncAndProxyExpressiveUsage
-	
+
 
 */

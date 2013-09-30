@@ -48,7 +48,7 @@ namespace OOLUA
 	/**@}*/
 
 	/**@{*
-		\brief Pulls the top element off the stack popping it.
+		\brief Pulls the top element off the stack and pops it.
 		\details In stack terms this is a top followed by pop.
 		\return
 		Depending on the \ref OOLuaConfig used the return value can

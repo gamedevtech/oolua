@@ -15,15 +15,19 @@ class FunctionReturnType
 public:
 	virtual ~FunctionReturnType(){}
 	virtual ReturnType value() = 0;
+	/**[PtrReturn]*/
 	virtual ReturnType* ptr() = 0;
+	/**[PtrReturn]*/
 	virtual ReturnType& ref()=0;
 	virtual ReturnType*& refPtr() = 0;
-
 	virtual ReturnType const constant() = 0;
 	virtual ReturnType const & refConst() = 0;
+	/**[PtrConstReturn]*/
 	virtual ReturnType const * ptrConst() = 0;
 	virtual ReturnType const* & refPtrConst() = 0;
+	/**[ConstPtrReturn]*/
 	virtual ReturnType * const constPtr() = 0;
+	/**[ConstPtrReturn]*/
 	virtual ReturnType * const& refConstPtr() = 0;
 	virtual ReturnType const * const constPtrConst() = 0;
 	virtual ReturnType const * const & refConstPtrConst() = 0;

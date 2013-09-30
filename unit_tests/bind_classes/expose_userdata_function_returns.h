@@ -24,7 +24,9 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(UserDataFunctionReturnTraits)
 	OOLUA_TAGS(Abstract)
+	/**[UserDataProxyLuaReturnTrait]*/
 	OOLUA_MEM_FUNC(lua_return<Stub1*>, ptr)
+	/**[UserDataProxyLuaReturnTrait]*/
 	OOLUA_MEM_FUNC(lua_return<Stub1 const*>, ptrConst)
 	OOLUA_MEM_FUNC(lua_return<Stub1 const*&>, refPtrConst)
 	OOLUA_MEM_FUNC(lua_return<Stub1 const*const&>, refConstPtrConst)
@@ -32,7 +34,9 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(UserDataFunctionReturnMaybeNullTraits)
 	OOLUA_TAGS(Abstract)
+	/**[UserDataProxyMaybeNullTrait]*/
 	OOLUA_MEM_FUNC(maybe_null<Stub1*>, ptr)
+	/**[UserDataProxyMaybeNullTrait]*/
 	OOLUA_MEM_FUNC(maybe_null<Stub1 *const>, constPtr)
 	OOLUA_MEM_FUNC(maybe_null<Stub1 const*>, ptrConst)
 	OOLUA_MEM_FUNC(maybe_null<Stub1 const*const>, constPtrConst)
@@ -45,7 +49,9 @@ int lua_proxy_returns_lua_valid_ptr(lua_State* l);
 
 OOLUA_PROXY(UserDataFunctionReturnLuaMaybeNullTraits)
 	OOLUA_TAGS(Abstract)
+	/**[UserDataProxyLuaMaybeNullTrait]*/
 	OOLUA_MEM_FUNC(lua_maybe_null<Stub1*>, ptr)
+	/**[UserDataProxyLuaMaybeNullTrait]*/
 	OOLUA_MEM_FUNC(lua_maybe_null<Stub1 *const>, constPtr)
 	OOLUA_MEM_FUNC(lua_maybe_null<Stub1 const*>, ptrConst)
 	OOLUA_MEM_FUNC(lua_maybe_null<Stub1 const*const>, constPtrConst)

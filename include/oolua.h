@@ -31,12 +31,11 @@
 		\li LuaJIT 1.1.8 and 2.0 http://www.luajit.org/
 
 	\section OOLuaLinks Links
-		\li Project Home  http://code.google.com/p/oolua
-		\li Issue tracker http://code.google.com/p/oolua/issues/list
-		\li Mailing list http://groups.google.com/group/oolua-user
+		\li Project Home  http://oolua.org TODO add main page
+		\li Library documentation http://docs.oolua.org
+		\li Issue tracker http://code.google.com/p/oolua/issues/list TODO update this
+		\li Mailing list http://www.freelists.org/list/oolua
 		\li Twitter http://twitter.com/OOLua
-		\li <a href="http://oolua.googlecode.com/svn/docs/trunk/html/index.html">Latest trunk documentation</a>
-		\li <a href="http://oolua.googlecode.com/svn/docs/branches/dsl/html/index.html">This documentation</a>
 
 	\section OOLuaLicence Licence
 	OOLua:
@@ -106,19 +105,19 @@ namespace OOLUA
 	/** \class Script
 		\brief OOLua helper class
 		\details
-		OOLua is purposely designed not to be dependent on the OOLUA::Script class
+		OOLua is purposely designed not to be dependent on the \ref OOLUA::Script "Script" class
 		and therefore passes around it's dependency of a lua_State instance.
-		This class is only a helper and anything you can do with it
-		can be accomplished either via using a Lua_function struct, calling OOLUA
-		namespaced functions or using the Lua C API.
+		The Script class is only a helper and anything you can do with it
+		can be accomplished either via using a \ref OOLUA::Lua_function "Lua_function" struct,
+		calling OOLUA namespaced functions or using the Lua C API.
 
 		Script provides the following :
 		\li Scopes a lua_State pointer
-		\li Provides access to the lua_State pointer via a cast operator and function
-		\li Provides methods to register types
-		\li Binds a Lua_function instance to call functions via Script::call
+		\li Provides access to the lua_State pointer via a \ref OOLUA::Script::operator "cast operator" and \ref OOLUA::Script::state "function"
+		\li Provides methods to \ref OOLUA::Script::register_class "register" types
+		\li Binds a \ref OOLUA::Lua_function "Lua_function" instance to \ref OOLUA::Script::call "call" functions
 		\li Has member functions for a little state management
-		\li Sets up the state to work with OOLua
+		\li \ref OOLUA::setup_user_lua_state "Sets up" the state to work with OOLua
 
 		\note
 		This class is not copy constructible or assignable.
@@ -174,8 +173,10 @@ namespace OOLUA
 		/**@}*/
 
 		/**@{*/
+		/** \brief Helper function \see OOLUA::pull */
 		template<typename T>
 		bool pull(T & t);
+		/** \brief Helper function \see OOLUA::push */
 		template<typename T>
 		bool push(T const& t);
 		/**@}*/
