@@ -114,12 +114,12 @@ public:
 
 	struct StringHelper
 	{
-		StringHelper(lua_State* l)
+		StringHelper(lua_State* vm)
 			: mock()
 			, object(&mock)
 			, input("input buffer")
 		{
-			OOLUA::register_class<CharFunctionInTraits>(l);
+			OOLUA::register_class<CharFunctionInTraits>(vm);
 		}
 		CharFunctionInTraitsMock mock;
 		CharFunctionInTraits* object;

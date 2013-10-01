@@ -21,9 +21,9 @@ namespace OOLUA
 		struct shouldPushValueByReference
 		{
 			enum {value = 0};
-			static void push(lua_State* l, T* input)
+			static void push(lua_State* vm, T* input)
 			{
-				OOLUA::push(l, *input);
+				OOLUA::push(vm, *input);
 			}
 		};
 
@@ -31,16 +31,16 @@ namespace OOLUA
 		struct shouldPushValueByReference<T, 1>
 		{
 			enum {value = 1};
-			static void push(lua_State* l, T* input)
+			static void push(lua_State* vm, T* input)
 			{
-				OOLUA::push(l, input);
+				OOLUA::push(vm, input);
 			}
 		};
 
 		struct PushPublicMember
 		{
 			template<typename T>
-			static void push(lua_State* l, T* input)
+			static void push(lua_State* vm, T* input)
 			{
 				shouldPushValueByReference<T,
 					//can not have a pointer to reference.
@@ -48,7 +48,7 @@ namespace OOLUA
 					//or type
 					OOLUA::INTERNAL::is_param_by_value<T>::value
 					&& has_a_proxy_type<typename OOLUA::INTERNAL::Raw_type<T>::type >::value >
-						::push(l, input);
+						::push(vm, input);
 			}
 		};
 
@@ -70,9 +70,9 @@ namespace OOLUA
 		\param id Public member name
 	*/
 #	define OOLUA_MEM_GETN(get_name, id) \
-	int get_name(lua_State* l) const \
+	int get_name(lua_State* vm) const \
 	{ \
-		OOLUA::INTERNAL::PushPublicMember::push(l, &m_this->id); \
+		OOLUA::INTERNAL::PushPublicMember::push(vm, &m_this->id); \
 		return 1; \
 	}
 
@@ -84,9 +84,9 @@ namespace OOLUA
 		\param id Public member name
 	 */
 #	define OOLUA_MEM_SETN(set_name, id) \
-	int set_name(lua_State* l) \
+	int set_name(lua_State* vm) \
 	{ \
-		OOLUA::INTERNAL::LUA_CALLED::get(l, 2, m_this->id); \
+		OOLUA::INTERNAL::LUA_CALLED::get(vm, 2, m_this->id); \
 		return 0; \
 	}
 

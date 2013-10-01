@@ -288,14 +288,14 @@ namespace OOLUA
 	>::type Tags; typedef class_ tag_block_check;
 
 #define OOLUA_ENUMS_START \
-static void oolua_enums(lua_State * l) \
+static void oolua_enums(lua_State * vm) \
 { \
-	Table meth(l, Proxy_class<class_>::class_name); \
-	meth.push_on_stack(l); \
-	int const top = lua_gettop(l);
+	Table meth(vm, Proxy_class<class_>::class_name); \
+	meth.push_on_stack(vm); \
+	int const top = lua_gettop(vm);
 
 #define OOLUA_ENUMS_END \
-	lua_pop(l, 1); \
+	lua_pop(vm, 1); \
 }
 /** \endcond*/
 
@@ -308,9 +308,9 @@ static void oolua_enums(lua_State * l) \
 		\param EnumName The class enumeration name
 	*/
 #	define OOLUA_ENUM(EnumName) \
-		lua_pushliteral(l, #EnumName); \
-		lua_pushinteger(l, (lua_Integer)class_::EnumName); \
-		lua_settable(l, top);
+		lua_pushliteral(vm, #EnumName); \
+		lua_pushinteger(vm, (lua_Integer)class_::EnumName); \
+		lua_settable(vm, top);
 
 	/**	\def OOLUA_ENUMS
 		\hideinitializer

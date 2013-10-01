@@ -196,12 +196,12 @@ Order can not be differentiated between
 */
 struct LuaStateConstructors
 {
-	LuaStateConstructors(lua_State* l)
-		: lua(l)
+	LuaStateConstructors(lua_State* vm)
+		: lua(vm)
 		, m_int(ParamValues::int_not_set)
 	{}
-	LuaStateConstructors(int i, lua_State* l)
-		: lua(l)
+	LuaStateConstructors(int i, lua_State* vm)
+		: lua(vm)
 		, m_int(i)
 	{}
 	lua_State* lua;

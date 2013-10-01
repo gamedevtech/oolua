@@ -29,22 +29,22 @@ namespace OOLUA
 		indicate success and failure.
 		\see OOLuaErrorReporting
 	*/
-	bool push(lua_State* const s, bool const& value);
-	bool push(lua_State* const s, std::string const& value);
-	bool push(lua_State* const s, char const * const& value);
-	bool push(lua_State* const s, double const& value);
-	bool push(lua_State* const s, float const&  value);
-	bool push(lua_State* const s, lua_CFunction const &  value);
-	bool push(lua_State* const s, Table const &  value);
+	bool push(lua_State* const vm, bool const& value);
+	bool push(lua_State* const vm, std::string const& value);
+	bool push(lua_State* const vm, char const * const& value);
+	bool push(lua_State* const vm, double const& value);
+	bool push(lua_State* const vm, float const&  value);
+	bool push(lua_State* const vm, lua_CFunction const &  value);
+	bool push(lua_State* const vm, Table const &  value);
 
 	template<typename T>
-	bool push(lua_State* const s, T * const &  value);
+	bool push(lua_State* const vm, T * const &  value);
 	template<typename T>
-	bool push(lua_State* const s, T * const &  value, OOLUA::Owner);
+	bool push(lua_State* const vm, T * const &  value, OOLUA::Owner);
 	template<typename T>
-	bool push(lua_State* const s, lua_acquire_ptr<T>&  value);
+	bool push(lua_State* const vm, lua_acquire_ptr<T>&  value);
 	template<typename T>
-	bool push(lua_State* const s, T const &  value);
+	bool push(lua_State* const vm, T const &  value);
 	/**@}*/
 
 	/**@{*
@@ -55,19 +55,19 @@ namespace OOLUA
 		indicate success and failure.
 		\see OOLuaErrorReporting
 	*/
-	bool pull(lua_State* const s, bool& value);
-	bool pull(lua_State* const s, std::string& value);
-	bool pull(lua_State* const s, double& value);
-	bool pull(lua_State* const s, float& value);
-	bool pull(lua_State* const s, lua_CFunction& value);
-	bool pull(lua_State* const s, Table&  value);
+	bool pull(lua_State* const vm, bool& value);
+	bool pull(lua_State* const vm, std::string& value);
+	bool pull(lua_State* const vm, double& value);
+	bool pull(lua_State* const vm, float& value);
+	bool pull(lua_State* const vm, lua_CFunction& value);
+	bool pull(lua_State* const vm, Table&  value);
 
 	template<typename T>
-	bool pull(lua_State* const s, T *&  value);
+	bool pull(lua_State* const vm, T *&  value);
 	template<typename T>
-	bool pull(lua_State* const s, T&  value);
+	bool pull(lua_State* const vm, T&  value);
 	template<typename T>
-	bool pull(lua_State* const s, cpp_acquire_ptr<T>&  value);
+	bool pull(lua_State* const vm, cpp_acquire_ptr<T>&  value);
 	/**@}*/
 
 
@@ -75,21 +75,21 @@ namespace OOLUA
 	{
 		namespace LUA_CALLED
 		{
-			void get(lua_State* const s, int idx, bool& value);
-			void get(lua_State* const s, int idx, std::string& value);
-			void get(lua_State* const s, int idx, double& value);
-			void get(lua_State* const s, int idx, float& value);
-			void get(lua_State* const s, int idx, lua_CFunction& value);
-			void get(lua_State* const s, int idx, Table&  value);
+			void get(lua_State* const vm, int idx, bool& value);
+			void get(lua_State* const vm, int idx, std::string& value);
+			void get(lua_State* const vm, int idx, double& value);
+			void get(lua_State* const vm, int idx, float& value);
+			void get(lua_State* const vm, int idx, lua_CFunction& value);
+			void get(lua_State* const vm, int idx, Table&  value);
 
 			template<typename T>
-			void get(lua_State* const s, int idx, T& value);
+			void get(lua_State* const vm, int idx, T& value);
 
 			template<typename T>
-			void get(lua_State* const s, int idx, T *&  value);
+			void get(lua_State* const vm, int idx, T *&  value);
 
 			template<typename T>
-			void get(lua_State* const s, int idx, OOLUA::cpp_acquire_ptr<T>&  value);
+			void get(lua_State* const vm, int idx, OOLUA::cpp_acquire_ptr<T>&  value);
 		} // namespace LUA_CALLED // NOLINT
 
 	} // namespace INTERNAL // NOLINT

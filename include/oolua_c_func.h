@@ -26,7 +26,7 @@
 	typedef R::type (funcType)( OOLUA_PARAM_TYPE_CONCAT(__VA_ARGS__) ) ; \
 	OOLUA::INTERNAL::Proxy_none_member_caller<R, LVD::is_void< R::type >::value >:: \
 		call<funcType OOLUA_TPARAMS_CONCAT(__VA_ARGS__)> \
-			(l, &func OOLUA_PPARAMS_CONCAT(__VA_ARGS__)); \
+			(vm, &func OOLUA_PPARAMS_CONCAT(__VA_ARGS__)); \
 	OOLUA_BACK_CONCAT(__VA_ARGS__) \
 	return OOLUA::INTERNAL::lua_return_count< Type_list<R OOLUA_RETURNS_CONCAT(__VA_ARGS__) >::type> ::out;
 
@@ -34,15 +34,15 @@
 	typedef OOLUA::INTERNAL::return_type_traits<return_value > R; \
 	typedef R::type (funcType)() ; \
 	OOLUA::INTERNAL::Proxy_none_member_caller<R, LVD::is_void< R::type >::value >:: \
-		call<funcType>(l, &func); \
+		call<funcType>(vm, &func); \
 	return R::out;
 
 
-#define OOLUA_CFUNC_RETURN(Name) \
-	return OOLUA::INTERNAL::proxy_c_function_with_default_traits(l, Name);
-
 #define OOLUA_CFUNC_INTERNAL_2(FunctionName, ProxyName) \
-	int ProxyName(lua_State* l) {  OOLUA_CFUNC_RETURN(FunctionName) }
+int ProxyName(lua_State* vm) \
+{ \
+	return OOLUA::INTERNAL::proxy_c_function_with_default_traits(vm, FunctionName); \
+}
 #define OOLUA_CFUNC_INTERNAL_1(FunctionName) \
 	OOLUA_CFUNC_INTERNAL_2(FunctionName, FunctionName)
 

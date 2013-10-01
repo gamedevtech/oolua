@@ -12,7 +12,7 @@ namespace OOLUA
 
 	/** \cond INTERNAL*/
 	template<typename T>
-	void register_class(lua_State* l);
+	void register_class(lua_State* vm);
 
 	namespace INTERNAL
 	{

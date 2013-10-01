@@ -211,53 +211,53 @@ namespace OOLUA
 		\brief If you want to use OOLua with a lua_State you already have active
 		or supplied by some third party then calling this function
 		adds the necessary tables and globals for it to work with OOLua.
-		\param[in] l lua_State to be initialise by OOLua
+		\param[in] vm lua_State to be initialise by OOLua
 	*/
-	void setup_user_lua_state(lua_State* l);
+	void setup_user_lua_state(lua_State* vm);
 
 	/**
 		\brief Helper function to set a Lua global variable.
 		\tparam T Type for instance
-		\param[in] l lua_State
+		\param[in] vm lua_State
 		\param[in] name Global name to set
 		\param[in] instance Any variable which is valid to push to the stack
 		\return Boolean indicating if the operation was successful \see OOLuaErrorReporting
 	*/
 	template<typename T>
-	bool set_global(lua_State* l, char const* name, T& instance)
+	bool set_global(lua_State* vm, char const* name, T& instance)
 	{
-		if ( !OOLUA::push(l, instance) ) return false;
-		lua_setglobal(l, name);
+		if ( !OOLUA::push(vm, instance) ) return false;
+		lua_setglobal(vm, name);
 		return true;
 	}
 
-	inline bool set_global(lua_State* l, char const* name, lua_CFunction instance)
+	inline bool set_global(lua_State* vm, char const* name, lua_CFunction instance)
 	{
-		lua_pushcclosure(l, instance, 0);
-		lua_setglobal(l, name);
+		lua_pushcclosure(vm, instance, 0);
+		lua_setglobal(vm, name);
 		return true;
 	}
 
 	/**
 		\brief Helper function to set a Lua global variable to nil.
-		\param[in] l lua_State
+		\param[in] vm lua_State
 		\param[in] name Global name to set
 	*/
-	void set_global_to_nil(lua_State*l, char const * name);
+	void set_global_to_nil(lua_State* vm, char const * name);
 
 	/**
 		\brief Helper function to set a Lua global variable.
 		\tparam T Type for instance
-		\param[in] l lua_State
+		\param[in] vm lua_State
 		\param[in] name Global name to query
 		\param[out] instance Any variable which is valid to pull from the stack
 		\return Boolean indicating if the operation was successful \see OOLuaErrorReporting
 	*/
 	template<typename T>
-	bool get_global(lua_State* l, char const* name, T& instance)
+	bool get_global(lua_State* vm, char const* name, T& instance)
 	{
-		lua_getglobal(l, name);
-		return OOLUA::pull(l, instance);
+		lua_getglobal(vm, name);
+		return OOLUA::pull(vm, instance);
 	}
 
 	/** \brief Uses the Lua C API to check if it is valid to move data between the states
@@ -267,25 +267,25 @@ namespace OOLUA
 	*/
 	bool can_xmove(lua_State* vm0, lua_State* vm1);
 	/** \brief Loads a chunk leaving the resulting function on the stack
-		\param lua [in] \copydoc lua_State
+		\param vm [in] \copydoc lua_State
 		\param chunk [in]
 	*/
-	bool load_chunk(lua_State* lua, std::string const& chunk);
+	bool load_chunk(lua_State* vm, std::string const& chunk);
 	/** \brief Loads and runs a chunk of code
-		\param lua [in] \copydoc lua_State
+		\param vm [in] \copydoc lua_State
 		\param chunk [in]
 	*/
-	bool run_chunk(lua_State* lua, std::string const& chunk);
+	bool run_chunk(lua_State* vm, std::string const& chunk);
 	/** \brief Loads a file leaving the resulting function on the stack
-		\param lua [in] \copydoc lua_State
+		\param vm [in] \copydoc lua_State
 		\param filename [in]
 	 */
-	bool load_file(lua_State* lua, std::string const & filename);
+	bool load_file(lua_State* vm, std::string const & filename);
 	/** \brief Loads and runs the file
-		\param lua [in] \copydoc lua_State
+		\param vm [in] \copydoc lua_State
 		\param filename [in]
 	*/
-	bool run_file(lua_State* lua, std::string const & filename);
+	bool run_file(lua_State* vm, std::string const & filename);
 
 	template<typename T>
 	bool Script::push(T const& value)

@@ -13,7 +13,7 @@ OOLUA_CFUNC(
 			)
 
 //the function being proxied is overloaded, use the Expressive OOLUA_C_FUNCTION
-int oolua_ClassHasStaticFunction_static_function_int(lua_State* l)
+int oolua_ClassHasStaticFunction_static_function_int(lua_State* vm)
 {
 	//this function is overloaded
 	OOLUA_C_FUNCTION(void, ClassHasStaticFunction::static_function, int)

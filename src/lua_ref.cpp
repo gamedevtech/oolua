@@ -33,17 +33,17 @@ namespace OOLUA
 		}
 
 
-		void pull_handle_invalid(lua_State* const lua, int id)
+		void pull_handle_invalid(lua_State* const vm, int id)
 		{
 #if OOLUA_STORE_LAST_ERROR == 1 || 	OOLUA_USE_EXCEPTIONS == 1
-			lua_pushfstring(lua
+			lua_pushfstring(vm
 							, "pulling incorrect type from stack. This is a Lua registry reference to %s, stack contains %s"
-							, lua_typename(lua, id)
-							, lua_gettop(lua) ? lua_typename(lua, lua_type(lua, -1)) : "empty stack");
+							, lua_typename(vm, id)
+							, lua_gettop(vm) ? lua_typename(vm, lua_type(vm, -1)) : "empty stack");
 #	if OOLUA_USE_EXCEPTIONS == 1
-			throw OOLUA::Runtime_error(lua, (OOLUA::ERROR::PopTheStack*)0);
+			throw OOLUA::Runtime_error(vm, (OOLUA::ERROR::PopTheStack*)0);
 #	else // OOLUA_STORE_LAST_ERROR == 1
-			OOLUA::INTERNAL::set_error_from_top_of_stack_and_pop_the_error(lua);
+			OOLUA::INTERNAL::set_error_from_top_of_stack_and_pop_the_error(vm);
 #	endif
 #elif OOLUA_DEBUG_CHECKS == 1
 			assert(0 && "pulling incorrect type from stack");

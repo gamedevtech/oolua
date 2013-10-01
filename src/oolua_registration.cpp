@@ -6,79 +6,79 @@ namespace OOLUA
 	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
-		int get_oolua_module(lua_State* L)
+		int get_oolua_module(lua_State* vm)
 		{
-			lua_getfield(L, LUA_REGISTRYINDEX, OOLUA::INTERNAL::oolua_str);
+			lua_getfield(vm, LUA_REGISTRYINDEX, OOLUA::INTERNAL::oolua_str);
 			return 1;
 		}
-		void register_oolua_type(lua_State* L, char const* name, int const stack_index)
+		void register_oolua_type(lua_State* vm, char const* name, int const stack_index)
 		{
-			get_oolua_module(L);
-			lua_pushstring(L, name);
-			lua_pushvalue(L, stack_index);
-			lua_rawset(L, -3);
-			lua_pop(L, 1);
+			get_oolua_module(vm);
+			lua_pushstring(vm, name);
+			lua_pushvalue(vm, stack_index);
+			lua_rawset(vm, -3);
+			lua_pop(vm, 1);
 		}
 
-		void set_function_in_table_with_upvalue(lua_State* l, char const * func_name, lua_CFunction func
+		void set_function_in_table_with_upvalue(lua_State* vm, char const * func_name, lua_CFunction func
 													, int tableIndex, void* upvalue)
 		{
-			lua_pushstring(l, func_name);
-			lua_pushlightuserdata(l, upvalue);
-			lua_pushcclosure(l, func, 1);
-			lua_settable(l, tableIndex);
+			lua_pushstring(vm, func_name);
+			lua_pushlightuserdata(vm, upvalue);
+			lua_pushcclosure(vm, func, 1);
+			lua_settable(vm, tableIndex);
 		}
-		void set_function_in_table(lua_State* l, char const* func_name, lua_CFunction func, int tableIndex)
+		void set_function_in_table(lua_State* vm, char const* func_name, lua_CFunction func, int tableIndex)
 		{
-			lua_pushstring(l, func_name);
-			lua_pushcclosure(l, func, 0);
-			lua_settable(l, tableIndex);
+			lua_pushstring(vm, func_name);
+			lua_pushcclosure(vm, func, 0);
+			lua_settable(vm, tableIndex);
 		}
 
-		void set_oolua_userdata_creation_key_value_in_table(lua_State* l, int tableIndex)
+		void set_oolua_userdata_creation_key_value_in_table(lua_State* vm, int tableIndex)
 		{
 #if OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 1 && OOLUA_USERDATA_OPTIMISATION == 0
-			lua_pushlightuserdata(l, lua_topointer(l, LUA_REGISTRYINDEX));
-			lua_pushboolean(l, 1);
-			lua_settable(l, tableIndex);
+			lua_pushlightuserdata(vm, lua_topointer(vm, LUA_REGISTRYINDEX));
+			lua_pushboolean(vm, 1);
+			lua_settable(vm, tableIndex);
 #else
-			(void)l;
+			(void)vm;
 			(void)tableIndex;
 #endif
 		}
 
-		void set_key_value_in_table(lua_State* l, char const* key_name, int valueIndex, int tableIndex)
+		void set_key_value_in_table(lua_State* vm, char const* key_name, int valueIndex, int tableIndex)
 		{
-			lua_pushstring(l, key_name);
-			lua_pushvalue(l, valueIndex);
-			lua_settable(l, tableIndex);
+			lua_pushstring(vm, key_name);
+			lua_pushvalue(vm, valueIndex);
+			lua_settable(vm, tableIndex);
 		}
 
-		int check_for_key_in_stack_top(lua_State* l)
+		int check_for_key_in_stack_top(lua_State* vm)
 		{
 			//on entry stack is : table keyString basetable
-			lua_pushvalue(l, -2);//table keyString baseTable keyString
-			lua_gettable(l, -2);//check for keyString in baseTable
-			if( lua_isnil(l, -1) == 1)//table string baseTable valueOrNil
+			lua_pushvalue(vm, -2);//table keyString baseTable keyString
+			lua_gettable(vm, -2);//check for keyString in baseTable
+			if( lua_isnil(vm, -1) == 1)//table string baseTable valueOrNil
 			{
-				lua_pop(l, 2);//table keyString
+				lua_pop(vm, 2);//table keyString
 				return 0;
 			}
 
-			lua_remove(l, -2);//table keyString TheValueThatWeWereLookingFor
+			lua_remove(vm, -2);//table keyString TheValueThatWeWereLookingFor
 			return 1;
 		}
 
-		bool class_name_is_already_registered(lua_State*l, char const* name)
+		bool class_name_is_already_registered(lua_State* vm, char const* name)
 		{
-			lua_getfield(l, LUA_REGISTRYINDEX, name);
-			if( lua_isnil(l, -1) == 0 )// entryOrNil
+			lua_getfield(vm, LUA_REGISTRYINDEX, name);
+			if( lua_isnil(vm, -1) == 0 )// entryOrNil
 			{
-				lua_pop(l, 1);//pop the table
+				lua_pop(vm, 1);//pop the table
 				return true;
 			}
 
-			lua_pop(l, 1);//pop the null
+			lua_pop(vm, 1);//pop the null
 			return false;
 		}
 

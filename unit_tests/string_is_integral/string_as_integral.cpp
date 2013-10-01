@@ -126,12 +126,12 @@ public:
 
 	struct Helper
 	{
-		Helper(lua_State* l)
+		Helper(lua_State* vm)
 			: mock()
 			, object(&mock)
 			, input("std::string buffer")
 		{
-			OOLUA::register_class<StringFunctionTraits>(l);
+			OOLUA::register_class<StringFunctionTraits>(vm);
 		}
 		StringFunctionTraitsMock mock;
 		StringFunctionTraits* object;
@@ -223,12 +223,12 @@ public:
 
 	struct ReturnHelper
 	{
-		ReturnHelper(lua_State* l)
+		ReturnHelper(lua_State* vm)
 			: mock()
 			, object(&mock)
 			, output("std::string buffer")
 		{
-			OOLUA::register_class<StringFunctionReturnTraits>(l);
+			OOLUA::register_class<StringFunctionReturnTraits>(vm);
 		}
 		StringFunctionReturnTraitsMock mock;
 		StringFunctionReturnTraits* object;

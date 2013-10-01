@@ -22,33 +22,33 @@ namespace OOLUA
 	{
 
 		template<typename T>
-		T* check_index(lua_State * l, int narg);
+		T* check_index(lua_State * vm, int narg);
 
 		template<typename T>
-		T* check_index_no_const(lua_State * l, int narg);
+		T* check_index_no_const(lua_State * vm, int narg);
 
-		bool index_is_userdata(lua_State* l, int index, Lua_ud*& ud);
-		void report_error_userdata_is_constant(lua_State* const l, char const* pulling_class_type);
+		bool index_is_userdata(lua_State* vm, int index, Lua_ud*& ud);
+		void report_error_userdata_is_constant(lua_State* const vm, char const* pulling_class_type);
 
 #if OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 0
-		inline bool index_is_userdata(lua_State* l, int index, Lua_ud*& ud)
+		inline bool index_is_userdata(lua_State* vm, int index, Lua_ud*& ud)
 		{
-			ud = static_cast<Lua_ud *>(lua_touserdata(l, index));
+			ud = static_cast<Lua_ud *>(lua_touserdata(vm, index));
 			return ud != 0;
 		}
 #endif
 		template<typename T>
-		inline T* class_from_stack_top(lua_State * l)
+		inline T* class_from_stack_top(lua_State * vm)
 		{
-			const int top = lua_gettop(l);
-			return top ? check_index<T>(l, top) : NULL;//(T*)0;
+			const int top = lua_gettop(vm);
+			return top ? check_index<T>(vm, top) : NULL;//(T*)0;
 		}
 
 		template<typename T>
-		inline T* none_const_class_from_stack_top(lua_State * l)
+		inline T* none_const_class_from_stack_top(lua_State * vm)
 		{
-			const int top = lua_gettop(l);
-			return top ? check_index_no_const<T>(l, top) : NULL;//(T*)0;
+			const int top = lua_gettop(vm);
+			return top ? check_index_no_const<T>(vm, top) : NULL;//(T*)0;
 		}
 
 		template<typename T>
@@ -61,10 +61,10 @@ namespace OOLUA
 
 
 		template<typename T>
-		T* check_index(lua_State *  l, int narg)
+		T* check_index(lua_State *  vm, int narg)
 		{
 			Lua_ud * ud;
-			if( !index_is_userdata(l, narg, ud))return 0;
+			if( !index_is_userdata(vm, narg, ud))return 0;
 			if( !ud_is_type<T>(ud))
 			{
 				return valid_base_ptr_or_null<T>(ud);
@@ -74,13 +74,13 @@ namespace OOLUA
 
 
 		template<typename T>
-		T* check_index_no_const(lua_State * l, int narg)
+		T* check_index_no_const(lua_State * vm, int narg)
 		{
 			Lua_ud * ud;
-			if( !index_is_userdata(l, narg, ud))return 0;
+			if( !index_is_userdata(vm, narg, ud))return 0;
 			if( userdata_is_constant(ud) )
 			{
-				report_error_userdata_is_constant(l, OOLUA::Proxy_class<T>::class_name);
+				report_error_userdata_is_constant(vm, OOLUA::Proxy_class<T>::class_name);
 				//does not return
 			}
 			if( !ud_is_type<T>(ud))

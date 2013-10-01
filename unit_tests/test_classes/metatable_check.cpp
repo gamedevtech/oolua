@@ -5,11 +5,11 @@
 
 struct Int_wrapper{int i;};
 
-int equal(lua_State* s)
+int equal(lua_State* vm)
 {
-	Int_wrapper* i1 = static_cast<Int_wrapper *>(lua_touserdata(s, 1));
-	Int_wrapper* i2 = static_cast<Int_wrapper *>(lua_touserdata(s, 2));
-	lua_pushboolean(s, i1->i == i2->i ? 1 : 0);
+	Int_wrapper* i1 = static_cast<Int_wrapper *>(lua_touserdata(vm, 1));
+	Int_wrapper* i2 = static_cast<Int_wrapper *>(lua_touserdata(vm, 2));
+	lua_pushboolean(vm, i1->i == i2->i ? 1 : 0);
 	return 1;
 }
 
@@ -61,51 +61,51 @@ public:
 	//should be pushed onto the stack and its index re-pushed when it is required.
 	void equal_userdataWithDifferentMetatables_returnsTrue()
 	{
-		lua_State* s = luaL_newstate();
+		lua_State* vm = luaL_newstate();
 		std::string chunk("equal = function (lhs, rhs) return lhs == rhs end");
-		luaL_loadbuffer(s, chunk.c_str(), chunk.size(), "userChunk");
-		lua_pcall(s, 0, LUA_MULTRET, 0);
-		lua_getglobal(s, "equal");
+		luaL_loadbuffer(vm, chunk.c_str(), chunk.size(), "userChunk");
+		lua_pcall(vm, 0, LUA_MULTRET, 0);
+		lua_getglobal(vm, "equal");
 
-		luaL_newmetatable(s, "mt1");
-		int mt1 = lua_gettop(s);
-		luaL_newmetatable(s, "mt2");
-		int mt2 = lua_gettop(s);
+		luaL_newmetatable(vm, "mt1");
+		int mt1 = lua_gettop(vm);
+		luaL_newmetatable(vm, "mt2");
+		int mt2 = lua_gettop(vm);
 
-		lua_pushcfunction(s, &equal);
-		int func = lua_gettop(s);
-		lua_pushliteral(s, "__eq");
-		int metaname = lua_gettop(s);
+		lua_pushcfunction(vm, &equal);
+		int func = lua_gettop(vm);
+		lua_pushliteral(vm, "__eq");
+		int metaname = lua_gettop(vm);
 
-		lua_pushvalue(s, metaname);
-		lua_pushvalue(s, func);
-		lua_settable(s, mt1);
+		lua_pushvalue(vm, metaname);
+		lua_pushvalue(vm, func);
+		lua_settable(vm, mt1);
 
-		lua_pushvalue(s, metaname);
-		lua_pushvalue(s, func);
-		lua_settable(s, mt2);
+		lua_pushvalue(vm, metaname);
+		lua_pushvalue(vm, func);
+		lua_settable(vm, mt2);
 
-		lua_remove(s, metaname);
-		lua_remove(s, func);
+		lua_remove(vm, metaname);
+		lua_remove(vm, func);
 
-		Int_wrapper* wrapper1 = static_cast<Int_wrapper*>(lua_newuserdata(s, sizeof(Int_wrapper)));
-		int w1 = lua_gettop(s);
-		lua_pushvalue(s, mt1);
-		lua_setmetatable(s, w1);
+		Int_wrapper* wrapper1 = static_cast<Int_wrapper*>(lua_newuserdata(vm, sizeof(Int_wrapper)));
+		int w1 = lua_gettop(vm);
+		lua_pushvalue(vm, mt1);
+		lua_setmetatable(vm, w1);
 
-		Int_wrapper* wrapper2 = static_cast<Int_wrapper*>(lua_newuserdata(s, sizeof(Int_wrapper)));
-		int w2 = lua_gettop(s);
-		lua_pushvalue(s, mt2);
-		lua_setmetatable(s, w2);
+		Int_wrapper* wrapper2 = static_cast<Int_wrapper*>(lua_newuserdata(vm, sizeof(Int_wrapper)));
+		int w2 = lua_gettop(vm);
+		lua_pushvalue(vm, mt2);
+		lua_setmetatable(vm, w2);
 
 		wrapper1->i = wrapper2->i = 1;
-		lua_remove(s, mt2);
-		lua_remove(s, mt1);
+		lua_remove(vm, mt2);
+		lua_remove(vm, mt1);
 
-		lua_pcall(s, 2, LUA_MULTRET, 0);
-		bool result = lua_toboolean(s, -1) == 1 ? true : false;
+		lua_pcall(vm, 2, LUA_MULTRET, 0);
+		bool result = lua_toboolean(vm, -1) == 1 ? true : false;
 		CPPUNIT_ASSERT_EQUAL(true, result);
-		lua_close(s);
+		lua_close(vm);
 	}
 };
 

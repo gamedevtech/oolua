@@ -69,13 +69,13 @@
 
 		struct Exception : public std::runtime_error
 		{
-			Exception(lua_State* s)
-				:std::runtime_error(lua_tostring(s, -1))
+			Exception(lua_State* vm)
+				:std::runtime_error(lua_tostring(vm, -1))
 			{}
-			Exception(lua_State* s, ERROR::PopTheStack*)
-				:std::runtime_error(lua_tostring(s, -1))
+			Exception(lua_State* vm, ERROR::PopTheStack*)
+				:std::runtime_error(lua_tostring(vm, -1))
 			{
-				lua_pop(s, 1);
+				lua_pop(vm, 1);
 			}
 			Exception(std::string const& str)
 				:std::runtime_error(str)
@@ -84,21 +84,21 @@
 
 		struct Syntax_error : public Exception
 		{
-			Syntax_error(lua_State* s)
-				:Exception(s)
+			Syntax_error(lua_State* vm)
+				:Exception(vm)
 			{}
-			Syntax_error(lua_State* s, ERROR::PopTheStack* specialisation)
-				:Exception(s, specialisation)
+			Syntax_error(lua_State* vm, ERROR::PopTheStack* specialisation)
+				:Exception(vm, specialisation)
 			{}
 		};
 
 		struct Runtime_error : public Exception
 		{
-			Runtime_error(lua_State* s)
-				:Exception(s)
+			Runtime_error(lua_State* vm)
+				:Exception(vm)
 			{}
-			Runtime_error(lua_State* s, ERROR::PopTheStack* specialisation)
-				:Exception(s, specialisation)
+			Runtime_error(lua_State* vm, ERROR::PopTheStack* specialisation)
+				:Exception(vm, specialisation)
 			{}
 			Runtime_error(std::string const& str)
 				:Exception(str)
@@ -110,21 +110,21 @@
 			Memory_error(std::string const& str)
 				:Exception(str)
 			{}
-			Memory_error(lua_State* s)
-				:Exception(s)
+			Memory_error(lua_State* vm)
+				:Exception(vm)
 			{}
-			Memory_error(lua_State* s, ERROR::PopTheStack* specialisation)
-				:Exception(s, specialisation)
+			Memory_error(lua_State* vm, ERROR::PopTheStack* specialisation)
+				:Exception(vm, specialisation)
 			{}
 		};
 
 		struct File_error : public  Exception
 		{
-			File_error(lua_State* s)
-				:Exception(s)
+			File_error(lua_State* vm)
+				:Exception(vm)
 			{}
-			File_error(lua_State* s, ERROR::PopTheStack* specialisation)
-				:Exception(s, specialisation)
+			File_error(lua_State* vm, ERROR::PopTheStack* specialisation)
+				:Exception(vm, specialisation)
 			{}
 		};
 

@@ -17,21 +17,21 @@ namespace OOLUA
 		template<typename TypeWithTraits, int Is_intergral>
 		struct index_can_convert_to_type
 		{
-			static int valid(lua_State* /*l*/,int const& /*index*/){return 0;}//noop
+			static int valid(lua_State* /*vm*/,int const& /*index*/){return 0;}//noop
 		};
 
 		template<typename TypeWithTraits>
 		struct index_can_convert_to_type<TypeWithTraits, 0>
 		{
-			static int valid(lua_State* l, int index)
+			static int valid(lua_State* vm, int index)
 			{
 MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
 				if( !TypeWithTraits::is_constant
-				   && INTERNAL::userdata_is_constant(static_cast<INTERNAL::Lua_ud *>(lua_touserdata(l, index))) )
+				   && INTERNAL::userdata_is_constant(static_cast<INTERNAL::Lua_ud *>(lua_touserdata(vm, index))) )
 				{
 					return 0;
 				}
-				return OOLUA::INTERNAL::check_index<typename TypeWithTraits::raw>(l, index) != 0;
+				return OOLUA::INTERNAL::check_index<typename TypeWithTraits::raw>(vm, index) != 0;
 MSC_POP_COMPILER_WARNING_OOLUA
 			}
 		};
@@ -41,7 +41,7 @@ MSC_POP_COMPILER_WARNING_OOLUA
 		template<>
 		struct Param_helper<param_type<calling_lua_state> >
 		{
-			static int param_is_of_type(lua_State* /*l*/, int& /*index*/) //NOLINT
+			static int param_is_of_type(lua_State* /*vm*/, int& /*index*/) //NOLINT
 			{
 				return 1;
 			}
@@ -50,9 +50,9 @@ MSC_POP_COMPILER_WARNING_OOLUA
 		template<typename ParamWithTraits>
 		struct Param_helper
 		{
-			static int param_is_of_type(lua_State* l, int & index)
+			static int param_is_of_type(lua_State* vm, int & index)
 			{
-				switch ( lua_type(l, index) )
+				switch ( lua_type(vm, index) )
 				{
 					case LUA_TBOOLEAN :
 						return lua_type_is_cpp_type<typename ParamWithTraits::raw, LUA_TBOOLEAN>::value && ++index ? 1 : 0;
@@ -65,7 +65,7 @@ MSC_POP_COMPILER_WARNING_OOLUA
 					case LUA_TTABLE :
 						return lua_type_is_cpp_type<typename ParamWithTraits::raw, LUA_TTABLE>::value && ++index ? 1 : 0;
 					case LUA_TUSERDATA:
-						if( index_can_convert_to_type<ParamWithTraits, ParamWithTraits::is_integral>::valid(l, index) )
+						if( index_can_convert_to_type<ParamWithTraits, ParamWithTraits::is_integral>::valid(vm, index) )
 						{
 							++index;
 							return 1;

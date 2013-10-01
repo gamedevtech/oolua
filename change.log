@@ -21,6 +21,8 @@
 - Added \ref OOLUA::lua_return which is a specific trait for return types which will be owned by Lua.
 - Added \ref OOLUA::maybe_null which allows C functions and member functions to return NULL
 - Added \ref OOLUA::lua_maybe_null which allows C functions and member functions to return a runtime value of NULL, if it is not NULL then the instance will be owned by Lua
+- Changed OOLUA_C_FUNCTION, it now requires a lua_State pointer instance identified as "vm" instead of 'l'
+
 
 \section OOLuaChanges1-4-0 1.4.0
 - Added OOLUA_DEDUCE_FUNC(_CONST) for when there is no ambiguity for a function

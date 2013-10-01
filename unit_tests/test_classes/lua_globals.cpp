@@ -2,10 +2,10 @@
 #	include "oolua.h"
 #	include "common_cppunit_headers.h"
 
-int dummy_c_function_returns_stack_count(lua_State* l)
+int dummy_c_function_returns_stack_count(lua_State* vm)
 {
-	int top = lua_gettop(l);
-	OOLUA::push(l, top);
+	int top = lua_gettop(vm);
+	OOLUA::push(vm, top);
 	return 1;
 }
 

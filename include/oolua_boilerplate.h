@@ -1,6 +1,6 @@
 /** 
 	\file oolua_boilerplate.h
-	\date Fri Sep 20 20:24:25 2013
+	\date Tue Oct  1 18:59:25 2013
 	\details 
 	Configurable values as set when generating this file
 	\li constructor_params 5 - Maximum amount of parameters for a constructor of a proxied type	(Default 5)
@@ -27,7 +27,7 @@
 #define OOLUA_BACK_INTERNAL_NUM(NUM) \
 MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( P ## NUM ## _::out ) \
-		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::push2lua(l, p ## NUM); \
+		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::push2lua(vm, p ## NUM); \
 MSC_POP_COMPILER_WARNING_OOLUA
 #define OOLUA_BACK_INTERNAL_0
 #define OOLUA_BACK_INTERNAL_1 OOLUA_BACK_INTERNAL_NUM(1)
@@ -49,7 +49,7 @@ Functions proxied using the following macro may have traits
 	P ## NUM ##_::pull_type p ## NUM; \
 	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( P ## NUM ##_::in ) \
-		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::get(rolling_param_index, l, p ## NUM); \
+		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::get(rolling_param_index, vm, p ## NUM); \
 	MSC_POP_COMPILER_WARNING_OOLUA
 
 #define OOLUA_PARAMS_INTERNAL_0(StackIndex)
@@ -71,7 +71,7 @@ parameters.
 #define OOLUA_INTERNAL_DEFAULT_PARAM(NUM, OFFSET) \
 	typedef OOLUA::INTERNAL::param_type<P ## NUM > P ## NUM ##_; \
 	typename P ## NUM ##_::pull_type p ## NUM; \
-	OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::get(l, NUM + OFFSET, p ## NUM);
+	OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::get(vm, NUM + OFFSET, p ## NUM);
 
 #define OOLUA_PARAMS_DEFAULT_INTERNAL_0(OFFSET)
 #define OOLUA_PARAMS_DEFAULT_INTERNAL_1(OFFSET) OOLUA_INTERNAL_DEFAULT_PARAM(1, OFFSET)
@@ -175,7 +175,7 @@ parameters.
 
 #define OOLUA_CONSTRUCTOR_PARAM_NUM(NUM) \
 	typename P##NUM::pull_type p##NUM; \
-	Member_func_helper<P##NUM, P##NUM::owner>::get(index, l, p##NUM); \
+	Member_func_helper<P##NUM, P##NUM::owner>::get(index, vm, p##NUM); \
 	Converter<typename P##NUM::pull_type, typename P##NUM::type> p##NUM##_(p##NUM);
 #define OOLUA_CONSTRUCTOR_PARAM_1 OOLUA_CONSTRUCTOR_PARAM_NUM(1)
 #define OOLUA_CONSTRUCTOR_PARAM_2 OOLUA_CONSTRUCTOR_PARAM_1  OOLUA_CONSTRUCTOR_PARAM_NUM(2)
@@ -183,7 +183,7 @@ parameters.
 #define OOLUA_CONSTRUCTOR_PARAM_4 OOLUA_CONSTRUCTOR_PARAM_3  OOLUA_CONSTRUCTOR_PARAM_NUM(4)
 #define OOLUA_CONSTRUCTOR_PARAM_5 OOLUA_CONSTRUCTOR_PARAM_4  OOLUA_CONSTRUCTOR_PARAM_NUM(5)
 
-#define OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_NUM(NUM) Param_helper<P##NUM >::param_is_of_type(l, index)
+#define OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_NUM(NUM) Param_helper<P##NUM >::param_is_of_type(vm, index)
 #define OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_1 OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_NUM(1)
 #define OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_2 OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_1 && OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_NUM(2)
 #define OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_3 OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_2 && OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_NUM(3)

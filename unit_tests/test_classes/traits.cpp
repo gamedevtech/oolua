@@ -160,8 +160,8 @@ public:
 	void callingLuaState_luaPassesNoParameterYetFunctionWantsALuaInstance_calledOnceWithCorrectInstance()
 	{
 		LuaStateParamMock mock;
-		lua_State* l = *m_lua;
-		EXPECT_CALL(mock, value(::testing::Eq(l))).Times(1);
+		lua_State* vm = *m_lua;
+		EXPECT_CALL(mock, value(::testing::Eq(vm))).Times(1);
 
 		m_lua->register_class<LuaStateParam>();
 		m_lua->run_chunk("return function(object) object:value() end");

@@ -11,7 +11,7 @@ namespace OOLUA
 	{
 		struct Lua_ud;
 		typedef void (*oolua_function_check_base)(INTERNAL::Lua_ud* __restrict, INTERNAL::Lua_ud const* __restrict);
-		typedef void (*oolua_type_check_function)(lua_State * l);
+		typedef void (*oolua_type_check_function)(lua_State * vm);
 		struct Lua_ud
 		{
 			void* void_class_ptr;

@@ -17,16 +17,16 @@
 
 #	define OOLUA_INTERNAL_MEMBER_CALLER_NUM(NUM) \
 	template<typename FuncType  OOLUA_COMMA_PREFIXED_TYPENAMES_##NUM > \
-	static void call(lua_State* const l, C* m_this, FuncType ptr2mem OOLUA_PULL_TYPE_PARAMS_##NUM) \
+	static void call(lua_State* const vm, C* m_this, FuncType ptr2mem OOLUA_PULL_TYPE_PARAMS_##NUM) \
 	{ \
 		OOLUA_CONVERTER_##NUM \
 		typename R::type r( (m_this->*ptr2mem)(OOLUA_CONVERTER_PARAMS_##NUM) ); \
-		Member_func_helper<typename R::traits, R::owner>::push2lua(l, r); \
+		Member_func_helper<typename R::traits, R::owner>::push2lua(vm, r); \
 	}
 
 #	define OOLUA_INTERNAL_MEMBER_CALLER_NO_RETURN_NUM(NUM) \
 	template<typename FuncType  OOLUA_COMMA_PREFIXED_TYPENAMES_##NUM > \
-	static void call(lua_State* const /*l*/, C* m_this, FuncType ptr2mem OOLUA_PULL_TYPE_PARAMS_##NUM) \
+	static void call(lua_State* const /*vm*/, C* m_this, FuncType ptr2mem OOLUA_PULL_TYPE_PARAMS_##NUM) \
 	{ \
 		OOLUA_CONVERTER_##NUM \
 		(m_this->*ptr2mem)(OOLUA_CONVERTER_PARAMS_##NUM); \
@@ -34,16 +34,16 @@
 
 #	define OOLUA_INTERNAL_C_CALLER_NUM(NUM) \
 	template<typename FuncType  OOLUA_COMMA_PREFIXED_TYPENAMES_##NUM > \
-	static void call(lua_State* const l, FuncType ptr2func OOLUA_PULL_TYPE_PARAMS_##NUM) \
+	static void call(lua_State* const vm, FuncType ptr2func OOLUA_PULL_TYPE_PARAMS_##NUM) \
 	{ \
 		OOLUA_CONVERTER_##NUM \
 		typename R::type r( (*ptr2func)(OOLUA_CONVERTER_PARAMS_##NUM) ); \
-		Member_func_helper<typename R::traits, R::owner>::push2lua(l, r); \
+		Member_func_helper<typename R::traits, R::owner>::push2lua(vm, r); \
 	}
 
 #	define OOLUA_INTERNAL_C_CALLER_NO_RETURN_NUM(NUM) \
 	template<typename FuncType  OOLUA_COMMA_PREFIXED_TYPENAMES_##NUM > \
-	static void call(lua_State* const /*l*/, FuncType ptr2func OOLUA_PULL_TYPE_PARAMS_##NUM) \
+	static void call(lua_State* const /*vm*/, FuncType ptr2func OOLUA_PULL_TYPE_PARAMS_##NUM) \
 	{ \
 		OOLUA_CONVERTER_##NUM \
 		(*ptr2func)(OOLUA_CONVERTER_PARAMS_##NUM); \

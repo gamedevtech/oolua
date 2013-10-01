@@ -23,7 +23,7 @@
 
 /*OOLUA_MEMBER_BODY_N generates a member function with at least one parameter*/
 #define OOLUA_MEMBER_BODY_N(mod, func_name, return_value, func , ...) \
-int func_name(lua_State* const l) mod \
+int func_name(lua_State* const vm) mod \
 { \
 	assert(m_this); \
 	OOLUA_PARAMS_CONCAT(2, __VA_ARGS__) \
@@ -31,7 +31,7 @@ int func_name(lua_State* const l) mod \
 	typedef R::type (class_::*funcType )( OOLUA_PARAM_TYPE_CONCAT(__VA_ARGS__) ) mod ; \
 	OOLUA::INTERNAL::Proxy_caller<R, class_, LVD::is_void< R::type >::value > \
 		::call<funcType OOLUA_TPARAMS_CONCAT(__VA_ARGS__) > \
-			(l, m_this, &class_::func OOLUA_PPARAMS_CONCAT(__VA_ARGS__)); \
+			(vm, m_this, &class_::func OOLUA_PPARAMS_CONCAT(__VA_ARGS__)); \
 	OOLUA_BACK_CONCAT(__VA_ARGS__) \
 	return INTERNAL::lua_return_count< Type_list<R OOLUA_RETURNS_CONCAT(__VA_ARGS__) > \
 		::type> ::out; \
@@ -39,13 +39,13 @@ int func_name(lua_State* const l) mod \
 
 /*OOLUA_MEMBER_BODY_0 generates a member function with no parameters*/
 #define OOLUA_MEMBER_BODY_0(mod, func_name, return_value, func) \
-int func_name(lua_State* const l) mod\
+int func_name(lua_State* const vm) mod\
 { \
 	assert(m_this); \
 	typedef INTERNAL::return_type_traits<return_value > R; \
 	typedef R::type (class_::*funcType )() mod ; \
 	OOLUA::INTERNAL::Proxy_caller<R, class_, LVD::is_void< R::type >::value > \
-		::call< funcType>(l, m_this, &class_::func); \
+		::call< funcType>(vm, m_this, &class_::func); \
 	return INTERNAL::lua_return_count< Type_list<R >::type> ::out; \
 }
 
@@ -68,9 +68,9 @@ int func_name(lua_State* const l) mod\
 
 
 #define OOLUA_MFUNC_GENERIC(mod, ProxyName, FunctionName) \
-int ProxyName(lua_State* l) mod \
+int ProxyName(lua_State* vm) mod \
 { \
-	return OOLUA::INTERNAL::mod##proxy_member_function_with_default_traits(l, m_this, &class_::FunctionName); \
+	return OOLUA::INTERNAL::mod##proxy_member_function_with_default_traits(vm, m_this, &class_::FunctionName); \
 }
 
 /*

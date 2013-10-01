@@ -26,7 +26,7 @@ namespace OOLUA
 	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
-		void pull_handle_invalid(lua_State* const lua, int id);
+		void pull_handle_invalid(lua_State* const vm, int id);
 		bool push_reference_if_possible(int const ref, lua_State* const from, lua_State* const to);
 	}//namespace INTERNAL //NOLINT
 	/** \endcond */
@@ -72,14 +72,14 @@ namespace OOLUA
 			is perfectly acceptable to pass parameters such that a call to
 			valid will return false.
 		*/
-		Lua_ref(lua_State* const lua, int const& ref);
+		Lua_ref(lua_State* const vm, int const& ref);
 
 		/**
 			\brief
 			Sets the lua_State for the instance and initialises the instance
 			so that a call to valid will return false.
 		*/
-		explicit Lua_ref(lua_State* const lua);
+		explicit Lua_ref(lua_State* const vm);
 
 		/**
 			\brief
@@ -115,7 +115,7 @@ namespace OOLUA
 			Releases any currently stored reference and takes ownership of the passed
 			reference.
 		*/
-		void set_ref(lua_State* const lua, int const& ref)OOLUA_DEFAULT;
+		void set_ref(lua_State* const vm, int const& ref)OOLUA_DEFAULT;
 
 		/**
 			\brief
@@ -129,10 +129,10 @@ namespace OOLUA
 
 		/** \cond INTERNAL*/
 
-		bool push(lua_State* const lua)const;
-		bool pull(lua_State* const lua) OOLUA_DEFAULT;
-		bool lua_push(lua_State* const lua)const;
-		bool lua_get(lua_State* const lua, int idx);
+		bool push(lua_State* const vm)const;
+		bool pull(lua_State* const vm) OOLUA_DEFAULT;
+		bool lua_push(lua_State* const vm)const;
+		bool lua_get(lua_State* const vm, int idx);
 
 		/**
 			\brief
@@ -146,7 +146,7 @@ namespace OOLUA
 	private:
 		/** \cond INTERNAL Yes I know this is bad \endcond*/
 		friend class Table;
-		bool pull_if_valid(lua_State* l);
+		bool pull_if_valid(lua_State* vm);
 		void release();
 		lua_State* m_lua;
 		int m_ref;
@@ -154,14 +154,14 @@ namespace OOLUA
 
 	/** \cond INTERNAL*/
 	template<int ID>
-	Lua_ref<ID>::Lua_ref(lua_State* const lua, int const& ref)
-		: m_lua(lua)
+	Lua_ref<ID>::Lua_ref(lua_State* const vm, int const& ref)
+		: m_lua(vm)
 		, m_ref(ref)
 	{}
 
 	template<int ID>
-	Lua_ref<ID>::Lua_ref(lua_State* const lua)
-		: m_lua(lua)
+	Lua_ref<ID>::Lua_ref(lua_State* const vm)
+		: m_lua(vm)
 		, m_ref(LUA_NOREF)
 	{}
 
@@ -203,11 +203,11 @@ namespace OOLUA
 	}
 
 	template<int ID>
-	inline void Lua_ref<ID>::set_ref(lua_State* const lua, int const& ref)
+	inline void Lua_ref<ID>::set_ref(lua_State* const vm, int const& ref)
 	{
 		release();
 		m_ref = ref;
-		m_lua = lua;
+		m_lua = vm;
 	}
 
 	template<int ID>
@@ -232,28 +232,28 @@ namespace OOLUA
 	}
 
 	template<int ID>
-	bool Lua_ref<ID>::push(lua_State* const lua)const
+	bool Lua_ref<ID>::push(lua_State* const vm)const
 	{
 		if( !valid() )
 		{
-			lua_pushnil(lua);
+			lua_pushnil(vm);
 			return true;
 		}
-		return  INTERNAL::push_reference_if_possible(m_ref, m_lua, lua)
-					&& lua_type(lua, -1) == ID;
+		return  INTERNAL::push_reference_if_possible(m_ref, m_lua, vm)
+					&& lua_type(vm, -1) == ID;
 	}
 
 	template<int ID>
-	bool Lua_ref<ID>::lua_push(lua_State* const lua)const
+	bool Lua_ref<ID>::lua_push(lua_State* const vm)const
 	{
 		if ( !valid() )
 		{
-			lua_pushnil(lua);
+			lua_pushnil(vm);
 			return true;
 		}
-		else if ( lua != m_lua )
+		else if ( vm != m_lua )
 		{
-			luaL_error(lua, "The reference is not valid for this Lua State");
+			luaL_error(vm, "The reference is not valid for this Lua State");
 			return false;
 		}
 		lua_rawgeti(m_lua, LUA_REGISTRYINDEX, m_ref);
@@ -261,13 +261,13 @@ namespace OOLUA
 	}
 
 	template<int ID>
-	bool Lua_ref<ID>::pull_if_valid(lua_State* const l)
+	bool Lua_ref<ID>::pull_if_valid(lua_State* const vm)
 	{
-		if (lua_gettop(l) == 0)  return false;
-		const int type = lua_type(l, -1);
+		if (lua_gettop(vm) == 0)  return false;
+		const int type = lua_type(vm, -1);
 		if( type == ID )
 		{
-			set_ref(l, luaL_ref(l, LUA_REGISTRYINDEX) );
+			set_ref(vm, luaL_ref(vm, LUA_REGISTRYINDEX) );
 			return true;
 		}
 		else if ( type == LUA_TNIL )
@@ -279,11 +279,11 @@ namespace OOLUA
 	}
 
 	template<int ID>
-	bool Lua_ref<ID>::pull(lua_State* const lua)
+	bool Lua_ref<ID>::pull(lua_State* const vm)
 	{
-		if( !pull_if_valid(lua) )
+		if( !pull_if_valid(vm) )
 		{
-			INTERNAL::pull_handle_invalid(lua, ID);
+			INTERNAL::pull_handle_invalid(vm, ID);
 			return false;
 		}
 		return true;

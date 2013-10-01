@@ -33,7 +33,7 @@
 // NOLINT
 
 #	define OOLUA_CONSTRUCTOR_RESPONSE(ExceptionType, Class, ArgNums) \
-	luaL_error(l, "%s exception in %d argument %s constructor. what() : %s" \
+	luaL_error(vm, "%s exception in %d argument %s constructor. what() : %s" \
 			, ExceptionType \
 			, ArgNums \
 			, OOLUA::Proxy_class<Class>::class_name \
@@ -55,7 +55,7 @@
 	}\
 	catch(...) \
 	{ \
-		luaL_error(l, "unknown exception in %s %d argument constructor", OOLUA::Proxy_class<Class>::class_name, Num); \
+		luaL_error(vm, "unknown exception in %s %d argument constructor", OOLUA::Proxy_class<Class>::class_name, Num); \
 	}
 #else
 #	define OOLUA_CONSTRUCTOR_TRY
@@ -70,11 +70,11 @@ namespace OOLUA
 		template<typename Type, int HasNoDefaultTypedef>
 		struct Constructor
 		{
-			static int construct(lua_State * l)
+			static int construct(lua_State * vm)
 			{
 				OOLUA_CONSTRUCTOR_TRY
 				Type* obj = new Type;
-				add_ptr(l, obj, false, Lua);
+				add_ptr(vm, obj, false, Lua);
 				OOLUA_CONSTRUCTOR_CATCH(Type, 0)
 				return 1;
 			}
@@ -83,23 +83,23 @@ namespace OOLUA
 		template<typename Type>
 		struct Constructor<Type, 1>
 		{
-			static int construct(lua_State * l)
+			static int construct(lua_State * vm)
 			{
-				return luaL_error(l, "%s %s %s", "No parameters passed to the constructor of the type"
+				return luaL_error(vm, "%s %s %s", "No parameters passed to the constructor of the type"
 						   , OOLUA::Proxy_class<Type>::class_name
 						   , "which does not have a default constructor.");
 			}
 		};
 
 		template<typename T>
-		inline int oolua_generic_default_constructor(lua_State* l)
+		inline int oolua_generic_default_constructor(lua_State* vm)
 		{
-			int const stack_count = lua_gettop(l);
+			int const stack_count = lua_gettop(vm);
 			if(stack_count == 0 )
 			{
-				return Constructor<T, has_tag<OOLUA::Proxy_class<T>, OOLUA::No_default_constructor>::Result>::construct(l);
+				return Constructor<T, has_tag<OOLUA::Proxy_class<T>, OOLUA::No_default_constructor>::Result>::construct(vm);
 			}
-			return luaL_error(l, "%s %d %s %s", "Could not match", stack_count, "parameter constructor for type", OOLUA::Proxy_class<T>::class_name);
+			return luaL_error(vm, "%s %d %s %s", "Could not match", stack_count, "parameter constructor for type", OOLUA::Proxy_class<T>::class_name);
 		}
 	} // namespace INTERNAL // NOLINT
 } // namespace OOLUA
@@ -112,23 +112,23 @@ namespace OOLUA \
 		template<typename Class OOLUA_COMMA_PREFIXED_TYPENAMES_##NUM > \
 		struct Constructor##NUM \
 		{ \
-			static int construct(lua_State* l) \
+			static int construct(lua_State* vm) \
 			{ \
 				int index(1); \
 				if(OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_##NUM) \
 				{ \
-					valid_construct(l); \
+					valid_construct(vm); \
 					return 1; \
 				} \
 				return 0; \
 			} \
-			static void valid_construct(lua_State* l) \
+			static void valid_construct(lua_State* vm) \
 			{ \
 				int index(1); \
 				OOLUA_CONSTRUCTOR_PARAM_##NUM \
 				OOLUA_CONSTRUCTOR_TRY \
 				Class* obj = new Class(OOLUA_CONVERTER_PARAMS_##NUM); \
-				add_ptr(l, obj, false, Lua); \
+				add_ptr(vm, obj, false, Lua); \
 				OOLUA_CONSTRUCTOR_CATCH(Class, NUM) \
 			} \
 		}; \
@@ -140,9 +140,9 @@ OOLUA_INTERNAL_CONSTRUCTORS_GEN
 
 
 #define OOLUA_CONSTRUCTORS_BEGIN \
-static int oolua_factory_function(lua_State* l) \
+static int oolua_factory_function(lua_State* vm) \
 { \
-	int const stack_count = lua_gettop(l);
+	int const stack_count = lua_gettop(vm);
 
 /** \endcond*/
 
@@ -162,7 +162,7 @@ static int oolua_factory_function(lua_State* l) \
 	if( (stack_count == OOLUA_NARG(__VA_ARGS__) && TYPELIST::IndexOf<Type_list< __VA_ARGS__ >::type, calling_lua_state>::value == -1) \
 	|| (stack_count == OOLUA_NARG(__VA_ARGS__)-1 && TYPELIST::IndexOf<Type_list< __VA_ARGS__ >::type, calling_lua_state>::value != -1) ) \
 	{ \
-		if( OOLUA_VA_CONSTRUCTOR(__VA_ARGS__)<class_ VA_PARAM_TYPES(__VA_ARGS__) >::construct(l) ) return 1; \
+		if( OOLUA_VA_CONSTRUCTOR(__VA_ARGS__)<class_ VA_PARAM_TYPES(__VA_ARGS__) >::construct(vm) ) return 1; \
 	} \
 	MSC_POP_COMPILER_WARNING_OOLUA
 /**@}*/
@@ -171,9 +171,9 @@ static int oolua_factory_function(lua_State* l) \
 #define OOLUA_CONSTRUCTORS_END \
 	if(stack_count == 0 ) \
 	{ \
-		return INTERNAL::Constructor<class_, INTERNAL::has_tag<this_type, No_default_constructor>::Result>::construct(l); \
+		return INTERNAL::Constructor<class_, INTERNAL::has_tag<this_type, No_default_constructor>::Result>::construct(vm); \
 	} \
-	return luaL_error(l, "%s %d %s %s", "Could not match", stack_count, "parameter constructor for type", class_name); \
+	return luaL_error(vm, "%s %d %s %s", "Could not match", stack_count, "parameter constructor for type", class_name); \
 } \
 	typedef class_ ctor_block_check;
 

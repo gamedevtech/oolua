@@ -13,7 +13,7 @@
 #	include "oolua_error.h"
 
 #	define OOLUA_PROXY_CALL_CATCH_RESPONSE(exception_type, what_message) \
-		luaL_error(l, "Type of exception: %s.\n what(): %s.\n When calling function on proxy type: %s\n" \
+		luaL_error(vm, "Type of exception: %s.\n what(): %s.\n When calling function on proxy type: %s\n" \
 					, exception_type \
 					, what_message   \
 					, Proxy_type::class_name);
@@ -50,10 +50,10 @@
 #if OOLUA_RUNTIME_CHECKS_ENABLED == 1
 #	define OOLUA_SELF_CHECK(obj, mod, reg_type, which_name) \
 			if(!obj) \
-				luaL_error(l, "%s \"%s::%s\"%s" \
+				luaL_error(vm, "%s \"%s::%s\"%s" \
 										, "The self/this instance in the function" \
 										, Proxy_type::which_name \
-										, (static_cast<typename Proxy_class<Base_type >::reg_type*>(lua_touserdata(l, lua_upvalueindex(1))))->name \
+										, (static_cast<typename Proxy_class<Base_type >::reg_type*>(lua_touserdata(vm, lua_upvalueindex(1))))->name \
 										, mod " is either NULL or the wrong type is on the stack." \
 				); /*NOLINT*/
 #else
@@ -67,8 +67,8 @@ namespace OOLUA
 	namespace INTERNAL
 	{
 
-		template<typename Proxy_type, typename Base_type>int member_caller(lua_State* l);
-		template<typename Proxy_type, typename Base_type>int const_member_caller(lua_State* l);
+		template<typename Proxy_type, typename Base_type>int member_caller(lua_State* vm);
+		template<typename Proxy_type, typename Base_type>int const_member_caller(lua_State* vm);
 
 
 		///////////////////////////////////////////////////////////////////////////////
@@ -78,35 +78,35 @@ namespace OOLUA
 		///  @return int requirement of Lua functions
 		///////////////////////////////////////////////////////////////////////////////
 		template<typename Proxy_type, typename Base_type>
-		inline int member_caller(lua_State * l)
+		inline int member_caller(lua_State * vm)
 		{
 #if	OOLUA_USE_EXCEPTIONS == 1
 			OOLUA_MEMBER_FUNCTION_TRY
 #endif
-				typename Proxy_type::class_ *obj = INTERNAL::check_index_no_const<typename Proxy_type::class_>(l, 1);
+				typename Proxy_type::class_ *obj = INTERNAL::check_index_no_const<typename Proxy_type::class_>(vm, 1);
 				OOLUA_SELF_CHECK(obj, " ", Reg_type, class_name)
 				///get member function from upvalue
 				typename Proxy_class<Base_type >::Reg_type* r =
-						static_cast<typename Proxy_class<Base_type >::Reg_type*>(lua_touserdata(l, lua_upvalueindex(1)));
+						static_cast<typename Proxy_class<Base_type >::Reg_type*>(lua_touserdata(vm, lua_upvalueindex(1)));
 				Proxy_type P(obj);
-				return (P.*(r->mfunc))(l);  ///call member function
+				return (P.*(r->mfunc))(vm);  ///call member function
 #if	OOLUA_USE_EXCEPTIONS == 1
 			OOLUA_MEMBER_FUNCTION_CATCH
 #endif
 		}
 		template<typename Proxy_type, typename Base_type>
-		inline int const_member_caller(lua_State * l)
+		inline int const_member_caller(lua_State * vm)
 		{
 #if	OOLUA_USE_EXCEPTIONS == 1
 			OOLUA_MEMBER_FUNCTION_TRY
 #endif
-				typename Proxy_type::class_ *obj = INTERNAL::check_index<typename Proxy_type::class_>(l, 1);
+				typename Proxy_type::class_ *obj = INTERNAL::check_index<typename Proxy_type::class_>(vm, 1);
 				OOLUA_SELF_CHECK(obj, "const", Reg_type_const, class_name_const)
 				///get member function from upvalue
 				typename Proxy_class<Base_type >::Reg_type_const* r =
-						static_cast<typename Proxy_class<Base_type >::Reg_type_const*>(lua_touserdata(l, lua_upvalueindex(1)));
+						static_cast<typename Proxy_class<Base_type >::Reg_type_const*>(lua_touserdata(vm, lua_upvalueindex(1)));
 				Proxy_type P(obj);
-				return (P.*(r->mfunc))(l);  ///call member function
+				return (P.*(r->mfunc))(vm);  ///call member function
 #if	OOLUA_USE_EXCEPTIONS == 1
 			OOLUA_MEMBER_FUNCTION_CATCH
 #endif

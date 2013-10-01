@@ -84,13 +84,13 @@ namespace BASE_HELPERS
 template<typename Derived, typename Base>
 struct HierarchyPushPull
 {
-	HierarchyPushPull(lua_State* l)
+	HierarchyPushPull(lua_State* vm)
 		: mock()
 		, basemock(&mock)
 		, baseFromLua(0)
 	{
-		OOLUA::push(l, &mock);
-		OOLUA::pull(l, baseFromLua);
+		OOLUA::push(vm, &mock);
+		OOLUA::pull(vm, baseFromLua);
 	}
 	Derived mock;
 	Base* basemock;

@@ -306,10 +306,10 @@
 		\param Optional Comma seperated list of function parameter types
 		\see \ref OOLuaConfigCppParams "cpp_params"
 		\pre The function in which this macro is contained must declare a lua_State pointer
-		which can be identified by the name "l" (small L)
+		which can be identified by the name "vm"
 		\code{.cpp}
 		extern void foo(int);
-		int l_foo(lua_State* l)
+		int l_foo(lua_State* vm)
 		{
 			OOLUA_C_FUNCTION(void,foo,int)
 		}

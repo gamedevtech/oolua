@@ -33,7 +33,7 @@ OOLUA_CFUNC( (( void(*)(char const*))expressive_say), expressive_say)
 /** [HelloMoonCFuncOverloadedCast]*/
 
 /** [HelloMoonCFuncProxyExpressive]*/
-int expressive_lsay(lua_State* l)
+int expressive_lsay(lua_State* vm)
 {
 	OOLUA_C_FUNCTION(void, expressive_say, OOLUA::in_p<char const*>)
 }

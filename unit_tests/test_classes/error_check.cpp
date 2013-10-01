@@ -26,7 +26,7 @@
 namespace
 {
 	jmp_buf mark;
-	int OOLua_panic(lua_State* /*l*/) //NOLINT(readability/casting)
+	int OOLua_panic(lua_State* /*vm*/) //NOLINT(readability/casting)
 	{
 		longjmp(mark, 1);
 		return 0;
@@ -94,7 +94,7 @@ OOLUA_EXPORT_NO_FUNCTIONS(NewProblemDerived)
 
 
 void cfunctionTakesStub(Stub1*){}//NOLINT(readability/function)
-int l_cfunctionTakesStub(lua_State* l)
+int l_cfunctionTakesStub(lua_State* vm)
 {
 	OOLUA_C_FUNCTION(void, cfunctionTakesStub, OOLUA::cpp_in_p<Stub1*>)
 }
@@ -326,9 +326,9 @@ public:
 
 	void lua_Lopenlibs_checkStackSizeAfterCall_stackIsEmpty()
 	{
-		lua_State* L = luaL_newstate();
-		luaL_openlibs(L);
-		CPPUNIT_ASSERT_EQUAL(0, lua_gettop(L));
+		lua_State* vm = luaL_newstate();
+		luaL_openlibs(vm);
+		CPPUNIT_ASSERT_EQUAL(0, lua_gettop(vm));
 	}
 
 

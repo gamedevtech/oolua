@@ -6,10 +6,10 @@
 #	include "oolua.h"
 
 template<typename Return_type, typename Input_type>
-void assert_return_equals_input(lua_State* l, Input_type input)
+void assert_return_equals_input(lua_State* vm, Input_type input)
 {
 	Return_type result;
-	OOLUA::pull(l, result);
+	OOLUA::pull(vm, result);
 	CPPUNIT_ASSERT_EQUAL((Return_type)input, result);// NOLINT(readability/casting)
 }
 

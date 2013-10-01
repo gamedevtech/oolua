@@ -12,8 +12,8 @@ namespace OOLUA
 		:m_table_ref(ref)
 	{}
 
-	Table::Table(lua_State*  const lua, std::string const& name)
-		:m_table_ref(lua)
+	Table::Table(lua_State*  const vm, std::string const& name)
+		:m_table_ref(vm)
 	{
 		set_table(name);
 	}
@@ -22,15 +22,15 @@ namespace OOLUA
 		:m_table_ref(rhs.m_table_ref)
 	{}
 
-	void Table::bind_script(lua_State*  const lua)
+	void Table::bind_script(lua_State*  const vm)
 	{
-		if(m_table_ref.m_lua == lua)return;
+		if(m_table_ref.m_lua == vm)return;
 		if(m_table_ref.valid() )
 		{
-			Lua_table_ref tempRef(lua);
+			Lua_table_ref tempRef(vm);
 			m_table_ref.swap(tempRef);
 		}
-		else m_table_ref.m_lua = lua;
+		else m_table_ref.m_lua = vm;
 	}
 
 	void Table::set_table(std::string const& name)
@@ -67,9 +67,9 @@ namespace OOLUA
 		return result;
 	}
 
-	void Table::set_ref(lua_State* const lua, int const& ref)
+	void Table::set_ref(lua_State* const vm, int const& ref)
 	{
-		m_table_ref.set_ref(lua, ref);
+		m_table_ref.set_ref(vm, ref);
 	}
 
 	bool Table::get_table()const
@@ -80,19 +80,19 @@ namespace OOLUA
 		return  lua_type(m_table_ref.m_lua, -1) == LUA_TTABLE;
 	}
 
-	bool Table::push_on_stack(lua_State* l)const
+	bool Table::push_on_stack(lua_State* vm)const
 	{
-		return m_table_ref.push(l);
+		return m_table_ref.push(vm);
 	}
 
-	bool Table::pull_from_stack(lua_State* l)
+	bool Table::pull_from_stack(lua_State* vm)
 	{
-		return m_table_ref.pull(l);
+		return m_table_ref.pull(vm);
 	}
 
-	void Table::lua_get(lua_State* l, int idx)
+	void Table::lua_get(lua_State* vm, int idx)
 	{
-		m_table_ref.lua_get(l, idx);
+		m_table_ref.lua_get(vm, idx);
 	}
 
 	void Table::restore_stack(int const & init_stack_size)const
@@ -127,16 +127,16 @@ namespace OOLUA
 		m_table_ref.swap(rhs.m_table_ref);
 	}
 
-	void new_table(lua_State* l, Table& t)
+	void new_table(lua_State* vm, Table& t)
 	{
-		new_table(l).swap(t);
+		new_table(vm).swap(t);
 	}
 
-	Table new_table(lua_State* l)
+	Table new_table(lua_State* vm)
 	{
-		lua_newtable(l);
+		lua_newtable(vm);
 		Table t;
-		t.pull_from_stack(l);
+		t.pull_from_stack(vm);
 		return t;
 	}
 

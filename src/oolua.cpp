@@ -11,84 +11,84 @@
 #	include "oolua_char_arrays.h"
 namespace
 {
-	void add_weaklookup_table(lua_State* l)
+	void add_weaklookup_table(lua_State* vm)
 	{
-		lua_newtable(l);//tb
-		int weakTable = lua_gettop(l);
-		luaL_newmetatable(l, "weak_mt");
-		int weak_mt = lua_gettop(l);
+		lua_newtable(vm);//tb
+		int weakTable = lua_gettop(vm);
+		luaL_newmetatable(vm, "weak_mt");
+		int weak_mt = lua_gettop(vm);
 
-		lua_pushstring(l, "__mode");//tb mt key
-		lua_pushstring(l, "v");//tb mt key value
-		lua_settable(l, weak_mt);//tb mt
+		lua_pushstring(vm, "__mode");//tb mt key
+		lua_pushstring(vm, "v");//tb mt key value
+		lua_settable(vm, weak_mt);//tb mt
 		//weak_mt["__mode"]="v"
 
-		lua_setmetatable(l, weakTable);//tb
+		lua_setmetatable(vm, weakTable);//tb
 		//weakTable["__mt"]=weak_mt
 
-		OOLUA::INTERNAL::Weak_table::setWeakTable(l, -2);
+		OOLUA::INTERNAL::Weak_table::setWeakTable(vm, -2);
 		//registry[weak_lookup_name]=weakTable
 
-		lua_pop(l, 1);//empty
+		lua_pop(vm, 1);//empty
 	}
-	void add_ownership_globals(lua_State* l)
+	void add_ownership_globals(lua_State* vm)
 	{
-		lua_pushinteger(l, OOLUA::Cpp);//int
-		lua_setglobal(l, OOLUA::INTERNAL::cpp_owns_str);//globals[string]=int
+		lua_pushinteger(vm, OOLUA::Cpp);//int
+		lua_setglobal(vm, OOLUA::INTERNAL::cpp_owns_str);//globals[string]=int
 
-		lua_pushinteger(l, OOLUA::Lua);//int
-		lua_setglobal(l, OOLUA::INTERNAL::lua_owns_str);//globals[string]=int
+		lua_pushinteger(vm, OOLUA::Lua);//int
+		lua_setglobal(vm, OOLUA::INTERNAL::lua_owns_str);//globals[string]=int
 
-		OOLUA::INTERNAL::get_oolua_module(l);
-		lua_pushinteger(l, OOLUA::Cpp);//int
-		push_char_carray(l, OOLUA::INTERNAL::cpp_owns_str);
-		lua_rawset(l, -3);
+		OOLUA::INTERNAL::get_oolua_module(vm);
+		lua_pushinteger(vm, OOLUA::Cpp);//int
+		push_char_carray(vm, OOLUA::INTERNAL::cpp_owns_str);
+		lua_rawset(vm, -3);
 
-		lua_pushinteger(l, OOLUA::Lua);//int
-		push_char_carray(l, OOLUA::INTERNAL::lua_owns_str);
-		lua_rawset(l, -3);
+		lua_pushinteger(vm, OOLUA::Lua);//int
+		push_char_carray(vm, OOLUA::INTERNAL::lua_owns_str);
+		lua_rawset(vm, -3);
 
-		lua_pop(l, 1);
+		lua_pop(vm, 1);
 	}
 
-	void get_preload_table(lua_State* L)
+	void get_preload_table(lua_State* vm)
 	{
 #if LUA_VERSION_NUM < 502
-		lua_getglobal(L, "package");
-		lua_getfield(L, -1, "preload");
+		lua_getglobal(vm, "package");
+		lua_getfield(vm, -1, "preload");
 #else
-		lua_getfield(L, LUA_REGISTRYINDEX, "_PRELOAD");
+		lua_getfield(vm, LUA_REGISTRYINDEX, "_PRELOAD");
 #endif
-		if( lua_type(L, -1) != LUA_TTABLE )
-			luaL_error(L, "Lua %d get_preload_table failed to retrieve the preload table. Stack top is %s\n"
+		if( lua_type(vm, -1) != LUA_TTABLE )
+			luaL_error(vm, "Lua %d get_preload_table failed to retrieve the preload table. Stack top is %s\n"
 					   , LUA_VERSION_NUM
-					   , lua_typename(L, -1));
+					   , lua_typename(vm, -1));
 	}
 
-	void register_oolua_module(lua_State *L)
+	void register_oolua_module(lua_State *vm)
 	{
-		int const top = lua_gettop(L);
-		get_preload_table(L);
+		int const top = lua_gettop(vm);
+		get_preload_table(vm);
 
-		push_char_carray(L, OOLUA::INTERNAL::oolua_str);
-		lua_pushcclosure(L, OOLUA::INTERNAL::get_oolua_module, 0);
-		lua_settable(L, -3);
+		push_char_carray(vm, OOLUA::INTERNAL::oolua_str);
+		lua_pushcclosure(vm, OOLUA::INTERNAL::get_oolua_module, 0);
+		lua_settable(vm, -3);
 
-		push_char_carray(L, OOLUA::INTERNAL::oolua_str);
-		lua_createtable(L, 0, 2);//starts with two entries cpp_own and lua_owns
-		lua_rawset(L, LUA_REGISTRYINDEX);
+		push_char_carray(vm, OOLUA::INTERNAL::oolua_str);
+		lua_createtable(vm, 0, 2);//starts with two entries cpp_own and lua_owns
+		lua_rawset(vm, LUA_REGISTRYINDEX);
 
-		lua_settop(L, top);
+		lua_settop(vm, top);
 	}
 } // namespace
 
 namespace OOLUA
 {
-	void setup_user_lua_state(lua_State* l)
+	void setup_user_lua_state(lua_State* vm)
 	{
-		add_weaklookup_table(l);
-		register_oolua_module(l);
-		add_ownership_globals(l);
+		add_weaklookup_table(vm);
+		register_oolua_module(vm);
+		add_ownership_globals(vm);
 	}
 
 	Script::Script()
@@ -140,10 +140,10 @@ namespace OOLUA
 		return OOLUA::load_file(m_lua, filename);
 	}
 
-	void set_global_to_nil(lua_State*l, char const * name)
+	void set_global_to_nil(lua_State* vm, char const * name)
 	{
-		lua_pushnil(l);
-		lua_setglobal(l, name);
+		lua_pushnil(vm);
+		lua_setglobal(vm, name);
 	}
 
 	/*
@@ -170,7 +170,7 @@ namespace OOLUA
 	}
 
 
-	bool load_chunk(lua_State* lua, std::string const& chunk)
+	bool load_chunk(lua_State* vm, std::string const& chunk)
 	{
 #ifdef DEBUG
 #	define chunk_name chunk.c_str()
@@ -178,30 +178,30 @@ namespace OOLUA
 #	define chunk_name "userChunk"
 #endif
 
-		int res = luaL_loadbuffer(lua, chunk.c_str(), chunk.size(), chunk_name);
+		int res = luaL_loadbuffer(vm, chunk.c_str(), chunk.size(), chunk_name);
 #undef chunk_name
-		return INTERNAL::load_buffer_check_result(lua, res);
+		return INTERNAL::load_buffer_check_result(vm, res);
 	}
 
-	bool run_chunk(lua_State* lua, std::string const& chunk)
+	bool run_chunk(lua_State* vm, std::string const& chunk)
 	{
-		if( !load_chunk(lua, chunk) ) return false;
-		int result = lua_pcall(lua, 0, LUA_MULTRET, 0);
-		return INTERNAL::protected_call_check_result(lua, result);
+		if( !load_chunk(vm, chunk) ) return false;
+		int result = lua_pcall(vm, 0, LUA_MULTRET, 0);
+		return INTERNAL::protected_call_check_result(vm, result);
 	}
 
-	bool run_file(lua_State* lua, std::string const & filename)
+	bool run_file(lua_State* vm, std::string const & filename)
 	{
-		bool status = load_file(lua, filename);
+		bool status = load_file(vm, filename);
 		if(!status)return false;
-		int result = lua_pcall(lua, 0, LUA_MULTRET, 0);
-		return INTERNAL::protected_call_check_result(lua, result);
+		int result = lua_pcall(vm, 0, LUA_MULTRET, 0);
+		return INTERNAL::protected_call_check_result(vm, result);
 	}
 
-	bool load_file(lua_State* lua, std::string const & filename)
+	bool load_file(lua_State* vm, std::string const & filename)
 	{
-		int result = luaL_loadfile(lua, filename.c_str() );
-		return INTERNAL::load_buffer_check_result(lua, result);;
+		int result = luaL_loadfile(vm, filename.c_str() );
+		return INTERNAL::load_buffer_check_result(vm, result);;
 	}
 
 } // namespace OOLUA

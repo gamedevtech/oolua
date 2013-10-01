@@ -9,38 +9,38 @@ namespace
 	const int LEVELS1 = 10;
 	const int LEVELS2 = 20;
 
-	lua_State *getthread(lua_State *L, int *arg)
+	lua_State *getthread(lua_State *vm, int *arg)
 	{
-		if(lua_isthread(L, 1))
+		if(lua_isthread(vm, 1))
 		{
 			*arg = 1;
-			return lua_tothread(L, 1);
+			return lua_tothread(vm, 1);
 		}
 		else
 		{
 			*arg = 0;
-			return L;
+			return vm;
 		}
 	}
 
-	int stack_trace(lua_State *L)
+	int stack_trace(lua_State *vm)
 	{
 		int level;
 		int firstpart = 1;  /* still before eventual `...' */
 		int arg;
-		lua_State *L1 = getthread(L, &arg);
+		lua_State *L1 = getthread(vm, &arg);
 		lua_Debug ar;
-		if (lua_isnumber(L, arg+2)) {
-			level = (int)lua_tointeger(L, arg+2);//NOLINT
-			lua_pop(L, 1);
+		if (lua_isnumber(vm, arg+2)) {
+			level = (int)lua_tointeger(vm, arg+2);//NOLINT
+			lua_pop(vm, 1);
 		}
 		else
-			level = (L == L1) ? 1 : 0;  /* level 0 may be this own function */
-		if (lua_gettop(L) == arg)
-			lua_pushliteral(L, "");
-		else if (!lua_isstring(L, arg+1)) return 1;  /* message is not a string */
-		else lua_pushliteral(L, "\n");
-		lua_pushliteral(L, "stack traceback:");
+			level = (vm == L1) ? 1 : 0;  /* level 0 may be this own function */
+		if (lua_gettop(vm) == arg)
+			lua_pushliteral(vm, "");
+		else if (!lua_isstring(vm, arg+1)) return 1;  /* message is not a string */
+		else lua_pushliteral(vm, "\n");
+		lua_pushliteral(vm, "stack traceback:");
 		while (lua_getstack(L1, level++, &ar))
 		{
 			if (level > LEVELS1 && firstpart)
@@ -50,43 +50,43 @@ namespace
 					level--;  /* keep going */
 				else
 				{
-					lua_pushliteral(L, "\n\t...");  /* too many levels */
+					lua_pushliteral(vm, "\n\t...");  /* too many levels */
 					while (lua_getstack(L1, level+LEVELS2, &ar))  /* find last levels */
 						level++;
 				}
 				firstpart = 0;
 				continue;
 			}
-			lua_pushliteral(L, "\n\t");
+			lua_pushliteral(vm, "\n\t");
 			lua_getinfo(L1, "Snl", &ar);
-			lua_pushfstring(L, "%s:", ar.short_src);
+			lua_pushfstring(vm, "%s:", ar.short_src);
 			if(ar.currentline > 0)
-				lua_pushfstring(L, "%d:", ar.currentline);
+				lua_pushfstring(vm, "%d:", ar.currentline);
 			if(*ar.namewhat != '\0')  /* is there a name? */
-				lua_pushfstring(L, " in function " LUA_QS, ar.name);
+				lua_pushfstring(vm, " in function " LUA_QS, ar.name);
 			else
 			{
 				if(*ar.what == 'm')  /* main? */
-					lua_pushfstring(L, " in main chunk");
+					lua_pushfstring(vm, " in main chunk");
 				else if (*ar.what == 'C' || *ar.what == 't')
-					lua_pushliteral(L, " ?");  /* C function or tail call */
+					lua_pushliteral(vm, " ?");  /* C function or tail call */
 				else
-					lua_pushfstring(L, " in function <%s:%d>",
+					lua_pushfstring(vm, " in function <%s:%d>",
 									ar.short_src, ar.linedefined);
 			}
-			lua_concat(L, lua_gettop(L) - arg);
+			lua_concat(vm, lua_gettop(vm) - arg);
 		}
-		lua_concat(L, lua_gettop(L) - arg);
+		lua_concat(vm, lua_gettop(vm) - arg);
 		return 1;
 	}
 
-	int set_error_callback(lua_State* l, lua_CFunction func)
+	int set_error_callback(lua_State* vm, lua_CFunction func)
 	{
 #if OOLUA_DEBUG_CHECKS == 1
-		lua_pushcfunction(l, func);
-		return lua_gettop(l);
+		lua_pushcfunction(vm, func);
+		return lua_gettop(vm);
 #else
-		(void)l;
+		(void)vm;
 		(void)func;
 		return 0;
 #endif
@@ -96,20 +96,20 @@ namespace
 
 namespace OOLUA
 {
-	void Lua_function::bind_script(lua_State* const lua)
+	void Lua_function::bind_script(lua_State* const vm)
 	{
 #if OOLUA_DEBUG_CHECKS == 1
-		assert(lua);
+		assert(vm);
 #endif
-		m_lua = lua;
+		m_lua = vm;
 	}
 
 	Lua_function::Lua_function()
 		:m_lua(0)
 	{}
-	Lua_function::Lua_function(lua_State* l)
+	Lua_function::Lua_function(lua_State* vm)
 	{
-		bind_script(l);
+		bind_script(vm);
 	}
 	bool Lua_function::call(int const nparams, int const error_index)
 	{

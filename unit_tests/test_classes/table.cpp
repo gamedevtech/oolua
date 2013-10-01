@@ -46,10 +46,10 @@ namespace
 		MemberCallBack()
 			: called(0)
 		{}
-		void call_back(lua_State* l)
+		void call_back(lua_State* vm)
 		{
 			called += 1;
-			lua_pop(l, 1);
+			lua_pop(vm, 1);
 		}
 	};
 } // namespace

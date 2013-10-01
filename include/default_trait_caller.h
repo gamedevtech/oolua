@@ -17,23 +17,23 @@ namespace OOLUA
 		struct default_traits_const_caller;
 
 		template<typename this_type, typename func_type>
-		int proxy_member_function_with_default_traits(lua_State* l, this_type* this_, func_type mfptr)
+		int proxy_member_function_with_default_traits(lua_State* vm, this_type* this_, func_type mfptr)
 		{
-			return default_traits_caller<func_type>::call(l, this_, mfptr);
+			return default_traits_caller<func_type>::call(vm, this_, mfptr);
 		}
 
 		template<typename this_type, typename func_type>
-		int constproxy_member_function_with_default_traits(lua_State* l, this_type* this_, func_type mfptr)
+		int constproxy_member_function_with_default_traits(lua_State* vm, this_type* this_, func_type mfptr)
 		{
-			return default_traits_const_caller<func_type>::call(l, this_, mfptr);
+			return default_traits_const_caller<func_type>::call(vm, this_, mfptr);
 		}
 
 		template<typename func_type, typename type = func_type>
 		struct default_c_traits_caller;
 		template<typename func_type>
-		int proxy_c_function_with_default_traits(lua_State* l, func_type fptr)
+		int proxy_c_function_with_default_traits(lua_State* vm, func_type fptr)
 		{
-			return default_c_traits_caller<func_type>::call(l, fptr);
+			return default_c_traits_caller<func_type>::call(vm, fptr);
 		}
 	} // namespace INTERNAL // NOLINT
 } // namespace OOLUA
@@ -48,12 +48,12 @@ namespace OOLUA \
 		struct default_traits_caller<return_type (class_type::*)(OOLUA_COMMA_SEPERATED_TYPES_##num), func_type> \
 		{ \
 			typedef OOLUA::INTERNAL::return_type_traits<return_type > R; \
-			static int call(lua_State* l, class_type* this_, func_type mfptr) \
+			static int call(lua_State* vm, class_type* this_, func_type mfptr) \
 			{ \
 				OOLUA_PARAMS_DEFAULT_INTERNAL_##num(1) \
 				OOLUA::INTERNAL::Proxy_caller<R, class_type, LVD::is_void<return_type > ::value >:: \
 					template call<func_type OOLUA_COMMA_PREFIXED_PARAM_TYPES_##num > \
-						(l, this_, mfptr OOLUA_CALL_PARAMS_##num); \
+						(vm, this_, mfptr OOLUA_CALL_PARAMS_##num); \
 				return R::out; \
 			} \
 		}; \
@@ -61,12 +61,12 @@ namespace OOLUA \
 		struct default_traits_const_caller<return_type (class_type::*)(OOLUA_COMMA_SEPERATED_TYPES_##num)const, func_type> \
 		{ \
 			typedef OOLUA::INTERNAL::return_type_traits<return_type > R; \
-			static int call(lua_State* l, class_type* this_, func_type mfptr) \
+			static int call(lua_State* vm, class_type* this_, func_type mfptr) \
 			{ \
 				OOLUA_PARAMS_DEFAULT_INTERNAL_##num(1) \
 				OOLUA::INTERNAL::Proxy_caller<R, class_type, LVD::is_void<return_type >::value >\
 					:: template call<func_type OOLUA_COMMA_PREFIXED_PARAM_TYPES_##num > \
-						(l, this_, mfptr OOLUA_CALL_PARAMS_##num); \
+						(vm, this_, mfptr OOLUA_CALL_PARAMS_##num); \
 				return R::out; \
 			} \
 		}; \
@@ -74,12 +74,12 @@ namespace OOLUA \
 		struct default_c_traits_caller<return_type (*)(OOLUA_COMMA_SEPERATED_TYPES_##num), func_type> \
 		{ \
 			typedef OOLUA::INTERNAL::return_type_traits<return_type > R; \
-			static int call(lua_State* l, func_type fptr) \
+			static int call(lua_State* vm, func_type fptr) \
 			{ \
 				OOLUA_PARAMS_DEFAULT_INTERNAL_##num(0) \
 				OOLUA::INTERNAL::Proxy_none_member_caller< R, LVD::is_void<return_type >::value >:: \
 					template call<func_type OOLUA_COMMA_PREFIXED_PARAM_TYPES_##num > \
-						(l, fptr OOLUA_CALL_PARAMS_##num); \
+						(vm, fptr OOLUA_CALL_PARAMS_##num); \
 				return R::out; \
 			} \
 		};\

@@ -204,7 +204,7 @@ local gen_boilerplate = function(options,path)
 #define OOLUA_BACK_INTERNAL_NUM(NUM) \
 MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( P ## NUM ## _::out ) \
-		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::push2lua(l, p ## NUM); \
+		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::push2lua(vm, p ## NUM); \
 MSC_POP_COMPILER_WARNING_OOLUA
 ]], 0, options.cpp_params, 'OOLUA_BACK_INTERNAL_' )
 
@@ -219,7 +219,7 @@ Functions proxied using the following macro may have traits
 	P ## NUM ##_::pull_type p ## NUM; \
 	MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 	if( P ## NUM ##_::in ) \
-		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::get(rolling_param_index, l, p ## NUM); \
+		OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::get(rolling_param_index, vm, p ## NUM); \
 	MSC_POP_COMPILER_WARNING_OOLUA
 
 #define OOLUA_PARAMS_INTERNAL_0(StackIndex)
@@ -243,7 +243,7 @@ parameters.
 #define OOLUA_INTERNAL_DEFAULT_PARAM(NUM, OFFSET) \
 	typedef OOLUA::INTERNAL::param_type<P ## NUM > P ## NUM ##_; \
 	typename P ## NUM ##_::pull_type p ## NUM; \
-	OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::get(l, NUM + OFFSET, p ## NUM);
+	OOLUA::INTERNAL::Member_func_helper<P ## NUM ##_, P ## NUM ##_::owner>::get(vm, NUM + OFFSET, p ## NUM);
 
 #define OOLUA_PARAMS_DEFAULT_INTERNAL_0(OFFSET)
 #define OOLUA_PARAMS_DEFAULT_INTERNAL_1(OFFSET) OOLUA_INTERNAL_DEFAULT_PARAM(1, OFFSET)
@@ -290,12 +290,12 @@ parameters.
 	generic_write([[
 #define OOLUA_CONSTRUCTOR_PARAM_NUM(NUM) \
 	typename P##NUM::pull_type p##NUM; \
-	Member_func_helper<P##NUM, P##NUM::owner>::get(index, l, p##NUM); \
+	Member_func_helper<P##NUM, P##NUM::owner>::get(index, vm, p##NUM); \
 	Converter<typename P##NUM::pull_type, typename P##NUM::type> p##NUM##_(p##NUM);
 ]],1,options.constructor_params,'OOLUA_CONSTRUCTOR_PARAM_')
 
 	generic_write([[
-#define OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_NUM(NUM) Param_helper<P##NUM >::param_is_of_type(l, index)
+#define OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_NUM(NUM) Param_helper<P##NUM >::param_is_of_type(vm, index)
 ]],1,options.constructor_params,'OOLUA_CONSTRUCTOR_PARAM_IS_OF_TYPE_','&&')
 
 	f:write([[

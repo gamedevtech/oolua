@@ -22,88 +22,88 @@ namespace OOLUA
 	{
 		//rhs is top of stack lhs is below (lhs op rhs)
 		template<typename T>
-		int lua_equal(lua_State*  const l)
+		int lua_equal(lua_State*  const vm)
 		{
 			T const* lhs(0);
 			T const* rhs(0);
-			INTERNAL::LUA_CALLED::get(l, 1, lhs);
-			INTERNAL::LUA_CALLED::get(l, 2, rhs);
+			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
+			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
 			bool result(*lhs == *rhs);
-			OOLUA::push(l, result);
+			OOLUA::push(vm, result);
 			return 1;
 		}
 
 		template<typename T>
-		int lua_less_than(lua_State* const l)
+		int lua_less_than(lua_State* const vm)
 		{
 			T const* lhs(0);
 			T const* rhs(0);
-			INTERNAL::LUA_CALLED::get(l, 1, lhs);
-			INTERNAL::LUA_CALLED::get(l, 2, rhs);
+			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
+			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
 			bool result(*lhs < *rhs);
-			OOLUA::push(l, result);
+			OOLUA::push(vm, result);
 			return 1;
 		}
 
 		template<typename T>
-		int lua_less_than_or_equal(lua_State* const l)
+		int lua_less_than_or_equal(lua_State* const vm)
 		{
 			T const* lhs(0);
 			T const* rhs(0);
-			INTERNAL::LUA_CALLED::get(l, 1, lhs);
-			INTERNAL::LUA_CALLED::get(l, 2, rhs);
+			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
+			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
 			bool result(*lhs <= *rhs);
-			OOLUA::push(l, result);
+			OOLUA::push(vm, result);
 			return 1;
 		}
 
 		//these following operator functions return a type that they are working on
 		template<typename T>
-		int lua_add(lua_State*  const l)
+		int lua_add(lua_State*  const vm)
 		{
 			T const* lhs(0);
 			T const* rhs(0);
-			INTERNAL::LUA_CALLED::get(l, 1, lhs);
-			INTERNAL::LUA_CALLED::get(l, 2, rhs);
+			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
+			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
 			T* result(new T(*lhs + *rhs));
-			INTERNAL::add_ptr<T>(l, result, false, OOLUA::Lua);
+			INTERNAL::add_ptr<T>(vm, result, false, OOLUA::Lua);
 			return 1;
 		}
 
 
 		template<typename T>
-		int lua_sub(lua_State*  const l)
+		int lua_sub(lua_State*  const vm)
 		{
 			T const* lhs(0);
 			T const* rhs(0);
-			INTERNAL::LUA_CALLED::get(l, 1, lhs);
-			INTERNAL::LUA_CALLED::get(l, 2, rhs);
+			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
+			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
 			T* result(new T(*lhs - *rhs));
-			INTERNAL::add_ptr<T>(l, result, false, OOLUA::Lua);
+			INTERNAL::add_ptr<T>(vm, result, false, OOLUA::Lua);
 			return 1;
 		}
 
 		template<typename T>
-		int lua_mul(lua_State*  const l)
+		int lua_mul(lua_State*  const vm)
 		{
 			T const* lhs(0);
 			T const* rhs(0);
-			INTERNAL::LUA_CALLED::get(l, 1, lhs);
-			INTERNAL::LUA_CALLED::get(l, 2, rhs);
+			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
+			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
 			T* result(new T(*lhs * *rhs));
-			INTERNAL::add_ptr<T>(l, result, false, OOLUA::Lua);
+			INTERNAL::add_ptr<T>(vm, result, false, OOLUA::Lua);
 			return 1;
 		}
 
 		template<typename T>
-		int lua_div(lua_State*  const l)
+		int lua_div(lua_State*  const vm)
 		{
 			T const* lhs(0);
 			T const* rhs(0);
-			INTERNAL::LUA_CALLED::get(l, 1, lhs);
-			INTERNAL::LUA_CALLED::get(l, 2, rhs);
+			INTERNAL::LUA_CALLED::get(vm, 1, lhs);
+			INTERNAL::LUA_CALLED::get(vm, 2, rhs);
 			T* result(new T(*lhs / *rhs));
-			INTERNAL::add_ptr<T>(l, result, false, OOLUA::Lua);
+			INTERNAL::add_ptr<T>(vm, result, false, OOLUA::Lua);
 			return 1;
 		}
 
@@ -111,16 +111,16 @@ namespace OOLUA
 		template<typename T, bool hasOperator >\
 		struct set_ ## operation ## _function\
 		{\
-			static void set(lua_State* const /*l*/, int /*metatable*/){}\
+			static void set(lua_State* const /*vm*/, int /*metatable*/){}\
 		};\
 		template<typename T>\
 		struct set_ ## operation ## _function<T, true> \
 		{\
-			static void set(lua_State* const l, int metatable)\
+			static void set(lua_State* const vm, int metatable)\
 			{\
-				lua_pushliteral(l, lua_string_op);\
-				lua_pushcfunction(l, lua_## operation<T>);\
-				lua_rawset(l, metatable);\
+				lua_pushliteral(vm, lua_string_op);\
+				lua_pushcfunction(vm, lua_## operation<T>);\
+				lua_rawset(vm, metatable);\
 			}\
 		};
 

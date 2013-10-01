@@ -5,17 +5,17 @@
 #	include "expose_static_and_c_functions.h"
 #	include "expose_hierarchy.h"
 
-int returns_stack_count(lua_State* l)
+int returns_stack_count(lua_State* vm)
 {
-	int top = lua_gettop(l);
-	OOLUA::push(l, top);
+	int top = lua_gettop(vm);
+	OOLUA::push(vm, top);
 	return 1;
 }
 
-int stack_top_type(lua_State* l)
+int stack_top_type(lua_State* vm)
 {
-	int top = lua_type(l, -1);
-	OOLUA::push(l, top);
+	int top = lua_type(vm, -1);
+	OOLUA::push(vm, top);
 	return 1;
 }
 
@@ -25,14 +25,14 @@ namespace
 	int static_func_derived_return(1);
 } // namespace
 
-int staticFunction_pushes0(lua_State* l)
+int staticFunction_pushes0(lua_State* vm)
 {
-	OOLUA::push(l, static_func_base_return);
+	OOLUA::push(vm, static_func_base_return);
 	return 1;
 }
-int staticFunction_pushes1(lua_State* l)
+int staticFunction_pushes1(lua_State* vm)
 {
-	OOLUA::push(l, static_func_derived_return);
+	OOLUA::push(vm, static_func_derived_return);
 	return 1;
 }
 

@@ -75,8 +75,8 @@ namespace OOLUA
 			an error until a lua_State is bound via \ref bind_script
 		*/
 		Lua_function();
-		/** \brief Binds the state l to this instance */
-		Lua_function(lua_State* l); // NOLINT Let OOLUA::Script decay to pointer
+		/** \brief Binds the state vm to this instance */
+		Lua_function(lua_State* vm); // NOLINT Let OOLUA::Script decay to pointer
 
 		/**@{*/
 		/**
@@ -89,7 +89,7 @@ namespace OOLUA
 		/**@}*/
 
 		/** \brief Sets the state in which functions will be called*/
-		void bind_script(lua_State* const lua);
+		void bind_script(lua_State* const vm);
 	private:
 		int get_top();
 		bool call(int const nparams, int const error_index);

@@ -11,7 +11,7 @@ OOLUA_PROXY(ClassHasStaticFunction)
 OOLUA_PROXY_END
 /*[ClassStaticFunctionExpose]*/
 
-int oolua_ClassHasStaticFunction_static_function(lua_State* l);
-int oolua_ClassHasStaticFunction_static_function_int(lua_State* l);
+int oolua_ClassHasStaticFunction_static_function(lua_State* vm);
+int oolua_ClassHasStaticFunction_static_function_int(lua_State* vm);
 
 #endif

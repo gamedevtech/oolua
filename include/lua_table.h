@@ -53,7 +53,7 @@ namespace OOLUA
 		explicit Table(Lua_table_ref const& ref);
 
 		/** \brief Sets the lua_State and calls Lua_table::set_table */
-		Table(lua_State*  const lua, std::string const& name);
+		Table(lua_State*  const vm, std::string const& name);
 		Table(Table const& rhs);
 
 		/** \brief unimplemented*/
@@ -64,7 +64,7 @@ namespace OOLUA
 		~Table()OOLUA_DEFAULT;
 
 		/**@{*/
-		void bind_script(lua_State*  const lua);
+		void bind_script(lua_State*  const vm);
 
 		/** \brief
 			Order of trying to initilaise :
@@ -78,7 +78,7 @@ namespace OOLUA
 		void set_table(std::string const& name);
 
 		/** \brief Initailises the internal Lua_func_ref to the id ref*/
-		void set_ref(lua_State* const lua, int const& ref);
+		void set_ref(lua_State* const vm, int const& ref);
 
 		/** \brief Swaps the internal Lua_func_ref and rhs.m_table_ref*/
 		void swap(Table & rhs);
@@ -129,9 +129,9 @@ namespace OOLUA
 		void traverse(traverse_do_function do_);
 
 		/** \cond INTERNAL*/
-		bool push_on_stack(lua_State* l)const;
-		bool pull_from_stack(lua_State* l);
-		void lua_get(lua_State* l, int idx);
+		bool push_on_stack(lua_State* vm)const;
+		bool pull_from_stack(lua_State* vm);
+		void lua_get(lua_State* vm, int idx);
 		lua_State* state() const { return m_table_ref.m_lua; }
 		/** \endcond*/
 	private:
@@ -266,11 +266,11 @@ namespace OOLUA
 		table is left at the index.
 	*/
 	template<typename T, typename T1>
-	inline void table_set_value(lua_State* lua, int table_index, T const& key, T1 const& value)
+	inline void table_set_value(lua_State* vm, int table_index, T const& key, T1 const& value)
 	{
-		push(lua, key);
-		push(lua, value);
-		lua_settable(lua, table_index < 0 ? table_index-2 : table_index);
+		push(vm, key);
+		push(vm, value);
+		lua_settable(vm, table_index < 0 ? table_index-2 : table_index);
 	}
 
 	/**	\brief
@@ -278,27 +278,27 @@ namespace OOLUA
 	 table is left at the index.
 	*/
     template<typename T, typename T1>
-	inline bool table_at(lua_State* lua, int const table_index, T const& key, T1& value)
+	inline bool table_at(lua_State* vm, int const table_index, T const& key, T1& value)
 	{
-		push(lua, key);//table key
-		lua_gettable(lua, table_index < 0 ? table_index-1 : table_index);//table value
-		return pull(lua, value);//table
+		push(vm, key);//table key
+		lua_gettable(vm, table_index < 0 ? table_index-1 : table_index);//table value
+		return pull(vm, value);//table
 	}
 
 	/**
 		\brief Creates a new valid \ref OOLUA::Table
-		\param [in] l
+		\param [in] vm
 		\param [inout] t
 		\post stack is the same on exit as entry
 
 	*/
-	void new_table(lua_State* l, OOLUA::Table& t);
+	void new_table(lua_State* vm, OOLUA::Table& t);
 
 	/**
 		\brief Creates a new valid \ref OOLUA::Table "Table"
 		\post stack is the same on exit as entry
 	*/
-	OOLUA::Table new_table(lua_State* l);
+	OOLUA::Table new_table(lua_State* vm);
 
 	/**	\def oolua_ipairs (table)
 		Helper for iterating over the array part of a table declares:
