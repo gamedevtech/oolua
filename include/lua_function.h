@@ -60,7 +60,7 @@ namespace OOLUA
 	\details
 	\ref OOLUA::Lua_function "Lua_function" is a lua_State function caller object, the state in which
 	it calls a function is specified in either the \ref OOLUA::Lua_function::Lua_function(lua_State*)
-	"constructor" or via \ref bind_script.
+	"constructor" or via \ref OOLUA::Lua_function::bind_script "bind_script".
 	This object provides function call operator overloads upto
 	\ref OOLuaConfigLuaParams "\"lua_params\"" count + 1 parameters, the first of which being
 	the function which is to be called and it's type maybe one of:
